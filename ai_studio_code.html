@@ -2,10 +2,10 @@
 <!--
 ================================================================================
   CHRONO BLITZ: ARCADE COLLECTION - 技術仕様書 兼 開発引き継ぎドキュメント
-  Version: 2.2.0 (Review Fixes & Maintainability)
+  Version: 2.3.0 (Final Fight Style Chain)
 ================================================================================
 
-【0. 現行構成サマリ / v2.2.0 時点 — 引き継ぐ人はまずここを読む】
+【0. 現行構成サマリ / v2.3.0 時点 — 引き継ぐ人はまずここを読む】
   ■ 配布物
     ai_studio_code.html 1 本（約 84.8MB）。画像 18 枚・背景 4 枚・WAV 126 本・全コードを埋込済み。
     file:// 直開きでも、python -m http.server などの静的配信でも動く。外部通信・追加インストールは不要。
@@ -20,15 +20,16 @@
   ■ コードの置き場所（HTML 内のマーカーと編集元）
     HTML 直書き（編集元はこの HTML 自身）:
       CSS / DOM / Input / 定数 / CHARACTERS / STAGES / Fighter / Game（対戦ロジック・HUD）/ UI 配線 / メインループ
-    // SPRITE_ASSETS_BEGIN 〜 END  ← tools/build-sprites.mjs が再生成。手で編集しない
+    SPRITE_ASSETS の BEGIN〜END マーカー ← tools/build-sprites.mjs が再生成。手で編集しない
       SPRITE_SOURCES・STAGE_SOURCES・VOICE_SOURCES・VOICE_PROFILES（data URI）
       assets/sprites/throws.js    ThrowMotion（投げの同期・姿勢補間。両ゲーム共用）
       assets/sprites/renderer.js  FighterSprites（432 姿勢のアトラス描画）
       assets/stages/renderer.js   StageArt（4 背景＋動く装飾）
       assets/voices/engine.js     FighterVoiceBank（126 クリップの再生・優先度・ダッキング）
-    // AUDIO_ENGINE_BEGIN 〜 END   ← assets/audio/engine.js（ARCADE_TRACKS / SoundEngine / sound）
-    // BELT_ENGINE_BEGIN 〜 END    ← assets/belt/engine.js（STREET / StreetPalettes / StreetActor / NeonUprising / Game への差し込み / blur 処理）
+    AUDIO_ENGINE の BEGIN〜END マーカー ← assets/audio/engine.js（ARCADE_TRACKS / SoundEngine / sound）
+    BELT_ENGINE の BEGIN〜END マーカー ← assets/belt/engine.js（STREET / StreetPalettes / StreetActor / NeonUprising / Game への差し込み / blur 処理）
     編集元を直したら node tools/build-sprites.mjs で再埋込する。マーカー内を直接編集すると次のビルドで消える。
+    このヘッダーに「// 」で始まるマーカー名の行を書かないこと（v2.3.0 でビルドが誤認して本文を削った。[FIX-60]）。
 
   ■ 主要クラス
     SoundEngine      Web Audio。35 個の PCM 音源をローカル合成、8 曲を 25ms 間隔・120ms 先読みで予約。prebuild() で操作前に準備。
@@ -54,6 +55,62 @@
     node tools/verify-audio.cjs        8 曲 32 小節の実レンダリング・効果音・ダッキング
     node tools/verify-voice-update.cjs 音声埋込の一致
     結果は verification/ 配下。構文だけなら script 要素の中身を切り出して node --check（ヘッダー内に script タグの文字列を書かないこと）。
+
+【アップデート履歴 / v2.3.0 — 2026-11-09 / Claude Fable 5.1 (Claude Code)】
+  依頼内容: NEON UPRISING の通常攻撃を「ファイナルファイト方式」に変更。パンチ→（当たった時だけ）ボディブロー→アッパーで
+            吹き飛ばし。↓を入れたままなら吹き飛ばさず自動で投げ、投げた敵の体は他の敵にも当たる。改良が分かるよう
+            バージョンを画面に表示する。
+  復元    : ai_studio_code.v2.2.0.backup.html（変更前の完成版）。
+  記法    : [種別-連番] 症状 / 原因 / 修正 / 変更箇所 / 検証。
+
+  [CHANGE-57] 通常攻撃チェーンをファイナルファイト方式に変更
+    従来   : J を押すたびに 1→2→3 段目へ無条件に進んだ（空振りでも進む）。3 段目でダウン。
+    修正   : 段階は「直前の段が命中した場合」だけ進む。空振りは 1 段目（パンチ）に戻る。
+             1 段目 = パンチ（ATK_L、威力 30）、2 段目 = ボディブロー（ATK_C_L、威力 38、active 4F / 15F で終了）、
+             3 段目 = アッパー（ATK_H、威力 68、knock）。アッパーは source 'upper' として hurt() に渡り、通常の
+             ダウン打撃より高く短く飛ぶ（vz 11 / knockX 5。通常は 8 / 7）。ボスのアーマー判定は 'upper' も打撃として扱う。
+             木箱・ドラム缶への命中もチェーンを継続する（verify-belt の「Breakable drops」が 2 連打で壊す前提のため）。
+             鉄パイプ所持中は従来どおり全段 ATK_H（威力 +32）だが、進行条件（命中時のみ）は同じ。
+    変更箇所: assets/belt/engine.js StreetActor コンストラクタ（chainHit）、attack()、swing()、hurt()。
+    検証   : 下記「検証結果（v2.3.0）」。
+
+  [CHANGE-58] ↓を入れたまま 3 発目でチェーン投げ
+    修正   : attack() で 3 段目に入る瞬間に S / ↓ が押されていて、正面 reach 以内に掴める敵（grabbable: IDLE / WALK_F /
+             HIT_STAND、ボスは隙中のみ）がいれば、アッパーの代わりに beginGrab() → throwHeld(facing) を即時実行する。
+             投げの演出・ダメージ（92×power）・投げた敵の体が他の敵に当たる処理（throwFlight → 'body' 64 ダメージ）は
+             既存の投げと共通。掴める敵がいない場合は通常のアッパーになる。鉄パイプ所持中は投げに変化しない。
+    変更箇所: assets/belt/engine.js attack()。
+    検証   : 同上。
+
+  [UI-59] バージョン表示
+    修正   : STREET.version = '2.3.0' を追加し、HUB 右上「VERSION 2.3.0」、STREET_SELECT 右上、STREET の HUD 右下
+             「v2.3.0」に表示。H の操作説明・HUD 下段のヒント・STREET_SELECT の操作行をチェーン投げの説明に更新。
+    変更箇所: assets/belt/engine.js（HUB / STREET_SELECT 描画、drawHUD）、ai_studio_code.html の streetHelp、
+             assets/belt/README.md、README.md、index.html。
+    注意   : 以後バージョンを上げるときは STREET.version・本ヘッダー・index.html・README.md を揃えて更新する。
+
+  [FIX-60] ビルドがヘッダーの説明文をマーカーと誤認し本文を削る（重大・今回発見）
+    症状   : node tools/build-sprites.mjs 後の HTML が 6,014 行 → 4,766 行に減り、CSS・DOM・Fighter/Game の大半が消えた。
+    原因   : v2.2.0 の構成サマリに「    // SPRITE_ASSETS_BEGIN 〜 END」と書いた行があり、build-sprites.mjs の
+             indexOf('// SPRITE_ASSETS_BEGIN') がその行（ヘッダー内）に先に一致した。v2.2.0 の配布物はビルド後に
+             ヘッダーを書いたため無事だったが、次のビルド（今回）で発現した。
+    修正   : (1) build-sprites.mjs は行頭から行末までがマーカーそのものの行だけを対象にする（find / cut ヘルパー、
+             対が壊れていれば例外で停止）。(2) ヘッダー側の説明を「SPRITE_ASSETS の BEGIN〜END マーカー」に言い換え。
+    変更箇所: tools/build-sprites.mjs、本ヘッダー 0. 構成サマリ。
+    検証   : バックアップから復元して再ビルド → 行数 6,014 + 追加分のみ、マーカー外の差分はヘッダーとヘルプの編集だけ。
+
+  ■ 検証結果（v2.3.0）
+    node --check: OK（script 要素を切り出して検査）。
+    tools/verify-chain.cjs（新規・19 項目）: 空振りでパンチに戻る / 命中でパンチ→ボディ（ATK_C_L）→アッパー（ATK_H, upper）/ アッパーの
+      最高到達 z > 60 / アッパー後はパンチに戻る / ↓＋3 発目で THROWING（grapple.mode 'throw'）/ 投げた体が 190px 先の敵に当たる（HP 122→58）/
+      掴める敵がいなければアッパー / 鉄パイプ所持中は投げに変化しない / 公開入力（J 連打）だけで 3 段目到達 / 木箱命中でチェーン継続 /
+      描画が状態を変えない / STREET.version 文字列: すべて通過、ブラウザ例外 0。結果 verification/chain-report.json、
+      画面 verification/chain-hub.png（HUB 右上 VERSION 2.3.0）・chain-hud.png（HUD 右下 v2.3.0）。
+    verify-belt（全 6 人が公開入力のみでステージ 1 クリア、33 体撃破）/ verify-sprites（2,880F 回帰・432 姿勢・126 音・実キー操作）/
+      verify-throws（72 組）/ verify-audio / verify-voice-update: すべて exit 0（2026-11-09）。
+    ビルド整合: v2.2.0 バックアップとマーカー外を行単位で比較し、差分はヘッダー・ヘルプ（streetHelp）の編集のみ（6,014 → 6,094 行）。
+    目視（Playwright 1280×800 の切り出し）: 1 段目ジャブ、2 段目はしゃがみ気味のボディブロー、3 段目は各キャラの強攻撃姿勢
+      （ヴォルトは蹴り上げ）で敵が高く浮く。↓＋3 発目で持ち上げ → 投げ → 飛んだ体が奥の敵を巻き込んで両者 HIT_AIR。
 
 【アップデート履歴 / v2.2.0 — 2026-11-08 / Claude Fable 5.1 (Claude Code)】
   依頼内容: v2.1.0 全体のレビューで挙げた 13 件の修正候補をまとめて適用。
@@ -246,7 +303,8 @@
               肌・無彩色を保持。元PNG・共通アトラスは書き換えず、任意streetPaletteで描画。
               ThrowMotion.sample(u)へ既存投げの姿勢・移動補間を抽出し、両モードで共有。
               対戦用ThrowMotion.positionの床・壁制限と結果は維持する。
-    操作    : WASD/矢印=左右と奥行き、J/Z=3段攻撃・拾う、K/X/Space=ジャンプ、
+    操作    : WASD/矢印=左右と奥行き、J/Z=連続攻撃・拾う、K/X/Space=ジャンプ、
+              （v2.3.0: パンチ→ボディ→アッパーは直前の命中時のみ進行。↓＋3発目で自動投げ。[CHANGE-57/58]）
               空中J/Z=ジャンプ攻撃、歩いて接近=掴み、掴みJ=追撃（最大3回）、
               方向＋JまたはI=投げ（近距離Iで直接投げも可）、掴みK=解放。
               L/Cまたは攻撃＋ジャンプ=無敵の緊急全周攻撃。命中時のみ最大HPの7.5%消費、
@@ -1191,7 +1249,8 @@
         <div class="card" id="streetHelp" style="grid-column:1/-1;border-color:#dca46b;">
           <h3>NEON UPRISING — ベルトスクロールアクション / 1人用</h3>
           <div class="row"><span>移動（上下は奥行き）</span><span>WASD / 矢印キー</span></div>
-          <div class="row"><span>3段連続攻撃 / アイテムを拾う</span><span>J / Z（連続入力）</span></div>
+          <div class="row"><span>連続攻撃 / アイテムを拾う</span><span>J / Z。パンチ → ボディブロー → アッパー（吹き飛ばし）。前の一撃が当たった時だけ次へ進む</span></div>
+          <div class="row"><span>チェーン投げ</span><span>↓（S）を入れたまま3発目 → 吹き飛ばさず自動で投げる。投げた敵の体は他の敵にも当たる</span></div>
           <div class="row"><span>ジャンプ / ジャンプ攻撃</span><span>K / X / Space → 空中で J / Z</span></div>
           <div class="row"><span>掴む / 追撃 / 投げる</span><span>敵へ歩いて接近 → Jで追撃 / 方向＋J または Iで投げ</span></div>
           <div class="row"><span>緊急回転攻撃</span><span>L / C または 攻撃＋ジャンプ。命中時に最大体力の7.5%消費（残り1まで）</span></div>
@@ -4298,6 +4357,7 @@ class Game {
 // Coordinates: x = street distance, y = floor depth, z = height above that floor.
 // Fixed 60 Hz simulation. Draw methods must not change simulation or consume random values.
 const STREET = {
+  version: '2.3.0',
   width: 6200,
   top: 440,
   bottom: 626,
@@ -4428,6 +4488,7 @@ class StreetActor extends Fighter {
     this.hold = null;
     this.queue = 0;
     this.chain = 0;
+    this.chainHit = false;
     this.comboTTL = 0;
     this.flashTimer = 0;
     this.vz = 0;
@@ -4874,18 +4935,33 @@ class NeonUprising {
     );
   }
   attack(a, air = false) {
-    const stage = air ? 3 : (a.chain % 3) + 1;
+    // Final Fight style chain: punch -> body blow -> uppercut. A stage is reachable only while the previous one connected
+    // (chainHit) and the chain window (comboTTL) is still open; a whiff restarts from the punch.
+    const stage = air ? 3 : a.chain > 0 && a.chain < 3 && a.chainHit ? a.chain + 1 : 1;
+    if (!air && stage === 3 && a.team === 0 && !a.weapon && STREET.down('KeyS', 'ArrowDown')) {
+      // Holding down on the third hit converts the uppercut into an automatic throw of the enemy in front.
+      const e = this.grabbable(a.reach);
+      if (e && (e.x - a.x) * a.facing >= 0) {
+        a.chain = 0;
+        a.chainHit = false;
+        this.beginGrab(e);
+        this.throwHeld(a.facing);
+        return;
+      }
+    }
     a.chain = stage;
+    a.chainHit = false;
     a.comboTTL = 42;
-    a.pose(air ? 'ATK_J_H' : stage === 3 || a.weapon ? 'ATK_H' : 'ATK_L');
+    a.pose(air ? 'ATK_J_H' : a.weapon || stage === 3 ? 'ATK_H' : stage === 2 ? 'ATK_C_L' : 'ATK_L');
     a.attack = {
       stage,
-      active: air ? 5 : stage === 3 ? 8 : 5,
-      end: air ? 22 : stage === 3 ? 29 : 18,
+      active: air ? 5 : stage === 3 ? 8 : stage === 2 ? 4 : 5,
+      end: air ? 22 : stage === 3 ? 29 : stage === 2 ? 15 : 18,
       damage: Math.round((air ? 48 : stage === 3 ? 68 : stage === 2 ? 38 : 30) * a.power + (a.weapon ? 32 : 0)),
       reach: a.reach + (a.weapon ? 45 : 0),
       depth: 29,
       knock: stage === 3,
+      upper: stage === 3 && !air && !a.weapon,
       hit: new Set()
     };
     a.speak((stage === 3 ? 'heavy' : 'light') + (stage % 2), stage === 3 ? 45 : 30);
@@ -4903,10 +4979,11 @@ class NeonUprising {
         Math.abs(b.z - a.z) < 115 &&
         !atk.hit.has(b.uid)
       ) {
-        if (this.hurt(b, atk.damage, a.facing, atk.knock, 'strike')) {
+        if (this.hurt(b, atk.damage, a.facing, atk.knock, atk.upper ? 'upper' : 'strike')) {
           atk.hit.add(b.uid);
           struck = true;
           if (a.team === 0) {
+            a.chainHit = true;
             this.combo++;
             this.comboTime = 90;
           }
@@ -4922,6 +4999,7 @@ class NeonUprising {
           Math.abs(prop.y - a.y) < 35
         ) {
           prop.hp -= atk.damage;
+          a.chainHit = true;
           this.effects(prop.x, prop.y - 28, '#bb996d');
           sound.playBreak(prop.type === 'barrel' ? 'metal' : 'wood');
           if (prop.hp <= 0) {
@@ -4945,18 +5023,20 @@ class NeonUprising {
     this.effects(a.x, a.y - a.z - 85, a.team === 0 ? '#ffca9a' : '#fff0bc');
     if (a.team === 0) {
       a.chain = 0;
+      a.chainHit = false;
       a.weapon = 0;
       a.invuln = 36;
     }
     a.speak(a.hp <= 0 ? 'ko' : 'hurt' + (a.uid % 2), a.hp <= 0 ? 110 : 45);
-    const armor = a.kind === 'boss' && ['CHARGE', 'SLAM'].includes(a.state) && source === 'strike';
+    const armor = a.kind === 'boss' && ['CHARGE', 'SLAM'].includes(a.state) && ['strike', 'upper'].includes(source);
     // Facing turns toward the attacker only when the hit actually staggers. An armored boss keeps its committed lane.
     if (a.hp <= 0 || (!armor && knock)) {
       a.facing = -dir;
       a.pose('HIT_AIR');
       a.z = Math.max(10, a.z);
-      a.vz = 8;
-      a.knockX = dir * 7;
+      // The uppercut sends the enemy higher and shorter than a regular knockdown blow.
+      a.vz = source === 'upper' ? 11 : 8;
+      a.knockX = dir * (source === 'upper' ? 5 : 7);
       a.throwFlight = source === 'body';
       a.throwLanding = true;
     } else if (!armor) {
@@ -5373,13 +5453,14 @@ class NeonUprising {
     );
     STREET.text(
       c,
-      '接近して掴む → Jで追撃 / 方向＋J・Iで投げ    緊急技は命中時に体力消費    H: 詳しい操作',
+      'パンチ→ボディ→アッパー（命中で続く）    ↓を入れたまま3発目=投げ    接近で掴む→J追撃 / 方向＋J・Iで投げ    H: 詳しい操作',
       W / 2,
       672,
       12,
       '#8fa9ba',
       'center'
     );
+    STREET.text(c, 'v' + STREET.version, W - 22, 700, 11, '#6f8796', 'right', '700');
   }
   overlay(c, kicker, title, sub) {
     c.fillStyle = 'rgba(4,11,20,.78)';
@@ -5828,6 +5909,7 @@ Game.prototype.draw = function () {
   ctx.fillRect(0, 0, W, H);
   if (this.scene === 'HUB') {
     STREET.text(ctx, 'CHRONO BLITZ / ARCADE COLLECTION', 64, 65, 15, '#92abbc', 'left', '800');
+    STREET.text(ctx, 'VERSION ' + STREET.version, W - 64, 65, 13, '#7c93a3', 'right', '800');
     STREET.text(ctx, 'CHOOSE YOUR BATTLE', 64, 132, 47, '#f0efea', 'left', '900');
     STREET.text(ctx, '二つの戦場。一つの闘志。', 66, 170, 18, '#9fb1c1');
     for (let i = 0; i < 2; i++) {
@@ -5888,6 +5970,7 @@ Game.prototype.draw = function () {
     );
   } else {
     STREET.text(ctx, 'NEON UPRISING', 44, 65, 18, '#efb980', 'left', '900');
+    STREET.text(ctx, 'VERSION ' + STREET.version, W - 44, 65, 13, '#7c93a3', 'right', '800');
     STREET.text(ctx, 'CHOOSE YOUR REBEL', 44, 120, 44, '#efeee8', 'left', '900');
     STREET.text(ctx, 'STAGE 01 / BLACK VEIN — 荒くれ者の巣くう犯罪都市へ', 44, 163, 17, '#9bb7c7');
     for (let i = 0; i < CHARACTERS.length; i++) {
@@ -5915,7 +5998,14 @@ Game.prototype.draw = function () {
       16,
       '#bfd0d9'
     );
-    STREET.text(ctx, '移動: WASD / 矢印   攻撃: J / Z   ジャンプ: K / X   緊急技: L / C', 44, 583, 17, '#dfc59d');
+    STREET.text(
+      ctx,
+      '移動: WASD / 矢印   攻撃: J / Z（パンチ→ボディ→アッパー、↓＋3発目で投げ）   ジャンプ: K / X   緊急技: L / C',
+      44,
+      583,
+      17,
+      '#dfc59d'
+    );
     STREET.text(ctx, '← → で選択  /  ENTER またはカードをクリックで出撃  /  ESC で戻る', 44, 626, 15, '#91aaba');
   }
   ctx.restore();

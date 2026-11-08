@@ -1,0 +1,24 @@
+{
+  "checks": {
+    "Version string present": true,
+    "First press is the punch": true,
+    "Whiff restarts at the punch": true,
+    "Punch connects": true,
+    "Second press is the body blow": true,
+    "Body blow staggers without launching": true,
+    "Third press is the uppercut": true,
+    "Uppercut launches the enemy high": true,
+    "Chain restarts after the uppercut": true,
+    "Two hits landed before the throw": true,
+    "Down + third hit throws instead of uppercut": true,
+    "Thrown body hits the other enemy": true,
+    "Throw finishes cleanly": true,
+    "No grab target: uppercut instead": true,
+    "Pipe swing": true,
+    "Pipe third hit stays a swing": true,
+    "Key-driven chain reaches stage 3": true,
+    "Crate hit continues the chain": true,
+    "Draw is pure": true
+  },
+  "browserErrors": []
+}

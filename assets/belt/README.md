@@ -20,7 +20,8 @@
 | 操作 | 入力 |
 |---|---|
 | 左右・奥行き移動 | WASD / 矢印 |
-| 3段連続攻撃、地面のアイテムを拾う | J / Z |
+| 連続攻撃（パンチ→ボディ→アッパー）、地面のアイテムを拾う | J / Z。前の一撃が当たった時だけ次段へ |
+| チェーン投げ | ↓（S）を入れたまま3発目。吹き飛ばさず自動で投げる |
 | ジャンプ、空中で攻撃 | K / X / Space、その後 J / Z |
 | 掴む | 敵へ正面から歩いて接近 |
 | 掴み追撃 | J、最大3回 |
@@ -33,7 +34,7 @@
 ジャンプと奥行きを分け、攻撃判定は床面の奥行き差と高さを検査する。
 緊急攻撃は敵への命中時だけ最大HPの7.5%を消費し、HP1は残す。被弾中の脱出にも使える。
 掴み保持中は第三者の攻撃で解除される。投げ動作中は保護される。
-投げられた敵は他の敵を巻き込める。ジャンプ攻撃と3段目はダウンを奪う。
+投げられた敵は他の敵を巻き込める（チェーン投げも同じ）。ジャンプ攻撃とアッパーはダウンを奪う。
 
 ## ステージと難易度
 
@@ -96,3 +97,10 @@ node tools/verify-voice-update.cjs
 - `StreetPalettes` の着色 canvas は `willReadFrequently: true`。
 - `CanvasRenderingContext2D.filter` に対応しない環境（古い Safari など）では色相回転が効かず、敵は元の衣装色で表示される。動作には影響しない。
 - 書式は Prettier（printWidth 120 / singleQuote / trailingComma none / CRLF）。編集後も同じ設定で整形してから `node tools/build-sprites.mjs`。
+
+## v2.3.0 の変更
+
+- `attack()`: ファイナルファイト方式。段階は `chainHit`（直前の段が命中）かつ `comboTTL` 内でのみ進む。1 段目 ATK_L、2 段目 ATK_C_L（ボディブロー）、3 段目 ATK_H（アッパー、`upper: true`）。空振りはパンチに戻る。
+- `swing()`: 敵・破壊物への命中で `a.chainHit = true`。アッパーは `hurt(..., 'upper')` で vz 11 / knockX 5 と高く短く飛ぶ。ボスのアーマーは 'upper' も打撃扱い。
+- チェーン投げ: 3 段目に入る瞬間に S / ↓ が押されていて正面 `reach` 以内に `grabbable()` の敵がいれば `beginGrab()` → `throwHeld(facing)` を即実行。投げた敵の体が他の敵に当たる処理は既存の `throwFlight` と共通。鉄パイプ所持中は投げに変化しない。
+- `STREET.version`（'2.3.0'）を HUB / STREET_SELECT の右上と HUD 右下に表示。バージョンを上げるときはここと HTML ヘッダー・index.html・README.md を揃える。

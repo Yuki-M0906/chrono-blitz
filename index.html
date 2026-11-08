@@ -13,6 +13,7 @@
   h1 { font-size: clamp(28px, 6vw, 52px); font-style: italic; font-weight: 900; letter-spacing: 1px; text-shadow: 0 0 24px rgba(0, 240, 255, 0.6); }
   h1 span { display: block; color: #ff2a66; font-size: 0.5em; text-shadow: 0 0 18px rgba(255, 0, 85, 0.6); }
   .lead { color: var(--muted); margin: 14px 0 28px; }
+  .version { display: inline-block; margin-top: 10px; padding: 4px 12px; border: 1px solid rgba(0, 240, 255, 0.4); border-radius: 999px; font-size: 12px; color: var(--cyan); letter-spacing: 0.5px; }
   .play { display: inline-block; background: linear-gradient(135deg, var(--cyan), #0088aa); color: #000; font-weight: 900; font-size: 20px; padding: 16px 36px; border-radius: 14px; text-decoration: none; box-shadow: 0 0 24px rgba(0, 240, 255, 0.45); transition: transform .15s, box-shadow .15s; }
   .play:hover { transform: translateY(-2px); box-shadow: 0 0 36px rgba(0, 240, 255, 0.7); }
   .note { margin-top: 12px; font-size: 13px; color: var(--muted); }
@@ -29,6 +30,7 @@
 <body>
 <main>
   <h1>CHRONO BLITZ<span>ARCADE COLLECTION — DEMO</span></h1>
+  <p class="version">VERSION 2.3.0 — NEON UPRISING: ファイナルファイト方式の連続攻撃（パンチ→ボディ→アッパー）と ↓＋3発目のチェーン投げを追加</p>
   <p class="lead">
     ブラウザだけで動く 2 本立てのアーケードゲームです。1 対 1 の 2D 対戦格闘「OVERDRIVE」と、1 人用ベルトスクロールアクション「NEON UPRISING」をゲーム選択画面から遊べます。
     画像・音声・コードはすべて 1 つの HTML に埋め込まれており、サーバーや追加インストールは不要です。<br>
@@ -57,7 +59,8 @@
       <ul>
         <li>犯罪都市 BLACK VEIN を進み、5 区画 33 体の敵とボス IRON VOSS を倒すステージ 1</li>
         <li>移動 <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>　攻撃 / 拾う <kbd>J</kbd>　ジャンプ <kbd>K</kbd>　緊急技 <kbd>L</kbd>　投げ <kbd>I</kbd></li>
-        <li>歩いて接近すると掴み。<kbd>J</kbd> で追撃、方向＋<kbd>J</kbd> で投げ</li>
+        <li><kbd>J</kbd> 連打でパンチ → ボディブロー → アッパー（当たった時だけ次へ）。<kbd>S</kbd> を入れたまま 3 発目で投げに変化</li>
+        <li>歩いて接近すると掴み。<kbd>J</kbd> で追撃、方向＋<kbd>J</kbd> で投げ。投げた敵は他の敵にも当たる</li>
         <li>木箱・ドラム缶から食料 / 現金 / 鉄パイプ</li>
       </ul>
     </div>

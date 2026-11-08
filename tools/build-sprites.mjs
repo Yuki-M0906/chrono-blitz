@@ -27,8 +27,12 @@ const code = begin + '\nconst SPRITE_SOURCES = ' + JSON.stringify(sources, null,
   fs.readFileSync(path.join(root, 'assets/stages/renderer.js'), 'utf8') + '\n' +
   fs.readFileSync(path.join(root, 'assets/voices/engine.js'), 'utf8') + '\n' + end;
 let html = fs.readFileSync(file, 'utf8');
-if (html.includes(begin)) {
-  html = html.slice(0, html.indexOf(begin)) + code + html.slice(html.indexOf(end) + end.length);
+// Markers count only as whole lines: the header comment may mention them in prose (it did in v2.2.0, and a plain
+// indexOf() then wiped everything between the header and the real end marker).
+const find = (text, marker) => { const m = text.match(new RegExp('^' + marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\r?$', 'm')); return m ? m.index : -1; };
+const cut = (text, b, e, replacement) => { const i = find(text, b), j = find(text, e); if (i < 0 || j < i) throw new Error('Marker pair broken: ' + b); return text.slice(0, i) + replacement + text.slice(j + e.length); };
+if (find(html, begin) >= 0) {
+  html = cut(html, begin, end, code);
 } else {
   const marker = '// 1. WEB AUDIO API SYNTHESIZER';
   const index = html.lastIndexOf('// ============================================================================', html.indexOf(marker));
@@ -38,10 +42,10 @@ if (html.includes(begin)) {
 const beltBegin = '// BELT_ENGINE_BEGIN', beltEnd = '// BELT_ENGINE_END';
 const audioBegin='// AUDIO_ENGINE_BEGIN',audioEnd='// AUDIO_ENGINE_END';
 const audioCode=audioBegin+'\n'+fs.readFileSync(path.join(root,'assets/audio/engine.js'),'utf8')+'\n'+audioEnd;
-if(html.includes(audioBegin))html=html.slice(0,html.indexOf(audioBegin))+audioCode+html.slice(html.indexOf(audioEnd)+audioEnd.length);
+if(find(html,audioBegin)>=0)html=cut(html,audioBegin,audioEnd,audioCode);
 else {const start=html.indexOf('class SoundEngine {'),end=html.indexOf('const sound = new SoundEngine();',start)+'const sound = new SoundEngine();'.length;if(start<0||end<start)throw Error('Audio insertion anchor missing');html=html.slice(0,start)+audioCode+html.slice(end);}
 const beltCode = beltBegin+'\n'+fs.readFileSync(path.join(root,'assets/belt/engine.js'),'utf8')+'\n'+beltEnd;
-if(html.includes(beltBegin)) html=html.slice(0,html.indexOf(beltBegin))+beltCode+html.slice(html.indexOf(beltEnd)+beltEnd.length);
+if(find(html,beltBegin)>=0) html=cut(html,beltBegin,beltEnd,beltCode);
 else html=html.replace('const game = new Game();',()=>beltCode+'\n\nconst game = new Game();\ngame.scene = \'HUB\';');
 fs.writeFileSync(file, html);
 console.log('Embedded '+ids.length+' sprite atlases, '+stages.length+' backgrounds, '+Object.keys(voices).length+' voice clips: '+fs.statSync(file).size+' bytes');

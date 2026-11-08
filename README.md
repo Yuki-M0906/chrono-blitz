@@ -4,6 +4,8 @@ Browser-only arcade collection in a single HTML file: the 1-on-1 2D fighter **OV
 
 **▶ Play the demo / デモをプレイ:** https://yuki-m0906.github.io/chrono-blitz/
 
+Current version: **v2.3.0** (shown at the top right of the game select screen). / 現在のバージョン: **v2.3.0**（ゲーム選択画面の右上に表示）
+
 > The game itself is one 85 MB HTML file (`ai_studio_code.html`) with all sprites, backgrounds, voice clips and code embedded. The first load takes a while; later loads are cached. Keyboard required.
 > ゲーム本体は約 85MB の単一 HTML です。初回読み込みには時間がかかります。キーボードが必要です。
 
@@ -13,14 +15,14 @@ Browser-only arcade collection in a single HTML file: the 1-on-1 2D fighter **OV
 |---|---|---|
 | Genre | 1-on-1 versus fighting | Side-scrolling beat 'em up (1 player) |
 | Content | 6 fighters, 4 stages, ARCADE / VS CPU / VS 2P / TRAINING | Stage 1 "BLACK VEIN": 5 areas, 33 enemies, boss IRON VOSS |
-| Systems | Gatling cancels, command-input bonus, just guard, drive burst, synchronized throws | Depth movement, grabs / knee strikes / throws, emergency spin attack, breakables and pickups, lives and 1UP |
+| Systems | Gatling cancels, command-input bonus, just guard, drive burst, synchronized throws | Final Fight style chain (punch → body blow → uppercut, each stage only after a hit), hold ↓ on the third hit to throw instead, thrown bodies hit other enemies, grabs / knee strikes, emergency spin attack, breakables and pickups, lives and 1UP |
 
 ## Controls / 操作
 
 | | 1P (OVERDRIVE) | NEON UPRISING |
 |---|---|---|
 | Move | `W` `A` `S` `D` (or arrows) | `W` `A` `S` `D` (up/down = depth) |
-| Light / Heavy | `J` / `K` | `J` attack and pick up |
+| Light / Heavy | `J` / `K` | `J` chain attack (punch → body → upper) and pick up; hold `S` on the 3rd hit to throw |
 | Special / Super | `L` / `U` | `L` emergency attack |
 | Throw / Burst | `I` / `O` | `I` throw, `K` jump |
 | 2P | Arrows + `N` `M` `,` `.` `/` `;` | — |

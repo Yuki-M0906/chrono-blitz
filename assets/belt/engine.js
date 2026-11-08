@@ -2,6 +2,7 @@
 // Coordinates: x = street distance, y = floor depth, z = height above that floor.
 // Fixed 60 Hz simulation. Draw methods must not change simulation or consume random values.
 const STREET = {
+  version: '2.3.0',
   width: 6200,
   top: 440,
   bottom: 626,
@@ -132,6 +133,7 @@ class StreetActor extends Fighter {
     this.hold = null;
     this.queue = 0;
     this.chain = 0;
+    this.chainHit = false;
     this.comboTTL = 0;
     this.flashTimer = 0;
     this.vz = 0;
@@ -578,18 +580,33 @@ class NeonUprising {
     );
   }
   attack(a, air = false) {
-    const stage = air ? 3 : (a.chain % 3) + 1;
+    // Final Fight style chain: punch -> body blow -> uppercut. A stage is reachable only while the previous one connected
+    // (chainHit) and the chain window (comboTTL) is still open; a whiff restarts from the punch.
+    const stage = air ? 3 : a.chain > 0 && a.chain < 3 && a.chainHit ? a.chain + 1 : 1;
+    if (!air && stage === 3 && a.team === 0 && !a.weapon && STREET.down('KeyS', 'ArrowDown')) {
+      // Holding down on the third hit converts the uppercut into an automatic throw of the enemy in front.
+      const e = this.grabbable(a.reach);
+      if (e && (e.x - a.x) * a.facing >= 0) {
+        a.chain = 0;
+        a.chainHit = false;
+        this.beginGrab(e);
+        this.throwHeld(a.facing);
+        return;
+      }
+    }
     a.chain = stage;
+    a.chainHit = false;
     a.comboTTL = 42;
-    a.pose(air ? 'ATK_J_H' : stage === 3 || a.weapon ? 'ATK_H' : 'ATK_L');
+    a.pose(air ? 'ATK_J_H' : a.weapon || stage === 3 ? 'ATK_H' : stage === 2 ? 'ATK_C_L' : 'ATK_L');
     a.attack = {
       stage,
-      active: air ? 5 : stage === 3 ? 8 : 5,
-      end: air ? 22 : stage === 3 ? 29 : 18,
+      active: air ? 5 : stage === 3 ? 8 : stage === 2 ? 4 : 5,
+      end: air ? 22 : stage === 3 ? 29 : stage === 2 ? 15 : 18,
       damage: Math.round((air ? 48 : stage === 3 ? 68 : stage === 2 ? 38 : 30) * a.power + (a.weapon ? 32 : 0)),
       reach: a.reach + (a.weapon ? 45 : 0),
       depth: 29,
       knock: stage === 3,
+      upper: stage === 3 && !air && !a.weapon,
       hit: new Set()
     };
     a.speak((stage === 3 ? 'heavy' : 'light') + (stage % 2), stage === 3 ? 45 : 30);
@@ -607,10 +624,11 @@ class NeonUprising {
         Math.abs(b.z - a.z) < 115 &&
         !atk.hit.has(b.uid)
       ) {
-        if (this.hurt(b, atk.damage, a.facing, atk.knock, 'strike')) {
+        if (this.hurt(b, atk.damage, a.facing, atk.knock, atk.upper ? 'upper' : 'strike')) {
           atk.hit.add(b.uid);
           struck = true;
           if (a.team === 0) {
+            a.chainHit = true;
             this.combo++;
             this.comboTime = 90;
           }
@@ -626,6 +644,7 @@ class NeonUprising {
           Math.abs(prop.y - a.y) < 35
         ) {
           prop.hp -= atk.damage;
+          a.chainHit = true;
           this.effects(prop.x, prop.y - 28, '#bb996d');
           sound.playBreak(prop.type === 'barrel' ? 'metal' : 'wood');
           if (prop.hp <= 0) {
@@ -649,18 +668,20 @@ class NeonUprising {
     this.effects(a.x, a.y - a.z - 85, a.team === 0 ? '#ffca9a' : '#fff0bc');
     if (a.team === 0) {
       a.chain = 0;
+      a.chainHit = false;
       a.weapon = 0;
       a.invuln = 36;
     }
     a.speak(a.hp <= 0 ? 'ko' : 'hurt' + (a.uid % 2), a.hp <= 0 ? 110 : 45);
-    const armor = a.kind === 'boss' && ['CHARGE', 'SLAM'].includes(a.state) && source === 'strike';
+    const armor = a.kind === 'boss' && ['CHARGE', 'SLAM'].includes(a.state) && ['strike', 'upper'].includes(source);
     // Facing turns toward the attacker only when the hit actually staggers. An armored boss keeps its committed lane.
     if (a.hp <= 0 || (!armor && knock)) {
       a.facing = -dir;
       a.pose('HIT_AIR');
       a.z = Math.max(10, a.z);
-      a.vz = 8;
-      a.knockX = dir * 7;
+      // The uppercut sends the enemy higher and shorter than a regular knockdown blow.
+      a.vz = source === 'upper' ? 11 : 8;
+      a.knockX = dir * (source === 'upper' ? 5 : 7);
       a.throwFlight = source === 'body';
       a.throwLanding = true;
     } else if (!armor) {
@@ -1077,13 +1098,14 @@ class NeonUprising {
     );
     STREET.text(
       c,
-      '接近して掴む → Jで追撃 / 方向＋J・Iで投げ    緊急技は命中時に体力消費    H: 詳しい操作',
+      'パンチ→ボディ→アッパー（命中で続く）    ↓を入れたまま3発目=投げ    接近で掴む→J追撃 / 方向＋J・Iで投げ    H: 詳しい操作',
       W / 2,
       672,
       12,
       '#8fa9ba',
       'center'
     );
+    STREET.text(c, 'v' + STREET.version, W - 22, 700, 11, '#6f8796', 'right', '700');
   }
   overlay(c, kicker, title, sub) {
     c.fillStyle = 'rgba(4,11,20,.78)';
@@ -1532,6 +1554,7 @@ Game.prototype.draw = function () {
   ctx.fillRect(0, 0, W, H);
   if (this.scene === 'HUB') {
     STREET.text(ctx, 'CHRONO BLITZ / ARCADE COLLECTION', 64, 65, 15, '#92abbc', 'left', '800');
+    STREET.text(ctx, 'VERSION ' + STREET.version, W - 64, 65, 13, '#7c93a3', 'right', '800');
     STREET.text(ctx, 'CHOOSE YOUR BATTLE', 64, 132, 47, '#f0efea', 'left', '900');
     STREET.text(ctx, '二つの戦場。一つの闘志。', 66, 170, 18, '#9fb1c1');
     for (let i = 0; i < 2; i++) {
@@ -1592,6 +1615,7 @@ Game.prototype.draw = function () {
     );
   } else {
     STREET.text(ctx, 'NEON UPRISING', 44, 65, 18, '#efb980', 'left', '900');
+    STREET.text(ctx, 'VERSION ' + STREET.version, W - 44, 65, 13, '#7c93a3', 'right', '800');
     STREET.text(ctx, 'CHOOSE YOUR REBEL', 44, 120, 44, '#efeee8', 'left', '900');
     STREET.text(ctx, 'STAGE 01 / BLACK VEIN — 荒くれ者の巣くう犯罪都市へ', 44, 163, 17, '#9bb7c7');
     for (let i = 0; i < CHARACTERS.length; i++) {
@@ -1619,7 +1643,14 @@ Game.prototype.draw = function () {
       16,
       '#bfd0d9'
     );
-    STREET.text(ctx, '移動: WASD / 矢印   攻撃: J / Z   ジャンプ: K / X   緊急技: L / C', 44, 583, 17, '#dfc59d');
+    STREET.text(
+      ctx,
+      '移動: WASD / 矢印   攻撃: J / Z（パンチ→ボディ→アッパー、↓＋3発目で投げ）   ジャンプ: K / X   緊急技: L / C',
+      44,
+      583,
+      17,
+      '#dfc59d'
+    );
     STREET.text(ctx, '← → で選択  /  ENTER またはカードをクリックで出撃  /  ESC で戻る', 44, 626, 15, '#91aaba');
   }
   ctx.restore();
