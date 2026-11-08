@@ -1,0 +1,9 @@
+{
+  "syntax": true,
+  "assets": {
+    "SPRITE_SOURCES": "identical to v1.7",
+    "STAGE_SOURCES": "identical to v1.7",
+    "VOICE_SOURCES": "identical to v1.7",
+    "VOICE_PROFILES": "identical to v1.7"
+  }
+}

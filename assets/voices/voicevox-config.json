@@ -1,0 +1,17 @@
+{
+  "version": "1.7.0",
+  "engine": "VOICEVOX Core 0.17.1 / ONNX Runtime 1.17.3 / VVM 0.17.1 / CPU",
+  "sampleRate": 24000,
+  "profiles": {
+    "kagura": {"voice": "玄野武宏", "models": [4,10], "styles": {"normal":11,"force":40,"hurt":41,"win":39,"ko":41}, "speed":1.02, "pitch":-0.015, "superSegments":["奥義。","グレンテンショーザン！"]},
+    "volt": {"voice": "白上虎太郎", "models": [9], "styles": {"normal":12,"force":34,"hurt":33,"win":32,"ko":35}, "speed":1.10, "pitch":-0.015, "superSegments":["オーバードライブ。","ラグナロク！"]},
+    "freya": {"voice": "四国めたん", "models": [0], "styles": {"normal":2,"force":6,"hurt":2,"win":0,"ko":2}, "speed":1.00, "pitch":-0.025, "superSegments":["アブソリュートゼロ。","カリバー！"]},
+    "titan": {"voice": "麒ヶ島宗麟", "models": [12], "styles": {"normal":53,"force":53,"hurt":53,"win":53,"ko":53}, "speed":0.98, "pitch":-0.025, "superSegments":["メテオ。","カタストロフィ！"]},
+    "ayame": {"voice": "中国うさぎ", "models": [3], "styles": {"normal":61,"force":61,"hurt":62,"win":61,"ko":64}, "speed":1.08, "pitch":0.015, "superSegments":["秘奥義。","ヒャッカリョーラン！"]},
+    "celine": {"voice": "九州そら", "models": [2], "styles": {"normal":16,"force":18,"hurt":16,"win":15,"ko":16}, "speed":1.02, "pitch":-0.015, "eventSpeeds":{"light1":1.34}, "superSegments":["エトワール。","デュ・ソワール！"]}
+  },
+  "pronunciations": {
+    "kagura-sp1":"エンゲツ！", "kagura-sp2":"ヒエン！", "kagura-sp3":"シュンゴクセン！",
+    "ayame-sp1":"シゲツセン！", "ayame-sp2":"ヒエンの舞！", "ayame-sp3":"カスミバシリ！"
+  }
+}

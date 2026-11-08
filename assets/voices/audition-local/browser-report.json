@@ -1,0 +1,80 @@
+{
+  "metadata": [
+    {
+      "src": "../freya-select.wav",
+      "seconds": 1.175283,
+      "error": null
+    },
+    {
+      "src": "freya-select.wav",
+      "seconds": 1.226667,
+      "error": null
+    },
+    {
+      "src": "../freya-sp1.wav",
+      "seconds": 1.0161,
+      "error": null
+    },
+    {
+      "src": "freya-sp1.wav",
+      "seconds": 0.896,
+      "error": null
+    },
+    {
+      "src": "../freya-hurt0.wav",
+      "seconds": 0.184671,
+      "error": null
+    },
+    {
+      "src": "freya-hurt0.wav",
+      "seconds": 0.266667,
+      "error": null
+    },
+    {
+      "src": "../freya-super.wav",
+      "seconds": 1.802902,
+      "error": null
+    },
+    {
+      "src": "freya-super.wav",
+      "seconds": 1.614667,
+      "error": null
+    }
+  ],
+  "signals": [
+    {
+      "src": "../freya-select.wav",
+      "peak": 0
+    },
+    {
+      "src": "freya-select.wav",
+      "peak": 0
+    },
+    {
+      "src": "../freya-sp1.wav",
+      "peak": 0
+    },
+    {
+      "src": "freya-sp1.wav",
+      "peak": 0
+    },
+    {
+      "src": "../freya-hurt0.wav",
+      "peak": 0
+    },
+    {
+      "src": "freya-hurt0.wav",
+      "peak": 0
+    },
+    {
+      "src": "../freya-super.wav",
+      "peak": 0
+    },
+    {
+      "src": "freya-super.wav",
+      "peak": 0
+    }
+  ],
+  "errors": [],
+  "credit": "音声生成：VOICEVOX:四国めたん（ノーマル／ツンツン）\n音源利用規約 · VOICEVOX\n\nこの音声を再利用・配布する場合も、上記クレジットと音源規約を守ってください。"
+}

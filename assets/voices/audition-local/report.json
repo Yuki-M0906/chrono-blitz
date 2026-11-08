@@ -1,0 +1,84 @@
+{
+  "engine": "VOICEVOX Core 0.17.1 / CPU",
+  "credit": "VOICEVOX:四国めたん",
+  "status": "audition_only_not_applied_to_game",
+  "listeningReview": "pending",
+  "clips": [
+    {
+      "file": "freya-select.wav",
+      "event": "select",
+      "label": "選択台詞",
+      "seconds": 1.227,
+      "peak": 9435,
+      "segments": [
+        {
+          "text": "静かな決着を。",
+          "styleId": 2,
+          "style": "ノーマル",
+          "speedScale": 1.06,
+          "intonationScale": 1.12,
+          "pitchScale": -0.025
+        }
+      ]
+    },
+    {
+      "file": "freya-sp1.wav",
+      "event": "sp1",
+      "label": "必殺技",
+      "seconds": 0.896,
+      "peak": 10741,
+      "segments": [
+        {
+          "text": "グレイシャーピラー！",
+          "styleId": 6,
+          "style": "ツンツン",
+          "speedScale": 1.2,
+          "intonationScale": 1.24,
+          "pitchScale": -0.025
+        }
+      ]
+    },
+    {
+      "file": "freya-hurt0.wav",
+      "event": "hurt0",
+      "label": "被弾",
+      "seconds": 0.267,
+      "peak": 5702,
+      "segments": [
+        {
+          "text": "くっ！",
+          "styleId": 2,
+          "style": "ノーマル",
+          "speedScale": 1.24,
+          "intonationScale": 0.9,
+          "pitchScale": -0.025
+        }
+      ]
+    },
+    {
+      "file": "freya-super.wav",
+      "event": "super",
+      "label": "超必殺技",
+      "seconds": 1.615,
+      "peak": 16235,
+      "segments": [
+        {
+          "text": "アブソリュートゼロ。",
+          "styleId": 2,
+          "style": "ノーマル",
+          "speedScale": 1.1,
+          "intonationScale": 1.08,
+          "pitchScale": -0.025
+        },
+        {
+          "text": "カリバー！",
+          "styleId": 6,
+          "style": "ツンツン",
+          "speedScale": 1.18,
+          "intonationScale": 1.28,
+          "pitchScale": -0.025
+        }
+      ]
+    }
+  ]
+}

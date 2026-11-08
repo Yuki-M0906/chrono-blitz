@@ -1,0 +1,28 @@
+{
+  "updated": "2026-11-08",
+  "version": "1.7.0",
+  "status": "complete_applied_to_game",
+  "provider": "VOICEVOX local CPU",
+  "audioApplied": true,
+  "characters": 6,
+  "clips": 126,
+  "engine": "VOICEVOX Core 0.17.1 / ONNX Runtime 1.17.3 / VVM 0.17.1",
+  "userConsent": "Explicit consent obtained for model/runtime terms and all six voice libraries.",
+  "game": "ai_studio_code.html",
+  "preview": "assets/voices/generated-v1.7/preview.wav",
+  "checks": {
+    "decodeAndNonSilent": 126,
+    "distinctVoices": 6,
+    "combatRegressionFrames": 2880,
+    "browserErrors": 0,
+    "report": "verification/report.json",
+    "embeddedAssetReport": "verification/voice-update.json",
+    "nonThrowCombatMatchesV160": true,
+    "throwPairCases": 72,
+    "throwReport": "verification/throws.json"
+  },
+  "listeningReview": "Automated signal/control checks completed; no claim of human listening review of every clip.",
+  "oldVoiceBackup": "assets/voices/backup-v1.6/",
+  "oldProviderHistory": "assets/voices/backup-v1.5/generation-history.json",
+  "nextStep": "Implementation complete. Future voice adjustments should regenerate locally; do not resume fal."
+}

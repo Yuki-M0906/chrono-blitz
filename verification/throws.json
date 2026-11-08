@@ -1,0 +1,103 @@
+{
+  "pairCases": 72,
+  "poses": {
+    "kagura": 24,
+    "volt": 24,
+    "freya": 24,
+    "titan": 24,
+    "ayame": 24,
+    "celine": 24
+  },
+  "gaiaDamage": [
+    165,
+    190
+  ],
+  "missCases": 5,
+  "wallCases": 2,
+  "pause": true,
+  "hitstop": true,
+  "projectileProtection": true,
+  "sceneCancellation": true,
+  "lethalLanding": true,
+  "actualAudio": [
+    {
+      "thrower": "kagura",
+      "victim": "volt",
+      "command": false,
+      "events": [
+        "kagura-throw",
+        "volt-grabbed",
+        "kagura-throw_release",
+        "volt-thrown",
+        "volt-throw_impact"
+      ],
+      "nonZeroOutput": true
+    },
+    {
+      "thrower": "volt",
+      "victim": "freya",
+      "command": false,
+      "events": [
+        "volt-throw",
+        "freya-grabbed",
+        "volt-throw_release",
+        "freya-thrown",
+        "freya-throw_impact"
+      ],
+      "nonZeroOutput": true
+    },
+    {
+      "thrower": "freya",
+      "victim": "titan",
+      "command": false,
+      "events": [
+        "freya-throw",
+        "titan-grabbed",
+        "freya-throw_release",
+        "titan-thrown",
+        "titan-throw_impact"
+      ],
+      "nonZeroOutput": true
+    },
+    {
+      "thrower": "titan",
+      "victim": "ayame",
+      "command": true,
+      "events": [
+        "titan-throw",
+        "ayame-grabbed",
+        "titan-throw_release",
+        "ayame-thrown",
+        "ayame-throw_impact"
+      ],
+      "nonZeroOutput": true
+    },
+    {
+      "thrower": "ayame",
+      "victim": "celine",
+      "command": false,
+      "events": [
+        "ayame-throw",
+        "celine-grabbed",
+        "ayame-throw_release",
+        "celine-thrown",
+        "celine-throw_impact"
+      ],
+      "nonZeroOutput": true
+    },
+    {
+      "thrower": "celine",
+      "victim": "kagura",
+      "command": false,
+      "events": [
+        "celine-throw",
+        "kagura-grabbed",
+        "celine-throw_release",
+        "kagura-thrown",
+        "kagura-throw_impact"
+      ],
+      "nonZeroOutput": true
+    }
+  ],
+  "browserErrors": []
+}

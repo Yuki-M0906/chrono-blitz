@@ -1,0 +1,1808 @@
+{
+  "schemaVersion": 1,
+  "status": "direction_reference",
+  "sourceGameVersion": "1.7.0",
+  "language": "ja-JP",
+  "note": "演技の設計台本。実際の音源と合成設定はvoicevox-config.json、適用状況はgeneration-status.json、合成したパラメータはgenerated-v1.7/queries.jsonを参照。",
+  "recording": "オリジナルの架空人物による日本語の格闘ゲーム音声。録音ブースでの乾いた近接マイク音。声だけ、BGM・効果音・残響・説明は含めない。各人物の声色とマイク距離を全テイクで統一する。演技指示は発声しない。",
+  "timing": "targetSecondsは収録目安。速さ優先で機械的にタイムストレッチせず、発声と演技を調整して再テイクする。息や語末を無音と誤認して切り捨てない。",
+  "review": "ファイル検査と実聴評価を区別して記録する。自然な日本語、技名の読み、キャラクターの一貫性、掛け声の勢いについて、実聴を行った場合のみ実聴評価として記録する。",
+  "profiles": {
+    "kagura": {
+      "name": "神楽",
+      "voice": "成人男性。落ち着いた中低音、芯のある武人。短い言葉にも意志を込める。",
+      "performance": "通常は抑えた息と鋭い語頭。必殺では腹から声を放ち、決めの語尾を強く落とす。勝利は安堵と敬意。"
+    },
+    "volt": {
+      "name": "ヴォルト",
+      "voice": "成人男性。明るい中音域、若々しく俊敏。自然な会話の軽さと自信。",
+      "performance": "笑みを感じる軽快な話し方。攻撃は前へ弾ける。必殺は加速する高揚、被弾は不意を突かれた息。"
+    },
+    "freya": {
+      "name": "フレイヤ",
+      "voice": "成人女性。澄んだ中低音、凛とした騎士。穏やかさの奥に強さ。",
+      "performance": "短く明瞭な子音と落ち着いた母音。必殺だけ一段力強く解放する。被弾では気丈さが一瞬崩れ、勝利は静かな余韻。"
+    },
+    "titan": {
+      "name": "タイタン",
+      "voice": "壮年男性。豊かで低い胸声、経験を感じる温かい響き。",
+      "performance": "重い呼気を一撃に乗せる。言葉の頭に重量感、語尾は太く短く。選択と勝利は豪快な余裕。低い声でも言葉を明瞭に。"
+    },
+    "ayame": {
+      "name": "綾女",
+      "voice": "成人の日本人女性。軽やかで自然な中高音。いたずらっぽい余裕を持つ忍者。",
+      "performance": "近くの相手に話しかける親密な距離感。移動は微笑むように軽く、攻撃は鋭く切り替える。超必殺は優雅な導入から凛とした決めへ。"
+    },
+    "celine": {
+      "name": "セリーヌ",
+      "voice": "成人のフランス人女性。艶やかな中音域、端正な発音。日本語は流暢で上品。",
+      "performance": "会話はしなやかな抑揚。攻撃ではフェンシングの踏み込みに合う鋭い呼気。必殺は気高く力強い。勝利は対戦相手への敬意を込める。"
+    }
+  },
+  "clips": [
+    {
+      "id": "kagura-light0",
+      "character": "kagura",
+      "event": "light0",
+      "file": "kagura-light0.wav",
+      "originalText": "はっ！",
+      "text": "はっ！",
+      "targetSeconds": [
+        0.16,
+        0.42
+      ],
+      "energy": 3,
+      "direction": "一撃の瞬間に短く息を吐く。母音を読み上げる感覚ではなく、身体から自然に漏れる鋭い掛け声。"
+    },
+    {
+      "id": "kagura-light1",
+      "character": "kagura",
+      "event": "light1",
+      "file": "kagura-light1.wav",
+      "originalText": "せいっ！",
+      "text": "せいっ！",
+      "targetSeconds": [
+        0.18,
+        0.48
+      ],
+      "energy": 3,
+      "direction": "弱攻撃の別テイク。light0と声質を揃えつつ、語頭の勢いと息の抜け方を変える。"
+    },
+    {
+      "id": "kagura-heavy0",
+      "character": "kagura",
+      "event": "heavy0",
+      "file": "kagura-heavy0.wav",
+      "originalText": "やあっ！",
+      "text": "やあっ！",
+      "targetSeconds": [
+        0.3,
+        0.85
+      ],
+      "energy": 4,
+      "direction": "踏み込みに合わせ、息を溜めてから腹で押す。語頭に力、終わりは短く切る。"
+    },
+    {
+      "id": "kagura-heavy1",
+      "character": "kagura",
+      "event": "heavy1",
+      "file": "kagura-heavy1.wav",
+      "originalText": "斬る！",
+      "text": "斬る！",
+      "targetSeconds": [
+        0.35,
+        1
+      ],
+      "energy": 4,
+      "direction": "狙いを定めた強打。相手へ言葉を投げる。heavy0と異なる自然なイントネーション。"
+    },
+    {
+      "id": "kagura-jump",
+      "character": "kagura",
+      "event": "jump",
+      "file": "kagura-jump.wav",
+      "originalText": "ふっ！",
+      "text": "ふっ！",
+      "targetSeconds": [
+        0.15,
+        0.4
+      ],
+      "energy": 2,
+      "direction": "跳躍時の小さな呼気。身体を持ち上げる瞬間の短い声。"
+    },
+    {
+      "id": "kagura-dash",
+      "character": "kagura",
+      "event": "dash",
+      "file": "kagura-dash.wav",
+      "originalText": "行くぞ！",
+      "text": "行くぞ！",
+      "targetSeconds": [
+        0.3,
+        0.85
+      ],
+      "energy": 2,
+      "direction": "移動しながら軽く言い放つ。相手との駆け引きを感じさせる、急ぎすぎない自然な会話。"
+    },
+    {
+      "id": "kagura-hurt0",
+      "character": "kagura",
+      "event": "hurt0",
+      "file": "kagura-hurt0.wav",
+      "originalText": "ぐっ！",
+      "text": "ぐっ……！",
+      "targetSeconds": [
+        0.18,
+        0.48
+      ],
+      "energy": 3,
+      "direction": "不意に一撃を受け、息が詰まる短い反応。痛みに一瞬だけ声が揺れる。"
+    },
+    {
+      "id": "kagura-hurt1",
+      "character": "kagura",
+      "event": "hurt1",
+      "file": "kagura-hurt1.wav",
+      "originalText": "うっ！",
+      "text": "うっ……！",
+      "targetSeconds": [
+        0.25,
+        0.7
+      ],
+      "energy": 4,
+      "direction": "強めの一撃で息が押し出される反応。hurt0より力が抜け、語尾が呼気へ消える。"
+    },
+    {
+      "id": "kagura-throw",
+      "character": "kagura",
+      "event": "throw",
+      "file": "kagura-throw.wav",
+      "originalText": "捉えた！",
+      "text": "捉えた！",
+      "targetSeconds": [
+        0.4,
+        1.1
+      ],
+      "energy": 3,
+      "direction": "相手を捉えた確信と踏ん張り。発声の中心に瞬間的な力を込める。"
+    },
+    {
+      "id": "kagura-burst",
+      "character": "kagura",
+      "event": "burst",
+      "file": "kagura-burst.wav",
+      "originalText": "退けっ！",
+      "text": "退けっ！",
+      "targetSeconds": [
+        0.4,
+        1
+      ],
+      "energy": 5,
+      "direction": "追い詰められた状態から一気に力を解放。鋭い語頭と強い決意、最後はすっと息を抜く。"
+    },
+    {
+      "id": "kagura-sp1",
+      "character": "kagura",
+      "event": "sp1",
+      "file": "kagura-sp1.wav",
+      "originalText": "エンゲツ！",
+      "text": "えんげつ！",
+      "targetSeconds": [
+        0.55,
+        1.5
+      ],
+      "energy": 4,
+      "direction": "技名をひと息のまとまりで放つ。前半を自然に立ち上げ、最後のアクセントを攻撃の決めにする。"
+    },
+    {
+      "id": "kagura-sp2",
+      "character": "kagura",
+      "event": "sp2",
+      "file": "kagura-sp2.wav",
+      "originalText": "ヒエン！",
+      "text": "ひえん！",
+      "targetSeconds": [
+        0.55,
+        1.65
+      ],
+      "energy": 4,
+      "direction": "踏み込みの勢いを声に乗せる。技名の中でも強弱をつけ、語末に芯を残す。"
+    },
+    {
+      "id": "kagura-sp3",
+      "character": "kagura",
+      "event": "sp3",
+      "file": "kagura-sp3.wav",
+      "originalText": "シュンゴクセン！",
+      "text": "しゅんごくせん！",
+      "targetSeconds": [
+        0.55,
+        1.65
+      ],
+      "energy": 4,
+      "direction": "狙い澄ました必殺。短い溜めから明瞭に放ち、締めを強く。技名全体を一続きに発声。"
+    },
+    {
+      "id": "kagura-super",
+      "character": "kagura",
+      "event": "super",
+      "file": "kagura-super.wav",
+      "originalText": "奥義。グレンテンショーザン！",
+      "text": "奥義……ぐれんてんしょうざん！",
+      "targetSeconds": [
+        1.25,
+        2.7
+      ],
+      "energy": 5,
+      "direction": "最初は低く決意を込め、意味の切れ目で約100msの間。そこから一気に高揚し、最後の技名を力強く解放する。"
+    },
+    {
+      "id": "kagura-select",
+      "character": "kagura",
+      "event": "select",
+      "file": "kagura-select.wav",
+      "originalText": "我が太刀、見切れるか？",
+      "text": "我が太刀、見切れるか？",
+      "targetSeconds": [
+        1,
+        2.5
+      ],
+      "energy": 2,
+      "direction": "目の前の対戦相手への自然な呼びかけ。言葉の意味で抑揚を作り、キャラクターの性格を最も感じさせる。"
+    },
+    {
+      "id": "kagura-win",
+      "character": "kagura",
+      "event": "win",
+      "file": "kagura-win.wav",
+      "originalText": "勝負あり。",
+      "text": "勝負あり。",
+      "targetSeconds": [
+        0.7,
+        2.1
+      ],
+      "energy": 2,
+      "direction": "戦闘が終わった安堵をひと呼吸に込める。相手へ語りかける穏やかな余韻と、その人物らしい自信。"
+    },
+    {
+      "id": "kagura-ko",
+      "character": "kagura",
+      "event": "ko",
+      "file": "kagura-ko.wav",
+      "originalText": "無念。",
+      "text": "……無念。",
+      "targetSeconds": [
+        0.5,
+        1.6
+      ],
+      "energy": 2,
+      "direction": "力を使い果たし、途切れがちな息の中からこぼれる言葉。敗北への感情を込め、語尾は自然に弱まる。"
+    },
+    {
+      "id": "kagura-grabbed",
+      "character": "kagura",
+      "event": "grabbed",
+      "file": "kagura-grabbed.wav",
+      "originalText": "なにっ！",
+      "text": "なにっ！",
+      "targetSeconds": [
+        0.16,
+        0.5
+      ],
+      "energy": 3,
+      "direction": "掴まれた瞬間の短い驚き。言葉を伸ばさず反射的に。"
+    },
+    {
+      "id": "kagura-throw_release",
+      "character": "kagura",
+      "event": "throw_release",
+      "file": "kagura-throw_release.wav",
+      "originalText": "せいっ！",
+      "text": "せいっ！",
+      "targetSeconds": [
+        0.2,
+        0.6
+      ],
+      "energy": 5,
+      "direction": "持ち上げた相手を投げ放す瞬間の鋭い呼気。"
+    },
+    {
+      "id": "kagura-thrown",
+      "character": "kagura",
+      "event": "thrown",
+      "file": "kagura-thrown.wav",
+      "originalText": "うわあっ！",
+      "text": "うわあっ！",
+      "targetSeconds": [
+        0.2,
+        0.75
+      ],
+      "energy": 4,
+      "direction": "空中に投げ飛ばされ、驚きと苦しさが混じる声。"
+    },
+    {
+      "id": "kagura-throw_impact",
+      "character": "kagura",
+      "event": "throw_impact",
+      "file": "kagura-throw_impact.wav",
+      "originalText": "ぐはっ！",
+      "text": "ぐはっ！",
+      "targetSeconds": [
+        0.15,
+        0.5
+      ],
+      "energy": 4,
+      "direction": "地面へ落ち、息が一瞬押し出される短い反応。"
+    },
+    {
+      "id": "volt-light0",
+      "character": "volt",
+      "event": "light0",
+      "file": "volt-light0.wav",
+      "originalText": "はっ！",
+      "text": "はっ！",
+      "targetSeconds": [
+        0.16,
+        0.42
+      ],
+      "energy": 3,
+      "direction": "一撃の瞬間に短く息を吐く。母音を読み上げる感覚ではなく、身体から自然に漏れる鋭い掛け声。"
+    },
+    {
+      "id": "volt-light1",
+      "character": "volt",
+      "event": "light1",
+      "file": "volt-light1.wav",
+      "originalText": "そらっ！",
+      "text": "そらっ！",
+      "targetSeconds": [
+        0.18,
+        0.48
+      ],
+      "energy": 3,
+      "direction": "弱攻撃の別テイク。light0と声質を揃えつつ、語頭の勢いと息の抜け方を変える。"
+    },
+    {
+      "id": "volt-heavy0",
+      "character": "volt",
+      "event": "heavy0",
+      "file": "volt-heavy0.wav",
+      "originalText": "くらえっ！",
+      "text": "くらえっ！",
+      "targetSeconds": [
+        0.3,
+        0.85
+      ],
+      "energy": 4,
+      "direction": "踏み込みに合わせ、息を溜めてから腹で押す。語頭に力、終わりは短く切る。"
+    },
+    {
+      "id": "volt-heavy1",
+      "character": "volt",
+      "event": "heavy1",
+      "file": "volt-heavy1.wav",
+      "originalText": "決めるぜ！",
+      "text": "決めるぜ！",
+      "targetSeconds": [
+        0.35,
+        1
+      ],
+      "energy": 4,
+      "direction": "狙いを定めた強打。相手へ言葉を投げる。heavy0と異なる自然なイントネーション。"
+    },
+    {
+      "id": "volt-jump",
+      "character": "volt",
+      "event": "jump",
+      "file": "volt-jump.wav",
+      "originalText": "よっと！",
+      "text": "よっと！",
+      "targetSeconds": [
+        0.15,
+        0.4
+      ],
+      "energy": 2,
+      "direction": "跳躍時の小さな呼気。身体を持ち上げる瞬間の短い声。"
+    },
+    {
+      "id": "volt-dash",
+      "character": "volt",
+      "event": "dash",
+      "file": "volt-dash.wav",
+      "originalText": "遅いぜ！",
+      "text": "遅いぜ！",
+      "targetSeconds": [
+        0.3,
+        0.85
+      ],
+      "energy": 2,
+      "direction": "移動しながら軽く言い放つ。相手との駆け引きを感じさせる、急ぎすぎない自然な会話。"
+    },
+    {
+      "id": "volt-hurt0",
+      "character": "volt",
+      "event": "hurt0",
+      "file": "volt-hurt0.wav",
+      "originalText": "くっ！",
+      "text": "くっ！",
+      "targetSeconds": [
+        0.18,
+        0.48
+      ],
+      "energy": 3,
+      "direction": "不意に一撃を受け、息が詰まる短い反応。痛みに一瞬だけ声が揺れる。"
+    },
+    {
+      "id": "volt-hurt1",
+      "character": "volt",
+      "event": "hurt1",
+      "file": "volt-hurt1.wav",
+      "originalText": "ぐあっ！",
+      "text": "ぐあっ！",
+      "targetSeconds": [
+        0.25,
+        0.7
+      ],
+      "energy": 4,
+      "direction": "強めの一撃で息が押し出される反応。hurt0より力が抜け、語尾が呼気へ消える。"
+    },
+    {
+      "id": "volt-throw",
+      "character": "volt",
+      "event": "throw",
+      "file": "volt-throw.wav",
+      "originalText": "よしっ！",
+      "text": "よしっ！",
+      "targetSeconds": [
+        0.4,
+        1.1
+      ],
+      "energy": 3,
+      "direction": "相手を捉えた確信と踏ん張り。発声の中心に瞬間的な力を込める。"
+    },
+    {
+      "id": "volt-burst",
+      "character": "volt",
+      "event": "burst",
+      "file": "volt-burst.wav",
+      "originalText": "離れろっ！",
+      "text": "離れろっ！",
+      "targetSeconds": [
+        0.4,
+        1
+      ],
+      "energy": 5,
+      "direction": "追い詰められた状態から一気に力を解放。鋭い語頭と強い決意、最後はすっと息を抜く。"
+    },
+    {
+      "id": "volt-sp1",
+      "character": "volt",
+      "event": "sp1",
+      "file": "volt-sp1.wav",
+      "originalText": "プラズマショット！",
+      "text": "プラズマショット！",
+      "targetSeconds": [
+        0.55,
+        1.5
+      ],
+      "energy": 4,
+      "direction": "技名をひと息のまとまりで放つ。前半を自然に立ち上げ、最後のアクセントを攻撃の決めにする。"
+    },
+    {
+      "id": "volt-sp2",
+      "character": "volt",
+      "event": "sp2",
+      "file": "volt-sp2.wav",
+      "originalText": "ライトニングドライブ！",
+      "text": "ライトニングドライブ！",
+      "targetSeconds": [
+        0.55,
+        1.65
+      ],
+      "energy": 4,
+      "direction": "踏み込みの勢いを声に乗せる。技名の中でも強弱をつけ、語末に芯を残す。"
+    },
+    {
+      "id": "volt-sp3",
+      "character": "volt",
+      "event": "sp3",
+      "file": "volt-sp3.wav",
+      "originalText": "サンダーサマー！",
+      "text": "サンダーサマー！",
+      "targetSeconds": [
+        0.55,
+        1.65
+      ],
+      "energy": 4,
+      "direction": "狙い澄ました必殺。短い溜めから明瞭に放ち、締めを強く。技名全体を一続きに発声。"
+    },
+    {
+      "id": "volt-super",
+      "character": "volt",
+      "event": "super",
+      "file": "volt-super.wav",
+      "originalText": "オーバードライブ。ラグナロク！",
+      "text": "オーバードライブ……ラグナロク！",
+      "targetSeconds": [
+        1.25,
+        2.7
+      ],
+      "energy": 5,
+      "direction": "最初は低く決意を込め、意味の切れ目で約100msの間。そこから一気に高揚し、最後の技名を力強く解放する。"
+    },
+    {
+      "id": "volt-select",
+      "character": "volt",
+      "event": "select",
+      "file": "volt-select.wav",
+      "originalText": "最高速で行こうぜ！",
+      "text": "最高速で行こうぜ！",
+      "targetSeconds": [
+        1,
+        2.5
+      ],
+      "energy": 2,
+      "direction": "目の前の対戦相手への自然な呼びかけ。言葉の意味で抑揚を作り、キャラクターの性格を最も感じさせる。"
+    },
+    {
+      "id": "volt-win",
+      "character": "volt",
+      "event": "win",
+      "file": "volt-win.wav",
+      "originalText": "俺の勝ちだ！",
+      "text": "俺の勝ちだ！",
+      "targetSeconds": [
+        0.7,
+        2.1
+      ],
+      "energy": 2,
+      "direction": "戦闘が終わった安堵をひと呼吸に込める。相手へ語りかける穏やかな余韻と、その人物らしい自信。"
+    },
+    {
+      "id": "volt-ko",
+      "character": "volt",
+      "event": "ko",
+      "file": "volt-ko.wav",
+      "originalText": "マジかよ。",
+      "text": "マジかよ……。",
+      "targetSeconds": [
+        0.5,
+        1.6
+      ],
+      "energy": 2,
+      "direction": "力を使い果たし、途切れがちな息の中からこぼれる言葉。敗北への感情を込め、語尾は自然に弱まる。"
+    },
+    {
+      "id": "volt-grabbed",
+      "character": "volt",
+      "event": "grabbed",
+      "file": "volt-grabbed.wav",
+      "originalText": "しまった！",
+      "text": "しまった！",
+      "targetSeconds": [
+        0.16,
+        0.5
+      ],
+      "energy": 3,
+      "direction": "掴まれた瞬間の短い驚き。言葉を伸ばさず反射的に。"
+    },
+    {
+      "id": "volt-throw_release",
+      "character": "volt",
+      "event": "throw_release",
+      "file": "volt-throw_release.wav",
+      "originalText": "そらよっ！",
+      "text": "そらよっ！",
+      "targetSeconds": [
+        0.2,
+        0.6
+      ],
+      "energy": 5,
+      "direction": "持ち上げた相手を投げ放す瞬間の鋭い呼気。"
+    },
+    {
+      "id": "volt-thrown",
+      "character": "volt",
+      "event": "thrown",
+      "file": "volt-thrown.wav",
+      "originalText": "うわっ！",
+      "text": "うわっ！",
+      "targetSeconds": [
+        0.2,
+        0.75
+      ],
+      "energy": 4,
+      "direction": "空中に投げ飛ばされ、驚きと苦しさが混じる声。"
+    },
+    {
+      "id": "volt-throw_impact",
+      "character": "volt",
+      "event": "throw_impact",
+      "file": "volt-throw_impact.wav",
+      "originalText": "がはっ！",
+      "text": "がはっ！",
+      "targetSeconds": [
+        0.15,
+        0.5
+      ],
+      "energy": 4,
+      "direction": "地面へ落ち、息が一瞬押し出される短い反応。"
+    },
+    {
+      "id": "freya-light0",
+      "character": "freya",
+      "event": "light0",
+      "file": "freya-light0.wav",
+      "originalText": "はっ！",
+      "text": "はっ！",
+      "targetSeconds": [
+        0.16,
+        0.42
+      ],
+      "energy": 3,
+      "direction": "一撃の瞬間に短く息を吐く。母音を読み上げる感覚ではなく、身体から自然に漏れる鋭い掛け声。"
+    },
+    {
+      "id": "freya-light1",
+      "character": "freya",
+      "event": "light1",
+      "file": "freya-light1.wav",
+      "originalText": "せいっ！",
+      "text": "せいっ！",
+      "targetSeconds": [
+        0.18,
+        0.48
+      ],
+      "energy": 3,
+      "direction": "弱攻撃の別テイク。light0と声質を揃えつつ、語頭の勢いと息の抜け方を変える。"
+    },
+    {
+      "id": "freya-heavy0",
+      "character": "freya",
+      "event": "heavy0",
+      "file": "freya-heavy0.wav",
+      "originalText": "凍りなさい！",
+      "text": "凍りなさい！",
+      "targetSeconds": [
+        0.3,
+        0.85
+      ],
+      "energy": 4,
+      "direction": "踏み込みに合わせ、息を溜めてから腹で押す。語頭に力、終わりは短く切る。"
+    },
+    {
+      "id": "freya-heavy1",
+      "character": "freya",
+      "event": "heavy1",
+      "file": "freya-heavy1.wav",
+      "originalText": "貫く！",
+      "text": "貫く！",
+      "targetSeconds": [
+        0.35,
+        1
+      ],
+      "energy": 4,
+      "direction": "狙いを定めた強打。相手へ言葉を投げる。heavy0と異なる自然なイントネーション。"
+    },
+    {
+      "id": "freya-jump",
+      "character": "freya",
+      "event": "jump",
+      "file": "freya-jump.wav",
+      "originalText": "ふっ！",
+      "text": "ふっ！",
+      "targetSeconds": [
+        0.15,
+        0.4
+      ],
+      "energy": 2,
+      "direction": "跳躍時の小さな呼気。身体を持ち上げる瞬間の短い声。"
+    },
+    {
+      "id": "freya-dash",
+      "character": "freya",
+      "event": "dash",
+      "file": "freya-dash.wav",
+      "originalText": "参ります！",
+      "text": "参ります！",
+      "targetSeconds": [
+        0.3,
+        0.85
+      ],
+      "energy": 2,
+      "direction": "移動しながら軽く言い放つ。相手との駆け引きを感じさせる、急ぎすぎない自然な会話。"
+    },
+    {
+      "id": "freya-hurt0",
+      "character": "freya",
+      "event": "hurt0",
+      "file": "freya-hurt0.wav",
+      "originalText": "くっ！",
+      "text": "くっ……！",
+      "targetSeconds": [
+        0.18,
+        0.48
+      ],
+      "energy": 3,
+      "direction": "不意に一撃を受け、息が詰まる短い反応。痛みに一瞬だけ声が揺れる。"
+    },
+    {
+      "id": "freya-hurt1",
+      "character": "freya",
+      "event": "hurt1",
+      "file": "freya-hurt1.wav",
+      "originalText": "あっ！",
+      "text": "あっ！",
+      "targetSeconds": [
+        0.25,
+        0.7
+      ],
+      "energy": 4,
+      "direction": "強めの一撃で息が押し出される反応。hurt0より力が抜け、語尾が呼気へ消える。"
+    },
+    {
+      "id": "freya-throw",
+      "character": "freya",
+      "event": "throw",
+      "file": "freya-throw.wav",
+      "originalText": "そこっ！",
+      "text": "そこっ！",
+      "targetSeconds": [
+        0.4,
+        1.1
+      ],
+      "energy": 3,
+      "direction": "相手を捉えた確信と踏ん張り。発声の中心に瞬間的な力を込める。"
+    },
+    {
+      "id": "freya-burst",
+      "character": "freya",
+      "event": "burst",
+      "file": "freya-burst.wav",
+      "originalText": "近寄らないで！",
+      "text": "近寄らないで！",
+      "targetSeconds": [
+        0.4,
+        1
+      ],
+      "energy": 5,
+      "direction": "追い詰められた状態から一気に力を解放。鋭い語頭と強い決意、最後はすっと息を抜く。"
+    },
+    {
+      "id": "freya-sp1",
+      "character": "freya",
+      "event": "sp1",
+      "file": "freya-sp1.wav",
+      "originalText": "グレイシャーピラー！",
+      "text": "グレイシャーピラー！",
+      "targetSeconds": [
+        0.55,
+        1.5
+      ],
+      "energy": 4,
+      "direction": "技名をひと息のまとまりで放つ。前半を自然に立ち上げ、最後のアクセントを攻撃の決めにする。"
+    },
+    {
+      "id": "freya-sp2",
+      "character": "freya",
+      "event": "sp2",
+      "file": "freya-sp2.wav",
+      "originalText": "ヴァルキリーランス！",
+      "text": "ヴァルキリーランス！",
+      "targetSeconds": [
+        0.55,
+        1.65
+      ],
+      "energy": 4,
+      "direction": "踏み込みの勢いを声に乗せる。技名の中でも強弱をつけ、語末に芯を残す。"
+    },
+    {
+      "id": "freya-sp3",
+      "character": "freya",
+      "event": "sp3",
+      "file": "freya-sp3.wav",
+      "originalText": "フロストノヴァ！",
+      "text": "フロストノヴァ！",
+      "targetSeconds": [
+        0.55,
+        1.65
+      ],
+      "energy": 4,
+      "direction": "狙い澄ました必殺。短い溜めから明瞭に放ち、締めを強く。技名全体を一続きに発声。"
+    },
+    {
+      "id": "freya-super",
+      "character": "freya",
+      "event": "super",
+      "file": "freya-super.wav",
+      "originalText": "アブソリュートゼロ。カリバー！",
+      "text": "アブソリュートゼロ……カリバー！",
+      "targetSeconds": [
+        1.25,
+        2.7
+      ],
+      "energy": 5,
+      "direction": "最初は低く決意を込め、意味の切れ目で約100msの間。そこから一気に高揚し、最後の技名を力強く解放する。"
+    },
+    {
+      "id": "freya-select",
+      "character": "freya",
+      "event": "select",
+      "file": "freya-select.wav",
+      "originalText": "静かな決着を。",
+      "text": "静かな決着を。",
+      "targetSeconds": [
+        1,
+        2.5
+      ],
+      "energy": 2,
+      "direction": "目の前の対戦相手への自然な呼びかけ。言葉の意味で抑揚を作り、キャラクターの性格を最も感じさせる。"
+    },
+    {
+      "id": "freya-win",
+      "character": "freya",
+      "event": "win",
+      "file": "freya-win.wav",
+      "originalText": "お眠りなさい。",
+      "text": "お眠りなさい。",
+      "targetSeconds": [
+        0.7,
+        2.1
+      ],
+      "energy": 2,
+      "direction": "戦闘が終わった安堵をひと呼吸に込める。相手へ語りかける穏やかな余韻と、その人物らしい自信。"
+    },
+    {
+      "id": "freya-ko",
+      "character": "freya",
+      "event": "ko",
+      "file": "freya-ko.wav",
+      "originalText": "そんな。",
+      "text": "そんな……。",
+      "targetSeconds": [
+        0.5,
+        1.6
+      ],
+      "energy": 2,
+      "direction": "力を使い果たし、途切れがちな息の中からこぼれる言葉。敗北への感情を込め、語尾は自然に弱まる。"
+    },
+    {
+      "id": "freya-grabbed",
+      "character": "freya",
+      "event": "grabbed",
+      "file": "freya-grabbed.wav",
+      "originalText": "あっ！",
+      "text": "あっ！",
+      "targetSeconds": [
+        0.16,
+        0.5
+      ],
+      "energy": 3,
+      "direction": "掴まれた瞬間の短い驚き。言葉を伸ばさず反射的に。"
+    },
+    {
+      "id": "freya-throw_release",
+      "character": "freya",
+      "event": "throw_release",
+      "file": "freya-throw_release.wav",
+      "originalText": "はあっ！",
+      "text": "はあっ！",
+      "targetSeconds": [
+        0.2,
+        0.6
+      ],
+      "energy": 5,
+      "direction": "持ち上げた相手を投げ放す瞬間の鋭い呼気。"
+    },
+    {
+      "id": "freya-thrown",
+      "character": "freya",
+      "event": "thrown",
+      "file": "freya-thrown.wav",
+      "originalText": "ああっ！",
+      "text": "ああっ！",
+      "targetSeconds": [
+        0.2,
+        0.75
+      ],
+      "energy": 4,
+      "direction": "空中に投げ飛ばされ、驚きと苦しさが混じる声。"
+    },
+    {
+      "id": "freya-throw_impact",
+      "character": "freya",
+      "event": "throw_impact",
+      "file": "freya-throw_impact.wav",
+      "originalText": "くっ！",
+      "text": "くっ！",
+      "targetSeconds": [
+        0.15,
+        0.5
+      ],
+      "energy": 4,
+      "direction": "地面へ落ち、息が一瞬押し出される短い反応。"
+    },
+    {
+      "id": "titan-light0",
+      "character": "titan",
+      "event": "light0",
+      "file": "titan-light0.wav",
+      "originalText": "ふんっ！",
+      "text": "ふんっ！",
+      "targetSeconds": [
+        0.16,
+        0.42
+      ],
+      "energy": 3,
+      "direction": "一撃の瞬間に短く息を吐く。母音を読み上げる感覚ではなく、身体から自然に漏れる鋭い掛け声。"
+    },
+    {
+      "id": "titan-light1",
+      "character": "titan",
+      "event": "light1",
+      "file": "titan-light1.wav",
+      "originalText": "どりゃっ！",
+      "text": "どりゃっ！",
+      "targetSeconds": [
+        0.18,
+        0.48
+      ],
+      "energy": 3,
+      "direction": "弱攻撃の別テイク。light0と声質を揃えつつ、語頭の勢いと息の抜け方を変える。"
+    },
+    {
+      "id": "titan-heavy0",
+      "character": "titan",
+      "event": "heavy0",
+      "file": "titan-heavy0.wav",
+      "originalText": "うおおっ！",
+      "text": "うおおっ！",
+      "targetSeconds": [
+        0.3,
+        0.85
+      ],
+      "energy": 4,
+      "direction": "踏み込みに合わせ、息を溜めてから腹で押す。語頭に力、終わりは短く切る。"
+    },
+    {
+      "id": "titan-heavy1",
+      "character": "titan",
+      "event": "heavy1",
+      "file": "titan-heavy1.wav",
+      "originalText": "砕けろ！",
+      "text": "砕けろ！",
+      "targetSeconds": [
+        0.35,
+        1
+      ],
+      "energy": 4,
+      "direction": "狙いを定めた強打。相手へ言葉を投げる。heavy0と異なる自然なイントネーション。"
+    },
+    {
+      "id": "titan-jump",
+      "character": "titan",
+      "event": "jump",
+      "file": "titan-jump.wav",
+      "originalText": "ぬっ！",
+      "text": "ぬっ！",
+      "targetSeconds": [
+        0.15,
+        0.4
+      ],
+      "energy": 2,
+      "direction": "跳躍時の小さな呼気。身体を持ち上げる瞬間の短い声。"
+    },
+    {
+      "id": "titan-dash",
+      "character": "titan",
+      "event": "dash",
+      "file": "titan-dash.wav",
+      "originalText": "突き進む！",
+      "text": "突き進む！",
+      "targetSeconds": [
+        0.3,
+        0.85
+      ],
+      "energy": 2,
+      "direction": "移動しながら軽く言い放つ。相手との駆け引きを感じさせる、急ぎすぎない自然な会話。"
+    },
+    {
+      "id": "titan-hurt0",
+      "character": "titan",
+      "event": "hurt0",
+      "file": "titan-hurt0.wav",
+      "originalText": "ぐぬっ！",
+      "text": "ぐぬっ……！",
+      "targetSeconds": [
+        0.18,
+        0.48
+      ],
+      "energy": 3,
+      "direction": "不意に一撃を受け、息が詰まる短い反応。痛みに一瞬だけ声が揺れる。"
+    },
+    {
+      "id": "titan-hurt1",
+      "character": "titan",
+      "event": "hurt1",
+      "file": "titan-hurt1.wav",
+      "originalText": "がはっ！",
+      "text": "がはっ！",
+      "targetSeconds": [
+        0.25,
+        0.7
+      ],
+      "energy": 4,
+      "direction": "強めの一撃で息が押し出される反応。hurt0より力が抜け、語尾が呼気へ消える。"
+    },
+    {
+      "id": "titan-throw",
+      "character": "titan",
+      "event": "throw",
+      "file": "titan-throw.wav",
+      "originalText": "捉えた！",
+      "text": "捉えた！",
+      "targetSeconds": [
+        0.4,
+        1.1
+      ],
+      "energy": 3,
+      "direction": "相手を捉えた確信と踏ん張り。発声の中心に瞬間的な力を込める。"
+    },
+    {
+      "id": "titan-burst",
+      "character": "titan",
+      "event": "burst",
+      "file": "titan-burst.wav",
+      "originalText": "吹き飛べっ！",
+      "text": "吹き飛べっ！",
+      "targetSeconds": [
+        0.4,
+        1
+      ],
+      "energy": 5,
+      "direction": "追い詰められた状態から一気に力を解放。鋭い語頭と強い決意、最後はすっと息を抜く。"
+    },
+    {
+      "id": "titan-sp1",
+      "character": "titan",
+      "event": "sp1",
+      "file": "titan-sp1.wav",
+      "originalText": "シンキャク。大地砕き！",
+      "text": "しんきゃく……大地砕き！",
+      "targetSeconds": [
+        0.55,
+        1.5
+      ],
+      "energy": 4,
+      "direction": "技名をひと息のまとまりで放つ。前半を自然に立ち上げ、最後のアクセントを攻撃の決めにする。"
+    },
+    {
+      "id": "titan-sp2",
+      "character": "titan",
+      "event": "sp2",
+      "file": "titan-sp2.wav",
+      "originalText": "ギガントタックル！",
+      "text": "ギガントタックル！",
+      "targetSeconds": [
+        0.55,
+        1.65
+      ],
+      "energy": 4,
+      "direction": "踏み込みの勢いを声に乗せる。技名の中でも強弱をつけ、語末に芯を残す。"
+    },
+    {
+      "id": "titan-sp3",
+      "character": "titan",
+      "event": "sp3",
+      "file": "titan-sp3.wav",
+      "originalText": "ガイアバスター！",
+      "text": "ガイアバスター！",
+      "targetSeconds": [
+        0.55,
+        1.65
+      ],
+      "energy": 4,
+      "direction": "狙い澄ました必殺。短い溜めから明瞭に放ち、締めを強く。技名全体を一続きに発声。"
+    },
+    {
+      "id": "titan-super",
+      "character": "titan",
+      "event": "super",
+      "file": "titan-super.wav",
+      "originalText": "メテオ。カタストロフィ！",
+      "text": "メテオ……カタストロフィ！",
+      "targetSeconds": [
+        1.25,
+        2.7
+      ],
+      "energy": 5,
+      "direction": "最初は低く決意を込め、意味の切れ目で約100msの間。そこから一気に高揚し、最後の技名を力強く解放する。"
+    },
+    {
+      "id": "titan-select",
+      "character": "titan",
+      "event": "select",
+      "file": "titan-select.wav",
+      "originalText": "さあ、かかって来い！",
+      "text": "さあ、かかって来い！",
+      "targetSeconds": [
+        1,
+        2.5
+      ],
+      "energy": 2,
+      "direction": "目の前の対戦相手への自然な呼びかけ。言葉の意味で抑揚を作り、キャラクターの性格を最も感じさせる。"
+    },
+    {
+      "id": "titan-win",
+      "character": "titan",
+      "event": "win",
+      "file": "titan-win.wav",
+      "originalText": "まだまだじゃ。",
+      "text": "まだまだじゃ。",
+      "targetSeconds": [
+        0.7,
+        2.1
+      ],
+      "energy": 2,
+      "direction": "戦闘が終わった安堵をひと呼吸に込める。相手へ語りかける穏やかな余韻と、その人物らしい自信。"
+    },
+    {
+      "id": "titan-ko",
+      "character": "titan",
+      "event": "ko",
+      "file": "titan-ko.wav",
+      "originalText": "見事じゃ。",
+      "text": "……見事じゃ。",
+      "targetSeconds": [
+        0.5,
+        1.6
+      ],
+      "energy": 2,
+      "direction": "力を使い果たし、途切れがちな息の中からこぼれる言葉。敗北への感情を込め、語尾は自然に弱まる。"
+    },
+    {
+      "id": "titan-grabbed",
+      "character": "titan",
+      "event": "grabbed",
+      "file": "titan-grabbed.wav",
+      "originalText": "ぬおっ！",
+      "text": "ぬおっ！",
+      "targetSeconds": [
+        0.16,
+        0.5
+      ],
+      "energy": 3,
+      "direction": "掴まれた瞬間の短い驚き。言葉を伸ばさず反射的に。"
+    },
+    {
+      "id": "titan-throw_release",
+      "character": "titan",
+      "event": "throw_release",
+      "file": "titan-throw_release.wav",
+      "originalText": "どりゃあっ！",
+      "text": "どりゃあっ！",
+      "targetSeconds": [
+        0.2,
+        0.6
+      ],
+      "energy": 5,
+      "direction": "持ち上げた相手を投げ放す瞬間の鋭い呼気。"
+    },
+    {
+      "id": "titan-thrown",
+      "character": "titan",
+      "event": "thrown",
+      "file": "titan-thrown.wav",
+      "originalText": "ぐおおっ！",
+      "text": "ぐおおっ！",
+      "targetSeconds": [
+        0.2,
+        0.75
+      ],
+      "energy": 4,
+      "direction": "空中に投げ飛ばされ、驚きと苦しさが混じる声。"
+    },
+    {
+      "id": "titan-throw_impact",
+      "character": "titan",
+      "event": "throw_impact",
+      "file": "titan-throw_impact.wav",
+      "originalText": "がはっ！",
+      "text": "がはっ！",
+      "targetSeconds": [
+        0.15,
+        0.5
+      ],
+      "energy": 4,
+      "direction": "地面へ落ち、息が一瞬押し出される短い反応。"
+    },
+    {
+      "id": "ayame-light0",
+      "character": "ayame",
+      "event": "light0",
+      "file": "ayame-light0.wav",
+      "originalText": "はっ！",
+      "text": "はっ！",
+      "targetSeconds": [
+        0.16,
+        0.42
+      ],
+      "energy": 3,
+      "direction": "一撃の瞬間に短く息を吐く。母音を読み上げる感覚ではなく、身体から自然に漏れる鋭い掛け声。"
+    },
+    {
+      "id": "ayame-light1",
+      "character": "ayame",
+      "event": "light1",
+      "file": "ayame-light1.wav",
+      "originalText": "えいっ！",
+      "text": "えいっ！",
+      "targetSeconds": [
+        0.18,
+        0.48
+      ],
+      "energy": 3,
+      "direction": "弱攻撃の別テイク。light0と声質を揃えつつ、語頭の勢いと息の抜け方を変える。"
+    },
+    {
+      "id": "ayame-heavy0",
+      "character": "ayame",
+      "event": "heavy0",
+      "file": "ayame-heavy0.wav",
+      "originalText": "そこね！",
+      "text": "そこね！",
+      "targetSeconds": [
+        0.3,
+        0.85
+      ],
+      "energy": 4,
+      "direction": "踏み込みに合わせ、息を溜めてから腹で押す。語頭に力、終わりは短く切る。"
+    },
+    {
+      "id": "ayame-heavy1",
+      "character": "ayame",
+      "event": "heavy1",
+      "file": "ayame-heavy1.wav",
+      "originalText": "舞いなさい！",
+      "text": "舞いなさい！",
+      "targetSeconds": [
+        0.35,
+        1
+      ],
+      "energy": 4,
+      "direction": "狙いを定めた強打。相手へ言葉を投げる。heavy0と異なる自然なイントネーション。"
+    },
+    {
+      "id": "ayame-jump",
+      "character": "ayame",
+      "event": "jump",
+      "file": "ayame-jump.wav",
+      "originalText": "よっ！",
+      "text": "よっ！",
+      "targetSeconds": [
+        0.15,
+        0.4
+      ],
+      "energy": 2,
+      "direction": "跳躍時の小さな呼気。身体を持ち上げる瞬間の短い声。"
+    },
+    {
+      "id": "ayame-dash",
+      "character": "ayame",
+      "event": "dash",
+      "file": "ayame-dash.wav",
+      "originalText": "こちらよ！",
+      "text": "こちらよ！",
+      "targetSeconds": [
+        0.3,
+        0.85
+      ],
+      "energy": 2,
+      "direction": "移動しながら軽く言い放つ。相手との駆け引きを感じさせる、急ぎすぎない自然な会話。"
+    },
+    {
+      "id": "ayame-hurt0",
+      "character": "ayame",
+      "event": "hurt0",
+      "file": "ayame-hurt0.wav",
+      "originalText": "くっ！",
+      "text": "くっ……！",
+      "targetSeconds": [
+        0.18,
+        0.48
+      ],
+      "energy": 3,
+      "direction": "不意に一撃を受け、息が詰まる短い反応。痛みに一瞬だけ声が揺れる。"
+    },
+    {
+      "id": "ayame-hurt1",
+      "character": "ayame",
+      "event": "hurt1",
+      "file": "ayame-hurt1.wav",
+      "originalText": "あっ！",
+      "text": "あっ！",
+      "targetSeconds": [
+        0.25,
+        0.7
+      ],
+      "energy": 4,
+      "direction": "強めの一撃で息が押し出される反応。hurt0より力が抜け、語尾が呼気へ消える。"
+    },
+    {
+      "id": "ayame-throw",
+      "character": "ayame",
+      "event": "throw",
+      "file": "ayame-throw.wav",
+      "originalText": "そこね！",
+      "text": "そこね！",
+      "targetSeconds": [
+        0.4,
+        1.1
+      ],
+      "energy": 3,
+      "direction": "相手を捉えた確信と踏ん張り。発声の中心に瞬間的な力を込める。"
+    },
+    {
+      "id": "ayame-burst",
+      "character": "ayame",
+      "event": "burst",
+      "file": "ayame-burst.wav",
+      "originalText": "お下がりっ！",
+      "text": "お下がりっ！",
+      "targetSeconds": [
+        0.4,
+        1
+      ],
+      "energy": 5,
+      "direction": "追い詰められた状態から一気に力を解放。鋭い語頭と強い決意、最後はすっと息を抜く。"
+    },
+    {
+      "id": "ayame-sp1",
+      "character": "ayame",
+      "event": "sp1",
+      "file": "ayame-sp1.wav",
+      "originalText": "シゲツセン！",
+      "text": "しげつせん！",
+      "targetSeconds": [
+        0.55,
+        1.5
+      ],
+      "energy": 4,
+      "direction": "技名をひと息のまとまりで放つ。前半を自然に立ち上げ、最後のアクセントを攻撃の決めにする。"
+    },
+    {
+      "id": "ayame-sp2",
+      "character": "ayame",
+      "event": "sp2",
+      "file": "ayame-sp2.wav",
+      "originalText": "ヒエンの舞！",
+      "text": "ひえんのまい！",
+      "targetSeconds": [
+        0.55,
+        1.65
+      ],
+      "energy": 4,
+      "direction": "踏み込みの勢いを声に乗せる。技名の中でも強弱をつけ、語末に芯を残す。"
+    },
+    {
+      "id": "ayame-sp3",
+      "character": "ayame",
+      "event": "sp3",
+      "file": "ayame-sp3.wav",
+      "originalText": "カスミバシリ！",
+      "text": "かすみばしり！",
+      "targetSeconds": [
+        0.55,
+        1.65
+      ],
+      "energy": 4,
+      "direction": "狙い澄ました必殺。短い溜めから明瞭に放ち、締めを強く。技名全体を一続きに発声。"
+    },
+    {
+      "id": "ayame-super",
+      "character": "ayame",
+      "event": "super",
+      "file": "ayame-super.wav",
+      "originalText": "秘奥義。ヒャッカリョーラン！",
+      "text": "秘奥義……ひゃっかりょうらん！",
+      "targetSeconds": [
+        1.25,
+        2.7
+      ],
+      "energy": 5,
+      "direction": "最初は低く決意を込め、意味の切れ目で約100msの間。そこから一気に高揚し、最後の技名を力強く解放する。"
+    },
+    {
+      "id": "ayame-select",
+      "character": "ayame",
+      "event": "select",
+      "file": "ayame-select.wav",
+      "originalText": "ついてこられるかしら？",
+      "text": "ついてこられるかしら？",
+      "targetSeconds": [
+        1,
+        2.5
+      ],
+      "energy": 2,
+      "direction": "目の前の対戦相手への自然な呼びかけ。言葉の意味で抑揚を作り、キャラクターの性格を最も感じさせる。"
+    },
+    {
+      "id": "ayame-win",
+      "character": "ayame",
+      "event": "win",
+      "file": "ayame-win.wav",
+      "originalText": "舞はここまで。",
+      "text": "舞はここまで。",
+      "targetSeconds": [
+        0.7,
+        2.1
+      ],
+      "energy": 2,
+      "direction": "戦闘が終わった安堵をひと呼吸に込める。相手へ語りかける穏やかな余韻と、その人物らしい自信。"
+    },
+    {
+      "id": "ayame-ko",
+      "character": "ayame",
+      "event": "ko",
+      "file": "ayame-ko.wav",
+      "originalText": "不覚ね。",
+      "text": "……不覚ね。",
+      "targetSeconds": [
+        0.5,
+        1.6
+      ],
+      "energy": 2,
+      "direction": "力を使い果たし、途切れがちな息の中からこぼれる言葉。敗北への感情を込め、語尾は自然に弱まる。"
+    },
+    {
+      "id": "ayame-grabbed",
+      "character": "ayame",
+      "event": "grabbed",
+      "file": "ayame-grabbed.wav",
+      "originalText": "えっ！",
+      "text": "えっ！",
+      "targetSeconds": [
+        0.16,
+        0.5
+      ],
+      "energy": 3,
+      "direction": "掴まれた瞬間の短い驚き。言葉を伸ばさず反射的に。"
+    },
+    {
+      "id": "ayame-throw_release",
+      "character": "ayame",
+      "event": "throw_release",
+      "file": "ayame-throw_release.wav",
+      "originalText": "せいっ！",
+      "text": "せいっ！",
+      "targetSeconds": [
+        0.2,
+        0.6
+      ],
+      "energy": 5,
+      "direction": "持ち上げた相手を投げ放す瞬間の鋭い呼気。"
+    },
+    {
+      "id": "ayame-thrown",
+      "character": "ayame",
+      "event": "thrown",
+      "file": "ayame-thrown.wav",
+      "originalText": "きゃあっ！",
+      "text": "きゃあっ！",
+      "targetSeconds": [
+        0.2,
+        0.75
+      ],
+      "energy": 4,
+      "direction": "空中に投げ飛ばされ、驚きと苦しさが混じる声。"
+    },
+    {
+      "id": "ayame-throw_impact",
+      "character": "ayame",
+      "event": "throw_impact",
+      "file": "ayame-throw_impact.wav",
+      "originalText": "うっ！",
+      "text": "うっ！",
+      "targetSeconds": [
+        0.15,
+        0.5
+      ],
+      "energy": 4,
+      "direction": "地面へ落ち、息が一瞬押し出される短い反応。"
+    },
+    {
+      "id": "celine-light0",
+      "character": "celine",
+      "event": "light0",
+      "file": "celine-light0.wav",
+      "originalText": "はっ！",
+      "text": "はっ！",
+      "targetSeconds": [
+        0.16,
+        0.42
+      ],
+      "energy": 3,
+      "direction": "一撃の瞬間に短く息を吐く。母音を読み上げる感覚ではなく、身体から自然に漏れる鋭い掛け声。"
+    },
+    {
+      "id": "celine-light1",
+      "character": "celine",
+      "event": "light1",
+      "file": "celine-light1.wav",
+      "originalText": "えいっ！",
+      "text": "えいっ！",
+      "targetSeconds": [
+        0.18,
+        0.48
+      ],
+      "energy": 3,
+      "direction": "弱攻撃の別テイク。light0と声質を揃えつつ、語頭の勢いと息の抜け方を変える。"
+    },
+    {
+      "id": "celine-heavy0",
+      "character": "celine",
+      "event": "heavy0",
+      "file": "celine-heavy0.wav",
+      "originalText": "そこです！",
+      "text": "そこです！",
+      "targetSeconds": [
+        0.3,
+        0.85
+      ],
+      "energy": 4,
+      "direction": "踏み込みに合わせ、息を溜めてから腹で押す。語頭に力、終わりは短く切る。"
+    },
+    {
+      "id": "celine-heavy1",
+      "character": "celine",
+      "event": "heavy1",
+      "file": "celine-heavy1.wav",
+      "originalText": "貫きます！",
+      "text": "貫きます！",
+      "targetSeconds": [
+        0.35,
+        1
+      ],
+      "energy": 4,
+      "direction": "狙いを定めた強打。相手へ言葉を投げる。heavy0と異なる自然なイントネーション。"
+    },
+    {
+      "id": "celine-jump",
+      "character": "celine",
+      "event": "jump",
+      "file": "celine-jump.wav",
+      "originalText": "ふっ！",
+      "text": "ふっ！",
+      "targetSeconds": [
+        0.15,
+        0.4
+      ],
+      "energy": 2,
+      "direction": "跳躍時の小さな呼気。身体を持ち上げる瞬間の短い声。"
+    },
+    {
+      "id": "celine-dash",
+      "character": "celine",
+      "event": "dash",
+      "file": "celine-dash.wav",
+      "originalText": "失礼！",
+      "text": "失礼！",
+      "targetSeconds": [
+        0.3,
+        0.85
+      ],
+      "energy": 2,
+      "direction": "移動しながら軽く言い放つ。相手との駆け引きを感じさせる、急ぎすぎない自然な会話。"
+    },
+    {
+      "id": "celine-hurt0",
+      "character": "celine",
+      "event": "hurt0",
+      "file": "celine-hurt0.wav",
+      "originalText": "くっ！",
+      "text": "くっ……！",
+      "targetSeconds": [
+        0.18,
+        0.48
+      ],
+      "energy": 3,
+      "direction": "不意に一撃を受け、息が詰まる短い反応。痛みに一瞬だけ声が揺れる。"
+    },
+    {
+      "id": "celine-hurt1",
+      "character": "celine",
+      "event": "hurt1",
+      "file": "celine-hurt1.wav",
+      "originalText": "ああっ！",
+      "text": "ああっ！",
+      "targetSeconds": [
+        0.25,
+        0.7
+      ],
+      "energy": 4,
+      "direction": "強めの一撃で息が押し出される反応。hurt0より力が抜け、語尾が呼気へ消える。"
+    },
+    {
+      "id": "celine-throw",
+      "character": "celine",
+      "event": "throw",
+      "file": "celine-throw.wav",
+      "originalText": "そこっ！",
+      "text": "そこっ！",
+      "targetSeconds": [
+        0.4,
+        1.1
+      ],
+      "energy": 3,
+      "direction": "相手を捉えた確信と踏ん張り。発声の中心に瞬間的な力を込める。"
+    },
+    {
+      "id": "celine-burst",
+      "character": "celine",
+      "event": "burst",
+      "file": "celine-burst.wav",
+      "originalText": "お離れなさい！",
+      "text": "お離れなさい！",
+      "targetSeconds": [
+        0.4,
+        1
+      ],
+      "energy": 5,
+      "direction": "追い詰められた状態から一気に力を解放。鋭い語頭と強い決意、最後はすっと息を抜く。"
+    },
+    {
+      "id": "celine-sp1",
+      "character": "celine",
+      "event": "sp1",
+      "file": "celine-sp1.wav",
+      "originalText": "ローズエクレール！",
+      "text": "ローズエクレール！",
+      "targetSeconds": [
+        0.55,
+        1.5
+      ],
+      "energy": 4,
+      "direction": "技名をひと息のまとまりで放つ。前半を自然に立ち上げ、最後のアクセントを攻撃の決めにする。"
+    },
+    {
+      "id": "celine-sp2",
+      "character": "celine",
+      "event": "sp2",
+      "file": "celine-sp2.wav",
+      "originalText": "フルールランジ！",
+      "text": "フルールランジ！",
+      "targetSeconds": [
+        0.55,
+        1.65
+      ],
+      "energy": 4,
+      "direction": "踏み込みの勢いを声に乗せる。技名の中でも強弱をつけ、語末に芯を残す。"
+    },
+    {
+      "id": "celine-sp3",
+      "character": "celine",
+      "event": "sp3",
+      "file": "celine-sp3.wav",
+      "originalText": "エメラルドリポスト！",
+      "text": "エメラルドリポスト！",
+      "targetSeconds": [
+        0.55,
+        1.65
+      ],
+      "energy": 4,
+      "direction": "狙い澄ました必殺。短い溜めから明瞭に放ち、締めを強く。技名全体を一続きに発声。"
+    },
+    {
+      "id": "celine-super",
+      "character": "celine",
+      "event": "super",
+      "file": "celine-super.wav",
+      "originalText": "エトワール。デュ・ソワール！",
+      "text": "エトワール……デュ・ソワール！",
+      "targetSeconds": [
+        1.25,
+        2.7
+      ],
+      "energy": 5,
+      "direction": "最初は低く決意を込め、意味の切れ目で約100msの間。そこから一気に高揚し、最後の技名を力強く解放する。"
+    },
+    {
+      "id": "celine-select",
+      "character": "celine",
+      "event": "select",
+      "file": "celine-select.wav",
+      "originalText": "美しい決闘を。",
+      "text": "美しい決闘を。",
+      "targetSeconds": [
+        1,
+        2.5
+      ],
+      "energy": 2,
+      "direction": "目の前の対戦相手への自然な呼びかけ。言葉の意味で抑揚を作り、キャラクターの性格を最も感じさせる。"
+    },
+    {
+      "id": "celine-win",
+      "character": "celine",
+      "event": "win",
+      "file": "celine-win.wav",
+      "originalText": "見事な勝負でした。",
+      "text": "見事な勝負でした。",
+      "targetSeconds": [
+        0.7,
+        2.1
+      ],
+      "energy": 2,
+      "direction": "戦闘が終わった安堵をひと呼吸に込める。相手へ語りかける穏やかな余韻と、その人物らしい自信。"
+    },
+    {
+      "id": "celine-ko",
+      "character": "celine",
+      "event": "ko",
+      "file": "celine-ko.wav",
+      "originalText": "参りました。",
+      "text": "……参りました。",
+      "targetSeconds": [
+        0.5,
+        1.6
+      ],
+      "energy": 2,
+      "direction": "力を使い果たし、途切れがちな息の中からこぼれる言葉。敗北への感情を込め、語尾は自然に弱まる。"
+    },
+    {
+      "id": "celine-grabbed",
+      "character": "celine",
+      "event": "grabbed",
+      "file": "celine-grabbed.wav",
+      "originalText": "あっ！",
+      "text": "あっ！",
+      "targetSeconds": [
+        0.16,
+        0.5
+      ],
+      "energy": 3,
+      "direction": "掴まれた瞬間の短い驚き。言葉を伸ばさず反射的に。"
+    },
+    {
+      "id": "celine-throw_release",
+      "character": "celine",
+      "event": "throw_release",
+      "file": "celine-throw_release.wav",
+      "originalText": "はあっ！",
+      "text": "はあっ！",
+      "targetSeconds": [
+        0.2,
+        0.6
+      ],
+      "energy": 5,
+      "direction": "持ち上げた相手を投げ放す瞬間の鋭い呼気。"
+    },
+    {
+      "id": "celine-thrown",
+      "character": "celine",
+      "event": "thrown",
+      "file": "celine-thrown.wav",
+      "originalText": "ああっ！",
+      "text": "ああっ！",
+      "targetSeconds": [
+        0.2,
+        0.75
+      ],
+      "energy": 4,
+      "direction": "空中に投げ飛ばされ、驚きと苦しさが混じる声。"
+    },
+    {
+      "id": "celine-throw_impact",
+      "character": "celine",
+      "event": "throw_impact",
+      "file": "celine-throw_impact.wav",
+      "originalText": "くっ！",
+      "text": "くっ！",
+      "targetSeconds": [
+        0.15,
+        0.5
+      ],
+      "energy": 4,
+      "direction": "地面へ落ち、息が一瞬押し出される短い反応。"
+    }
+  ]
+}

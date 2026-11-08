@@ -1,0 +1,134 @@
+{
+  "syntax": "passed",
+  "embeddedAtlases": 18,
+  "decodeErrors": [],
+  "backgrounds": 4,
+  "stageErrors": [],
+  "voice": {
+    "decoded": {
+      "count": 126,
+      "errors": [],
+      "nonSilent": 126
+    },
+    "mixing": {
+      "channels": 2,
+      "replay": false,
+      "mutedChannels": 0,
+      "mutedPlay": false,
+      "pausedChannels": 0,
+      "modalChannels": 0,
+      "globalMute": false
+    },
+    "actualOutput": "non-zero signal for all six fighters"
+  },
+  "regressionFrames": 2880,
+  "nonThrowCombatMatchesV160": true,
+  "behavior": {
+    "pure": true,
+    "pause": true,
+    "hitstop": true,
+    "weak": [
+      8,
+      9,
+      33,
+      36
+    ],
+    "strong": [
+      8,
+      10,
+      35,
+      36
+    ]
+  },
+  "additions": {
+    "characters": 6,
+    "stages": 4,
+    "results": [
+      {
+        "id": "ayame",
+        "special": "SP_1",
+        "emitted": 1,
+        "active": 0,
+        "recovered": true
+      },
+      {
+        "id": "ayame",
+        "special": "SP_2",
+        "emitted": 0,
+        "active": 16,
+        "recovered": true
+      },
+      {
+        "id": "ayame",
+        "special": "SP_3",
+        "emitted": 0,
+        "active": 14,
+        "recovered": true
+      },
+      {
+        "id": "ayame",
+        "special": "SUPER",
+        "emitted": 0,
+        "active": 26,
+        "recovered": true
+      },
+      {
+        "id": "celine",
+        "special": "SP_1",
+        "emitted": 1,
+        "active": 0,
+        "recovered": true
+      },
+      {
+        "id": "celine",
+        "special": "SP_2",
+        "emitted": 0,
+        "active": 16,
+        "recovered": true
+      },
+      {
+        "id": "celine",
+        "special": "SP_3",
+        "emitted": 0,
+        "active": 14,
+        "recovered": true
+      },
+      {
+        "id": "celine",
+        "special": "SUPER",
+        "emitted": 0,
+        "active": 26,
+        "recovered": true
+      }
+    ],
+    "coverage": {
+      "kagura": {
+        "idle": 6,
+        "walk": 8
+      },
+      "volt": {
+        "idle": 6,
+        "walk": 8
+      },
+      "freya": {
+        "idle": 6,
+        "walk": 8
+      },
+      "titan": {
+        "idle": 6,
+        "walk": 8
+      },
+      "ayame": {
+        "idle": 6,
+        "walk": 8
+      },
+      "celine": {
+        "idle": 6,
+        "walk": 8
+      }
+    },
+    "nonempty": 432
+  },
+  "liveKeyboardAndAnimation": "passed",
+  "browserErrors": []
+}

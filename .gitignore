@@ -1,0 +1,15 @@
+# 版ごとの完全バックアップ（各 60〜85MB）。配布物は ai_studio_code.html のみ
+ai_studio_code.v*.backup.html
+
+# VOICEVOX 実行環境（約 540MB の venv / モデル）。再生成手順は assets/voices/*.md を参照
+tools/voicevox-runtime/
+
+# 中間生成物
+assets/voices/generated-*/
+assets/voices/backup-*/
+*.log
+
+# ローカルツール設定
+.claude/
+Thumbs.db
+.DS_Store

@@ -1,0 +1,8 @@
+{
+  "kagura":{"throw":"捉えた！","grabbed":"なにっ！","throw_release":"せいっ！","thrown":"うわあっ！","throw_impact":"ぐはっ！"},
+  "volt":{"throw":"よしっ！","grabbed":"しまった！","throw_release":"そらよっ！","thrown":"うわっ！","throw_impact":"がはっ！"},
+  "freya":{"throw":"そこっ！","grabbed":"あっ！","throw_release":"はあっ！","thrown":"ああっ！","throw_impact":"くっ！"},
+  "titan":{"throw":"捉えた！","grabbed":"ぬおっ！","throw_release":"どりゃあっ！","thrown":"ぐおおっ！","throw_impact":"がはっ！"},
+  "ayame":{"throw":"そこね！","grabbed":"えっ！","throw_release":"せいっ！","thrown":"きゃあっ！","throw_impact":"うっ！"},
+  "celine":{"throw":"そこっ！","grabbed":"あっ！","throw_release":"はあっ！","thrown":"ああっ！","throw_impact":"くっ！"}
+}
