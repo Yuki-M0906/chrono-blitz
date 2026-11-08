@@ -17,6 +17,12 @@
     "Pipe swing": true,
     "Pipe third hit stays a swing": true,
     "Key-driven chain reaches stage 3": true,
+    "Held down + J every 9F throws without leaving the lane": true,
+    "Depth movement works again after the throw (9F)": true,
+    "Held down + J every 20F throws without leaving the lane": true,
+    "Depth movement works again after the throw (20F)": true,
+    "Held down + J every 30F throws without leaving the lane": true,
+    "Depth movement works again after the throw (30F)": true,
     "Crate hit continues the chain": true,
     "Draw is pure": true
   },

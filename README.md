@@ -4,7 +4,7 @@ Browser-only arcade collection in a single HTML file: the 1-on-1 2D fighter **OV
 
 **▶ Play the demo / デモをプレイ:** https://yuki-m0906.github.io/chrono-blitz/
 
-Current version: **v2.3.0** (shown at the top right of the game select screen). / 現在のバージョン: **v2.3.0**（ゲーム選択画面の右上に表示）
+Current version: **v2.3.1** (shown at the top right of the game select screen). / 現在のバージョン: **v2.3.1**（ゲーム選択画面の右上に表示）
 
 > The game itself is one 85 MB HTML file (`ai_studio_code.html`) with all sprites, backgrounds, voice clips and code embedded. The first load takes a while; later loads are cached. Keyboard required.
 > ゲーム本体は約 85MB の単一 HTML です。初回読み込みには時間がかかります。キーボードが必要です。

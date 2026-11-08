@@ -103,4 +103,10 @@ node tools/verify-voice-update.cjs
 - `attack()`: ファイナルファイト方式。段階は `chainHit`（直前の段が命中）かつ `comboTTL` 内でのみ進む。1 段目 ATK_L、2 段目 ATK_C_L（ボディブロー）、3 段目 ATK_H（アッパー、`upper: true`）。空振りはパンチに戻る。
 - `swing()`: 敵・破壊物への命中で `a.chainHit = true`。アッパーは `hurt(..., 'upper')` で vz 11 / knockX 5 と高く短く飛ぶ。ボスのアーマーは 'upper' も打撃扱い。
 - チェーン投げ: 3 段目に入る瞬間に S / ↓ が押されていて正面 `reach` 以内に `grabbable()` の敵がいれば `beginGrab()` → `throwHeld(facing)` を即実行。投げた敵の体が他の敵に当たる処理は既存の `throwFlight` と共通。鉄パイプ所持中は投げに変化しない。
-- `STREET.version`（'2.3.0'）を HUB / STREET_SELECT の右上と HUD 右下に表示。バージョンを上げるときはここと HTML ヘッダー・index.html・README.md を揃える。
+- `STREET.version`（'2.3.1'）を HUB / STREET_SELECT の右上と HUD 右下に表示。バージョンを上げるときはここと HTML ヘッダー・index.html・README.md を揃える。
+
+## v2.3.1 の変更
+
+- `playerInput()`: チェーンが生きている間（`chain > 0 && chainHit && comboTTL > 0`）は上下入力を移動に使わない。↓を押しっぱなしにしても敵のレーンから外れず、3 発目が確実に投げになる。
+- `grabbable(range, depth = 22)`: 奥行き引数を追加。チェーン投げは `grabbable(reach, 29)`（打撃と同じ奥行き）で敵を探す。
+- `tools/verify-chain.cjs` にキー入力だけの再現（S 押しっぱなし＋J を 9 / 20 / 30F 間隔）を追加。

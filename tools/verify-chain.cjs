@@ -48,6 +48,14 @@ const root=path.resolve(__dirname,'..');let browser;
   s=setup();p=s.player;e=s.spawnEnemy('punk',p.x+60,p.y);e.cooldown=999;e.hp=9999;e.maxHp=9999;let reached=0;
   for(let t=0;t<120;t++){if(t%9===0)input.just.KeyJ=true;step(s);reached=Math.max(reached,p.chain);}
   check(reached===3,'Key-driven chain reaches stage 3');
+  // 7b. Real input, slow presses: holding S between hits must not walk the player off the enemy's lane,
+  //     and the third press must still become the throw (v2.3.1 fix).
+  for(const period of [9,20,30]){
+    s=setup();p=s.player;e=s.spawnEnemy('punk',p.x+60,p.y);e.cooldown=999;e.y=p.y;e.hp=9999;e.maxHp=9999;const y0=p.y;let thrown=false,maxDy=0;
+    for(let t=0;t<110&&!thrown;t++){input.keys={KeyS:true};input.just={};if(t%period===0)input.just.KeyJ=true;step(s);maxDy=Math.max(maxDy,Math.abs(p.y-y0));thrown=p.state==='THROWING';}
+    check(thrown&&maxDy<1,'Held down + J every '+period+'F throws without leaving the lane');
+    input.keys={};for(let i=0;i<80;i++)step(s);input.keys={KeyS:true};for(let i=0;i<10;i++)step(s);check(p.y>y0,'Depth movement works again after the throw ('+period+'F)');input.keys={};
+  }
   // 8. Breakables continue the chain (two presses must still break a crate as in verify-belt).
   s=setup();p=s.player;const prop=s.props[0];p.x=prop.x-60;p.y=prop.y;s.attack(p);s.swing(p,p.attack);check(p.chainHit,'Crate hit continues the chain');
   // 9. Drawing never mutates the simulation.

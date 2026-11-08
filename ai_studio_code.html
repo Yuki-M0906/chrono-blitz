@@ -2,10 +2,10 @@
 <!--
 ================================================================================
   CHRONO BLITZ: ARCADE COLLECTION - 技術仕様書 兼 開発引き継ぎドキュメント
-  Version: 2.3.0 (Final Fight Style Chain)
+  Version: 2.3.1 (Final Fight Style Chain — hold-down fix)
 ================================================================================
 
-【0. 現行構成サマリ / v2.3.0 時点 — 引き継ぐ人はまずここを読む】
+【0. 現行構成サマリ / v2.3.1 時点 — 引き継ぐ人はまずここを読む】
   ■ 配布物
     ai_studio_code.html 1 本（約 84.8MB）。画像 18 枚・背景 4 枚・WAV 126 本・全コードを埋込済み。
     file:// 直開きでも、python -m http.server などの静的配信でも動く。外部通信・追加インストールは不要。
@@ -56,6 +56,28 @@
     node tools/verify-voice-update.cjs 音声埋込の一致
     結果は verification/ 配下。構文だけなら script 要素の中身を切り出して node --check（ヘッダー内に script タグの文字列を書かないこと）。
 
+【アップデート履歴 / v2.3.1 — 2026-11-09 / Claude Fable 5.1 (Claude Code)】
+  依頼内容: 「レバーを下に入れたまま連続攻撃を完成させても自動で投げにならない」の検証と修正。
+  復元    : ai_studio_code.v2.3.0.backup.html（変更前の完成版）。
+
+  [FIX-61] ↓を押しっぱなしにすると 3 発目が投げにならない（高）
+    症状   : S / ↓ を押したまま J を押しても、ほとんどの場合アッパー（または空振り）になり投げに変化しない。
+             J を連打して先行入力（queue）した時だけ成功していた。
+    原因   : 攻撃と攻撃の間に通常の移動処理が走り、押しっぱなしの ↓ でプレイヤーが奥へ歩いて敵のレーンから外れていた
+             （キー入力だけの再現で 30F 間隔の押下時に奥行き差が 41px まで拡大）。3 発目の時点で grabbable()
+             （奥行き 22px 以内）に敵がおらず、アッパーも depth 29px の判定から外れて空振りしていた。
+             v2.3.0 の検証は attack() を直接呼んで S の押下を同時にセットしていたため、この経路を通らなかった。
+    修正   : (1) playerInput(): チェーンが生きている間（chain > 0 かつ chainHit かつ comboTTL > 0）は上下入力を
+             移動に使わない（dy = 0）。↓はこの間「投げの修飾キー」として扱う。左右移動は従来どおり。
+             (2) チェーン投げの敵探索は grabbable(reach, 29) とし、ボディブローが届いた奥行き差（29px）までを対象にする。
+             grabbable(range, depth = 22) に奥行き引数を追加（既存の歩き掴みは 22 のまま）。
+    変更箇所: assets/belt/engine.js playerInput()（dy を let に変更、chaining 判定）、grabbable()、attack()。
+    検証   : tools/verify-chain.cjs に実入力ケースを追加（S 押しっぱなし＋J を 9F / 20F / 30F 間隔 → いずれも THROWING、
+             チェーン中の奥行き移動 0px、投げ後は上下移動が復帰）。全 25 項目通過。verify-belt / sprites / throws / audio /
+             voice-update も再実行してすべて exit 0。バージョン表示は 2.3.1。
+    注意   : verify-audio.cjs は実音量を計測するため、他の Playwright 検証と同時に走らせると失敗することがある
+             （今回 1 回失敗、単独再実行で通過）。verify-audio は単独で実行すること。
+
 【アップデート履歴 / v2.3.0 — 2026-11-09 / Claude Fable 5.1 (Claude Code)】
   依頼内容: NEON UPRISING の通常攻撃を「ファイナルファイト方式」に変更。パンチ→（当たった時だけ）ボディブロー→アッパーで
             吹き飛ばし。↓を入れたままなら吹き飛ばさず自動で投げ、投げた敵の体は他の敵にも当たる。改良が分かるよう
@@ -88,6 +110,8 @@
     変更箇所: assets/belt/engine.js（HUB / STREET_SELECT 描画、drawHUD）、ai_studio_code.html の streetHelp、
              assets/belt/README.md、README.md、index.html。
     注意   : 以後バージョンを上げるときは STREET.version・本ヘッダー・index.html・README.md を揃えて更新する。
+    補足   : 新機能の検証は内部関数の直接呼び出しだけでなく、キー入力だけで再現する経路（playerInput → queue）も
+             必ず含めること（v2.3.1 [FIX-61] の教訓）。
 
   [FIX-60] ビルドがヘッダーの説明文をマーカーと誤認し本文を削る（重大・今回発見）
     症状   : node tools/build-sprites.mjs 後の HTML が 6,014 行 → 4,766 行に減り、CSS・DOM・Fighter/Game の大半が消えた。
@@ -4357,7 +4381,7 @@ class Game {
 // Coordinates: x = street distance, y = floor depth, z = height above that floor.
 // Fixed 60 Hz simulation. Draw methods must not change simulation or consume random values.
 const STREET = {
-  version: '2.3.0',
+  version: '2.3.1',
   width: 6200,
   top: 440,
   bottom: 626,
@@ -4852,8 +4876,8 @@ class NeonUprising {
   }
   playerInput() {
     const p = this.player,
-      dx = Number(STREET.down('KeyD', 'ArrowRight')) - Number(STREET.down('KeyA', 'ArrowLeft')),
-      dy = Number(STREET.down('KeyS', 'ArrowDown')) - Number(STREET.down('KeyW', 'ArrowUp'));
+      dx = Number(STREET.down('KeyD', 'ArrowRight')) - Number(STREET.down('KeyA', 'ArrowLeft'));
+    let dy = Number(STREET.down('KeyS', 'ArrowDown')) - Number(STREET.down('KeyW', 'ArrowUp'));
     const attack = STREET.press('KeyJ', 'KeyZ'),
       jump = STREET.press('KeyK', 'KeyX', 'Space'),
       thr = STREET.press('KeyI');
@@ -4910,6 +4934,10 @@ class NeonUprising {
       this.attack(p);
       return;
     }
+    // While a chain is live (a hit landed and the window is open) the stick's up/down is the throw modifier,
+    // not movement: walking off the enemy's lane between hits made the down-held throw unreachable.
+    const chaining = p.chain > 0 && p.chainHit && p.comboTTL > 0;
+    if (chaining) dy = 0;
     if (dx || dy) {
       const norm = dx && dy ? 0.707 : 1;
       p.x += dx * p.speed * norm;
@@ -4922,12 +4950,12 @@ class NeonUprising {
       }
     } else if (p.state === 'WALK_F') p.pose('IDLE');
   }
-  grabbable(range) {
+  grabbable(range, depth = 22) {
     const p = this.player;
     return this.alive().find(
       (e) =>
         Math.abs(e.x - p.x) < range &&
-        Math.abs(e.y - p.y) < 22 &&
+        Math.abs(e.y - p.y) < depth &&
         e.z === 0 &&
         e.invuln === 0 &&
         ['IDLE', 'WALK_F', 'HIT_STAND'].includes(e.state) &&
@@ -4940,7 +4968,8 @@ class NeonUprising {
     const stage = air ? 3 : a.chain > 0 && a.chain < 3 && a.chainHit ? a.chain + 1 : 1;
     if (!air && stage === 3 && a.team === 0 && !a.weapon && STREET.down('KeyS', 'ArrowDown')) {
       // Holding down on the third hit converts the uppercut into an automatic throw of the enemy in front.
-      const e = this.grabbable(a.reach);
+      // Same depth tolerance as the strikes that led here, so whatever the body blow reached can be thrown.
+      const e = this.grabbable(a.reach, 29);
       if (e && (e.x - a.x) * a.facing >= 0) {
         a.chain = 0;
         a.chainHit = false;

@@ -2,7 +2,7 @@
 // Coordinates: x = street distance, y = floor depth, z = height above that floor.
 // Fixed 60 Hz simulation. Draw methods must not change simulation or consume random values.
 const STREET = {
-  version: '2.3.0',
+  version: '2.3.1',
   width: 6200,
   top: 440,
   bottom: 626,
@@ -497,8 +497,8 @@ class NeonUprising {
   }
   playerInput() {
     const p = this.player,
-      dx = Number(STREET.down('KeyD', 'ArrowRight')) - Number(STREET.down('KeyA', 'ArrowLeft')),
-      dy = Number(STREET.down('KeyS', 'ArrowDown')) - Number(STREET.down('KeyW', 'ArrowUp'));
+      dx = Number(STREET.down('KeyD', 'ArrowRight')) - Number(STREET.down('KeyA', 'ArrowLeft'));
+    let dy = Number(STREET.down('KeyS', 'ArrowDown')) - Number(STREET.down('KeyW', 'ArrowUp'));
     const attack = STREET.press('KeyJ', 'KeyZ'),
       jump = STREET.press('KeyK', 'KeyX', 'Space'),
       thr = STREET.press('KeyI');
@@ -555,6 +555,10 @@ class NeonUprising {
       this.attack(p);
       return;
     }
+    // While a chain is live (a hit landed and the window is open) the stick's up/down is the throw modifier,
+    // not movement: walking off the enemy's lane between hits made the down-held throw unreachable.
+    const chaining = p.chain > 0 && p.chainHit && p.comboTTL > 0;
+    if (chaining) dy = 0;
     if (dx || dy) {
       const norm = dx && dy ? 0.707 : 1;
       p.x += dx * p.speed * norm;
@@ -567,12 +571,12 @@ class NeonUprising {
       }
     } else if (p.state === 'WALK_F') p.pose('IDLE');
   }
-  grabbable(range) {
+  grabbable(range, depth = 22) {
     const p = this.player;
     return this.alive().find(
       (e) =>
         Math.abs(e.x - p.x) < range &&
-        Math.abs(e.y - p.y) < 22 &&
+        Math.abs(e.y - p.y) < depth &&
         e.z === 0 &&
         e.invuln === 0 &&
         ['IDLE', 'WALK_F', 'HIT_STAND'].includes(e.state) &&
@@ -585,7 +589,8 @@ class NeonUprising {
     const stage = air ? 3 : a.chain > 0 && a.chain < 3 && a.chainHit ? a.chain + 1 : 1;
     if (!air && stage === 3 && a.team === 0 && !a.weapon && STREET.down('KeyS', 'ArrowDown')) {
       // Holding down on the third hit converts the uppercut into an automatic throw of the enemy in front.
-      const e = this.grabbable(a.reach);
+      // Same depth tolerance as the strikes that led here, so whatever the body blow reached can be thrown.
+      const e = this.grabbable(a.reach, 29);
       if (e && (e.x - a.x) * a.facing >= 0) {
         a.chain = 0;
         a.chainHit = false;
