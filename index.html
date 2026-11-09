@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CHRONO BLITZ: ARCADE COLLECTION — Demo</title>
-<meta name="description" content="CHRONO BLITZ: ARCADE COLLECTION — a browser-only 2D fighting game (OVERDRIVE) and side-scrolling beat 'em up (NEON UPRISING) in a single HTML file. / ブラウザだけで動く 2D 対戦格闘＋ベルトスクロールアクションのデモ。">
+<meta name="description" content="CHRONO BLITZ: ARCADE COLLECTION — a browser-only 2D fighting game (OVERDRIVE) and side-scrolling beat 'em up (NEON UPRISING) in one small HTML file plus asset packs. / ブラウザだけで動く 2D 対戦格闘＋ベルトスクロールアクションのデモ。">
 <style>
   :root { --cyan: #00f0ff; --pink: #ff0055; --gold: #ffcc00; --bg: #05070f; --panel: #0d1326; --text: #f0f4ff; --muted: #9fb3c8; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,18 +30,18 @@
 <body>
 <main>
   <h1>CHRONO BLITZ<span>ARCADE COLLECTION — DEMO</span></h1>
-  <p class="version">VERSION 2.3.1 — NEON UPRISING: ファイナルファイト方式の連続攻撃（パンチ→ボディ→アッパー）と ↓＋3発目のチェーン投げ</p>
+  <p class="version">VERSION 2.6.0 — NEON UPRISING の当たり判定を遊びやすく調整。データを分割して読み込みを改善</p>
   <p class="lead">
     ブラウザだけで動く 2 本立てのアーケードゲームです。1 対 1 の 2D 対戦格闘「OVERDRIVE」と、1 人用ベルトスクロールアクション「NEON UPRISING」をゲーム選択画面から遊べます。
-    画像・音声・コードはすべて 1 つの HTML に埋め込まれており、サーバーや追加インストールは不要です。<br>
-    A browser-only arcade collection: the 1-on-1 fighter <strong>OVERDRIVE</strong> and the side-scrolling beat 'em up <strong>NEON UPRISING</strong>, both in a single self-contained HTML file.
+    画像・音声はゲーム本体と同じ場所の data フォルダにまとめてあり、サーバーや追加インストールは不要です。<br>
+    A browser-only arcade collection: the 1-on-1 fighter <strong>OVERDRIVE</strong> and the side-scrolling beat 'em up <strong>NEON UPRISING</strong>, both running from one HTML file and a folder of asset packs, with nothing to install.
   </p>
 
   <a class="play" href="ai_studio_code.html">▶ PLAY DEMO / デモをプレイ</a>
   <p class="note">
-    ゲーム本体は約 85MB の単一 HTML です。初回は読み込みに数秒〜数十秒かかります（2 回目以降はブラウザキャッシュで速くなります）。
+    初回は約 117MB のデータを読み込むため数秒〜数十秒かかります（進捗バーが出ます。2 回目以降はブラウザキャッシュで速くなります）。
     キーボードが必要です。音が出ます。推奨: PC の Chrome / Edge / Firefox。<br>
-    The game is a single 85 MB HTML file; the first load takes a while. Keyboard required, audio on. Desktop Chrome / Edge / Firefox recommended.
+    The first load fetches about 117 MB of asset packs and shows a progress bar. Keyboard required, audio on. Desktop Chrome / Edge / Firefox recommended.
   </p>
 
   <div class="grid">
@@ -77,7 +77,7 @@
       <ul>
         <li>HTML5 Canvas 2D、固定 60Hz 更新、1280×720 論理解像度</li>
         <li>Web Audio API でローカル合成する 8 曲の BGM と効果音</li>
-        <li>生成ドット絵 432 姿勢、4 枚のパノラマ背景を埋め込み</li>
+        <li>共通 432 姿勢＋ボス専用 72 姿勢、対戦背景 4 枚＋街背景 5 枚、物体・アイテム 8 コマを埋め込み</li>
         <li>キャラクターボイスは VOICEVOX による合成音声（下記クレジット）</li>
       </ul>
     </div>

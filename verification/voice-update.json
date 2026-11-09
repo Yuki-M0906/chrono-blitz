@@ -1,8 +1,8 @@
 {
-  "version": "1.7.0",
+  "version": "1.7.0-v2.4-mastered",
   "clipsEmbedded": 126,
   "newThrowReactions": 24,
-  "reworkedCaptureVoices": 6,
-  "unchangedOtherVoices": 96,
+  "reworkedVoices": 102,
+  "remasteredFromV17": 126,
   "distinctVoices": 6
 }

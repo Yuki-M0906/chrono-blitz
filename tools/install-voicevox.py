@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parent.parent
 VOICE = ROOT / 'assets/voices'
 STAGE = VOICE / 'generated-v1.7'
 BACKUP = VOICE / 'backup-v1.6'
+BACKUP_V17 = VOICE / 'backup-v1.7'
 names = ['kagura','volt','freya','titan','ayame','celine']
 manifest = json.loads((STAGE/'manifest.json').read_text(encoding='utf-8'))
 old = json.loads((VOICE/'manifest.json').read_text(encoding='utf-8'))
@@ -34,6 +35,10 @@ if not BACKUP.exists():
     BACKUP.mkdir()
     for key in sorted(expected): shutil.copy2(VOICE/(key+'.wav'), BACKUP/(key+'.wav'))
     for file in ['manifest.json','audio-report.json']: shutil.copy2(VOICE/file,BACKUP/file)
+if not BACKUP_V17.exists() and old['version']=='1.7.0' and 'v2.4' not in old.get('engine',''):
+    BACKUP_V17.mkdir()
+    for key in sorted(expected): shutil.copy2(VOICE/(key+'.wav'), BACKUP_V17/(key+'.wav'))
+    for file in ['manifest.json','audio-report.json']: shutil.copy2(VOICE/file,BACKUP_V17/file)
 # All files validated before modifying the active bank. Restore the original bank on copy failure.
 rollback = {f: (VOICE/f).read_bytes() if (VOICE/f).exists() else None for f in [*(k+'.wav' for k in sorted(actual)),'manifest.json','audio-report.json']}
 try:

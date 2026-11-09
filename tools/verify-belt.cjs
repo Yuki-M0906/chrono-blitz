@@ -7,7 +7,7 @@ const root=path.resolve(__dirname,'..');let browser;
  await context.addInitScript(()=>{window.requestAnimationFrame=()=>0;});
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto(pathToFileURL(path.join(root,'ai_studio_code.html')).href);
- await page.evaluate(async()=>{await FighterSprites.ready;await StageArt.ready;game.draw();});
+ await page.evaluate(async()=>{await FighterSprites.ready;await StageArt.ready;await BeltArt.ready;game.draw();});
  await page.screenshot({path:path.join(root,'verification/arcade-hub.png')});
  assert.equal(await page.evaluate(()=>game.scene),'HUB');
  // Real keyboard handlers enter the classic title and return to the collection.

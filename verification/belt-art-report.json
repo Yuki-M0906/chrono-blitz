@@ -1,0 +1,39 @@
+{
+  "version": "2.6.0",
+  "loaded": {
+    "images": 9,
+    "districts": 5,
+    "props": 8,
+    "bossPoses": 72,
+    "errors": [],
+    "transparent": [
+      {
+        "id": "props",
+        "ratio": 0.6717910766601562
+      },
+      {
+        "id": "voss-base",
+        "ratio": 0.5898043314615885
+      },
+      {
+        "id": "voss-motion",
+        "ratio": 0.5855458577473959
+      },
+      {
+        "id": "voss-throw",
+        "ratio": 0.6362889607747396
+      }
+    ]
+  },
+  "checks": {
+    "sharedImagesVoicesAndAudioIdentical": true,
+    "sharedGameIdentical": true,
+    "nonvisualStreetMethodsIdentical": true,
+    "pureDraw": true,
+    "randomCalls": 0,
+    "fallback": true,
+    "bossStates": true,
+    "meanRenderMs": 0.18499999940395356
+  },
+  "browserErrors": []
+}

@@ -1,4 +1,4 @@
-# 版ごとの完全バックアップ（各 60〜85MB）。配布物は ai_studio_code.html のみ
+# 版ごとのバックアップ（v2.5.0 以前は単体で動く 60〜123MB の完全版）。配布物は ai_studio_code.html と data/
 ai_studio_code.v*.backup.html
 
 # VOICEVOX 実行環境（約 540MB の venv / モデル）。再生成手順は assets/voices/*.md を参照

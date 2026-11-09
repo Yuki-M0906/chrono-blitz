@@ -2,7 +2,29 @@
 // Coordinates: x = street distance, y = floor depth, z = height above that floor.
 // Fixed 60 Hz simulation. Draw methods must not change simulation or consume random values.
 const STREET = {
-  version: '2.3.1',
+  version: '2.6.0',
+  // v2.6.0 hit detection tuning. One table so the feel can be adjusted without hunting through the methods.
+  // Rule of thumb: the player's attacks are generous (wide lane, several active frames), enemy attacks are honest
+  // (one frame, narrow lane) so that stepping up/down out of a telegraphed blow reliably works.
+  hit: {
+    playerDepth: 38, // lane tolerance of player strikes (was 29)
+    playerRear: 30, // how far behind the player's centre a strike still connects (was 22)
+    playerActive: 4, // ground strikes stay active for this many frames (was 1)
+    airActive: 12, // jump attack stays active this long, i.e. for most of the descent (was 1)
+    propDepth: 44, // crates and barrels (was 35)
+    enemyDepth: 22, // enemy punch lane (was 26); the AI only starts a punch inside this lane
+    laneAssist: 0.5, // a struck enemy is pulled this fraction toward the player's lane so the chain keeps connecting
+    grabDepth: 24, // walking grab (was 22)
+    throwKeyDepth: 34, // I-key throw (was 22)
+    chainThrowDepth: 38, // down + third hit (was 29); equals playerDepth so anything the chain reached can be thrown
+    bodyDepth: 42, // thrown body versus other enemies (was 27)
+    bodyRange: 74, // (was 55)
+    pickupRange: 62, // (was 45)
+    pickupDepth: 38, // (was 26)
+    chargeDepth: 30, // boss charge lane (was 35)
+    slamRange: 150, // boss slam (was 155)
+    slamDepth: 70 // (was 78)
+  },
   width: 6200,
   top: 440,
   bottom: 626,
@@ -193,16 +215,20 @@ class StreetActor extends Fighter {
               : this.state === 'SLAM'
                 ? 'SP_1'
                 : this.state;
-    this.drawBody(c, 0, 0, this.facing, state, this.state === 'WINDUP' ? 4 : this.f, false);
+    const poseFrame = this.state === 'WINDUP' ? 4 : this.f;
+    if (!(this.kind === 'boss' && BeltArt.drawBoss(this, c, state, poseFrame)))
+      this.drawBody(c, 0, 0, this.facing, state, poseFrame, false);
     c.filter = 'none';
     if (this.weapon > 0) {
       c.save();
       c.translate(this.facing * 34, -67);
       c.rotate(this.facing * (this.attack?.stage === 3 ? 1.4 : 0.65));
-      c.fillStyle = '#bfcbd6';
-      c.fillRect(-4, -65, 8, 83);
-      c.fillStyle = '#5b7286';
-      c.fillRect(-4, 5, 8, 18);
+      if (!BeltArt.drawPipe(c)) {
+        c.fillStyle = '#bfcbd6';
+        c.fillRect(-4, -65, 8, 83);
+        c.fillStyle = '#5b7286';
+        c.fillRect(-4, 5, 8, 18);
+      }
       c.restore();
     }
     c.restore();
@@ -421,8 +447,8 @@ class NeonUprising {
             other !== a &&
             !other.dead &&
             other.state !== 'HIT_AIR' &&
-            Math.abs(other.y - a.y) < 27 &&
-            Math.abs(other.x - a.x) < 55 &&
+            Math.abs(other.y - a.y) < STREET.hit.bodyDepth &&
+            Math.abs(other.x - a.x) < STREET.hit.bodyRange &&
             !a.jumpHits.has(other.uid)
           ) {
             a.jumpHits.add(other.uid);
@@ -481,7 +507,8 @@ class NeonUprising {
     }
     if (a.attack) {
       const atk = a.attack;
-      if (a.f === atk.active) this.swing(a, atk);
+      // The strike is live from `active` through `until`; atk.hit / atk.props keep every target to one hit per swing.
+      if (a.f >= atk.active && a.f <= (atk.until ?? atk.active)) this.swing(a, atk);
       if (a.f >= atk.end) {
         a.pose(a.z > 0 ? 'JUMP' : 'IDLE');
         if (a.team === 0 && a.queue > 0 && a.z === 0) {
@@ -543,7 +570,7 @@ class NeonUprising {
       return;
     }
     if (thr) {
-      const e = this.grabbable(72);
+      const e = this.grabbable(72, STREET.hit.throwKeyDepth);
       if (e) {
         this.beginGrab(e);
         this.throwHeld(dx || p.facing);
@@ -571,7 +598,7 @@ class NeonUprising {
       }
     } else if (p.state === 'WALK_F') p.pose('IDLE');
   }
-  grabbable(range, depth = 22) {
+  grabbable(range, depth = STREET.hit.grabDepth) {
     const p = this.player;
     return this.alive().find(
       (e) =>
@@ -590,7 +617,7 @@ class NeonUprising {
     if (!air && stage === 3 && a.team === 0 && !a.weapon && STREET.down('KeyS', 'ArrowDown')) {
       // Holding down on the third hit converts the uppercut into an automatic throw of the enemy in front.
       // Same depth tolerance as the strikes that led here, so whatever the body blow reached can be thrown.
-      const e = this.grabbable(a.reach, 29);
+      const e = this.grabbable(a.reach, STREET.hit.chainThrowDepth);
       if (e && (e.x - a.x) * a.facing >= 0) {
         a.chain = 0;
         a.chainHit = false;
@@ -603,16 +630,20 @@ class NeonUprising {
     a.chainHit = false;
     a.comboTTL = 42;
     a.pose(air ? 'ATK_J_H' : a.weapon || stage === 3 ? 'ATK_H' : stage === 2 ? 'ATK_C_L' : 'ATK_L');
+    const active = air ? 5 : stage === 3 ? 8 : stage === 2 ? 4 : 5;
     a.attack = {
       stage,
-      active: air ? 5 : stage === 3 ? 8 : stage === 2 ? 4 : 5,
+      active,
+      until: active + (air ? STREET.hit.airActive : STREET.hit.playerActive) - 1,
       end: air ? 22 : stage === 3 ? 29 : stage === 2 ? 15 : 18,
       damage: Math.round((air ? 48 : stage === 3 ? 68 : stage === 2 ? 38 : 30) * a.power + (a.weapon ? 32 : 0)),
       reach: a.reach + (a.weapon ? 45 : 0),
-      depth: 29,
+      depth: STREET.hit.playerDepth,
+      rear: STREET.hit.playerRear,
       knock: stage === 3,
       upper: stage === 3 && !air && !a.weapon,
-      hit: new Set()
+      hit: new Set(),
+      props: new Set()
     };
     a.speak((stage === 3 ? 'heavy' : 'light') + (stage % 2), stage === 3 ? 45 : 30);
     sound.playSwing(stage === 3);
@@ -623,7 +654,7 @@ class NeonUprising {
       const dist = (b.x - a.x) * a.facing;
       if (
         !b.dead &&
-        dist > -22 &&
+        dist > -(atk.rear ?? 22) &&
         dist < atk.reach &&
         Math.abs(b.y - a.y) < atk.depth &&
         Math.abs(b.z - a.z) < 115 &&
@@ -636,6 +667,9 @@ class NeonUprising {
             a.chainHit = true;
             this.combo++;
             this.comboTime = 90;
+            // Lane assist: a staggered enemy slides toward the player's lane, so a chain started at the edge of the
+            // depth tolerance does not whiff its next hit. Launched enemies keep their own lane.
+            if (b.state === 'HIT_STAND') b.y += (a.y - b.y) * STREET.hit.laneAssist;
           }
         }
       }
@@ -644,10 +678,12 @@ class NeonUprising {
       for (const prop of this.props)
         if (
           prop.hp > 0 &&
-          (prop.x - a.x) * a.facing > -22 &&
+          !atk.props?.has(prop) &&
+          (prop.x - a.x) * a.facing > -(atk.rear ?? 22) &&
           (prop.x - a.x) * a.facing < atk.reach &&
-          Math.abs(prop.y - a.y) < 35
+          Math.abs(prop.y - a.y) < STREET.hit.propDepth
         ) {
+          atk.props?.add(prop);
           prop.hp -= atk.damage;
           a.chainHit = true;
           this.effects(prop.x, prop.y - 28, '#bb996d');
@@ -808,7 +844,9 @@ class NeonUprising {
   }
   pickup() {
     const p = this.player,
-      index = this.items.findIndex((it) => Math.abs(it.x - p.x) < 45 && Math.abs(it.y - p.y) < 26);
+      index = this.items.findIndex(
+        (it) => Math.abs(it.x - p.x) < STREET.hit.pickupRange && Math.abs(it.y - p.y) < STREET.hit.pickupDepth
+      );
     if (index < 0) return false;
     const it = this.items.splice(index, 1)[0];
     if (it.type === 'food') {
@@ -847,7 +885,7 @@ class NeonUprising {
             end: 32,
             damage: e.damage,
             reach: e.kind === 'knife' ? 115 : 95,
-            depth: 26,
+            depth: STREET.hit.enemyDepth,
             knock: e.kind === 'brute',
             hit: new Set()
           };
@@ -859,7 +897,7 @@ class NeonUprising {
     if (e.state === 'CHARGE') {
       e.x += e.facing * (e.enraged ? 18 : 14);
       e.x = STREET.clamp(e.x, this.backWall + 35, this.gate - 35);
-      if (!e.chargeHit && Math.abs(p.x - e.x) < 95 && Math.abs(p.y - e.y) < 35 && p.z < 55) {
+      if (!e.chargeHit && Math.abs(p.x - e.x) < 95 && Math.abs(p.y - e.y) < STREET.hit.chargeDepth && p.z < 55) {
         e.chargeHit = this.hurt(p, e.damage, e.facing, true, 'boss');
       }
       if (e.f >= 30) {
@@ -873,7 +911,7 @@ class NeonUprising {
         this.effects(e.x, e.y, '#ffb862', 32);
         this.shake = 14;
         sound.playGrapple('impact');
-        if (Math.abs(p.x - e.x) < 155 && Math.abs(p.y - e.y) < 78 && p.z < 48)
+        if (Math.abs(p.x - e.x) < STREET.hit.slamRange && Math.abs(p.y - e.y) < STREET.hit.slamDepth && p.z < 48)
           this.hurt(p, e.damage, e.facing, true, 'boss');
       }
       if (e.f >= 53) {
@@ -1165,6 +1203,7 @@ class NeonUprising {
     if (clear) STREET.text(c, 'ステージ1 完結', W / 2, 551, 14, '#8497a6', 'center');
   }
   drawProp(c, p) {
+    if (BeltArt.drawProp(c, p)) return;
     c.save();
     c.translate(p.x, p.y);
     c.fillStyle = 'rgba(0,0,0,.4)';
@@ -1193,6 +1232,7 @@ class NeonUprising {
     c.restore();
   }
   drawItem(c, p) {
+    if (BeltArt.drawItem(this, c, p)) return;
     c.save();
     c.translate(p.x, p.y - 4 - Math.sin((p.age + this.tick) / 12) * 3);
     c.shadowBlur = 12;
@@ -1217,6 +1257,7 @@ class NeonUprising {
   }
 
   drawStreet(c) {
+    if (BeltArt.drawStreet(this, c)) return;
     c.fillStyle = '#0b1420';
     c.fillRect(0, 0, W, H);
     const art = StageArt.artwork.get(1);

@@ -9,8 +9,11 @@ const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'ai_studio_code.html'), 'utf8');
 const code = html.match(/<script>([\s\S]*?)<\/script>/)[1];
 new vm.Script(code);
-assert.equal((code.match(/data:image\/png;base64,/g) || []).length, 22);
-assert.equal((code.match(/data:audio\/wav;base64,/g) || []).length, 126);
+// v2.6.0: assets live in data/*.js packs, the HTML holds code only.
+const packed = require('./packs.cjs').readPacks().all;
+assert.equal((code.match(/data:(image|audio)\//g) || []).length, 0, 'HTML must not embed assets any more');
+assert.equal((packed.match(/data:image\/png;base64,/g) || []).length, 31);
+assert.equal((packed.match(/data:audio\/wav;base64,/g) || []).length, 126);
 const { chromium } = require('playwright');
 let browser;
 

@@ -1,87 +1,292 @@
-// v2.1 — Original FM / sampled-synthesis arcade soundtrack and layered Foley.
+// v2.4 — Studio-grade multi-sampled FM / subtractive arcade soundtrack and physical-modeled Foley.
 // No remote requests, sample licenses or game RNG. All PCM is built locally once per AudioContext.
 const ARCADE_TRACKS = [
   {
+    id: 0,
     name: 'NIGHT SIGNAL',
-    bpm: 108,
-    roots: [38, 34, 41, 36],
-    major: [false, true, true, true],
-    style: 'synth',
-    lead: 'lead',
-    chord: 'keys',
-    swing: 0.06
-  },
-  {
-    name: 'CRIMSON IGNITION',
-    bpm: 164,
-    roots: [40, 36, 43, 38],
-    major: [false, true, true, true],
-    style: 'rock',
-    lead: 'guitar',
-    chord: 'guitar',
-    swing: 0
-  },
-  {
-    name: 'NEON CIRCUIT',
-    bpm: 142,
-    roots: [42, 38, 45, 40],
-    major: [false, true, true, true],
-    style: 'break',
-    lead: 'lead',
-    chord: 'keys',
+    bpm: 122,
+    root: 50,
+    scale: [0, 2, 3, 5, 7, 9, 10],
+    prog: [0, 3, 6, 4, 0, 1, 3, 4],
+    progB: [3, 6, 0, 4, 1, 3, 6, 4],
+    lead: 'keys',
+    sub: 'bell',
+    style: 'noir',
     swing: 0.04
   },
   {
-    name: 'FROZEN CROWN',
-    bpm: 128,
-    roots: [38, 34, 41, 36],
-    major: [false, true, true, true],
-    style: 'ice',
-    lead: 'bell',
-    chord: 'pad',
-    swing: 0
-  },
-  {
-    name: 'AMBER RUN',
-    bpm: 122,
-    roots: [45, 41, 48, 43],
-    major: [false, true, true, true],
-    style: 'funk',
-    lead: 'brass',
-    chord: 'keys',
-    swing: 0.09
-  },
-  {
-    name: 'BLACK VEIN / AFTER DARK',
-    bpm: 112,
-    roots: [38, 38, 34, 36],
-    major: [false, false, true, true],
-    style: 'street',
+    id: 1,
+    name: 'CRIMSON IGNITION',
+    bpm: 136,
+    root: 52,
+    scale: [0, 2, 3, 5, 7, 8, 10],
+    prog: [0, 5, 6, 0, 0, 5, 3, 6],
+    progB: [5, 6, 2, 0, 5, 3, 6, 4],
     lead: 'guitar',
-    chord: 'keys',
-    swing: 0.12
-  },
-  {
-    name: 'IRON REIGN',
-    bpm: 156,
-    roots: [36, 36, 32, 34],
-    major: [false, false, true, true],
-    style: 'boss',
-    lead: 'lead',
-    chord: 'guitar',
+    sub: 'lead',
+    style: 'rock',
     swing: 0
   },
   {
-    name: 'BREAK THE DAWN',
-    bpm: 126,
-    roots: [48, 43, 45, 41],
-    major: [true, true, false, true],
-    style: 'victory',
-    lead: 'brass',
-    chord: 'keys',
+    id: 2,
+    name: 'NEON CIRCUIT',
+    bpm: 142,
+    root: 57,
+    scale: [0, 2, 3, 5, 7, 9, 10],
+    prog: [0, 6, 3, 4, 0, 2, 3, 6],
+    progB: [3, 6, 0, 4, 3, 1, 6, 4],
+    lead: 'lead',
+    sub: 'keys',
+    style: 'cyber',
+    swing: 0.02
+  },
+  {
+    id: 3,
+    name: 'FROZEN CROWN',
+    bpm: 130,
+    root: 54,
+    scale: [0, 2, 3, 5, 7, 8, 10],
+    prog: [0, 5, 2, 6, 0, 3, 5, 4],
+    progB: [5, 2, 6, 0, 3, 5, 6, 4],
+    lead: 'lead',
+    sub: 'bell',
+    style: 'royal',
+    swing: 0
+  },
+  {
+    id: 4,
+    name: 'AMBER RUN',
+    bpm: 146,
+    root: 55,
+    scale: [0, 2, 3, 5, 7, 9, 10],
+    prog: [0, 6, 3, 6, 0, 2, 3, 4],
+    progB: [3, 6, 2, 4, 0, 6, 3, 4],
+    lead: 'lead',
+    sub: 'guitar',
+    style: 'ninja',
     swing: 0.03
+  },
+  {
+    id: 5,
+    name: 'BLACK VEIN / AFTER DARK',
+    bpm: 138,
+    root: 49,
+    scale: [0, 2, 3, 5, 7, 8, 10],
+    prog: [0, 5, 3, 4, 0, 6, 5, 4],
+    progB: [3, 5, 0, 6, 3, 5, 6, 4],
+    lead: 'guitar',
+    sub: 'brass',
+    style: 'industrial',
+    swing: 0.04
+  },
+  {
+    id: 6,
+    name: 'IRON REIGN',
+    bpm: 128,
+    root: 48,
+    scale: [0, 2, 3, 5, 7, 8, 10],
+    prog: [0, 3, 5, 6, 0, 5, 3, 4],
+    progB: [5, 3, 0, 6, 5, 2, 6, 4],
+    lead: 'brass',
+    sub: 'guitar',
+    style: 'arena',
+    swing: 0
+  },
+  {
+    id: 7,
+    name: 'BREAK THE DAWN',
+    bpm: 152,
+    root: 51,
+    scale: [0, 2, 3, 5, 7, 8, 10],
+    prog: [0, 5, 2, 6, 3, 5, 6, 4],
+    progB: [5, 2, 6, 0, 5, 3, 6, 4],
+    lead: 'guitar',
+    sub: 'lead',
+    style: 'boss',
+    swing: 0
   }
 ];
+
+const TRACK_COMPOSITIONS = [
+  // 0: NIGHT SIGNAL — Neo-Noir Rhodes & Synth Lead (D Dorian, 122 BPM)
+  {
+    melA1: [
+      [4, 3, 0.85, 1], null, null, [5, 2, 0.78, 1], null, [6, 3, 0.88, 1], null, null,
+      [4, 2, 0.8, 1], null, [2, 2, 0.76, 1], null, [0, 4, 0.84, 1], null, null, null
+    ],
+    melA2: [
+      [4, 3, 0.86, 1], null, null, [6, 2, 0.82, 1], null, [7, 3, 0.9, 1], null, null,
+      [9, 2, 0.86, 1], null, [7, 2, 0.84, 1], null, [4, 4, 0.86, 1], null, null, null
+    ],
+    melB1: [
+      [7, 2, 0.9, 1], null, [8, 2, 0.88, 1], null, [9, 3, 0.92, 1], null, null, [7, 1, 0.8, 1],
+      [6, 2, 0.86, 1], null, [4, 2, 0.84, 1], null, [2, 3, 0.88, 1], null, null, [4, 1, 0.76, 1]
+    ],
+    melB2: [
+      [6, 2, 0.88, 1], null, [7, 2, 0.9, 1], null, [9, 3, 0.94, 1], null, null, [6, 1, 0.82, 1],
+      [4, 2, 0.86, 1], null, [2, 2, 0.84, 1], null, [7, 4, 0.92, 1], null, null, null
+    ],
+    arpDegs: [0, 2, 4, 6, 7, 6, 4, 2, 0, 2, 4, 7, 9, 7, 4, 2],
+    bassRhythm: [1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1],
+    bassDegs: [0, 0, 0, 4, 0, 0, 7, 0, 0, 0, 2, 0, 0, 4, 0, 6]
+  },
+  // 1: CRIMSON IGNITION — Protagonist Fighting Rock Anthem (E Aeolian, 136 BPM)
+  {
+    melA1: [
+      [0, 2, 0.94, 1], null, [2, 1, 0.86, 1], [3, 1, 0.88, 1], [4, 3, 0.96, 1], null, null, [6, 1, 0.9, 1],
+      [7, 2, 0.95, 1], null, [6, 2, 0.9, 1], null, [4, 3, 0.94, 1], null, null, [2, 1, 0.84, 1]
+    ],
+    melA2: [
+      [4, 2, 0.95, 1], null, [6, 1, 0.9, 1], [7, 1, 0.92, 1], [9, 3, 0.98, 1], null, null, [8, 1, 0.92, 1],
+      [7, 2, 0.95, 1], null, [4, 2, 0.9, 1], null, [7, 4, 0.96, 1], null, null, null
+    ],
+    melB1: [
+      [7, 2, 0.96, 1], null, [9, 2, 0.98, 1], null, [7, 2, 0.94, 1], null, [6, 1, 0.9, 1], [4, 1, 0.88, 1],
+      [7, 3, 0.95, 1], null, null, [4, 1, 0.88, 1], [2, 3, 0.92, 1], null, null, [4, 1, 0.9, 1]
+    ],
+    melB2: [
+      [9, 2, 0.98, 1], null, [7, 2, 0.96, 1], null, [11, 3, 1.0, 1], null, null, [9, 1, 0.92, 1],
+      [7, 2, 0.96, 1], null, [6, 2, 0.94, 1], null, [7, 4, 0.98, 1], null, null, null
+    ],
+    arpDegs: [0, 4, 7, 4, 9, 7, 4, 2, 0, 4, 7, 9, 7, 4, 2, 4],
+    bassRhythm: [1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1],
+    bassDegs: [0, 0, 0, 0, 4, 0, 7, 4, 0, 0, 0, 0, 4, 0, 2, 4]
+  },
+  // 2: NEON CIRCUIT — High-Speed Cyber Electro (A Dorian, 142 BPM)
+  {
+    melA1: [
+      [7, 1, 0.9, 1], [4, 1, 0.78, 1], [2, 2, 0.88, 1], null, [4, 1, 0.86, 1], [7, 2, 0.92, 1], null, [6, 1, 0.88, 1],
+      [4, 2, 0.94, 1], null, [2, 1, 0.86, 1], [4, 1, 0.86, 1], [7, 2, 0.9, 1], null, [4, 2, 0.86, 1], null
+    ],
+    melA2: [
+      [7, 1, 0.9, 1], [4, 1, 0.82, 1], [9, 2, 0.92, 1], null, [7, 1, 0.9, 1], [6, 2, 0.94, 1], null, [4, 1, 0.88, 1],
+      [7, 2, 0.92, 1], null, [4, 2, 0.9, 1], null, [9, 3, 0.96, 1], null, null, [7, 1, 0.86, 1]
+    ],
+    melB1: [
+      [9, 2, 0.96, 1], null, [7, 1, 0.9, 1], [6, 2, 0.92, 1], null, [4, 1, 0.88, 1], [2, 2, 0.9, 1], null,
+      [4, 1, 0.88, 1], [6, 1, 0.9, 1], [7, 2, 0.94, 1], null, [4, 2, 0.9, 1], null, [7, 2, 0.92, 1], null
+    ],
+    melB2: [
+      [7, 1, 0.92, 1], [9, 1, 0.94, 1], [11, 2, 0.98, 1], null, [9, 2, 0.96, 1], null, [7, 2, 0.94, 1], null,
+      [6, 2, 0.92, 1], null, [4, 1, 0.9, 1], [2, 1, 0.88, 1], [7, 4, 0.96, 1], null, null, null
+    ],
+    arpDegs: [0, 7, 4, 7, 2, 7, 4, 7, 0, 7, 4, 9, 7, 4, 2, 4],
+    bassRhythm: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1],
+    bassDegs: [0, 7, 7, 0, 0, 7, 7, 0, 0, 7, 7, 0, 4, 7, 4, 2]
+  },
+  // 3: FROZEN CROWN — Aristocratic Gothic-Symphonic Duel (F# Aeolian, 130 BPM)
+  {
+    melA1: [
+      [0, 2, 0.88, 1], null, [2, 1, 0.84, 1], [4, 1, 0.86, 1], [7, 3, 0.94, 1], null, null, [6, 1, 0.88, 1],
+      [4, 2, 0.9, 1], null, [2, 1, 0.84, 1], [4, 1, 0.86, 1], [2, 3, 0.9, 1], null, null, [0, 1, 0.82, 1]
+    ],
+    melA2: [
+      [2, 2, 0.9, 1], null, [4, 1, 0.86, 1], [6, 1, 0.88, 1], [7, 3, 0.96, 1], null, null, [9, 1, 0.9, 1],
+      [7, 2, 0.94, 1], null, [6, 1, 0.88, 1], [4, 1, 0.86, 1], [4, 4, 0.94, 1], null, null, null
+    ],
+    melB1: [
+      [7, 2, 0.96, 1], null, [9, 1, 0.9, 1], [7, 1, 0.9, 1], [6, 2, 0.92, 1], null, [4, 2, 0.9, 1], null,
+      [2, 2, 0.92, 1], null, [4, 1, 0.88, 1], [6, 1, 0.9, 1], [7, 3, 0.96, 1], null, null, [4, 1, 0.84, 1]
+    ],
+    melB2: [
+      [9, 2, 0.98, 1], null, [11, 1, 0.94, 1], [9, 1, 0.92, 1], [7, 2, 0.94, 1], null, [4, 2, 0.92, 1], null,
+      [6, 1, 0.88, 1], [4, 1, 0.88, 1], [2, 1, 0.9, 1], [4, 1, 0.9, 1], [7, 4, 0.98, 1], null, null, null
+    ],
+    arpDegs: [0, 2, 4, 7, 9, 7, 4, 2, 0, 2, 4, 7, 11, 7, 4, 2],
+    bassRhythm: [1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0],
+    bassDegs: [0, 0, 0, 4, 7, 0, 4, 0, 0, 0, 0, 4, 2, 0, 4, 0]
+  },
+  // 4: AMBER RUN — Kunoichi Rooftop Breakbeat Chase (G Dorian, 146 BPM)
+  {
+    melA1: [
+      [0, 1, 0.88, 1], [2, 1, 0.86, 1], [4, 1, 0.88, 1], [7, 2, 0.94, 1], null, [6, 1, 0.9, 1], [4, 2, 0.94, 1], null,
+      [6, 1, 0.88, 1], [4, 1, 0.86, 1], [2, 2, 0.9, 1], null, [0, 2, 0.86, 1], null, [2, 2, 0.88, 1], null
+    ],
+    melA2: [
+      [4, 1, 0.9, 1], [6, 1, 0.88, 1], [7, 1, 0.92, 1], [9, 2, 0.96, 1], null, [7, 1, 0.9, 1], [4, 2, 0.94, 1], null,
+      [9, 1, 0.94, 1], [7, 1, 0.9, 1], [4, 2, 0.92, 1], null, [7, 4, 0.96, 1], null, null, null
+    ],
+    melB1: [
+      [9, 2, 0.96, 1], null, [7, 1, 0.9, 1], [6, 1, 0.9, 1], [4, 2, 0.92, 1], null, [7, 2, 0.94, 1], null,
+      [2, 1, 0.86, 1], [4, 1, 0.88, 1], [7, 1, 0.92, 1], [9, 2, 0.96, 1], null, [7, 3, 0.92, 1], null, null
+    ],
+    melB2: [
+      [11, 1, 0.96, 1], [9, 1, 0.94, 1], [7, 2, 0.94, 1], null, [9, 1, 0.94, 1], [7, 1, 0.9, 1], [4, 2, 0.9, 1], null,
+      [2, 1, 0.88, 1], [4, 1, 0.9, 1], [9, 2, 0.96, 1], null, [7, 4, 0.98, 1], null, null, null
+    ],
+    arpDegs: [0, 2, 4, 7, 9, 7, 4, 2, 0, 4, 7, 9, 7, 4, 2, 4],
+    bassRhythm: [1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0],
+    bassDegs: [0, 0, 4, 7, 0, 7, 0, 4, 0, 0, 2, 4, 0, 7, 4, 0]
+  },
+  // 5: BLACK VEIN / AFTER DARK — Dark Underground Industrial Groove (C# Aeolian, 138 BPM)
+  {
+    melA1: [
+      [0, 2, 0.94, 1], null, [2, 2, 0.9, 1], null, [4, 1, 0.88, 1], [7, 2, 0.96, 1], null, [6, 1, 0.88, 1],
+      [4, 2, 0.92, 1], null, [2, 2, 0.88, 1], null, [0, 3, 0.94, 1], null, null, [2, 1, 0.86, 1]
+    ],
+    melA2: [
+      [0, 2, 0.94, 1], null, [4, 2, 0.92, 1], null, [7, 2, 0.96, 1], null, [9, 2, 0.94, 1], null,
+      [7, 2, 0.94, 1], null, [6, 1, 0.88, 1], [4, 1, 0.88, 1], [4, 4, 0.96, 1], null, null, null
+    ],
+    melB1: [
+      [7, 2, 0.98, 1], null, [9, 2, 0.94, 1], null, [7, 1, 0.92, 1], [6, 2, 0.94, 1], null, [4, 1, 0.9, 1],
+      [2, 2, 0.94, 1], null, [4, 2, 0.92, 1], null, [0, 3, 0.92, 1], null, null, [4, 1, 0.9, 1]
+    ],
+    melB2: [
+      [7, 1, 0.96, 1], [9, 1, 0.94, 1], [11, 2, 0.98, 1], null, [9, 2, 0.98, 1], null, [7, 2, 0.96, 1], null,
+      [6, 2, 0.94, 1], null, [4, 2, 0.92, 1], null, [7, 4, 0.98, 1], null, null, null
+    ],
+    arpDegs: [0, 4, 7, 4, 2, 4, 7, 4, 0, 4, 7, 9, 7, 4, 2, 4],
+    bassRhythm: [1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1],
+    bassDegs: [0, 0, 0, 2, 0, 4, 7, 0, 0, 0, 0, 2, 0, 4, 2, 0]
+  },
+  // 6: IRON REIGN — Heavyweight Arena Gladiator Anthem (C Aeolian, 128 BPM)
+  {
+    melA1: [
+      [0, 3, 0.96, 1], null, null, [2, 1, 0.9, 1], [4, 3, 0.98, 1], null, null, [6, 1, 0.92, 1],
+      [7, 2, 0.96, 1], null, [4, 2, 0.92, 1], null, [2, 3, 0.96, 1], null, null, [4, 1, 0.88, 1]
+    ],
+    melA2: [
+      [0, 3, 0.96, 1], null, null, [4, 1, 0.92, 1], [7, 3, 1.0, 1], null, null, [9, 1, 0.94, 1],
+      [7, 2, 0.98, 1], null, [6, 2, 0.94, 1], null, [7, 4, 0.98, 1], null, null, null
+    ],
+    melB1: [
+      [7, 3, 0.98, 1], null, null, [9, 1, 0.94, 1], [11, 3, 1.0, 1], null, null, [9, 1, 0.94, 1],
+      [7, 2, 0.98, 1], null, [4, 2, 0.94, 1], null, [7, 3, 0.98, 1], null, null, [4, 1, 0.9, 1]
+    ],
+    melB2: [
+      [9, 2, 1.0, 1], null, [7, 2, 0.96, 1], null, [11, 3, 1.02, 1], null, null, [9, 1, 0.96, 1],
+      [7, 2, 0.96, 1], null, [4, 2, 0.94, 1], null, [7, 4, 1.0, 1], null, null, null
+    ],
+    arpDegs: [0, 2, 4, 7, 9, 7, 4, 2, 0, 2, 4, 7, 11, 7, 4, 2],
+    bassRhythm: [1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0],
+    bassDegs: [0, 0, 0, 0, 4, 0, 7, 4, 0, 0, 0, 0, 2, 4, 7, 0]
+  },
+  // 7: BREAK THE DAWN — Final Boss Symphonic Speed-Rock Climax (D# Aeolian, 152 BPM)
+  {
+    melA1: [
+      [7, 1, 0.94, 1], [4, 1, 0.88, 1], [2, 1, 0.9, 1], [4, 1, 0.92, 1], [7, 2, 0.98, 1], null, [9, 2, 1.0, 1], null,
+      [7, 1, 0.94, 1], [6, 1, 0.92, 1], [4, 1, 0.9, 1], [2, 1, 0.88, 1], [4, 3, 0.94, 1], null, null, [2, 1, 0.88, 1]
+    ],
+    melA2: [
+      [7, 1, 0.94, 1], [4, 1, 0.88, 1], [6, 1, 0.9, 1], [7, 1, 0.92, 1], [9, 2, 1.0, 1], null, [11, 2, 1.02, 1], null,
+      [9, 1, 0.96, 1], [7, 1, 0.94, 1], [6, 1, 0.92, 1], [4, 1, 0.92, 1], [7, 4, 1.02, 1], null, null, null
+    ],
+    melB1: [
+      [11, 2, 1.0, 1], null, [9, 1, 0.96, 1], [7, 1, 0.94, 1], [9, 2, 0.96, 1], null, [7, 2, 0.96, 1], null,
+      [4, 2, 0.94, 1], null, [6, 1, 0.92, 1], [7, 1, 0.94, 1], [9, 3, 0.98, 1], null, null, [7, 1, 0.94, 1]
+    ],
+    melB2: [
+      [11, 1, 1.0, 1], [9, 1, 0.96, 1], [7, 1, 0.96, 1], [9, 1, 0.98, 1], [11, 2, 1.02, 1], null, [9, 2, 0.98, 1], null,
+      [7, 1, 0.96, 1], [6, 1, 0.94, 1], [4, 2, 0.96, 1], null, [7, 4, 1.0, 1], null, null, null
+    ],
+    arpDegs: [0, 4, 7, 9, 11, 9, 7, 4, 0, 2, 4, 7, 9, 7, 4, 2],
+    bassRhythm: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    bassDegs: [0, 0, 7, 0, 4, 0, 7, 4, 0, 0, 7, 0, 2, 4, 6, 7]
+  }
+];
+
+const PCM_CACHE = new Map();
 
 class SoundEngine {
   constructor() {
@@ -95,6 +300,7 @@ class SoundEngine {
     this.stepDur = 0;
     this.nextStepTime = 0;
     this.bank = new Map();
+    this.noteBank = new Map();
     this.active = new Set();
     this.musicBuses = new Set();
     this.cooldowns = new Map();
@@ -104,19 +310,33 @@ class SoundEngine {
     this.musicLevel = 0.48;
     this.stats = { started: 0, ended: 0, dropped: 0, peakVoices: 0 };
     this.jobs = [];
-    this.bankOwner = new Map(); // key -> the context whose createBuffer made the buffer
+    this.bankOwner = new Map();
+    this.noteBankOwner = new Map();
     this.jobTimer = null;
-    this.prebuilt = false; // v2.2: PCM bank can be built incrementally before the first gesture
-    document.addEventListener('visibilitychange', () => {
-      if (!this.ctx || !this.voiceBound) return;
-      if (document.hidden) {
-        fighterVoice.stopAll();
-        this.ctx.suspend();
-      } else {
-        this.nextStepTime = this.ctx.currentTime + 0.04;
-        this.ctx.resume();
+    this.prebuilt = false;
+    this.sampleRate = 24000;
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (!this.ctx || !this.voiceBound) return;
+        if (document.hidden) {
+          if (typeof fighterVoice !== 'undefined') fighterVoice.stopAll();
+          this.ctx.suspend();
+        } else {
+          this.nextStepTime = this.ctx.currentTime + 0.04;
+          this.ctx.resume();
+        }
+      });
+    }
+    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+      const resume = () => {
+        if (this.ctx && !this.offline && this.ctx.state === 'suspended' && typeof this.ctx.resume === 'function') {
+          this.ctx.resume();
+        }
+      };
+      for (const ev of ['click', 'pointerup', 'mouseup', 'keydown']) {
+        window.addEventListener(ev, resume, { passive: true });
       }
-    });
+    }
   }
   random() {
     let n = this.seed;
@@ -128,6 +348,20 @@ class SoundEngine {
   }
   mtof(n) {
     return 440 * Math.pow(2, (n - 69) / 12);
+  }
+  noise(i, seed = 1) {
+    const x = Math.sin(i * 12.9898 + seed * 78.233) * 43758.5453123;
+    return (x - Math.floor(x)) * 2 - 1;
+  }
+  metallic(t, base = 360, spread = 1.414) {
+    const ratios = [1, 1.342, 1.661, 2.023, 2.519, 3.184];
+    let sum = 0;
+    for (let idx = 0; idx < ratios.length; idx++) {
+      const r = ratios[idx] * (1 + (spread - 1.4) * 0.08 * idx);
+      const s = Math.sin(Math.PI * 2 * base * r * t);
+      sum += (s >= 0 ? 0.82 : -0.82) * (1 / (1 + idx * 0.22));
+    }
+    return sum * 0.22;
   }
   init() {
     if (this.ctx) {
@@ -170,7 +404,7 @@ class SoundEngine {
     this.musicHigh = context.createBiquadFilter();
     this.musicHigh.type = 'highshelf';
     this.musicHigh.frequency.value = 6500;
-    this.musicHigh.gain.value = -3;
+    this.musicHigh.gain.value = -2.2;
     this.bgmGain.connect(this.musicEQ);
     this.musicEQ.connect(this.musicHigh);
     this.musicHigh.connect(this.comp);
@@ -184,12 +418,28 @@ class SoundEngine {
     else if (!this.bank.size) this.buildBank(context);
     this.adoptBank(context);
     this.musicBus = this.newMusicBus();
-    // Set initial levels immediately; later changes use ramps to avoid clicks.
     this.bgmGain.gain.value = this.muted ? 0 : this.bgmVol * this.musicLevel;
-    this.seGain.gain.value = this.muted ? 0 : this.seVol * 0.7;
-    if (bindVoices) {
+    this.seGain.gain.value = this.muted ? 0 : this.seVol * 0.74;
+    if (bindVoices && typeof fighterVoice !== 'undefined') {
       fighterVoice.bind(this);
+      if (fighterVoice.ready && !this.offline) {
+        const baseReady = fighterVoice.ready;
+        fighterVoice.ready = Promise.resolve(baseReady).then(async () => {
+          if (this.ctx && this.ctx.state === 'suspended' && typeof this.ctx.resume === 'function') {
+            try {
+              await this.ctx.resume();
+            } catch (e) {}
+          }
+          const t0 = performance.now();
+          while (this.ctx && this.ctx.currentTime === 0 && performance.now() - t0 < 800) {
+            await new Promise((r) => setTimeout(r, 12));
+          }
+        });
+      }
       fighterVoice.duck();
+    }
+    if (!this.offline && context.state === 'suspended' && typeof context.resume === 'function') {
+      context.resume();
     }
   }
   impulse() {
@@ -198,183 +448,584 @@ class SoundEngine {
       b = this.ctx.createBuffer(2, n, rate);
     for (let channel = 0; channel < 2; channel++) {
       const d = b.getChannelData(channel);
+      let lp = 0;
       for (let i = 0; i < n; i++) {
         const t = i / rate;
-        d[i] = (this.random() * 2 - 1) * Math.exp(-t * 7) * 0.13;
-        if (i < rate * 0.018) d[i] = 0;
+        const raw = (this.random() * 2 - 1) * Math.exp(-t * 6.8) * 0.15;
+        lp += (raw - lp) * (0.42 - 0.2 * (i / n));
+        d[i] = i < rate * 0.015 ? 0 : lp;
       }
       for (const [time, level] of [
-        [0.037, 0.35],
-        [0.071, 0.22],
-        [0.113, 0.12]
+        [0.031, 0.34],
+        [0.064, 0.22],
+        [0.105, 0.13]
       ])
         d[Math.floor((time + channel * 0.007) * rate)] += level;
     }
     return b;
   }
-  // Builds the 35 PCM sources. `context` only supplies createBuffer (an AudioBuffer is not tied to a context), so an
-  // OfflineAudioContext can prepare everything at page load. With deferred=true the work is spread over idle timeouts
-  // and flushBank() completes whatever is left when the real context attaches.
-  buildBank(context = this.ctx, deferred = false) {
-    const rate = 22050,
-      tau = Math.PI * 2;
-    const make = (key, duration, fn) =>
-      this.jobs.push(() => {
-        const b = context.createBuffer(1, Math.ceil(rate * duration), rate),
-          d = b.getChannelData(0);
-        let low = 0,
-          previous = 0;
-        for (let i = 0; i < d.length; i++) {
-          const t = i / rate,
-            n = this.random() * 2 - 1;
-          low += 0.12 * (n - low);
-          const hi = n - previous;
-          previous = n;
-          const edge = Math.min(1, i / 22, (d.length - 1 - i) / 110);
-          d[i] = Math.tanh(fn(t, n, low, hi)) * edge;
+  makeBuffer(context, rate, seconds, fn) {
+    const length = Math.max(1, Math.ceil(rate * seconds));
+    const buffer = context.createBuffer(1, length, rate);
+    const data = buffer.getChannelData(0);
+    let peak = 0;
+    for (let i = 0; i < length; i++) {
+      const t = i / rate;
+      const edge = Math.min(1, i / 18, (length - 1 - i) / 96);
+      const v = fn(t, i, length, rate) * edge;
+      data[i] = Number.isFinite(v) ? v : 0;
+      const abs = Math.abs(data[i]);
+      if (abs > peak) peak = abs;
+    }
+    if (peak > 0.94) {
+      const scale = 0.91 / peak;
+      for (let i = 0; i < length; i++) data[i] *= scale;
+    }
+    return buffer;
+  }
+  synthDrum(context, rate, kind) {
+    const dt = 1 / rate;
+    if (kind === 'kick') {
+      let phase = 0,
+        subPhase = 0,
+        clickLp = 0;
+      return this.makeBuffer(context, rate, 0.36, (t, i) => {
+        const freq = 48 + 145 * Math.exp(-t * 38) + 26 * Math.exp(-t * 14);
+        phase += Math.PI * 2 * freq * dt;
+        subPhase += Math.PI * 2 * 49 * dt;
+        const body = Math.sin(phase) * Math.exp(-t * 8.2) * 0.86;
+        const sub = Math.sin(subPhase) * Math.exp(-t * 6.5) * 0.32;
+        const rawClick = this.noise(i, 3) * Math.exp(-t * 175);
+        clickLp += (rawClick - clickLp) * 0.28;
+        const beater = Math.sin(Math.PI * 2 * 1350 * t) * Math.exp(-t * 140) * 0.2 + clickLp * 0.3;
+        return Math.tanh((body + sub + beater) * 1.42) * 0.88;
+      });
+    }
+    if (kind === 'snare') {
+      let p1 = 0,
+        p2 = 0,
+        lp = 0,
+        hp = 0;
+      return this.makeBuffer(context, rate, 0.3, (t, i) => {
+        const f1 = 168 + 95 * Math.exp(-t * 42);
+        const f2 = 258 + 130 * Math.exp(-t * 48);
+        p1 += Math.PI * 2 * f1 * dt;
+        p2 += Math.PI * 2 * f2 * dt;
+        const shell = (Math.sin(p1) * 0.65 + Math.sin(p2) * 0.35) * Math.exp(-t * 23) * 0.4;
+        const rim = Math.sin(Math.PI * 2 * 1180 * t) * Math.exp(-t * 165) * 0.2;
+        const raw = this.noise(i, 7);
+        lp += (raw - lp) * 0.48;
+        hp += (lp - hp) * 0.08;
+        const wires = (lp - hp) * (0.64 * Math.exp(-t * 14) + 0.22 * Math.exp(-t * 6.0));
+        return Math.tanh((shell + rim + wires) * 1.38) * 0.86;
+      });
+    }
+    if (kind === 'hat' || kind === 'openhat') {
+      const dur = kind === 'openhat' ? 0.38 : 0.09;
+      const decay = kind === 'openhat' ? 8.2 : 46;
+      let hp1 = 0,
+        hp2 = 0;
+      return this.makeBuffer(context, rate, dur, (t, i) => {
+        const raw = this.metallic(t, 415, 1.46) * 0.56 + this.noise(i, 11) * 0.62;
+        hp1 += (raw - hp1) * 0.24;
+        const s1 = raw - hp1;
+        hp2 += (s1 - hp2) * 0.28;
+        const sizzle = s1 - hp2;
+        const ping = Math.sin(Math.PI * 2 * 6420 * t) * Math.exp(-t * 85) * 0.07;
+        return (sizzle * Math.exp(-t * decay) + ping) * 0.7;
+      });
+    }
+    if (kind === 'tom') {
+      let phase = 0;
+      return this.makeBuffer(context, rate, 0.32, (t, i) => {
+        const freq = 88 + 94 * Math.exp(-t * 22);
+        phase += Math.PI * 2 * freq * dt;
+        const body = (Math.sin(phase) + 0.2 * Math.sin(phase * 2)) * Math.exp(-t * 9.8);
+        const attack = this.noise(i, 15) * Math.exp(-t * 120) * 0.22;
+        return Math.tanh((body * 0.8 + attack) * 1.3) * 0.84;
+      });
+    }
+    if (kind === 'clap') {
+      let bp = 0,
+        lp = 0;
+      return this.makeBuffer(context, rate, 0.25, (t, i) => {
+        const raw = this.noise(i, 19);
+        lp += (raw - lp) * 0.34;
+        bp += (lp - bp) * 0.09;
+        const filtered = lp - bp;
+        const bursts =
+          (t < 0.009 ? Math.exp(-t * 220) : 0) +
+          (t >= 0.009 && t < 0.019 ? Math.exp(-(t - 0.009) * 210) * 0.92 : 0) +
+          (t >= 0.019 && t < 0.03 ? Math.exp(-(t - 0.019) * 195) * 0.86 : 0) +
+          (t >= 0.03 ? Math.exp(-(t - 0.03) * 15) * 0.6 : 0);
+        return Math.tanh(filtered * bursts * 2.0) * 0.78;
+      });
+    }
+    let hp = 0;
+    return this.makeBuffer(context, rate, 0.86, (t, i) => {
+      const raw = this.metallic(t, 338, 1.52) * 0.62 + this.noise(i, 23) * 0.55;
+      hp += (raw - hp) * 0.16;
+      const shimmer = (raw - hp) * (0.72 * Math.exp(-t * 3.8) + 0.26 * Math.exp(-t * 1.9));
+      return Math.tanh(shimmer * 1.22) * 0.7;
+    });
+  }
+  synthInstrument(context, rate, kind, midi, duration) {
+    const freq = this.mtof(midi);
+    const dt = 1 / rate;
+    let p1 = 0,
+      p2 = 0,
+      p3 = 0,
+      p4 = 0,
+      p5 = 0,
+      ic1 = 0,
+      ic2 = 0,
+      cabLp = 0,
+      cabHp = 0;
+    const svf = (input, cutoff, q = 1.1) => {
+      const fc = Math.max(40, Math.min(rate * 0.44, cutoff));
+      const g = Math.tan((Math.PI * fc) / rate);
+      const k = 1 / Math.max(0.5, q);
+      const a1 = 1 / (1 + g * (g + k));
+      const a2 = g * a1;
+      const a3 = g * a2;
+      const v3 = input - ic2;
+      const v1 = a1 * ic1 + a2 * v3;
+      const v2 = ic2 + a2 * ic1 + a3 * v3;
+      ic1 = 2 * v1 - ic1;
+      ic2 = 2 * v2 - ic2;
+      return v2;
+    };
+    return this.makeBuffer(context, rate, duration, (t, i) => {
+      const attack = Math.min(1, t / (kind === 'pad' ? 0.045 : kind === 'brass' ? 0.018 : 0.005));
+      const release = Math.exp(-t * (kind === 'pad' ? 1.9 : kind === 'bass' ? 5.0 : kind === 'keys' ? 4.5 : 3.4));
+      const env = attack * release;
+
+      if (kind === 'bass') {
+        p1 += Math.PI * 2 * freq * dt;
+        p2 += Math.PI * 2 * (freq * 0.5) * dt;
+        p3 += Math.PI * 2 * (freq * 2.0) * dt;
+        const saw = ((p1 / (Math.PI * 2)) % 1) * 2 - 1;
+        const sub = Math.sin(p2) * 0.64;
+        const fm = Math.sin(p1 + Math.sin(p3) * (1.95 * Math.exp(-t * 18))) * 0.65;
+        const click = this.noise(i, 29) * Math.exp(-t * 140) * 0.14;
+        const filtered = svf(saw * 0.42 + fm + sub + click, 210 + 1950 * Math.exp(-t * 16), 1.45);
+        return Math.tanh(filtered * 1.42) * env * 0.84;
+      }
+      if (kind === 'guitar') {
+        const vib = t > 0.09 ? Math.sin(Math.PI * 2 * 5.6 * (t - 0.09)) * 0.0035 * Math.min(1, (t - 0.09) * 8) : 0;
+        const f = freq * (1 + vib);
+        p1 += Math.PI * 2 * f * dt;
+        p2 += Math.PI * 2 * (f * 1.0032) * dt;
+        p3 += Math.PI * 2 * (f * 0.997) * dt;
+        const s1 = ((p1 / (Math.PI * 2)) % 1) * 2 - 1;
+        const s2 = Math.sin(p2) >= 0 ? 0.7 : -0.7;
+        const s3 = Math.sin(p3 + Math.sin(p1 * 2) * (1.25 * Math.exp(-t * 9)));
+        const pick = (this.noise(i, 31) * 0.45 + Math.sin(p1 * 4) * 0.45) * Math.exp(-t * 120) * 0.35;
+        const driven = Math.tanh((s1 * 0.44 + s2 * 0.25 + s3 * 0.52 + pick) * 2.1);
+        const body = svf(driven, 1400 + 2100 * Math.exp(-t * 7.8), 1.25);
+        cabLp += (body - cabLp) * 0.42;
+        cabHp += (cabLp - cabHp) * 0.015;
+        return (cabLp - cabHp) * env * 0.78;
+      }
+      if (kind === 'lead') {
+        const vib = t > 0.08 ? Math.sin(Math.PI * 2 * 5.8 * (t - 0.08)) * 0.0038 * Math.min(1, (t - 0.08) * 9) : 0;
+        const f = freq * (1 + vib);
+        p1 += Math.PI * 2 * f * dt;
+        p2 += Math.PI * 2 * (f * 1.0052) * dt;
+        p3 += Math.PI * 2 * (f * 0.9948) * dt;
+        const saw1 = ((p1 / (Math.PI * 2)) % 1) * 2 - 1;
+        const saw2 = ((p2 / (Math.PI * 2)) % 1) * 2 - 1;
+        const pulse = Math.sin(p3) > 0.15 ? 0.75 : -0.75;
+        const mix = saw1 * 0.4 + saw2 * 0.36 + pulse * 0.32;
+        const filtered = svf(mix, 1550 + 2950 * Math.exp(-t * 9.5), 1.3);
+        return Math.tanh(filtered * 1.3) * env * 0.74;
+      }
+      if (kind === 'keys') {
+        p1 += Math.PI * 2 * freq * dt;
+        p2 += Math.PI * 2 * (freq * 1.002) * dt;
+        p3 += Math.PI * 2 * (freq * 7.0) * dt;
+        p4 += Math.PI * 2 * (freq * 14.0) * dt;
+        const tine = Math.sin(p1 + Math.sin(p3) * (1.15 * Math.exp(-t * 24)) + Math.sin(p4) * (0.38 * Math.exp(-t * 55)));
+        const warm = Math.sin(p2 + Math.sin(p1 * 2) * (0.62 * Math.exp(-t * 8.5)));
+        return Math.tanh((tine * 0.44 + warm * 0.62) * 1.18) * env * 0.75;
+      }
+      if (kind === 'brass') {
+        const scoop = 1 - 0.016 * Math.exp(-t * 58);
+        const f = freq * scoop;
+        p1 += Math.PI * 2 * f * dt;
+        p2 += Math.PI * 2 * (f * 1.0042) * dt;
+        p3 += Math.PI * 2 * (f * 0.9958) * dt;
+        const s1 = ((p1 / (Math.PI * 2)) % 1) * 2 - 1;
+        const s2 = ((p2 / (Math.PI * 2)) % 1) * 2 - 1;
+        const s3 = ((p3 / (Math.PI * 2)) % 1) * 2 - 1;
+        const swell = Math.min(1, t / 0.036) * Math.exp(-t * 3.6);
+        const filtered = svf((s1 + s2 + s3) * 0.36, 520 + 2350 * swell, 1.2);
+        return Math.tanh(filtered * 1.34) * env * 0.76;
+      }
+      if (kind === 'pad') {
+        p1 += Math.PI * 2 * (freq * 0.993) * dt;
+        p2 += Math.PI * 2 * (freq * 0.997) * dt;
+        p3 += Math.PI * 2 * freq * dt;
+        p4 += Math.PI * 2 * (freq * 1.004) * dt;
+        p5 += Math.PI * 2 * (freq * 1.008) * dt;
+        const ens =
+          (((p1 / (Math.PI * 2)) % 1) * 2 - 1) * 0.2 +
+          Math.sin(p2) * 0.28 +
+          (((p3 / (Math.PI * 2)) % 1) * 2 - 1) * 0.22 +
+          Math.sin(p4 * 2) * 0.15 +
+          (((p5 / (Math.PI * 2)) % 1) * 2 - 1) * 0.2;
+        const cutoff = 1280 + 380 * Math.sin(Math.PI * 2 * 1.8 * t);
+        return svf(ens, cutoff, 0.9) * env * 0.68;
+      }
+      p1 += Math.PI * 2 * freq * dt;
+      p2 += Math.PI * 2 * (freq * 3.5) * dt;
+      p3 += Math.PI * 2 * (freq * 5.02) * dt;
+      const bell =
+        Math.sin(p1 + Math.sin(p2) * (1.6 * Math.exp(-t * 15))) * 0.68 +
+        Math.sin(p1 * 2 + Math.sin(p3) * (0.95 * Math.exp(-t * 24))) * 0.32;
+      return bell * Math.exp(-t * 5.6) * 0.74;
+    });
+  }
+  synthImpact(context, rate, kind, variant = 0) {
+    const dt = 1 / rate;
+    const vScale = 1 + variant * 0.065;
+    if (kind === 'punch') {
+      let pBody = 0,
+        pMid = 0,
+        lp = 0,
+        hp = 0;
+      return this.makeBuffer(context, rate, 0.25, (t, i) => {
+        const fBody = (54 + 175 * Math.exp(-t * 38)) * vScale;
+        const fMid = (125 + 340 * Math.exp(-t * 56)) * vScale;
+        pBody += Math.PI * 2 * fBody * dt;
+        pMid += Math.PI * 2 * fMid * dt;
+        const chest = Math.sin(pBody) * Math.exp(-t * 14) * 0.85;
+        const crack = Math.sin(pMid + Math.sin(pBody * 2.4) * 1.1) * Math.exp(-t * 26) * 0.56;
+        const raw = this.noise(i, 37 + variant * 7);
+        lp += (raw - lp) * 0.48;
+        hp += (lp - hp) * 0.09;
+        const snap = (lp - hp) * (0.88 * Math.exp(-t * 72) + 0.28 * Math.exp(-t * 20));
+        return Math.tanh((chest + crack + snap) * 1.72) * 0.9;
+      });
+    }
+    if (kind === 'heavy') {
+      let pSub = 0,
+        pCrunch = 0,
+        lp = 0,
+        hp = 0;
+      return this.makeBuffer(context, rate, 0.44, (t, i) => {
+        const fSub = (38 + 155 * Math.exp(-t * 26)) * vScale;
+        const fCrunch = (86 + 310 * Math.exp(-t * 34)) * vScale;
+        pSub += Math.PI * 2 * fSub * dt;
+        pCrunch += Math.PI * 2 * fCrunch * dt;
+        const sub = Math.sin(pSub) * Math.exp(-t * 7.5) * 0.94;
+        const crunch =
+          Math.sin(pCrunch + Math.sin(pSub * 3.2) * 1.6 * Math.exp(-t * 16)) * Math.exp(-t * 12.5) * 0.64;
+        const raw = this.noise(i, 53 + variant * 11);
+        lp += (raw - lp) * 0.44;
+        hp += (lp - hp) * 0.06;
+        const shock =
+          (lp - hp) * (Math.exp(-t * 46) * 0.82 + (t > 0.011 ? Math.exp(-(t - 0.011) * 24) * 0.52 : 0));
+        return Math.tanh((sub + crunch + shock) * 1.82) * 0.92;
+      });
+    }
+    if (kind === 'slash') {
+      let pBody = 0,
+        ic1 = 0,
+        ic2 = 0;
+      const bladeModes = [2120, 3180, 4640, 6180].map((f) => f * vScale);
+      return this.makeBuffer(context, rate, 0.32, (t, i) => {
+        const fBody = 54 + 150 * Math.exp(-t * 36);
+        pBody += Math.PI * 2 * fBody * dt;
+        const cleave = t >= 0.005 ? Math.sin(pBody) * Math.exp(-(t - 0.005) * 18) * 0.58 : 0;
+        const raw = this.noise(i, 71 + variant * 13);
+        const cutoff = Math.max(520, Math.min(rate * 0.43, 5200 * Math.exp(-t * 16) + 580));
+        const g = Math.tan((Math.PI * cutoff) / rate);
+        const k = 0.62;
+        const a1 = 1 / (1 + g * (g + k));
+        const a2 = g * a1;
+        const a3 = g * a2;
+        const v3 = raw - ic2;
+        const v1 = a1 * ic1 + a2 * v3;
+        const v2 = ic2 + a2 * ic1 + a3 * v3;
+        ic1 = 2 * v1 - ic1;
+        ic2 = 2 * v2 - ic2;
+        const swish = v1 * Math.exp(-t * 13.5) * 1.02;
+        const glide = 1 + 0.045 * Math.exp(-t * 34);
+        let steel = 0;
+        for (let m = 0; m < bladeModes.length; m++) {
+          const mf = bladeModes[m] * glide;
+          steel +=
+            Math.sin(Math.PI * 2 * mf * t + this.noise(i, m + 9) * 0.45 * Math.exp(-t * 42)) *
+            Math.exp(-t * (22 + m * 6)) *
+            (0.24 / (1 + m * 0.22));
         }
-        this.bank.set(key, b);
+        return Math.tanh((swish + steel + cleave) * 1.65) * 0.9;
+      });
+    }
+    if (kind === 'metal') {
+      let pKnock = 0,
+        ic1 = 0,
+        ic2 = 0;
+      const modes = [1140, 1520, 1980, 2560, 3290, 4180, 5280, 6540].map((f) => f * vScale);
+      const weights = [0.22, 0.21, 0.19, 0.17, 0.15, 0.12, 0.1, 0.08];
+      return this.makeBuffer(context, rate, 0.32, (t, i) => {
+        const fKnock = (72 + 135 * Math.exp(-t * 44)) * vScale;
+        pKnock += Math.PI * 2 * fKnock * dt;
+        const knock = Math.sin(pKnock) * Math.exp(-t * 28) * 0.48;
+        const raw = this.noise(i, 89 + variant * 17);
+        const cutoff = Math.max(900, Math.min(rate * 0.42, 4200 * Math.exp(-t * 22) + 1350));
+        const g = Math.tan((Math.PI * cutoff) / rate);
+        const k = 0.58;
+        const a1 = 1 / (1 + g * (g + k));
+        const a2 = g * a1;
+        const a3 = g * a2;
+        const v3 = raw - ic2;
+        const v1 = a1 * ic1 + a2 * v3;
+        const v2 = ic2 + a2 * ic1 + a3 * v3;
+        ic1 = 2 * v1 - ic1;
+        ic2 = 2 * v2 - ic2;
+        const strikeBurst =
+          v1 * (Math.exp(-t * 55) * 0.95 + (t > 0.009 ? Math.exp(-(t - 0.009) * 42) * 0.55 : 0));
+        const fmChaos =
+          (Math.sin(Math.PI * 2 * 1790 * vScale * t) * 1.9 + raw * 0.85) * Math.exp(-t * 34);
+        let clang = 0;
+        for (let m = 0; m < modes.length; m++) {
+          const damp = 21 + m * 4.8;
+          clang +=
+            Math.sin(Math.PI * 2 * modes[m] * t + fmChaos * (0.55 + m * 0.14)) *
+            Math.exp(-t * damp) *
+            weights[m];
+        }
+        return Math.tanh((knock + strikeBurst + clang * 1.15) * 1.68) * 0.9;
+      });
+    }
+    let pBox1 = 0,
+      pBox2 = 0,
+      ic1 = 0,
+      ic2 = 0;
+    return this.makeBuffer(context, rate, 0.28, (t, i) => {
+      const f1 = (78 + 115 * Math.exp(-t * 48)) * vScale;
+      const f2 = (148 + 185 * Math.exp(-t * 54)) * vScale;
+      pBox1 += Math.PI * 2 * f1 * dt;
+      pBox2 += Math.PI * 2 * f2 * dt;
+      const boxThud = (Math.sin(pBox1) * 0.68 + Math.sin(pBox2) * 0.42) * Math.exp(-t * 36) * 0.65;
+      const raw = this.noise(i, 107 + variant * 19);
+      const cutoff = (1650 + 1200 * Math.exp(-t * 28)) * vScale;
+      const g = Math.tan((Math.PI * Math.min(rate * 0.42, cutoff)) / rate);
+      const k = 0.68;
+      const a1 = 1 / (1 + g * (g + k));
+      const a2 = g * a1;
+      const a3 = g * a2;
+      const v3 = raw - ic2;
+      const v1 = a1 * ic1 + a2 * v3;
+      const v2 = ic2 + a2 * ic1 + a3 * v3;
+      ic1 = 2 * v1 - ic1;
+      ic2 = 2 * v2 - ic2;
+      const cracks =
+        Math.exp(-t * 82) * 0.95 +
+        (t > 0.011 ? Math.exp(-(t - 0.011) * 98) * 0.72 : 0) +
+        (t > 0.024 ? Math.exp(-(t - 0.024) * 115) * 0.56 : 0) +
+        (t > 0.041 ? Math.exp(-(t - 0.041) * 130) * 0.38 : 0);
+      const grain = Math.sin(Math.PI * 2 * 620 * vScale * t + raw * 1.1) * Math.exp(-t * 45) * 0.34;
+      return Math.tanh((boxThud + v1 * cracks * 1.25 + grain) * 1.68) * 0.88;
+    });
+  }
+  synthWhoosh(context, rate, seconds, startFreq, endFreq, seed) {
+    let ic1 = 0,
+      ic2 = 0,
+      pSub = 0;
+    const dt = 1 / rate;
+    return this.makeBuffer(context, rate, seconds, (t, i) => {
+      const p = t / seconds;
+      const env = Math.sin(Math.PI * Math.pow(p, 0.75)) * Math.exp(-p * 1.1);
+      const arch = Math.sin(Math.PI * Math.pow(p, 0.66));
+      const cutoff = Math.max(130, Math.min(rate * 0.42, endFreq + (startFreq - endFreq) * arch));
+      const raw = this.noise(i, seed);
+      const g = Math.tan((Math.PI * cutoff) / rate);
+      const k = 0.7;
+      const a1 = 1 / (1 + g * (g + k));
+      const a2 = g * a1;
+      const a3 = g * a2;
+      const v3 = raw - ic2;
+      const v1 = a1 * ic1 + a2 * v3;
+      const v2 = ic2 + a2 * ic1 + a3 * v3;
+      ic1 = 2 * v1 - ic1;
+      ic2 = 2 * v2 - ic2;
+      const subFreq = endFreq * 0.46 + (startFreq * 0.15 - endFreq * 0.46) * p;
+      pSub += Math.PI * 2 * subFreq * dt;
+      const airBody = Math.sin(pSub) * 0.22;
+      return Math.tanh((v1 * 1.38 + v2 * 0.32 + airBody) * env * 1.52) * 0.86;
+    });
+  }
+  synthCatch(context, rate) {
+    let p1 = 0,
+      lp = 0,
+      hp = 0;
+    const dt = 1 / rate;
+    return this.makeBuffer(context, rate, 0.24, (t, i) => {
+      const f = 56 + 145 * Math.exp(-t * 36);
+      p1 += Math.PI * 2 * f * dt;
+      const thud = Math.sin(p1) * Math.exp(-t * 16) * 0.7;
+      const raw = this.noise(i, 73);
+      lp += (raw - lp) * 0.42;
+      hp += (lp - hp) * 0.08;
+      const cloth =
+        (lp - hp) * (Math.exp(-t * 52) * 0.82 + (t > 0.02 ? Math.exp(-(t - 0.02) * 36) * 0.65 : 0));
+      const slap =
+        t > 0.016 ? Math.sin(Math.PI * 2 * 380 * (t - 0.016)) * Math.exp(-(t - 0.016) * 48) * 0.34 : 0;
+      return Math.tanh((thud + cloth + slap) * 1.6) * 0.88;
+    });
+  }
+  synthLanding(context, rate) {
+    let p1 = 0,
+      p2 = 0,
+      lp = 0;
+    const dt = 1 / rate;
+    return this.makeBuffer(context, rate, 0.56, (t, i) => {
+      const f1 = 46 + 96 * Math.exp(-t * 26);
+      p1 += Math.PI * 2 * f1 * dt;
+      const heel = Math.sin(p1) * Math.exp(-t * 9.2) * 0.78;
+      let sole = 0;
+      if (t >= 0.018) {
+        const ts = t - 0.018;
+        const f2 = 62 + 115 * Math.exp(-ts * 32);
+        p2 += Math.PI * 2 * f2 * dt;
+        sole = Math.sin(p2) * Math.exp(-ts * 11.5) * 0.58;
+      }
+      const raw = this.noise(i, 89);
+      lp += (raw - lp) * 0.3;
+      const grit = lp * (Math.exp(-t * 28) * 0.5 + (t >= 0.018 ? Math.exp(-(t - 0.018) * 18) * 0.46 : 0));
+      return Math.tanh((heel + sole + grit) * 1.55) * 0.88;
+    });
+  }
+  synthEnergy(context, rate) {
+    let pSub = 0,
+      ic1 = 0,
+      ic2 = 0;
+    const dt = 1 / rate;
+    const crystalFreqs = [880, 1320, 1760, 2640];
+    return this.makeBuffer(context, rate, 0.44, (t, i) => {
+      const fSub = 44 + 125 * Math.exp(-t * 22);
+      pSub += Math.PI * 2 * fSub * dt;
+      const sub = Math.sin(pSub) * Math.exp(-t * 9.5) * 0.56;
+      const raw = this.noise(i, 97);
+      const cutoff = Math.min(rate * 0.42, 420 + 3400 * Math.sin(Math.PI * Math.pow(t / 0.44, 0.65)));
+      const g = Math.tan((Math.PI * cutoff) / rate);
+      const k = 0.55;
+      const a1 = 1 / (1 + g * (g + k));
+      const a2 = g * a1;
+      const a3 = g * a2;
+      const v3 = raw - ic2;
+      const v1 = a1 * ic1 + a2 * v3;
+      const v2 = ic2 + a2 * ic1 + a3 * v3;
+      ic1 = 2 * v1 - ic1;
+      ic2 = 2 * v2 - ic2;
+      const whoosh = v1 * Math.min(1, t / 0.018) * Math.exp(-t * 5.2) * 0.85;
+      const glide = 1 + 0.22 * (1 - Math.exp(-t * 14));
+      let shimmer = 0;
+      for (let c = 0; c < crystalFreqs.length; c++) {
+        const cf = crystalFreqs[c] * glide;
+        shimmer +=
+          Math.sin(Math.PI * 2 * cf * t + Math.sin(Math.PI * 2 * 18 * t) * 0.35) *
+          Math.exp(-t * (6.5 + c * 1.8)) *
+          (0.18 / (1 + c * 0.2));
+      }
+      return Math.tanh((sub + whoosh + shimmer) * 1.55) * 0.88;
+    });
+  }
+  synthReverse(context, rate) {
+    let ic1 = 0,
+      ic2 = 0;
+    const baseFreqs = [523.25, 783.99, 1046.5, 1567.98];
+    return this.makeBuffer(context, rate, 0.38, (t, i) => {
+      const p = t / 0.38;
+      const swell = p < 0.86 ? Math.pow(p / 0.86, 2.1) : Math.exp(-(p - 0.86) * 32);
+      const sweep = 1 + 0.55 * p * p;
+      const raw = this.noise(i, 101);
+      const cutoff = Math.min(rate * 0.42, 360 + 3800 * p * p);
+      const g = Math.tan((Math.PI * cutoff) / rate);
+      const k = 0.6;
+      const a1 = 1 / (1 + g * (g + k));
+      const a2 = g * a1;
+      const a3 = g * a2;
+      const v3 = raw - ic2;
+      const v1 = a1 * ic1 + a2 * v3;
+      const v2 = ic2 + a2 * ic1 + a3 * v3;
+      ic1 = 2 * v1 - ic1;
+      ic2 = 2 * v2 - ic2;
+      let chord = 0;
+      for (let c = 0; c < baseFreqs.length; c++) {
+        const f = baseFreqs[c] * sweep;
+        chord += Math.sin(Math.PI * 2 * f * t + Math.sin(Math.PI * 2 * 22 * t) * 0.3) * (0.2 / (1 + c * 0.18));
+      }
+      const flashSnap =
+        p >= 0.84 && p < 0.92 ? Math.sin(Math.PI * 2 * 2400 * t) * Math.exp(-(p - 0.84) * 65) * 0.45 : 0;
+      return Math.tanh(((v1 * 0.82 + chord) * swell + flashSnap) * 1.52) * 0.86;
+    });
+  }
+  buildBank(context = this.ctx, deferred = false) {
+    const rate = 24000;
+    const fromCacheOrBuild = (cacheKey, builder) => {
+      let cached = PCM_CACHE.get(cacheKey);
+      if (!cached) {
+        const built = builder();
+        const raw = new Float32Array(built.length);
+        raw.set(built.getChannelData(0));
+        cached = { length: built.length, sampleRate: built.sampleRate, data: raw };
+        PCM_CACHE.set(cacheKey, cached);
+        return built;
+      }
+      const buf = context.createBuffer(1, cached.length, cached.sampleRate);
+      buf.copyToChannel(cached.data, 0);
+      return buf;
+    };
+    const addBank = (key, builder) =>
+      this.jobs.push(() => {
+        this.bank.set(key, fromCacheOrBuild('bank:' + key, builder));
         this.bankOwner.set(key, context);
       });
-    make(
-      'kick',
-      0.42,
-      (t, n) =>
-        0.95 * Math.sin(tau * (48 * t + 1.75 * (1 - Math.exp(-t / 0.018)))) * Math.exp(-t * 13) +
-        n * 0.19 * Math.exp(-t * 350)
-    );
-    make(
-      'snare',
-      0.3,
-      (t, n, low) =>
-        0.62 * (n - low) * Math.exp(-t * 18) +
-        0.34 * Math.sin(tau * 185 * t) * Math.exp(-t * 23) +
-        0.18 * Math.sin(tau * 335 * t) * Math.exp(-t * 33)
-    );
-    make('hat', 0.08, (t, n, low) => 0.31 * (n - low) * Math.exp(-t * 65));
-    make('openhat', 0.32, (t, n, low) => 0.23 * (n - low) * Math.exp(-t * 13));
-    make(
-      'clap',
-      0.24,
-      (t, n, low) =>
-        0.45 * (n - low) * [0, 0.011, 0.024].reduce((v, start) => v + (t >= start ? Math.exp(-(t - start) * 80) : 0), 0)
-    );
-    make('tom', 0.36, (t) => 0.7 * Math.sin(tau * (105 * t + 0.65 * (1 - Math.exp(-t * 30)))) * Math.exp(-t * 14));
-    make(
-      'crash',
-      1.25,
-      (t, n, low) =>
-        ((n - low) * 0.29 + 0.07 * Math.sin(tau * 4381 * t) * Math.sin(tau * 6193 * t)) * Math.exp(-t * 4.2)
-    );
-    // Instruments are PCM performances at C3/C4, transposed by playbackRate, with a separate note envelope.
-    for (const name of ['bass', 'guitar', 'keys', 'pad', 'lead', 'bell', 'brass']) {
-      const freq = this.mtof(name === 'bass' ? 36 : 60);
-      make(name, 2.2, (t) => {
-        const p = tau * freq * t,
-          pluck = Math.exp(-t * 4),
-          attack = 1 - Math.exp(-t * (name === 'pad' ? 13 : name === 'brass' ? 55 : 700));
-        let v = 0;
-        if (name === 'bass')
-          v =
-            (Math.sin(p) + 0.32 * Math.sin(2 * p) * Math.exp(-t * 4) + 0.16 * Math.sin(3 * p) * Math.exp(-t * 8)) *
-            0.56 *
-            Math.exp(-t * 1.8);
-        if (name === 'guitar') {
-          for (let h = 1; h <= 10; h++)
-            v += (Math.sin(p * h + 0.003 * h * Math.sin(tau * 5 * t)) * Math.exp(-t * (1.4 + h * 0.85))) / (h * 0.95);
-          v = Math.tanh(v * 2.2) * 0.48;
-        }
-        if (name === 'keys')
-          v =
-            (Math.sin(p + 0.65 * pluck * Math.sin(p * 2)) * 0.54 + 0.12 * Math.sin(p * 7) * Math.exp(-t * 12)) *
-            Math.exp(-t * 2.4);
-        if (name === 'pad') {
-          for (let h = 1; h <= 6; h++) v += (Math.sin(p * h) + Math.sin(p * h * 1.003)) / (h * h);
-          v *= 0.19 * Math.exp(-t * 0.3);
-        }
-        if (name === 'lead')
-          v =
-            (Math.sin(p + (1.4 * pluck + 0.35) * Math.sin(p * 2)) * 0.42 +
-              0.12 * Math.sin(p * 1.004) +
-              0.08 * Math.sin(p * 2)) *
-            Math.exp(-t * 0.7);
-        if (name === 'bell')
-          v =
-            (Math.sin(p) * 0.4 +
-              Math.sin(p * 2.76) * 0.25 * Math.exp(-t * 6) +
-              Math.sin(p * 5.4) * 0.12 * Math.exp(-t * 12)) *
-            Math.exp(-t * 2.5);
-        if (name === 'brass') {
-          for (let h = 1; h <= 8; h++) v += Math.sin(p * h) / (h * (1 + h * 0.15));
-          v *= 0.36 * Math.exp(-t * 1.8);
-        }
-        return v * attack;
+    const addNote = (key, builder) =>
+      this.jobs.push(() => {
+        this.noteBank.set(key, fromCacheOrBuild('note:' + key, builder));
+        this.noteBankOwner.set(key, context);
       });
+
+    for (const d of ['kick', 'snare', 'hat', 'openhat', 'clap', 'tom', 'crash']) {
+      addBank(d, () => this.synthDrum(context, rate, d));
     }
+    addBank('bass', () => this.synthInstrument(context, rate, 'bass', 36, 0.56));
+    addBank('guitar', () => this.synthInstrument(context, rate, 'guitar', 60, 0.68));
+    addBank('keys', () => this.synthInstrument(context, rate, 'keys', 60, 0.56));
+    addBank('pad', () => this.synthInstrument(context, rate, 'pad', 60, 0.92));
+    addBank('lead', () => this.synthInstrument(context, rate, 'lead', 60, 0.62));
+    addBank('bell', () => this.synthInstrument(context, rate, 'bell', 72, 0.64));
+    addBank('brass', () => this.synthInstrument(context, rate, 'brass', 60, 0.66));
+
+    for (const midi of [31, 36, 41, 46, 51]) {
+      addNote(`bass:${midi}`, () => this.synthInstrument(context, rate, 'bass', midi, 0.56));
+    }
+    for (const kind of ['guitar', 'lead', 'keys', 'brass', 'pad', 'bell']) {
+      const dur = kind === 'pad' ? 0.92 : kind === 'guitar' || kind === 'brass' ? 0.66 : 0.6;
+      for (const midi of [48, 54, 60, 66, 72, 78, 84]) {
+        addNote(`${kind}:${midi}`, () => this.synthInstrument(context, rate, kind, midi, dur));
+      }
+    }
+
     for (let variant = 0; variant < 3; variant++) {
-      const v = 1 + variant * 0.055;
-      make(
-        'punch' + variant,
-        0.22,
-        (t, n, low) =>
-          0.55 * low * Math.exp(-t * 26) +
-          0.22 * (n - low) * Math.exp(-t * 100) +
-          0.52 * Math.sin(tau * 88 * v * t) * Math.exp(-t * 27)
-      );
-      make(
-        'heavy' + variant,
-        0.38,
-        (t, n, low) =>
-          0.65 * low * Math.exp(-t * 16) +
-          0.32 * (n - low) * Math.exp(-t * 75) +
-          0.65 * Math.sin(tau * 61 * v * t) * Math.exp(-t * 17)
-      );
-      make(
-        'slash' + variant,
-        0.29,
-        (t, n, low) =>
-          0.5 * (n - low) * (1 - Math.exp(-t * 150)) * Math.exp(-t * 24) +
-          (0.13 * Math.sin(tau * 1790 * v * t) + 0.09 * Math.sin(tau * 2747 * v * t)) * Math.exp(-t * 28)
-      );
-      make(
-        'wood' + variant,
-        0.35,
-        (t, n, low) =>
-          0.7 * (n - low) * Math.exp(-t * 48) +
-          0.32 * Math.sin(tau * 287 * v * t) * Math.exp(-t * 27) +
-          0.3 * low * Math.exp(-t * 10) * (t > 0.04 ? 1 : 0)
-      );
-      make(
-        'metal' + variant,
-        0.55,
-        (t, n, low) =>
-          (0.3 * Math.sin(tau * 411 * v * t) +
-            0.2 * Math.sin(tau * 673 * v * t) +
-            0.12 * Math.sin(tau * 1109 * v * t)) *
-            Math.exp(-t * 11) +
-          0.35 * (n - low) * Math.exp(-t * 85)
-      );
+      addBank('punch' + variant, () => this.synthImpact(context, rate, 'punch', variant));
+      addBank('heavy' + variant, () => this.synthImpact(context, rate, 'heavy', variant));
+      addBank('slash' + variant, () => this.synthImpact(context, rate, 'slash', variant));
+      addBank('wood' + variant, () => this.synthImpact(context, rate, 'wood', variant));
+      addBank('metal' + variant, () => this.synthImpact(context, rate, 'metal', variant));
     }
-    make('swing', 0.2, (t, n, low) => 0.5 * low * Math.pow(Math.sin((Math.PI * t) / 0.2), 1.4));
-    make('swingHeavy', 0.3, (t, n, low) => 0.75 * low * Math.pow(Math.sin((Math.PI * t) / 0.3), 1.6));
-    make('catch', 0.13, (t, n, low) => 0.65 * low * Math.exp(-t * 28) + 0.14 * n * Math.exp(-t * 70));
-    make(
-      'landing',
-      0.56,
-      (t, n, low) =>
-        0.75 * low * Math.exp(-t * 10) +
-        0.65 * Math.sin(tau * 48 * t) * Math.exp(-t * 12) +
-        0.22 * (n - low) * Math.exp(-t * 62)
-    );
-    make(
-      'energy',
-      0.9,
-      (t, n, low) =>
-        0.45 * low * Math.exp(-t * 5) +
-        0.5 * Math.sin(tau * (38 * t + 1.5 * (1 - Math.exp(-t * 8)))) * Math.exp(-t * 6) +
-        0.2 * (n - low) * Math.exp(-t * 17)
-    );
-    make('reverse', 0.38, (t, n, low) => 0.45 * (n - low) * Math.pow(t / 0.38, 2));
+    addBank('swing', () => this.synthWhoosh(context, rate, 0.21, 1850, 280, 19));
+    addBank('swingHeavy', () => this.synthWhoosh(context, rate, 0.32, 1420, 185, 43));
+    addBank('catch', () => this.synthCatch(context, rate));
+    addBank('landing', () => this.synthLanding(context, rate));
+    addBank('energy', () => this.synthEnergy(context, rate));
+    addBank('reverse', () => this.synthReverse(context, rate));
+
     if (deferred) this.scheduleJobs();
     else this.flushBank();
   }
@@ -386,7 +1037,6 @@ class SoundEngine {
       if (this.jobs.length) this.scheduleJobs();
     }, 0);
   }
-  // Buffers prepared on the scratch OfflineAudioContext are silent on a different context in Chrome: copy them over.
   adoptBank(context) {
     for (const [key, buffer] of this.bank) {
       if (this.bankOwner.get(key) === context) continue;
@@ -395,14 +1045,19 @@ class SoundEngine {
       this.bank.set(key, copy);
       this.bankOwner.set(key, context);
     }
+    for (const [key, buffer] of this.noteBank) {
+      if (this.noteBankOwner.get(key) === context) continue;
+      const copy = context.createBuffer(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
+      for (let ch = 0; ch < buffer.numberOfChannels; ch++) copy.copyToChannel(buffer.getChannelData(ch), ch);
+      this.noteBank.set(key, copy);
+      this.noteBankOwner.set(key, context);
+    }
   }
   flushBank() {
     clearTimeout(this.jobTimer);
     this.jobTimer = null;
     while (this.jobs.length) this.jobs.shift()();
   }
-  // Called once at page load: prepares PCM sources and voice clips without creating an AudioContext,
-  // so the first keypress only has to resume audio instead of synthesizing ~350ms of material.
   prebuild() {
     if (this.ctx || this.prebuilt) return;
     this.prebuilt = true;
@@ -415,7 +1070,7 @@ class SoundEngine {
       return;
     }
     this.buildBank(scratch, true);
-    fighterVoice.preload(scratch);
+    if (typeof fighterVoice !== 'undefined') fighterVoice.preload(scratch);
   }
   newMusicBus() {
     const bus = this.ctx.createGain();
@@ -435,30 +1090,38 @@ class SoundEngine {
   }
   updateVol() {
     if (!this.ctx) return;
-    this.seGain.gain.setTargetAtTime(this.muted ? 0 : this.seVol * 0.7, this.ctx.currentTime, 0.02);
+    if (!this.offline && this.ctx.state === 'suspended' && typeof this.ctx.resume === 'function') {
+      this.ctx.resume();
+    }
+    this.seGain.gain.setTargetAtTime(this.muted ? 0 : this.seVol * 0.74, this.ctx.currentTime, 0.02);
     this.duckMusic(this.ducked);
-    if (this.voiceBound) {
+    if (this.voiceBound && typeof fighterVoice !== 'undefined') {
       fighterVoice.updateVolume();
       fighterVoice.duck();
     }
   }
-  sample(key, t, volume = 1, rate = 1, pan = 0, duration = null, bus = null, group = 'music') {
-    const buffer = this.bank.get(key);
+  sample(keyOrBuffer, t, volume = 1, rate = 1, pan = 0, duration = null, bus = null, group = 'music') {
+    const buffer = typeof keyOrBuffer === 'string' ? this.bank.get(keyOrBuffer) : keyOrBuffer;
     if (!buffer || !Number.isFinite(t)) return;
+    if (!this.offline && this.ctx.state === 'suspended' && typeof this.ctx.resume === 'function') {
+      this.ctx.resume();
+    }
     const cap = group === 'music' ? 72 : 32;
     if (!this.offline && [...this.active].filter((v) => v.group === group).length >= cap) {
       this.stats.dropped++;
       return;
     }
+    const clampedRate = Math.max(0.25, Math.min(4, rate));
     const at = Math.max(this.ctx.currentTime, t),
-      length = Math.min(buffer.duration / rate, duration ?? buffer.duration / rate),
+      maxDur = buffer.duration / clampedRate,
+      length = Math.min(maxDur, duration ?? maxDur),
       release = Math.min(0.08, length * 0.3);
     const source = this.ctx.createBufferSource(),
       gain = this.ctx.createGain(),
       panner = this.ctx.createStereoPanner();
     source.buffer = buffer;
-    source.playbackRate.value = rate;
-    panner.pan.value = pan;
+    source.playbackRate.value = clampedRate;
+    panner.pan.value = Math.max(-1, Math.min(1, pan));
     gain.gain.setValueAtTime(0, at);
     gain.gain.linearRampToValueAtTime(volume, at + 0.003);
     gain.gain.setValueAtTime(volume, at + Math.max(0.004, length - release));
@@ -483,11 +1146,30 @@ class SoundEngine {
     return entry;
   }
   note(name, midi, t, duration, volume = 0.3, pan = 0, bus = null, group = 'music') {
+    let buffer = null;
+    let base = name === 'bass' ? 36 : name === 'bell' ? 72 : 60;
+    if (this.noteBank && this.noteBank.size) {
+      const pitches = name === 'bass' ? [31, 36, 41, 46, 51] : [48, 54, 60, 66, 72, 78, 84];
+      let best = pitches[0];
+      let bestDist = Math.abs(midi - best);
+      for (let i = 1; i < pitches.length; i++) {
+        const d = Math.abs(midi - pitches[i]);
+        if (d < bestDist) {
+          best = pitches[i];
+          bestDist = d;
+        }
+      }
+      const candidate = this.noteBank.get(`${name}:${best}`);
+      if (candidate) {
+        buffer = candidate;
+        base = best;
+      }
+    }
     return this.sample(
-      name,
+      buffer || name,
       t,
       volume,
-      Math.pow(2, (midi - (name === 'bass' ? 36 : 60)) / 12),
+      Math.pow(2, (midi - base) / 12),
       pan,
       duration,
       bus,
@@ -535,7 +1217,6 @@ class SoundEngine {
       this.nextStepTime = this.ctx.currentTime + 0.04;
       return;
     }
-    // Never replay a backlog after a stalled tab / device interruption.
     if (this.nextStepTime < this.ctx.currentTime - 0.15) this.nextStepTime = this.ctx.currentTime + 0.02;
     const horizon = this.ctx.currentTime + 0.12;
     while (this.nextStepTime < horizon) {
@@ -544,95 +1225,200 @@ class SoundEngine {
       this.nextStepTime += this.stepDur;
     }
   }
+  degreeToSemi(scale, degree) {
+    const len = scale.length;
+    const oct = Math.floor(degree / len);
+    const idx = ((degree % len) + len) % len;
+    return oct * 12 + scale[idx];
+  }
+  chordSemis(cfg, bar) {
+    const section = Math.floor((bar % 32) / 8);
+    const progList = section === 1 || section === 3 ? cfg.progB || cfg.prog : cfg.prog;
+    const deg = progList[bar % progList.length];
+    return [
+      this.degreeToSemi(cfg.scale, deg),
+      this.degreeToSemi(cfg.scale, deg + 2),
+      this.degreeToSemi(cfg.scale, deg + 4),
+      this.degreeToSemi(cfg.scale, deg + 6)
+    ];
+  }
   score(track, step) {
-    const cfg = ARCADE_TRACKS[track],
-      bar = Math.floor(step / 16) % 32,
-      b = step % 16,
-      chordIndex = Math.floor(bar / 2) % 4,
-      root = cfg.roots[chordIndex],
-      third = cfg.major[chordIndex] ? 4 : 3;
-    const beat = 60 / cfg.bpm,
-      unit = beat / 4,
-      events = [];
+    const cfg = typeof track === 'object' ? track : ARCADE_TRACKS[track] || ARCADE_TRACKS[0];
+    const trackId = cfg.id ?? (typeof track === 'number' ? track : 0);
+    const events = [];
+    const s = step % 16;
+    const bar = Math.floor(step / 16) % 32;
+    const section = Math.floor(bar / 8);
+    const isIntro = bar < 2;
+    const isBreakdown = bar >= 16 && bar < 18;
+    const isClimax = section === 1 || section === 3 || bar >= 22;
+    const isFill = bar % 8 === 7 && s >= 12;
+    const isLastBar = bar === 31;
+    const maxLen = isLastBar ? Math.max(1, 16 - s) : 12;
+    const unit = 60 / cfg.bpm / 4;
+
     const note = (instrument, midi, length, volume, pan = 0) =>
-      events.push({ instrument, midi, duration: length * unit, volume, pan });
-    const drum = (instrument, volume, pan = 0) => events.push({ instrument, midi: null, duration: null, volume, pan });
-    const breakdown = bar >= 12 && bar < 16,
-      full = bar >= 4 && !breakdown,
-      intense = bar >= 20 && bar < 28;
-    const style = cfg.style,
-      rock = style === 'rock' || style === 'boss',
-      funk = style === 'funk' || style === 'street';
-    const kickPattern = rock ? [0, 6, 8, 10] : funk ? [0, 3, 7, 10] : style === 'break' ? [0, 6, 10] : [0, 8];
-    if (kickPattern.includes(b) && (!breakdown || b === 0)) drum('kick', rock ? 0.88 : 0.78);
-    if ((b === 4 || b === 12) && (!breakdown || bar >= 14)) {
-      drum('snare', rock ? 0.78 : 0.62);
-      if (style === 'street' || style === 'victory') drum('clap', 0.2, -0.15);
+      events.push({ instrument, midi, duration: Math.max(0.06, length * unit), volume, pan });
+    const drum = (instrument, volume, pan = 0, rate = 1) =>
+      events.push({ instrument, midi: null, duration: null, volume, pan, rate });
+
+    const comp = TRACK_COMPOSITIONS[trackId] || TRACK_COMPOSITIONS[0];
+    const progList = section === 1 || section === 3 ? cfg.progB || cfg.prog : cfg.prog;
+    const chordDeg = progList[bar % progList.length];
+    const chord = this.chordSemis(cfg, bar);
+
+    // 1. DRUMS — Style-specific arcade drum grooves
+    if (s === 0 && (bar % 4 === 0 || (isClimax && bar % 2 === 0))) {
+      drum('crash', isLastBar ? 0.19 : 0.24, -0.22);
     }
-    if (b % 2 === 0 && (!breakdown || b % 4 === 0))
-      drum(b === 14 && full ? 'openhat' : 'hat', b % 4 === 0 ? 0.31 : 0.2, 0.3);
-    if (full && b === 11 && funk) drum('snare', 0.16, -0.08);
-    if (full && b === 15 && intense) drum('hat', 0.13, -0.3);
-    if (b === 0 && (bar === 4 || bar === 16 || bar === 24 || (bar === 0 && style === 'boss')))
-      drum('crash', 0.38, -0.38);
-    if (bar % 8 === 7 && b >= 12) {
-      if (b % 2 === 0) drum('tom', 0.4, (b - 14) * 0.2);
-      if (b === 15) drum('snare', 0.5);
+
+    if (cfg.style === 'noir') {
+      if (s === 0 || s === 6 || s === 10 || (s === 14 && bar % 2 === 1)) {
+        drum('kick', 0.48);
+      }
+      if (s === 4 || s === 12) {
+        drum('snare', 0.35, 0.05);
+        if (s === 12 && isClimax) drum('clap', 0.18, -0.1);
+      }
+      if (s % 2 === 0) {
+        drum(s === 10 ? 'openhat' : 'hat', s === 10 ? 0.16 : 0.12, 0.2);
+      } else if (s === 7 || s === 15) {
+        drum('hat', 0.09, -0.18);
+      }
+    } else if (cfg.style === 'cyber') {
+      if (s % 4 === 0 || (s === 14 && bar % 2 === 1)) {
+        drum('kick', 0.52);
+      }
+      if (s === 4 || s === 12) {
+        drum('snare', 0.38, 0.04);
+        drum('clap', 0.2, -0.08);
+      }
+      if (s % 4 === 2) {
+        drum('openhat', 0.17, 0.22);
+      } else {
+        drum('hat', s % 2 === 0 ? 0.12 : 0.09, (s % 2 ? -1 : 1) * 0.18);
+      }
+    } else if (cfg.style === 'ninja') {
+      if (s === 0 || s === 3 || s === 6 || s === 10 || (s === 13 && bar % 2 === 1)) {
+        drum('kick', 0.5);
+      }
+      if (s === 4 || s === 12 || (s === 9 && !isIntro)) {
+        drum('snare', s === 9 ? 0.22 : 0.39, 0.06);
+      }
+      drum(s === 14 ? 'openhat' : 'hat', s === 14 ? 0.17 : s % 2 === 0 ? 0.13 : 0.09, (s % 2 ? -1 : 1) * 0.2);
+    } else if (cfg.style === 'boss') {
+      if (s % 2 === 0 || s === 3 || s === 11 || s === 15) {
+        drum('kick', s % 4 === 0 ? 0.52 : 0.4);
+      }
+      if (s === 4 || s === 12 || (s === 14 && bar % 2 === 1)) {
+        drum('snare', s === 14 ? 0.26 : 0.42, 0.06);
+      }
+      drum(s === 6 || s === 14 ? 'openhat' : 'hat', s % 2 === 0 ? 0.14 : 0.09, 0.22);
+    } else {
+      const kickPattern =
+        cfg.style === 'industrial'
+          ? [1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1]
+          : cfg.style === 'arena'
+            ? [1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0]
+            : [1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0];
+      if (kickPattern[s]) {
+        drum('kick', 0.5);
+      }
+      if (s === 4 || s === 12) {
+        drum('snare', 0.39, 0.05);
+        if (cfg.style === 'industrial' || (cfg.style === 'arena' && s === 12)) {
+          drum('clap', 0.2, -0.1);
+        }
+      }
+      if (s % 2 === 0 || isClimax) {
+        drum(s === 14 && bar % 2 === 1 ? 'openhat' : 'hat', s % 2 === 0 ? 0.13 : 0.09, (s % 2 ? -1 : 1) * 0.19);
+      }
     }
-    // Bass follows the harmony with octave pickups and passing fifths.
-    const bassPattern = rock ? [0, 2, 4, 6, 8, 10, 12, 14] : funk ? [0, 3, 6, 7, 10, 14] : [0, 6, 8, 14];
-    if (bassPattern.includes(b) && (!breakdown || b === 0 || b === 8))
-      note('bass', root + (b === 14 ? 7 : b === 7 ? 12 : 0), rock ? 1.7 : 2.7, rock ? 0.57 : 0.62);
-    // Open voicings prevent the low midrange from swallowing the voice channel.
-    const chordSteps = rock ? [0, 6, 8, 14] : funk ? [2, 7, 10] : style === 'ice' ? [0, 8] : [0, 10];
-    if (chordSteps.includes(b)) {
-      const length = cfg.chord === 'pad' ? 8 : rock ? 1.8 : 3.5,
-        vol = cfg.chord === 'pad' ? 0.17 : rock ? 0.19 : 0.22;
-      for (const [offset, pan] of [
-        [12, -0.45],
-        [12 + third, 0.4],
-        [19, -0.2]
-      ])
-        note(cfg.chord, root + offset, length, vol * (breakdown ? 0.65 : 1), pan);
+
+    if (isFill) {
+      const rate = 1.24 - (s - 12) * 0.09;
+      drum('tom', 0.32, (s - 13.5) * 0.18, rate);
+      if (s === 15) drum('snare', 0.36, 0.08);
     }
-    if (b === 0 && (full || style === 'ice'))
-      for (const [offset, pan] of [
-        [24, -0.65],
-        [31, 0.65]
-      ])
-        note('pad', root + offset, 14, 0.1, pan);
-    // Eight-bar call-and-response theme, varied in the second chorus.
-    const melodySteps = [0, 3, 6, 8, 11, 14],
-      motifs = [
-        [7, third, 0, 12, 7, third],
-        [0, 7, 12, 14, 12, 7],
-        [third, 7, 12, 7, third, 0],
-        [7, third, 2, 0, null, null],
-        [12, 7, third, 7, 12, 14],
-        [12, third + 12, 12, 7, third, 7],
-        [7, 12, 14, third + 12, 14, 12],
-        [third + 12, 12, 7, third, 2, 0]
-      ];
-    const pos = melodySteps.indexOf(b),
-      motif = motifs[bar % 8];
-    if (pos >= 0 && motif[pos] !== null && (bar >= 2 || style === 'victory') && !breakdown) {
-      const midi = root + 24 + motif[pos] + (intense && pos === 3 ? 12 : 0),
-        length = pos === 5 ? 2 : pos === 3 ? 2.7 : 2.2;
-      note(cfg.lead, midi, length, style === 'ice' ? 0.3 : cfg.lead === 'guitar' ? 0.32 : 0.27, -0.05);
-      if (intense && b === 0) note('bell', midi - 12, 5, 0.12, 0.5);
+
+    // 2. BASSLINE — 100% Diatonic to current chord degree
+    if (comp.bassRhythm[s]) {
+      const bDeg = comp.bassDegs[s] || 0;
+      const bassSemi = this.degreeToSemi(cfg.scale, chordDeg + bDeg);
+      const bassMidi = cfg.root - 12 + bassSemi;
+      const bassLen = Math.min(maxLen, comp.bassRhythm[(s + 1) % 16] ? 1.05 : 1.85);
+      note('bass', bassMidi, bassLen, s % 4 === 0 ? 0.29 : 0.24, -0.05);
     }
-    if ((breakdown || style === 'synth') && b % 4 === 2) {
-      const arp = [0, 7, third + 12, 7][Math.floor(b / 4)];
-      note('keys', root + 24 + arp, 3, 0.2, (b / 16 - 0.5) * 0.8);
+
+    // 3. HARMONIC PAD & RHYTHM STABS — Diatonic triads & 7th voicings
+    if (s === 0 || s === 8) {
+      const padLen = Math.min(maxLen, isLastBar ? 6 : 7.5);
+      const padNotes = [cfg.root + chord[0], cfg.root + chord[1], cfg.root + chord[2]];
+      padNotes.forEach((midi, idx) => {
+        note(
+          s === 0 && (cfg.style === 'royal' || cfg.style === 'arena') && idx > 0 ? 'brass' : 'pad',
+          midi,
+          padLen,
+          0.09 - idx * 0.008,
+          (idx - 1) * 0.22
+        );
+      });
     }
+
+    if (!isIntro && (s === 0 || s === 3 || s === 6 || s === 10 || s === 12)) {
+      const stabInst =
+        cfg.style === 'noir' ? 'keys' : cfg.style === 'royal' || cfg.style === 'arena' ? 'brass' : 'guitar';
+      const stabLen = Math.min(maxLen, s === 6 || s === 12 ? 2.1 : 1.35);
+      note(stabInst, cfg.root + (s === 6 ? chord[1] : chord[0]), stabLen, isBreakdown ? 0.1 : 0.145, -0.28);
+      note(stabInst, cfg.root + chord[2], stabLen, isBreakdown ? 0.09 : 0.125, 0.28);
+    }
+
+    // 4. ARPEGGIO / COUNTER-MELODY — 100% Diatonic chord-relative scale degrees
+    const arpActive = !isBreakdown || s % 2 === 0;
+    if (arpActive && (s % 2 === 0 || isClimax || cfg.style === 'cyber' || cfg.style === 'boss')) {
+      const arpDeg = comp.arpDegs[s];
+      const arpSemi = this.degreeToSemi(cfg.scale, chordDeg + arpDeg);
+      const arpInst = s % 4 === 0 && cfg.sub !== 'bell' ? 'bell' : cfg.sub;
+      note(arpInst, cfg.root + arpSemi, Math.min(maxLen, 1.35), s % 4 === 0 ? 0.135 : 0.105, (s % 4 < 2 ? 1 : -1) * 0.32);
+    }
+
+    // 5. LEAD MELODY & HARMONY — Diatonic scale degrees with chord-tone lock
+    if (!isIntro) {
+      const phrase =
+        isClimax
+          ? bar % 2 === 0
+            ? comp.melB1
+            : comp.melB2
+          : bar % 2 === 0
+            ? comp.melA1
+            : comp.melA2;
+      const stepNote = phrase[s];
+      if (stepNote) {
+        const [degOffset, rawLen, vel, isChordRel] = stepNote;
+        const noteLen = Math.min(maxLen, rawLen);
+        const totalDeg = isChordRel ? chordDeg + degOffset : degOffset;
+        const semi = this.degreeToSemi(cfg.scale, totalDeg);
+        const octaveShift = isBreakdown ? 0 : 12;
+        const leadMidi = cfg.root + octaveShift + semi;
+        const leadGain = (isBreakdown ? 0.16 : isClimax ? 0.24 : 0.205) * (vel || 0.9);
+        note(cfg.lead, leadMidi, noteLen, leadGain, 0.12);
+
+        if (isClimax && !isBreakdown) {
+          const harmDeg = cfg.style === 'noir' || cfg.style === 'cyber' ? totalDeg - 7 : totalDeg - 2;
+          const harmMidi = cfg.root + octaveShift + this.degreeToSemi(cfg.scale, harmDeg);
+          note(cfg.sub, harmMidi, Math.min(maxLen, noteLen * 0.92), leadGain * 0.55, -0.22);
+        }
+      }
+    }
+
     return events;
   }
   tick(track, step, t) {
     const cfg = ARCADE_TRACKS[track];
     if (!cfg) return;
-    const swung = t + (step % 2 ? (cfg.swing * 60) / cfg.bpm / 4 : 0);
+    const swung = t + (step % 2 ? ((cfg.swing || 0) * 60) / cfg.bpm / 4 : 0);
     for (const event of this.score(track, step)) {
-      if (event.midi === null) this.sample(event.instrument, swung, event.volume, 1, event.pan);
+      if (event.midi === null) this.sample(event.instrument, swung, event.volume, event.rate || 1, event.pan);
       else this.note(event.instrument, event.midi, swung, event.duration, event.volume, event.pan);
     }
   }
@@ -654,90 +1440,108 @@ class SoundEngine {
     if (!this.allow('ui', 0.045)) return;
     const t = this.ctx.currentTime;
     if (type === 'cursor') {
-      this.note('keys', 86, t, 0.065, 0.23, 0, this.seGain, 'effect');
+      this.note('bell', 84, t, 0.08, 0.24, -0.08, this.seGain, 'effect');
+      this.note('keys', 72, t + 0.008, 0.07, 0.18, 0.08, this.seGain, 'effect');
       return;
     }
-    for (const [i, n] of [60, 67, 76].entries())
-      this.note('keys', n, t + i * 0.035, 0.21, 0.32, i * 0.12 - 0.12, this.seGain, 'effect');
+    for (const [i, n] of [67, 74, 79].entries()) {
+      this.note('bell', n + 12, t + i * 0.036, 0.22, 0.26, i * 0.14 - 0.14, this.seGain, 'effect');
+      this.note('keys', n, t + i * 0.036, 0.2, 0.24, 0.14 - i * 0.14, this.seGain, 'effect');
+    }
   }
   playSwing(heavy = false) {
     if (this.allow('swing', 0.035))
-      this.effect(heavy ? 'swingHeavy' : 'swing', heavy ? 0.9 : 0.7, (this.random() - 0.5) * 0.35);
+      this.effect(heavy ? 'swingHeavy' : 'swing', heavy ? 0.92 : 0.72, (this.random() - 0.5) * 0.35);
   }
   playHit(style = 'light') {
     if (!this.allow('hit', 0.018)) return;
     if (style === 'justguard') {
-      this.effect(this.variant('metal'), 0.55);
+      this.effect(this.variant('metal'), 0.72, 0, 0, 1.15);
+      this.effect('energy', 0.38, 0.15, 0.012, 1.25);
       for (const [i, n] of [84, 91].entries())
-        this.note('bell', n, this.ctx.currentTime + i * 0.028, 0.25, 0.42, i ? 0.3 : -0.3, this.seGain, 'effect');
+        this.note('bell', n, this.ctx.currentTime + i * 0.028, 0.26, 0.42, i ? 0.3 : -0.3, this.seGain, 'effect');
       return;
     }
     if (style === 'block') {
-      this.effect(this.variant('metal'), 0.62, 0, 0, 1.16);
+      this.effect(this.variant('metal'), 0.68, 0, 0, 1.06);
+      this.effect(this.variant('wood'), 0.36, 0.1, 0.008, 1.08);
       return;
     }
     if (style === 'slash') {
-      this.effect(this.variant('slash'), 0.95);
-      this.effect(this.variant('punch'), 0.42, 0, 0.008);
+      this.effect(this.variant('slash'), 0.96);
+      this.effect(this.variant('heavy'), 0.48, 0, 0.01, 0.94);
       return;
     }
-    this.effect(
-      this.variant(style === 'light' ? 'punch' : 'heavy'),
-      style === 'light' ? 0.95 : 1.05,
-      (this.random() - 0.5) * 0.22
-    );
+    const pan = (this.random() - 0.5) * 0.22;
+    this.effect(this.variant(style === 'light' ? 'punch' : 'heavy'), style === 'light' ? 0.96 : 1.06, pan);
   }
   playGrapple(phase) {
     if (!this.allow('grapple-' + phase, 0.025)) return;
-    if (phase === 'catch') this.effect('catch', 1);
-    else if (phase === 'release') {
-      this.effect('swingHeavy', 1.15, -0.15);
-      this.effect('catch', 0.45, 0.15, 0.035);
+    if (phase === 'catch') {
+      this.effect('catch', 0.96);
+    } else if (phase === 'release') {
+      this.effect('swingHeavy', 1.12, -0.15);
     } else {
       this.effect('landing', 1.05);
-      this.effect(this.variant('wood'), 0.3, 0.2, 0.055);
+      this.effect(this.variant('wood'), 0.42, 0.2, 0.055, 0.9);
     }
   }
   playSuper() {
     if (!this.allow('super', 0.18)) return;
-    this.effect('reverse', 0.65);
-    this.effect('energy', 1, 0, 0.07);
-    this.effect(this.variant('metal'), 0.4, -0.35, 0.08);
-    this.effect('crash', 0.22, 0.35, 0.11);
+    this.effect('reverse', 0.72);
+    this.effect('energy', 0.96, 0, 0.055);
+    this.effect(this.variant('heavy'), 0.64, -0.25, 0.075, 0.84);
+    this.effect('crash', 0.3, 0.3, 0.09);
   }
   playBreak(material = 'wood') {
     if (!this.allow('break', 0.035)) return;
-    this.effect(this.variant(material === 'metal' ? 'metal' : 'wood'), 1);
-    this.effect('landing', 0.25, 0, 0.02);
+    this.effect(this.variant(material === 'metal' ? 'metal' : 'wood'), 0.98);
+    this.effect(this.variant('heavy'), 0.46, -0.12, 0.012, 0.88);
+    this.effect('landing', 0.34, 0.12, 0.022);
   }
   playPickup(type) {
     if (!this.allow('pickup', 0.08)) return;
+    const t = this.ctx.currentTime;
+    if (type === 'pipe') {
+      this.effect('metal0', 0.48, -0.1, 0, 1.18);
+    }
     const notes = type === 'food' ? [67, 72, 76] : type === 'pipe' ? [55, 62] : [76, 83, 88];
-    for (const [i, n] of notes.entries())
-      this.note('keys', n, this.ctx.currentTime + i * 0.06, 0.25, 0.43, i * 0.15 - 0.15, this.seGain, 'effect');
+    for (const [i, n] of notes.entries()) {
+      this.note('keys', n, t + i * 0.055, 0.24, 0.36, i * 0.15 - 0.15, this.seGain, 'effect');
+      this.note('bell', n + 12, t + i * 0.055, 0.2, 0.22, 0.15 - i * 0.15, this.seGain, 'effect');
+    }
   }
   playCue(type) {
     if (!this.allow('cue-' + type, 0.4)) return;
     const t = this.ctx.currentTime;
     if (type === 'boss') {
-      this.effect('reverse', 0.75);
-      this.effect('energy', 0.8, 0, 0.25);
-      for (const n of [36, 43, 48]) this.note('brass', n, t + 0.28, 0.8, 0.35, 0, this.seGain, 'effect');
+      this.effect('reverse', 0.76);
+      this.effect('energy', 0.82, 0, 0.22);
+      for (const [i, n] of [36, 43, 48, 55].entries())
+        this.note('brass', n + 12, t + 0.25, 0.78, 0.32, (i - 1.5) * 0.18, this.seGain, 'effect');
     } else if (type === 'clear' || type === 'extend') {
-      for (const [i, n] of [60, 64, 67, 72].entries())
-        this.note('brass', n, t + i * 0.1, 0.42, 0.3, i * 0.1 - 0.15, this.seGain, 'effect');
+      for (const [i, n] of [60, 64, 67, 72, 76].entries()) {
+        this.note('brass', n, t + i * 0.085, 0.4, 0.28, (i - 2) * 0.12, this.seGain, 'effect');
+        this.note('bell', n + 12, t + i * 0.085, 0.32, 0.2, (2 - i) * 0.1, this.seGain, 'effect');
+      }
     } else if (type === 'over') {
+      this.effect('heavy2', 0.72, -0.1, 0, 0.78);
+      this.effect('crash', 0.34, 0.15, 0.015, 0.88);
       for (const [i, n] of [55, 51, 48].entries())
-        this.note('keys', n, t + i * 0.2, 0.55, 0.42, 0, this.seGain, 'effect');
+        this.note('keys', n, t + i * 0.18, 0.52, 0.38, (i - 1) * 0.15, this.seGain, 'effect');
     } else {
-      this.effect('catch', 0.7);
-      this.effect(this.variant('metal'), 0.36, 0.1, 0.12);
-      this.effect('heavy0', 0.6, 0, 0.23);
+      this.effect('catch', 0.68);
+      this.effect(this.variant('metal'), 0.42, 0.1, 0.1, 1.08);
+      this.effect('heavy0', 0.68, 0, 0.2, 0.92);
     }
   }
-  // Round banners already carry the words; use a short musical sting instead of robotic browser TTS.
   announce(text) {
     this.playCue(/Congratulations/i.test(text) ? 'clear' : /K\.O|KO/i.test(text) ? 'over' : 'start');
   }
 }
 const sound = new SoundEngine();
+if (typeof window !== 'undefined') {
+  window.SoundEngine = SoundEngine;
+  window.ARCADE_TRACKS = ARCADE_TRACKS;
+  window.sound = sound;
+}

@@ -1,0 +1,95 @@
+{
+  "version": "2.6.0",
+  "distribution": {
+    "htmlBytes": 399899,
+    "packs": [
+      {
+        "name": "sprites-kagura",
+        "kind": "sprites",
+        "size": 9887755
+      },
+      {
+        "name": "sprites-volt",
+        "kind": "sprites",
+        "size": 9342221
+      },
+      {
+        "name": "sprites-freya",
+        "kind": "sprites",
+        "size": 10176421
+      },
+      {
+        "name": "sprites-titan",
+        "kind": "sprites",
+        "size": 10340233
+      },
+      {
+        "name": "sprites-ayame",
+        "kind": "sprites",
+        "size": 9881112
+      },
+      {
+        "name": "sprites-celine",
+        "kind": "sprites",
+        "size": 9382863
+      },
+      {
+        "name": "stages",
+        "kind": "stages",
+        "size": 20218913
+      },
+      {
+        "name": "voices",
+        "kind": "voices",
+        "size": 6095602
+      },
+      {
+        "name": "belt-backgrounds",
+        "kind": "beltArt",
+        "size": 23315215
+      },
+      {
+        "name": "belt-actors",
+        "kind": "beltArt",
+        "size": 13920427
+      }
+    ]
+  },
+  "boot": {
+    "overlayGone": true,
+    "loaded": 122560409,
+    "total": 122560409,
+    "failed": [],
+    "sprites": null,
+    "belt": 9,
+    "beltErrors": [],
+    "inline": 231761
+  },
+  "checks": {
+    "Punch connects near the edge of the wider lane": true,
+    "Punch connects at 31px depth (missed before v2.6.0)": true,
+    "Punch still misses outside the lane": true,
+    "Punch catches an enemy hugging the back": true,
+    "Enemy clearly behind is not hit": true,
+    "Staggered enemy slides toward the player lane": true,
+    "Ground strike has several active frames": true,
+    "Late entry into reach is hit once (hits=1)": true,
+    "Recovery frames do not hit": true,
+    "Crate is hit in the wider lane without pipe wear": true,
+    "Crate takes one hit per swing": true,
+    "Jump attack has a long active window": true,
+    "Jump attack hits late in its arc": true,
+    "Enemy punch hits inside its lane": true,
+    "Stepping out of the lane dodges the enemy punch": true,
+    "Enemy winds up": true,
+    "Enemy punch uses the narrow lane and a single active frame": true,
+    "Thrown body hits an enemy 36px off the lane": true,
+    "Item is picked up from further away": true,
+    "Distant item is not picked up": true,
+    "Throw key reaches a wider lane than the walking grab": true,
+    "Boss charge misses just outside its lane": true,
+    "Boss charge hits inside its lane": true,
+    "Draw is pure": true
+  },
+  "browserErrors": []
+}
