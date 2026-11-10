@@ -692,56 +692,60 @@ class SoundEngine {
     if (kind === 'punch') {
       let pBody = 0,
         pMid = 0,
+        pWhip = 0,
         lp = 0,
         hp = 0;
       return this.makeBuffer(context, rate, 0.25, (t, i) => {
-        const fBody = (54 + 175 * Math.exp(-t * 38)) * vScale;
-        const fMid = (125 + 340 * Math.exp(-t * 56)) * vScale;
-        pBody += Math.PI * 2 * fBody * dt;
+        const fWhip = (4200 * Math.exp(-t * 250) + 380) * vScale;
+        const fMid = (175 + 640 * Math.exp(-t * 72)) * vScale;
+        const fBody = (58 + 205 * Math.exp(-t * 42)) * vScale;
+        pWhip += Math.PI * 2 * fWhip * dt;
         pMid += Math.PI * 2 * fMid * dt;
-        const chest = Math.sin(pBody) * Math.exp(-t * 14) * 0.85;
-        const crack = Math.sin(pMid + Math.sin(pBody * 2.4) * 1.1) * Math.exp(-t * 26) * 0.56;
+        pBody += Math.PI * 2 * fBody * dt;
+        const whip = Math.sin(pWhip + Math.sin(pWhip * 1.8) * 0.9) * Math.exp(-t * 115) * 0.58;
+        const chest = Math.sin(pBody + Math.sin(pBody * 2) * 0.35 * Math.exp(-t * 28)) * Math.exp(-t * 14.5) * 0.88;
+        const crack =
+          Math.sin(pMid + Math.sin(pBody * 2.6) * 1.45 * Math.exp(-t * 34)) * Math.exp(-t * 28) * 0.66;
         const raw = this.noise(i, 37 + variant * 7);
-        lp += (raw - lp) * 0.48;
-        hp += (lp - hp) * 0.09;
-        const snap = (lp - hp) * (0.88 * Math.exp(-t * 72) + 0.28 * Math.exp(-t * 20));
-        return Math.tanh((chest + crack + snap) * 1.72) * 0.9;
+        lp += (raw - lp) * 0.62;
+        hp += (lp - hp) * 0.11;
+        const snapEnv =
+          Math.exp(-t * 88) * 0.96 +
+          (t > 0.007 ? Math.exp(-(t - 0.007) * 32) * 0.42 : 0) +
+          0.22 * Math.exp(-t * 22);
+        const spark =
+          Math.sin(Math.PI * 2 * 3350 * vScale * t + raw * 1.7) * Math.exp(-t * 92) * 0.34;
+        const snap = (lp - hp) * snapEnv + spark;
+        return Math.tanh((whip + chest + crack + snap) * 1.88) * 0.92;
       });
     }
     if (kind === 'heavy') {
       let pSub = 0,
         pCrunch = 0,
-        lp = 0,
-        hp = 0;
-      return this.makeBuffer(context, rate, 0.44, (t, i) => {
-        const fSub = (38 + 155 * Math.exp(-t * 26)) * vScale;
-        const fCrunch = (86 + 310 * Math.exp(-t * 34)) * vScale;
-        pSub += Math.PI * 2 * fSub * dt;
-        pCrunch += Math.PI * 2 * fCrunch * dt;
-        const sub = Math.sin(pSub) * Math.exp(-t * 7.5) * 0.94;
-        const crunch =
-          Math.sin(pCrunch + Math.sin(pSub * 3.2) * 1.6 * Math.exp(-t * 16)) * Math.exp(-t * 12.5) * 0.64;
-        const raw = this.noise(i, 53 + variant * 11);
-        lp += (raw - lp) * 0.44;
-        hp += (lp - hp) * 0.06;
-        const shock =
-          (lp - hp) * (Math.exp(-t * 46) * 0.82 + (t > 0.011 ? Math.exp(-(t - 0.011) * 24) * 0.52 : 0));
-        return Math.tanh((sub + crunch + shock) * 1.82) * 0.92;
-      });
-    }
-    if (kind === 'slash') {
-      let pBody = 0,
+        pBite = 0,
+        pCrack = 0,
         ic1 = 0,
         ic2 = 0;
-      const bladeModes = [2120, 3180, 4640, 6180].map((f) => f * vScale);
-      return this.makeBuffer(context, rate, 0.32, (t, i) => {
-        const fBody = 54 + 150 * Math.exp(-t * 36);
-        pBody += Math.PI * 2 * fBody * dt;
-        const cleave = t >= 0.005 ? Math.sin(pBody) * Math.exp(-(t - 0.005) * 18) * 0.58 : 0;
-        const raw = this.noise(i, 71 + variant * 13);
-        const cutoff = Math.max(520, Math.min(rate * 0.43, 5200 * Math.exp(-t * 16) + 580));
+      return this.makeBuffer(context, rate, 0.44, (t, i) => {
+        const fCrack = (4800 * Math.exp(-t * 210) + 320) * vScale;
+        const fBite = (290 + 880 * Math.exp(-t * 58)) * vScale;
+        const fCrunch = (92 + 440 * Math.exp(-t * 38)) * vScale;
+        const fSub = (40 + 185 * Math.exp(-t * 28)) * vScale;
+        pCrack += Math.PI * 2 * fCrack * dt;
+        pBite += Math.PI * 2 * fBite * dt;
+        pCrunch += Math.PI * 2 * fCrunch * dt;
+        pSub += Math.PI * 2 * fSub * dt;
+        const crackSnap =
+          Math.sin(pCrack + Math.sin(pCrack * 1.7) * 1.1) *
+          (Math.exp(-t * 95) * 0.64 + (t > 0.012 ? Math.exp(-(t - 0.012) * 78) * 0.48 : 0));
+        const sub = Math.sin(pSub + 0.35 * Math.sin(pSub * 2)) * Math.exp(-t * 7.6) * 0.96;
+        const crunch =
+          Math.sin(pCrunch + Math.sin(pSub * 3.4) * 1.85 * Math.exp(-t * 16)) * Math.exp(-t * 12) * 0.72 +
+          Math.sin(pBite + Math.sin(pCrunch * 2.1) * 1.3) * Math.exp(-t * 26) * 0.52;
+        const raw = this.noise(i, 53 + variant * 11);
+        const cutoff = Math.max(480, Math.min(rate * 0.43, 4400 * Math.exp(-t * 20) + 680));
         const g = Math.tan((Math.PI * cutoff) / rate);
-        const k = 0.62;
+        const k = 0.56;
         const a1 = 1 / (1 + g * (g + k));
         const a2 = g * a1;
         const a3 = g * a2;
@@ -750,33 +754,73 @@ class SoundEngine {
         const v2 = ic2 + a2 * ic1 + a3 * v3;
         ic1 = 2 * v1 - ic1;
         ic2 = 2 * v2 - ic2;
-        const swish = v1 * Math.exp(-t * 13.5) * 1.02;
-        const glide = 1 + 0.045 * Math.exp(-t * 34);
+        const shockEnv =
+          Math.exp(-t * 50) * 0.92 + (t > 0.013 ? Math.exp(-(t - 0.013) * 21) * 0.68 : 0);
+        const spark =
+          (Math.sin(Math.PI * 2 * 3950 * vScale * t + raw * 1.6) * 0.28 +
+            Math.sin(Math.PI * 2 * 5680 * vScale * t + raw * 1.2) * 0.18) *
+          (Math.exp(-t * 72) + (t > 0.013 ? Math.exp(-(t - 0.013) * 48) * 0.65 : 0));
+        const shock = (v1 * 0.95 + (raw - v2) * 0.38) * shockEnv + spark;
+        return Math.tanh((crackSnap + sub + crunch + shock) * 1.92) * 0.94;
+      });
+    }
+    if (kind === 'slash') {
+      let pBody = 0,
+        pEdge = 0,
+        ic1 = 0,
+        ic2 = 0;
+      const bladeModes = [2280, 3420, 4860, 6480, 7950].map((f) => f * vScale);
+      return this.makeBuffer(context, rate, 0.32, (t, i) => {
+        const fEdge = (6400 * Math.exp(-t * 88) + 1420) * vScale;
+        const fBody = (54 + 190 * Math.exp(-t * 38)) * vScale;
+        pEdge += Math.PI * 2 * fEdge * dt;
+        pBody += Math.PI * 2 * fBody * dt;
+        const schwing = Math.sin(pEdge + Math.sin(pEdge * 1.5) * 0.85) * Math.exp(-t * 48) * 0.56;
+        const cleave = Math.sin(pBody + Math.sin(pBody * 2.2) * 0.8 * Math.exp(-t * 28)) * Math.exp(-t * 16.5) * 0.72;
+        const raw = this.noise(i, 71 + variant * 13);
+        const cutoff = Math.max(580, Math.min(rate * 0.44, 6200 * Math.exp(-t * 17) + 640));
+        const g = Math.tan((Math.PI * cutoff) / rate);
+        const k = 0.48;
+        const a1 = 1 / (1 + g * (g + k));
+        const a2 = g * a1;
+        const a3 = g * a2;
+        const v3 = raw - ic2;
+        const v1 = a1 * ic1 + a2 * v3;
+        const v2 = ic2 + a2 * ic1 + a3 * v3;
+        ic1 = 2 * v1 - ic1;
+        ic2 = 2 * v2 - ic2;
+        const swishEnv = Math.exp(-t * 14) * 1.05 + (t > 0.008 ? Math.exp(-(t - 0.008) * 28) * 0.52 : 0);
+        const swish = (v1 * 1.08 + (raw - v2) * 0.32) * swishEnv;
+        const glide = 1 + 0.062 * Math.exp(-t * 36);
         let steel = 0;
         for (let m = 0; m < bladeModes.length; m++) {
           const mf = bladeModes[m] * glide;
           steel +=
-            Math.sin(Math.PI * 2 * mf * t + this.noise(i, m + 9) * 0.45 * Math.exp(-t * 42)) *
-            Math.exp(-t * (22 + m * 6)) *
-            (0.24 / (1 + m * 0.22));
+            Math.sin(Math.PI * 2 * mf * t + this.noise(i, m + 9) * 0.42 * Math.exp(-t * 44)) *
+            Math.exp(-t * (19 + m * 5.2)) *
+            (0.28 / (1 + m * 0.2));
         }
-        return Math.tanh((swish + steel + cleave) * 1.65) * 0.9;
+        return Math.tanh((schwing + swish + steel + cleave) * 1.82) * 0.93;
       });
     }
     if (kind === 'metal') {
       let pKnock = 0,
+        pPing = 0,
         ic1 = 0,
         ic2 = 0;
-      const modes = [1140, 1520, 1980, 2560, 3290, 4180, 5280, 6540].map((f) => f * vScale);
-      const weights = [0.22, 0.21, 0.19, 0.17, 0.15, 0.12, 0.1, 0.08];
+      const modes = [1180, 1590, 2120, 2780, 3540, 4480, 5620, 6940].map((f) => f * vScale);
+      const weights = [0.24, 0.22, 0.2, 0.18, 0.16, 0.13, 0.11, 0.09];
       return this.makeBuffer(context, rate, 0.32, (t, i) => {
-        const fKnock = (72 + 135 * Math.exp(-t * 44)) * vScale;
+        const fPing = (5200 * Math.exp(-t * 175) + 1240) * vScale;
+        const fKnock = (74 + 165 * Math.exp(-t * 46)) * vScale;
+        pPing += Math.PI * 2 * fPing * dt;
         pKnock += Math.PI * 2 * fKnock * dt;
-        const knock = Math.sin(pKnock) * Math.exp(-t * 28) * 0.48;
+        const ping = Math.sin(pPing) * Math.exp(-t * 72) * 0.46;
+        const knock = Math.sin(pKnock) * Math.exp(-t * 24) * 0.58;
         const raw = this.noise(i, 89 + variant * 17);
-        const cutoff = Math.max(900, Math.min(rate * 0.42, 4200 * Math.exp(-t * 22) + 1350));
+        const cutoff = Math.max(950, Math.min(rate * 0.43, 4800 * Math.exp(-t * 22) + 1450));
         const g = Math.tan((Math.PI * cutoff) / rate);
-        const k = 0.58;
+        const k = 0.52;
         const a1 = 1 / (1 + g * (g + k));
         const a2 = g * a1;
         const a3 = g * a2;
@@ -786,18 +830,18 @@ class SoundEngine {
         ic1 = 2 * v1 - ic1;
         ic2 = 2 * v2 - ic2;
         const strikeBurst =
-          v1 * (Math.exp(-t * 55) * 0.95 + (t > 0.009 ? Math.exp(-(t - 0.009) * 42) * 0.55 : 0));
+          v1 * (Math.exp(-t * 52) * 0.98 + (t > 0.008 ? Math.exp(-(t - 0.008) * 38) * 0.62 : 0));
         const fmChaos =
-          (Math.sin(Math.PI * 2 * 1790 * vScale * t) * 1.9 + raw * 0.85) * Math.exp(-t * 34);
+          (Math.sin(Math.PI * 2 * 1840 * vScale * t) * 2.0 + raw * 0.85) * Math.exp(-t * 32);
         let clang = 0;
         for (let m = 0; m < modes.length; m++) {
-          const damp = 21 + m * 4.8;
+          const damp = 18.5 + m * 4.4;
           clang +=
             Math.sin(Math.PI * 2 * modes[m] * t + fmChaos * (0.55 + m * 0.14)) *
             Math.exp(-t * damp) *
             weights[m];
         }
-        return Math.tanh((knock + strikeBurst + clang * 1.15) * 1.68) * 0.9;
+        return Math.tanh((ping + knock + strikeBurst + clang * 1.22) * 1.78) * 0.92;
       });
     }
     let pBox1 = 0,
@@ -805,15 +849,15 @@ class SoundEngine {
       ic1 = 0,
       ic2 = 0;
     return this.makeBuffer(context, rate, 0.28, (t, i) => {
-      const f1 = (78 + 115 * Math.exp(-t * 48)) * vScale;
-      const f2 = (148 + 185 * Math.exp(-t * 54)) * vScale;
+      const f1 = (76 + 145 * Math.exp(-t * 48)) * vScale;
+      const f2 = (158 + 240 * Math.exp(-t * 54)) * vScale;
       pBox1 += Math.PI * 2 * f1 * dt;
       pBox2 += Math.PI * 2 * f2 * dt;
-      const boxThud = (Math.sin(pBox1) * 0.68 + Math.sin(pBox2) * 0.42) * Math.exp(-t * 36) * 0.65;
+      const boxThud = (Math.sin(pBox1) * 0.74 + Math.sin(pBox2) * 0.48) * Math.exp(-t * 30) * 0.76;
       const raw = this.noise(i, 107 + variant * 19);
-      const cutoff = (1650 + 1200 * Math.exp(-t * 28)) * vScale;
-      const g = Math.tan((Math.PI * Math.min(rate * 0.42, cutoff)) / rate);
-      const k = 0.68;
+      const cutoff = (1950 + 1650 * Math.exp(-t * 26)) * vScale;
+      const g = Math.tan((Math.PI * Math.min(rate * 0.43, cutoff)) / rate);
+      const k = 0.58;
       const a1 = 1 / (1 + g * (g + k));
       const a2 = g * a1;
       const a3 = g * a2;
@@ -823,27 +867,32 @@ class SoundEngine {
       ic1 = 2 * v1 - ic1;
       ic2 = 2 * v2 - ic2;
       const cracks =
-        Math.exp(-t * 82) * 0.95 +
-        (t > 0.011 ? Math.exp(-(t - 0.011) * 98) * 0.72 : 0) +
-        (t > 0.024 ? Math.exp(-(t - 0.024) * 115) * 0.56 : 0) +
-        (t > 0.041 ? Math.exp(-(t - 0.041) * 130) * 0.38 : 0);
-      const grain = Math.sin(Math.PI * 2 * 620 * vScale * t + raw * 1.1) * Math.exp(-t * 45) * 0.34;
-      return Math.tanh((boxThud + v1 * cracks * 1.25 + grain) * 1.68) * 0.88;
+        Math.exp(-t * 78) * 1.0 +
+        (t > 0.009 ? Math.exp(-(t - 0.009) * 92) * 0.82 : 0) +
+        (t > 0.021 ? Math.exp(-(t - 0.021) * 105) * 0.66 : 0) +
+        (t > 0.036 ? Math.exp(-(t - 0.036) * 118) * 0.48 : 0) +
+        (t > 0.052 ? Math.exp(-(t - 0.052) * 130) * 0.34 : 0);
+      const grain =
+        (Math.sin(Math.PI * 2 * 680 * vScale * t + raw * 1.2) * 0.38 +
+          Math.sin(Math.PI * 2 * 1420 * vScale * t + raw * 0.9) * 0.26) *
+        Math.exp(-t * 42);
+      return Math.tanh((boxThud + v1 * cracks * 1.35 + grain) * 1.78) * 0.91;
     });
   }
   synthWhoosh(context, rate, seconds, startFreq, endFreq, seed) {
     let ic1 = 0,
       ic2 = 0,
-      pSub = 0;
+      pSub = 0,
+      pWhip = 0;
     const dt = 1 / rate;
     return this.makeBuffer(context, rate, seconds, (t, i) => {
       const p = t / seconds;
-      const env = Math.sin(Math.PI * Math.pow(p, 0.75)) * Math.exp(-p * 1.1);
-      const arch = Math.sin(Math.PI * Math.pow(p, 0.66));
-      const cutoff = Math.max(130, Math.min(rate * 0.42, endFreq + (startFreq - endFreq) * arch));
+      const env = Math.sin(Math.PI * Math.pow(p, 0.68)) * Math.exp(-p * 0.95);
+      const arch = Math.sin(Math.PI * Math.pow(p, 0.6));
+      const cutoff = Math.max(140, Math.min(rate * 0.43, endFreq + (startFreq - endFreq) * arch));
       const raw = this.noise(i, seed);
       const g = Math.tan((Math.PI * cutoff) / rate);
-      const k = 0.7;
+      const k = 0.56;
       const a1 = 1 / (1 + g * (g + k));
       const a2 = g * a1;
       const a3 = g * a2;
@@ -852,51 +901,63 @@ class SoundEngine {
       const v2 = ic2 + a2 * ic1 + a3 * v3;
       ic1 = 2 * v1 - ic1;
       ic2 = 2 * v2 - ic2;
-      const subFreq = endFreq * 0.46 + (startFreq * 0.15 - endFreq * 0.46) * p;
+      const subFreq = endFreq * 0.48 + (startFreq * 0.18 - endFreq * 0.48) * p;
+      const whipFreq = cutoff * 1.35;
       pSub += Math.PI * 2 * subFreq * dt;
-      const airBody = Math.sin(pSub) * 0.22;
-      return Math.tanh((v1 * 1.38 + v2 * 0.32 + airBody) * env * 1.52) * 0.86;
+      pWhip += Math.PI * 2 * whipFreq * dt;
+      const airBody = Math.sin(pSub) * 0.28 + Math.sin(pWhip + raw * 1.4) * 0.18 * arch;
+      return Math.tanh((v1 * 1.48 + v2 * 0.34 + airBody) * env * 1.65) * 0.9;
     });
   }
   synthCatch(context, rate) {
     let p1 = 0,
+      pSnap = 0,
       lp = 0,
       hp = 0;
     const dt = 1 / rate;
     return this.makeBuffer(context, rate, 0.24, (t, i) => {
-      const f = 56 + 145 * Math.exp(-t * 36);
+      const f = 58 + 175 * Math.exp(-t * 38);
+      const fSnap = 420 + 2100 * Math.exp(-t * 140);
       p1 += Math.PI * 2 * f * dt;
-      const thud = Math.sin(p1) * Math.exp(-t * 16) * 0.7;
+      pSnap += Math.PI * 2 * fSnap * dt;
+      const thud = Math.sin(p1) * Math.exp(-t * 15) * 0.78;
+      const gripSnap = Math.sin(pSnap) * Math.exp(-t * 68) * 0.46;
       const raw = this.noise(i, 73);
-      lp += (raw - lp) * 0.42;
-      hp += (lp - hp) * 0.08;
+      lp += (raw - lp) * 0.52;
+      hp += (lp - hp) * 0.09;
       const cloth =
-        (lp - hp) * (Math.exp(-t * 52) * 0.82 + (t > 0.02 ? Math.exp(-(t - 0.02) * 36) * 0.65 : 0));
+        (lp - hp) * (Math.exp(-t * 48) * 0.92 + (t > 0.018 ? Math.exp(-(t - 0.018) * 34) * 0.72 : 0));
       const slap =
-        t > 0.016 ? Math.sin(Math.PI * 2 * 380 * (t - 0.016)) * Math.exp(-(t - 0.016) * 48) * 0.34 : 0;
-      return Math.tanh((thud + cloth + slap) * 1.6) * 0.88;
+        t > 0.014 ? Math.sin(Math.PI * 2 * 440 * (t - 0.014)) * Math.exp(-(t - 0.014) * 44) * 0.42 : 0;
+      return Math.tanh((thud + gripSnap + cloth + slap) * 1.75) * 0.91;
     });
   }
   synthLanding(context, rate) {
     let p1 = 0,
       p2 = 0,
+      pCrack = 0,
       lp = 0;
     const dt = 1 / rate;
     return this.makeBuffer(context, rate, 0.56, (t, i) => {
-      const f1 = 46 + 96 * Math.exp(-t * 26);
+      const f1 = 42 + 135 * Math.exp(-t * 28);
+      const fCrack = 260 + 1850 * Math.exp(-t * 110);
       p1 += Math.PI * 2 * f1 * dt;
-      const heel = Math.sin(p1) * Math.exp(-t * 9.2) * 0.78;
+      pCrack += Math.PI * 2 * fCrack * dt;
+      const heel = Math.sin(p1 + 0.3 * Math.sin(p1 * 2)) * Math.exp(-t * 8.5) * 0.88;
+      const slamCrack = Math.sin(pCrack) * Math.exp(-t * 58) * 0.48;
       let sole = 0;
       if (t >= 0.018) {
         const ts = t - 0.018;
-        const f2 = 62 + 115 * Math.exp(-ts * 32);
+        const f2 = 58 + 140 * Math.exp(-ts * 32);
         p2 += Math.PI * 2 * f2 * dt;
-        sole = Math.sin(p2) * Math.exp(-ts * 11.5) * 0.58;
+        sole = Math.sin(p2) * Math.exp(-ts * 10.5) * 0.66;
       }
       const raw = this.noise(i, 89);
-      lp += (raw - lp) * 0.3;
-      const grit = lp * (Math.exp(-t * 28) * 0.5 + (t >= 0.018 ? Math.exp(-(t - 0.018) * 18) * 0.46 : 0));
-      return Math.tanh((heel + sole + grit) * 1.55) * 0.88;
+      lp += (raw - lp) * 0.42;
+      const grit =
+        (lp * 0.75 + raw * 0.25) *
+        (Math.exp(-t * 26) * 0.62 + (t >= 0.018 ? Math.exp(-(t - 0.018) * 16) * 0.54 : 0));
+      return Math.tanh((heel + slamCrack + sole + grit) * 1.72) * 0.92;
     });
   }
   synthEnergy(context, rate) {
@@ -904,15 +965,15 @@ class SoundEngine {
       ic1 = 0,
       ic2 = 0;
     const dt = 1 / rate;
-    const crystalFreqs = [880, 1320, 1760, 2640];
+    const crystalFreqs = [880, 1320, 1760, 2640, 3520];
     return this.makeBuffer(context, rate, 0.44, (t, i) => {
-      const fSub = 44 + 125 * Math.exp(-t * 22);
+      const fSub = 44 + 155 * Math.exp(-t * 24);
       pSub += Math.PI * 2 * fSub * dt;
-      const sub = Math.sin(pSub) * Math.exp(-t * 9.5) * 0.56;
+      const sub = Math.sin(pSub) * Math.exp(-t * 9.0) * 0.64;
       const raw = this.noise(i, 97);
-      const cutoff = Math.min(rate * 0.42, 420 + 3400 * Math.sin(Math.PI * Math.pow(t / 0.44, 0.65)));
+      const cutoff = Math.min(rate * 0.43, 480 + 4200 * Math.sin(Math.PI * Math.pow(t / 0.44, 0.62)));
       const g = Math.tan((Math.PI * cutoff) / rate);
-      const k = 0.55;
+      const k = 0.48;
       const a1 = 1 / (1 + g * (g + k));
       const a2 = g * a1;
       const a3 = g * a2;
@@ -921,31 +982,31 @@ class SoundEngine {
       const v2 = ic2 + a2 * ic1 + a3 * v3;
       ic1 = 2 * v1 - ic1;
       ic2 = 2 * v2 - ic2;
-      const whoosh = v1 * Math.min(1, t / 0.018) * Math.exp(-t * 5.2) * 0.85;
-      const glide = 1 + 0.22 * (1 - Math.exp(-t * 14));
+      const whoosh = v1 * Math.min(1, t / 0.014) * Math.exp(-t * 4.8) * 0.92;
+      const glide = 1 + 0.26 * (1 - Math.exp(-t * 15));
       let shimmer = 0;
       for (let c = 0; c < crystalFreqs.length; c++) {
         const cf = crystalFreqs[c] * glide;
         shimmer +=
-          Math.sin(Math.PI * 2 * cf * t + Math.sin(Math.PI * 2 * 18 * t) * 0.35) *
-          Math.exp(-t * (6.5 + c * 1.8)) *
-          (0.18 / (1 + c * 0.2));
+          Math.sin(Math.PI * 2 * cf * t + Math.sin(Math.PI * 2 * 21 * t) * 0.42) *
+          Math.exp(-t * (6.0 + c * 1.6)) *
+          (0.22 / (1 + c * 0.18));
       }
-      return Math.tanh((sub + whoosh + shimmer) * 1.55) * 0.88;
+      return Math.tanh((sub + whoosh + shimmer) * 1.68) * 0.91;
     });
   }
   synthReverse(context, rate) {
     let ic1 = 0,
       ic2 = 0;
-    const baseFreqs = [523.25, 783.99, 1046.5, 1567.98];
+    const baseFreqs = [523.25, 783.99, 1046.5, 1567.98, 2093.0];
     return this.makeBuffer(context, rate, 0.38, (t, i) => {
       const p = t / 0.38;
-      const swell = p < 0.86 ? Math.pow(p / 0.86, 2.1) : Math.exp(-(p - 0.86) * 32);
-      const sweep = 1 + 0.55 * p * p;
+      const swell = p < 0.86 ? Math.pow(p / 0.86, 1.95) : Math.exp(-(p - 0.86) * 34);
+      const sweep = 1 + 0.62 * p * p;
       const raw = this.noise(i, 101);
-      const cutoff = Math.min(rate * 0.42, 360 + 3800 * p * p);
+      const cutoff = Math.min(rate * 0.43, 420 + 4400 * p * p);
       const g = Math.tan((Math.PI * cutoff) / rate);
-      const k = 0.6;
+      const k = 0.52;
       const a1 = 1 / (1 + g * (g + k));
       const a2 = g * a1;
       const a3 = g * a2;
@@ -957,11 +1018,14 @@ class SoundEngine {
       let chord = 0;
       for (let c = 0; c < baseFreqs.length; c++) {
         const f = baseFreqs[c] * sweep;
-        chord += Math.sin(Math.PI * 2 * f * t + Math.sin(Math.PI * 2 * 22 * t) * 0.3) * (0.2 / (1 + c * 0.18));
+        chord += Math.sin(Math.PI * 2 * f * t + Math.sin(Math.PI * 2 * 24 * t) * 0.36) * (0.22 / (1 + c * 0.16));
       }
       const flashSnap =
-        p >= 0.84 && p < 0.92 ? Math.sin(Math.PI * 2 * 2400 * t) * Math.exp(-(p - 0.84) * 65) * 0.45 : 0;
-      return Math.tanh(((v1 * 0.82 + chord) * swell + flashSnap) * 1.52) * 0.86;
+        p >= 0.83 && p < 0.94
+          ? (Math.sin(Math.PI * 2 * 2650 * t) * 0.48 + Math.sin(Math.PI * 2 * 4120 * t) * 0.28) *
+            Math.exp(-(p - 0.83) * 58)
+          : 0;
+      return Math.tanh(((v1 * 0.88 + chord) * swell + flashSnap) * 1.68) * 0.9;
     });
   }
   buildBank(context = this.ctx, deferred = false) {
@@ -1451,53 +1515,78 @@ class SoundEngine {
   }
   playSwing(heavy = false) {
     if (this.allow('swing', 0.035))
-      this.effect(heavy ? 'swingHeavy' : 'swing', heavy ? 0.92 : 0.72, (this.random() - 0.5) * 0.35);
+      this.effect(
+        heavy ? 'swingHeavy' : 'swing',
+        heavy ? 0.96 : 0.78,
+        (this.random() - 0.5) * 0.35,
+        0,
+        0.96 + this.random() * 0.1
+      );
   }
   playHit(style = 'light') {
     if (!this.allow('hit', 0.018)) return;
     if (style === 'justguard') {
-      this.effect(this.variant('metal'), 0.72, 0, 0, 1.15);
-      this.effect('energy', 0.38, 0.15, 0.012, 1.25);
+      this.effect(this.variant('metal'), 0.82, 0, 0, 1.18);
+      this.effect('energy', 0.48, 0.16, 0.01, 1.28);
       for (const [i, n] of [84, 91].entries())
-        this.note('bell', n, this.ctx.currentTime + i * 0.028, 0.26, 0.42, i ? 0.3 : -0.3, this.seGain, 'effect');
+        this.note('bell', n, this.ctx.currentTime + i * 0.026, 0.26, 0.44, i ? 0.3 : -0.3, this.seGain, 'effect');
       return;
     }
     if (style === 'block') {
-      this.effect(this.variant('metal'), 0.68, 0, 0, 1.06);
-      this.effect(this.variant('wood'), 0.36, 0.1, 0.008, 1.08);
+      this.effect(this.variant('metal'), 0.76, -0.06, 0, 1.08);
+      this.effect(this.variant('wood'), 0.42, 0.1, 0.007, 1.12);
       return;
     }
+    const effectLoad = [...this.active].filter((v) => v.group === 'effect').length;
+    const pan = (this.random() - 0.5) * 0.24;
+    const rateJitter = 0.96 + this.random() * 0.09;
     if (style === 'slash') {
-      this.effect(this.variant('slash'), 0.96);
-      this.effect(this.variant('heavy'), 0.48, 0, 0.01, 0.94);
+      this.effect(this.variant('slash'), 1.0, pan, 0, rateJitter);
+      this.effect(this.variant('heavy'), 0.54, -pan * 0.7, 0.008, 0.95);
+      if (effectLoad < 14) {
+        this.effect(this.variant('metal'), 0.28, -pan, 0.005, 1.36);
+      }
       return;
     }
-    const pan = (this.random() - 0.5) * 0.22;
-    this.effect(this.variant(style === 'light' ? 'punch' : 'heavy'), style === 'light' ? 0.96 : 1.06, pan);
+    if (style === 'light') {
+      this.effect(this.variant('punch'), 1.0, pan, 0, rateJitter);
+      if (effectLoad < 14) {
+        this.effect('swing', 0.28, -pan, 0.004, 1.42);
+      }
+      return;
+    }
+    this.effect(this.variant('heavy'), 1.08, pan, 0, rateJitter);
+    if (effectLoad < 14) {
+      this.effect(this.variant('punch'), 0.38, -pan, 0.005, 1.18);
+      this.effect('energy', 0.24, pan * 0.8, 0.012, 1.45);
+    }
   }
   playGrapple(phase) {
     if (!this.allow('grapple-' + phase, 0.025)) return;
     if (phase === 'catch') {
-      this.effect('catch', 0.96);
+      this.effect('catch', 1.0, -0.06);
+      this.effect(this.variant('punch'), 0.34, 0.08, 0.008, 1.22);
     } else if (phase === 'release') {
-      this.effect('swingHeavy', 1.12, -0.15);
+      this.effect('swingHeavy', 1.14, -0.15, 0, 1.04);
+      this.effect('swing', 0.42, 0.18, 0.015, 1.24);
     } else {
-      this.effect('landing', 1.05);
-      this.effect(this.variant('wood'), 0.42, 0.2, 0.055, 0.9);
+      this.effect('landing', 1.08, 0);
+      this.effect(this.variant('heavy'), 0.56, -0.15, 0.012, 0.86);
+      this.effect(this.variant('wood'), 0.46, 0.2, 0.048, 0.92);
     }
   }
   playSuper() {
     if (!this.allow('super', 0.18)) return;
-    this.effect('reverse', 0.72);
-    this.effect('energy', 0.96, 0, 0.055);
-    this.effect(this.variant('heavy'), 0.64, -0.25, 0.075, 0.84);
-    this.effect('crash', 0.3, 0.3, 0.09);
+    this.effect('reverse', 0.82, -0.1);
+    this.effect('energy', 1.02, 0.08, 0.05);
+    this.effect(this.variant('heavy'), 0.72, -0.22, 0.07, 0.86);
+    this.effect('crash', 0.36, 0.28, 0.085, 1.06);
   }
   playBreak(material = 'wood') {
     if (!this.allow('break', 0.035)) return;
-    this.effect(this.variant(material === 'metal' ? 'metal' : 'wood'), 0.98);
-    this.effect(this.variant('heavy'), 0.46, -0.12, 0.012, 0.88);
-    this.effect('landing', 0.34, 0.12, 0.022);
+    this.effect(this.variant(material === 'metal' ? 'metal' : 'wood'), 1.02, -0.08);
+    this.effect(this.variant('heavy'), 0.54, 0.12, 0.01, 0.9);
+    this.effect('landing', 0.38, -0.1, 0.022, 1.06);
   }
   playPickup(type) {
     if (!this.allow('pickup', 0.08)) return;

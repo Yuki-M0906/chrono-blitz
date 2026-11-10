@@ -1,13 +1,19 @@
 # CHRONO BLITZ: ARCADE COLLECTION
 
-Browser-only arcade collection (one small HTML file plus a `data/` folder of asset packs): the 1-on-1 2D fighter **OVERDRIVE** and the side-scrolling beat 'em up **NEON UPRISING**. / 1 つの HTML だけで動くアーケードコレクション。2D 対戦格闘「OVERDRIVE」と 1 人用ベルトスクロールアクション「NEON UPRISING」。
+Browser-only arcade collection (one small HTML file plus a `data/` folder of asset packs): the 1-on-1 2D fighter **OVERDRIVE** and the side-scrolling beat 'em up **NEON UPRISING**. / HTML と `data/` フォルダで動くアーケードコレクション。2D 対戦格闘「OVERDRIVE」と 1 人用ベルトスクロールアクション「NEON UPRISING」。
 
 **▶ Play the demo / デモをプレイ:** https://yuki-m0906.github.io/chrono-blitz/
 
-Current version: **v2.6.0** (shown at the top right of the game select screen). / 現在のバージョン: **v2.6.0**（ゲーム選択画面の右上に表示）
+Current version: **v2.8.1** (shown at the top right of the game select screen). / 現在のバージョン: **v2.8.1**（ゲーム選択画面の右上に表示）
 
-> The game is `ai_studio_code.html` (0.4 MB of code) plus ten asset packs in `data/` (117 MB in total, 22 MB at most each). Keep them together. The first load takes a while; later loads are cached per pack. Keyboard required.
-> ゲーム本体は `ai_studio_code.html`（約 0.4MB）と `data/` フォルダのアセットパック 10 本（計 約 117MB）のセットです。必ず同じ場所に置いてください。初回読み込みには時間がかかります。キーボードが必要です。
+> The game is `ai_studio_code.html` (0.4 MB of code) plus eleven asset packs in `data/` (135 MB in total, 22 MB at most each). Keep them together. The first load takes a while; later loads are cached per pack. Keyboard required.
+> ゲーム本体は `ai_studio_code.html`（約 0.4MB）と `data/` フォルダのアセットパック 11 本（計 約 135MB）のセットです。必ず同じ場所に置いてください。初回読み込みには時間がかかります。キーボードが必要です。
+>
+> v2.8.1: 起動直後のゲーム選択画面で音楽が鳴らない問題を修正。ブラウザは操作があるまで音を出せないため、最初のクリック / キー押下を「スタート」として受け、そこで音楽を始めます。 / The first click or key press now starts the game select screen and its music.
+>
+> v2.8.0: NEON UPRISING に前方向2回のダッシュと、走行中 J / Z の強力なダッシュ攻撃を追加。命中するとボスのアーマーも貫通して必ずダウン。6人専用の走行・攻撃・復帰144姿勢を追加し、2.7.0の音声・音楽・効果音と従来素材は保持。
+>
+> v2.7.0: キャラクター音声（全 6 人・126 クリップ）の棒読みを解消（音節構造に基づくアクセント・抑揚拡大、時変 F0 演技コンター、誤読・平板発声の修正）し、打撃・斬撃・投げ・必殺技などの効果音（SE）を爽快感のある重厚なアーケードサウンドへ刷新。
 >
 > v2.6.0: NEON UPRISING の当たり判定を遊びやすく調整（攻撃の奥行きと持続を拡大、敵の攻撃は避けやすく）。単一 HTML を分割して読み込みを改善。
 
@@ -26,6 +32,7 @@ v2.5.0: NEON UPRISING の全 5 区画を描き下ろし背景へ刷新。木箱�
 | | 1P (OVERDRIVE) | NEON UPRISING |
 |---|---|---|
 | Move | `W` `A` `S` `D` (or arrows) | `W` `A` `S` `D` (up/down = depth) |
+| Dash / Dash attack | Forward twice / Back twice | `→→` / `←←` / `D D` / `A A`, hold the second press to run; `J` / `Z` while running to attack |
 | Light / Heavy | `J` / `K` | `J` chain attack (punch → body → upper) and pick up; hold `S` on the 3rd hit to throw |
 | Special / Super | `L` / `U` | `L` emergency attack |
 | Throw / Burst | `I` / `O` | `I` throw, `K` jump |
@@ -36,7 +43,7 @@ v2.5.0: NEON UPRISING の全 5 区画を描き下ろし背景へ刷新。木箱�
 
 - HTML5 Canvas 2D, fixed 60 Hz simulation, 1280×720 logical resolution, deterministic rendering (drawing never consumes the combat RNG).
 - Web Audio API: 8 original diatonic tracks and all sound effects are synthesized locally from 35 base PCM buffers + 47 multi-sampled instrument buffers; no external audio files.
-- 432 shared pixel-art poses (18 atlases), 72 original boss poses (3 atlases), 4 versus backgrounds, 5 street backgrounds and an 8-cell prop/item atlas embedded as data URIs (31 PNGs total).
+- 432 shared pixel-art poses (18 atlases), 72 boss poses (3 atlases), 144 dash poses (6 atlases), 4 versus backgrounds, 5 street backgrounds and an 8-cell prop/item atlas stored as data URIs (37 PNGs total).
 - Character voices: 126 studio-mastered VOICEVOX synthesized clips (see credits).
 - No server, no network requests, no installation. Open `ai_studio_code.html` directly (with `data/` beside it).
 
@@ -59,7 +66,7 @@ verification/           latest test reports and screenshots
 Build: `node tools/build-sprites.mjs` re-embeds everything between the `SPRITE_ASSETS` / `AUDIO_ENGINE` / `BELT_ENGINE` markers. Never edit inside the markers by hand.
 Tests: `node tools/verify-*.cjs` (needs Playwright and Chrome; see `assets/belt/README.md`).
 
-The detailed design document and the per-version changelog (v1.1 → v2.6) live in the HTML comment at the top of `ai_studio_code.html`.
+The detailed design document and the per-version changelog (v1.1 → v2.8) live in the HTML comment at the top of `ai_studio_code.html`.
 
 ## Credits / クレジット
 

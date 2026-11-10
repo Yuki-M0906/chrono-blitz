@@ -26,7 +26,8 @@ const packs = [
   {name: 'voices', kind: 'voices', data: Object.fromEntries(Object.entries(voiceProfiles).flatMap(([id, profile]) => Object.keys(profile.lines).map(event =>
     [id + '-' + event, 'data:audio/wav;base64,' + b64('assets/voices', id + '-' + event + '.wav')])))},
   {name: 'belt-backgrounds', kind: 'beltArt', data: art(id => id.startsWith('district-'))},
-  {name: 'belt-actors', kind: 'beltArt', data: art(id => !id.startsWith('district-'))}
+  {name: 'belt-actors', kind: 'beltArt', data: art(id => !id.startsWith('district-') && !id.startsWith('dash-'))},
+  {name: 'belt-dash', kind: 'beltArt', data: art(id => id.startsWith('dash-'))}
 ];
 fs.mkdirSync(dataDir, {recursive: true});
 let total = 0;

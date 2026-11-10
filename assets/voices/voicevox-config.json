@@ -1,68 +1,113 @@
 {
   "version": "1.7.0",
-  "engine": "VOICEVOX Core 0.17.1 / ONNX Runtime 1.17.3 / VVM 0.17.1 / CPU (v2.4 Studio Mastered)",
+  "engine": "VOICEVOX Core 0.17.1 / ONNX Runtime 1.17.3 / VVM 0.17.1 / CPU (v2.7 Expressive Acting & Mora Prosody)",
   "sampleRate": 24000,
   "profiles": {
     "kagura": {
       "voice": "玄野武宏",
       "models": [4, 10],
-      "styles": { "normal": 11, "force": 40, "hurt": 40, "win": 11, "ko": 41 },
-      "speed": 1.0,
-      "pitch": -0.015,
-      "superSegments": ["奥義。", "ぐれんてんしょうざん！"]
+      "styles": { "normal": 39, "force": 40, "hurt": 40, "win": 11, "ko": 41, "intro": 40 },
+      "speed": 1.01,
+      "pitch": -0.01,
+      "superSegments": ["奥義！", "紅蓮、天翔斬！"]
     },
     "volt": {
       "voice": "白上虎太郎",
       "models": [9],
-      "styles": { "normal": 12, "force": 34, "hurt": 33, "win": 32, "ko": 33 },
+      "styles": { "normal": 32, "force": 34, "hurt": 33, "win": 32, "ko": 33, "intro": 34 },
       "speed": 1.03,
-      "pitch": -0.015,
+      "pitch": -0.01,
       "eventSpeeds": { "grabbed": 1.24 },
-      "superSegments": ["オーバードライブ。", "ラグナロク！"]
+      "superSegments": ["オーバードライブ！", "ラグナロク！"]
     },
     "freya": {
       "voice": "四国めたん",
       "models": [0],
-      "styles": { "normal": 2, "force": 6, "hurt": 6, "win": 4, "ko": 2 },
-      "speed": 1.0,
-      "pitch": -0.02,
-      "superSegments": ["アブソリュートゼロ。", "カリバー！"]
+      "styles": { "normal": 2, "force": 6, "hurt": 6, "win": 4, "ko": 2, "intro": 6 },
+      "speed": 1.01,
+      "pitch": -0.015,
+      "superSegments": ["アブソリュート、ゼロ！", "カリバー！"]
     },
     "titan": {
       "voice": "麒ヶ島宗麟",
       "models": [12],
-      "styles": { "normal": 53, "force": 53, "hurt": 53, "win": 53, "ko": 53 },
-      "speed": 0.98,
-      "pitch": -0.03,
-      "superSegments": ["メテオ。", "カタストロフィ！"]
+      "styles": { "normal": 53, "force": 53, "hurt": 53, "win": 53, "ko": 53, "intro": 53 },
+      "speed": 1.01,
+      "pitch": -0.025,
+      "superSegments": ["メテオ！", "カタストロフィ！"]
     },
     "ayame": {
       "voice": "中国うさぎ",
       "models": [3],
-      "styles": { "normal": 61, "force": 61, "hurt": 62, "win": 61, "ko": 64 },
+      "styles": { "normal": 61, "force": 62, "hurt": 62, "win": 61, "ko": 64, "intro": 61 },
       "speed": 1.04,
       "pitch": 0.01,
-      "superSegments": ["秘奥義。", "ひゃっかりょうらん！"]
+      "superSegments": ["秘奥義！", "ひゃっか、りょうらん！"]
     },
     "celine": {
       "voice": "九州そら",
       "models": [2],
-      "styles": { "normal": 16, "force": 16, "hurt": 18, "win": 17, "ko": 16 },
+      "styles": { "normal": 17, "force": 16, "hurt": 18, "win": 17, "ko": 16, "intro": 17 },
       "speed": 1.04,
       "pitch": -0.01,
-      "eventSpeeds": { "light1": 1.24, "sp1": 1.12, "sp2": 1.08, "sp3": 1.08 },
-      "superSegments": ["エトワール。", "デュ・ソワール！"]
+      "eventSpeeds": { "light1": 1.22, "hurt1": 1.14, "sp1": 1.10, "sp2": 1.08, "sp3": 1.08 },
+      "superSegments": ["エトワール！", "デュ、ソワール！"]
     }
   },
   "pronunciations": {
-    "kagura-sp1": "えんげつ！",
-    "kagura-sp2": "ひえん！",
-    "kagura-sp3": "しゅんごくせん！",
-    "ayame-sp1": "しげつせん！",
-    "ayame-sp2": "ひえんのまい！",
-    "ayame-sp3": "かすみばしり！",
+    "kagura-sp1": "円月！",
+    "kagura-sp2": "飛燕！",
+    "kagura-sp3": "しゅんごく、せん！",
+    "volt-sp1": "プラズマ、ショット！",
+    "volt-sp2": "ライトニング、ドライブ！",
+    "volt-sp3": "サンダー、サマー！",
+    "freya-throw_release": "ハアッ！",
+    "freya-sp1": "グレイシャー、ピラー！",
+    "freya-sp2": "ヴァルキリー、ランス！",
+    "freya-sp3": "フロスト、ノヴァ！",
+    "titan-sp2": "ギガント、タックル！",
+    "titan-sp3": "ガイア、バスター！",
+    "ayame-sp1": "しげつ、せん！",
+    "ayame-sp2": "ひえんの、まい！",
+    "ayame-sp3": "かすみ、ばしり！",
+    "celine-throw_release": "ハアッ！",
     "celine-sp1": "ローズ、エクレール！",
     "celine-sp2": "フルール、ランジイ！",
     "celine-sp3": "エメラルド、リポストオ！"
+  },
+  "accentOverrides": {
+    "kagura-heavy1": [1],
+    "kagura-sp1": [1],
+    "kagura-sp2": [1],
+    "kagura-sp3": [1, 1],
+    "kagura-super:0": [1],
+    "kagura-super:1": [1, 4],
+    "volt-sp1": [2, 1],
+    "volt-sp2": [1, 2],
+    "volt-sp3": [1, 1],
+    "volt-super:1": [1],
+    "freya-throw_release": [1],
+    "freya-sp1": [3, 2],
+    "freya-sp2": [3, 1],
+    "freya-sp3": [2, 1],
+    "freya-super:0": [4, 1],
+    "freya-super:1": [1],
+    "titan-sp1:0": [1],
+    "titan-sp1:1": [1, 2],
+    "titan-sp2": [2, 1],
+    "titan-sp3": [1, 1],
+    "titan-super:0": [1],
+    "titan-super:1": [3],
+    "ayame-sp1": [1, 1],
+    "ayame-sp2": [1, 1],
+    "ayame-sp3": [3, 2],
+    "ayame-super:0": [2],
+    "ayame-super:1": [1, 2],
+    "celine-throw_release": [1],
+    "celine-sp1": [1, 3],
+    "celine-sp2": [2, 1],
+    "celine-sp3": [3, 2],
+    "celine-super:0": [3],
+    "celine-super:1": [1, 2]
   }
 }

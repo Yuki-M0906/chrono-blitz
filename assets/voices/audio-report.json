@@ -1,16 +1,16 @@
 {
   "version": "1.7.0",
-  "engine": "VOICEVOX Core 0.17.1 / ONNX Runtime 1.17.3 / VVM 0.17.1 / CPU (v2.4 Studio Mastered)",
+  "engine": "VOICEVOX Core 0.17.1 / ONNX Runtime 1.17.3 / VVM 0.17.1 / CPU (v2.7 Expressive Acting & Mora Prosody)",
   "sampleRate": 24000,
-  "listeningReview": "Auditioned and verified with mora prosody sculpting and studio vocal mastering chain.",
+  "listeningReview": "Auditioned and verified with syllable-aware prosody sculpting, intra-mora F0 acting contour warping, and studio vocal mastering.",
   "clips": [
     {
       "clip": "kagura-light0",
-      "seconds": 0.288,
-      "bytes": 13868,
-      "peak": 28507,
-      "rms": 3366.4,
-      "sha256": "ab4ef721e19055af4c54448a45b528664485b98dfb5b901f0ea0eceb4964984c",
+      "seconds": 0.3,
+      "bytes": 14440,
+      "peak": 28800,
+      "rms": 3791.8,
+      "sha256": "f8f7325c04f57a9a4332577d2e173cafa9a3d3c27e4e190540530a6db5c5a947",
       "segments": [
         {
           "text": "はっ！",
@@ -22,11 +22,11 @@
     },
     {
       "clip": "kagura-light1",
-      "seconds": 0.416,
-      "bytes": 20012,
-      "peak": 28507,
-      "rms": 4619.2,
-      "sha256": "02c98c8d971765ca52ca5130cfa8d33100801d86ebd3e22a0085835882a5154e",
+      "seconds": 0.376,
+      "bytes": 18084,
+      "peak": 28800,
+      "rms": 4579.4,
+      "sha256": "a3ad14e6e2cf40de1afc1e08db0f6c07e3e8925867cd86982dccaa119a08deb8",
       "segments": [
         {
           "text": "せいっ！",
@@ -38,11 +38,11 @@
     },
     {
       "clip": "kagura-heavy0",
-      "seconds": 0.427,
-      "bytes": 20524,
-      "peak": 28507,
-      "rms": 3775.4,
-      "sha256": "fcc949e44114e9392bafea49d1d4c9afe976ac924dd399a2cfb78b0a9ee60174",
+      "seconds": 0.444,
+      "bytes": 21346,
+      "peak": 28800,
+      "rms": 4697.8,
+      "sha256": "7d086a82290af74bdc0e490e396799f730e8c17ac2a15b275e074a56ed2c02aa",
       "segments": [
         {
           "text": "やあっ！",
@@ -54,11 +54,11 @@
     },
     {
       "clip": "kagura-heavy1",
-      "seconds": 0.331,
-      "bytes": 15942,
-      "peak": 28507,
-      "rms": 4230.9,
-      "sha256": "d1ca6bbce314cb4c5074287c5e5ded23014928c556a68a2bfbb42f6f82decbb6",
+      "seconds": 0.32,
+      "bytes": 15418,
+      "peak": 28800,
+      "rms": 3945.0,
+      "sha256": "3fde83c91b47ba8448f2576c3fea1bb051586cecbc4440fa10dd0541e18ebe8a",
       "segments": [
         {
           "text": "斬る！",
@@ -70,43 +70,43 @@
     },
     {
       "clip": "kagura-jump",
-      "seconds": 0.244,
-      "bytes": 11778,
-      "peak": 28507,
-      "rms": 6017.4,
-      "sha256": "e17ec0e7c5c1e24ddd07aea639f97000a70c9ebba2eaeda7efd9dd6458cf0ce5",
+      "seconds": 0.334,
+      "bytes": 16078,
+      "peak": 28800,
+      "rms": 4857.0,
+      "sha256": "8eab550b005483741ceffeb2969031f9c243a01489153654449a04eaf3105cef",
       "segments": [
         {
           "text": "ふっ！",
           "voice": "玄野武宏",
-          "style": "ノーマル",
-          "styleId": 11
+          "style": "ツンギレ",
+          "styleId": 40
         }
       ]
     },
     {
       "clip": "kagura-dash",
-      "seconds": 0.427,
-      "bytes": 20524,
-      "peak": 28507,
-      "rms": 4407.9,
-      "sha256": "3efb3bed1629d7ecb4f077a5cda8f1b66878eba74f8404673a5a4f0391d0a7e5",
+      "seconds": 0.491,
+      "bytes": 23596,
+      "peak": 28800,
+      "rms": 4384.0,
+      "sha256": "dfd363560b9ae901a6e67f7e5d4197ccd67ca72a5d84284e6df0d02ff40a20b5",
       "segments": [
         {
           "text": "行くぞ！",
           "voice": "玄野武宏",
-          "style": "ノーマル",
-          "styleId": 11
+          "style": "ツンギレ",
+          "styleId": 40
         }
       ]
     },
     {
       "clip": "kagura-hurt0",
-      "seconds": 0.311,
-      "bytes": 14970,
-      "peak": 28507,
-      "rms": 4535.3,
-      "sha256": "43f9fd8f8db0f53d6614bc3cbb8dc270c1e0d2092eb61747718380f68370ddf5",
+      "seconds": 0.322,
+      "bytes": 15512,
+      "peak": 28800,
+      "rms": 5019.6,
+      "sha256": "a089199ca74dd74b34cbb56aa434bb2a77df9eea79206c8113afdd69057b5b2d",
       "segments": [
         {
           "text": "ぐっ！",
@@ -118,11 +118,11 @@
     },
     {
       "clip": "kagura-hurt1",
-      "seconds": 0.32,
-      "bytes": 15404,
-      "peak": 28507,
-      "rms": 4396.3,
-      "sha256": "69e395b85d419569c3cad45ea3749fee187ceba77fc8e8b280f21ec93b5c752f",
+      "seconds": 0.338,
+      "bytes": 16258,
+      "peak": 28800,
+      "rms": 4311.2,
+      "sha256": "dbb336ff7d6eb6bbbdfce8eaf472cccb29541b120f8874fde3a53403797b2d25",
       "segments": [
         {
           "text": "うっ！",
@@ -134,11 +134,11 @@
     },
     {
       "clip": "kagura-throw",
-      "seconds": 0.54,
-      "bytes": 25956,
-      "peak": 28507,
-      "rms": 5520.0,
-      "sha256": "6554f53a7a1853027fbee6b6e12002b1080c4ae702691326a3a704110da55046",
+      "seconds": 0.483,
+      "bytes": 23228,
+      "peak": 28800,
+      "rms": 6117.8,
+      "sha256": "19baec55593a3c665f86adf56318681d2b068e637a3177658cd57866eb7f8505",
       "segments": [
         {
           "text": "捉えた！",
@@ -150,11 +150,11 @@
     },
     {
       "clip": "kagura-burst",
-      "seconds": 0.725,
-      "bytes": 34860,
-      "peak": 28507,
-      "rms": 3461.8,
-      "sha256": "3812c17e6148995cc8a083604e8467276b1e95249727ccd7c9a125e01e616ede",
+      "seconds": 0.637,
+      "bytes": 30640,
+      "peak": 28800,
+      "rms": 4448.4,
+      "sha256": "e3132021bebf49c7bfd6871c324c9b87fcba0a2755ecd20517960664c2787d82",
       "segments": [
         {
           "text": "退けっ！",
@@ -166,14 +166,14 @@
     },
     {
       "clip": "kagura-sp1",
-      "seconds": 0.547,
-      "bytes": 26320,
-      "peak": 28507,
-      "rms": 3678.0,
-      "sha256": "35ad7e6d0fa0bad155712e0a992c3383f765e77ea504fd5f4973a9e76629f905",
+      "seconds": 0.576,
+      "bytes": 27674,
+      "peak": 28800,
+      "rms": 4411.1,
+      "sha256": "b7f0ceeca2f79e9186db7a0947019327ed28cd421fb62567e544391cea299eeb",
       "segments": [
         {
-          "text": "えんげつ！",
+          "text": "円月！",
           "voice": "玄野武宏",
           "style": "ツンギレ",
           "styleId": 40
@@ -182,14 +182,14 @@
     },
     {
       "clip": "kagura-sp2",
-      "seconds": 0.437,
-      "bytes": 21036,
-      "peak": 28507,
-      "rms": 4687.2,
-      "sha256": "48f3bdb61f81896550eded15ae5c049b18481ae662e733fd6efaff9e3c792cf8",
+      "seconds": 0.481,
+      "bytes": 23126,
+      "peak": 28800,
+      "rms": 5030.4,
+      "sha256": "920d102a779ac9058e5e918854287373800dd70ae83c4ab1b1872537b9e7b288",
       "segments": [
         {
-          "text": "ひえん！",
+          "text": "飛燕！",
           "voice": "玄野武宏",
           "style": "ツンギレ",
           "styleId": 40
@@ -198,14 +198,14 @@
     },
     {
       "clip": "kagura-sp3",
-      "seconds": 0.779,
-      "bytes": 37420,
-      "peak": 28507,
-      "rms": 4709.5,
-      "sha256": "4bbf4cb63b043e40603ede9810addb54a21de788a8f38dfb3eb291a7d3d7f9de",
+      "seconds": 0.931,
+      "bytes": 44746,
+      "peak": 28800,
+      "rms": 3398.3,
+      "sha256": "bd1926667c4a9ba4a71f5e8ea40edc6fa723a075c5e425df6ca8f4982ccdced1",
       "segments": [
         {
-          "text": "しゅんごくせん！",
+          "text": "しゅんごく、せん！",
           "voice": "玄野武宏",
           "style": "ツンギレ",
           "styleId": 40
@@ -214,20 +214,20 @@
     },
     {
       "clip": "kagura-super",
-      "seconds": 1.568,
-      "bytes": 75324,
-      "peak": 28507,
-      "rms": 3805.5,
-      "sha256": "a79373ba6b59c7f45f3f4b674b234f2a8cfcda78ca5eaa2637b454127be6437a",
+      "seconds": 1.586,
+      "bytes": 76174,
+      "peak": 28800,
+      "rms": 4845.8,
+      "sha256": "07368ee57bc0470f144d9f52bf88e5095a2a5ebec6bfcead98baf59f0aa41523",
       "segments": [
         {
-          "text": "奥義。",
+          "text": "奥義！",
           "voice": "玄野武宏",
-          "style": "ノーマル",
-          "styleId": 11
+          "style": "ツンギレ",
+          "styleId": 40
         },
         {
-          "text": "ぐれんてんしょうざん！",
+          "text": "紅蓮、天翔斬！",
           "voice": "玄野武宏",
           "style": "ツンギレ",
           "styleId": 40
@@ -236,27 +236,27 @@
     },
     {
       "clip": "kagura-select",
-      "seconds": 1.466,
-      "bytes": 70406,
-      "peak": 26869,
-      "rms": 3003.5,
-      "sha256": "988e42cbdbba47f40b1219c62a82e9c7c5eabf7252d13088ffc1da3c26f80c56",
+      "seconds": 1.437,
+      "bytes": 69008,
+      "peak": 27197,
+      "rms": 3381.5,
+      "sha256": "dbdc941db1d85891d4217f72654a40cd8626c6b5f5884804ed9ba5bd91c79b72",
       "segments": [
         {
           "text": "我が太刀、見切れるか？",
           "voice": "玄野武宏",
-          "style": "ノーマル",
-          "styleId": 11
+          "style": "喜び",
+          "styleId": 39
         }
       ]
     },
     {
       "clip": "kagura-win",
-      "seconds": 0.664,
-      "bytes": 31934,
-      "peak": 26869,
-      "rms": 4974.4,
-      "sha256": "6b89f74748d9f2807842882473679ea99ea6e61fb407b34001299ddcbfe998e7",
+      "seconds": 0.65,
+      "bytes": 31240,
+      "peak": 27197,
+      "rms": 6009.5,
+      "sha256": "698b97204a7b727bfc57232a6468a0013311417895bf089b20b37a7221f08c89",
       "segments": [
         {
           "text": "勝負あり。",
@@ -268,11 +268,11 @@
     },
     {
       "clip": "kagura-ko",
-      "seconds": 0.594,
-      "bytes": 28566,
+      "seconds": 0.572,
+      "bytes": 27486,
       "peak": 24903,
-      "rms": 5430.0,
-      "sha256": "9071a21e38e6ada3fa46f61c2e2edb990f64e9d329c24052ef29e894c496cf52",
+      "rms": 4625.2,
+      "sha256": "9b03a84d58b6e7c6841c5ee72b30fb3016ee4fa7e5867b0bda61a1ce063ce28c",
       "segments": [
         {
           "text": "無念。",
@@ -284,11 +284,11 @@
     },
     {
       "clip": "kagura-grabbed",
-      "seconds": 0.384,
-      "bytes": 18476,
-      "peak": 28507,
-      "rms": 3950.1,
-      "sha256": "65774137fc5ae4bac916c7f63970fcc783c1bef6de0966fe6758d9b5ff52b071",
+      "seconds": 0.397,
+      "bytes": 19098,
+      "peak": 28800,
+      "rms": 3894.0,
+      "sha256": "94c2e1ac2d32da6e718fe41d11738e5a4b40fba252b30b06d7df751f53e46abb",
       "segments": [
         {
           "text": "なにっ！",
@@ -300,11 +300,11 @@
     },
     {
       "clip": "kagura-throw_release",
-      "seconds": 0.437,
-      "bytes": 21036,
-      "peak": 28507,
-      "rms": 4564.5,
-      "sha256": "81e51c378f022963cf8c9e14cdd46a1b2ca1945d3ffb105e6268735b9b35b8ad",
+      "seconds": 0.425,
+      "bytes": 20464,
+      "peak": 28800,
+      "rms": 5229.6,
+      "sha256": "a40d680fb55b18509cdd810e601794db329c251307c163cb28ef1b1bdbae3404",
       "segments": [
         {
           "text": "せいっ！",
@@ -316,11 +316,11 @@
     },
     {
       "clip": "kagura-thrown",
-      "seconds": 0.491,
-      "bytes": 23596,
-      "peak": 28507,
-      "rms": 4197.5,
-      "sha256": "b353bb2af537ed9bb9bfaa030dc67754f1126dd20c2965c490cd8cc32dafdcdf",
+      "seconds": 0.534,
+      "bytes": 25680,
+      "peak": 28800,
+      "rms": 4752.1,
+      "sha256": "66b5982587569bf9408f947e1db400742b9cf8dff5ec9d3fabe96b0351efa786",
       "segments": [
         {
           "text": "うわあっ！",
@@ -332,11 +332,11 @@
     },
     {
       "clip": "kagura-throw_impact",
-      "seconds": 0.428,
-      "bytes": 20588,
-      "peak": 28507,
-      "rms": 4205.7,
-      "sha256": "c35d372ac982037b40cccc71ca5dcb60e1020671dd4f601a1c0bfeae31972259",
+      "seconds": 0.386,
+      "bytes": 18594,
+      "peak": 28800,
+      "rms": 4170.1,
+      "sha256": "41101bb85a39c5074a0e14c832f2592d038c01351d5c21825aa55c79b66edd08",
       "segments": [
         {
           "text": "ぐはっ！",
@@ -348,11 +348,11 @@
     },
     {
       "clip": "volt-light0",
-      "seconds": 0.448,
-      "bytes": 21542,
-      "peak": 28507,
-      "rms": 4811.2,
-      "sha256": "e639390d7b335b939b8e4784378ce1ca9470ed07bf1d5c5c71e4643da99b9a19",
+      "seconds": 0.459,
+      "bytes": 22092,
+      "peak": 28800,
+      "rms": 6217.0,
+      "sha256": "b16aa1dcf5675673a64fc17a636dc6df03df170026fe3f51a2c438a28a2830ad",
       "segments": [
         {
           "text": "はっ！",
@@ -364,11 +364,11 @@
     },
     {
       "clip": "volt-light1",
-      "seconds": 0.459,
-      "bytes": 22060,
-      "peak": 28507,
-      "rms": 5091.2,
-      "sha256": "d9744ca5f3ffd9093cd22ac0cfd5ae4c6bf70ebb3c1b9194f15a52052cc2c274",
+      "seconds": 0.449,
+      "bytes": 21592,
+      "peak": 28800,
+      "rms": 5095.3,
+      "sha256": "986a482d507ba00af0122a13e7b78f544ced242a5634645758a3fc545dcac2bd",
       "segments": [
         {
           "text": "そらっ！",
@@ -380,11 +380,11 @@
     },
     {
       "clip": "volt-heavy0",
-      "seconds": 0.576,
-      "bytes": 27692,
-      "peak": 28507,
-      "rms": 5710.7,
-      "sha256": "a54f89bc627ac8142969bb1530d874647031ef376331cdd457d80285ac5dc81f",
+      "seconds": 0.577,
+      "bytes": 27726,
+      "peak": 28800,
+      "rms": 6334.3,
+      "sha256": "66ac981d85729e906f8595f56887c4d934bceb8319203485d2d8f52062cca0ff",
       "segments": [
         {
           "text": "くらえっ！",
@@ -396,11 +396,11 @@
     },
     {
       "clip": "volt-heavy1",
-      "seconds": 0.736,
-      "bytes": 35372,
-      "peak": 28507,
-      "rms": 4832.7,
-      "sha256": "0d50461b927d9e8a95b434f127ce97f5075ec61992e5ee83237ec51172ce9244",
+      "seconds": 0.647,
+      "bytes": 31124,
+      "peak": 28800,
+      "rms": 5025.6,
+      "sha256": "7814910ff9794157c14ed623ec958eb984678059edbd254d1d1179e4be90f113",
       "segments": [
         {
           "text": "決めるぜ！",
@@ -412,43 +412,43 @@
     },
     {
       "clip": "volt-jump",
-      "seconds": 0.512,
-      "bytes": 24620,
-      "peak": 28507,
-      "rms": 4366.1,
-      "sha256": "9d9fb50afcaea207956f10c9a1abb45ab26a9335f491a8f369e5535147e5da85",
+      "seconds": 0.564,
+      "bytes": 27104,
+      "peak": 28800,
+      "rms": 6983.5,
+      "sha256": "adec04f5301719789ddc0e8d852e94ee31d0d14311029ea6d7ebdb8732105baf",
       "segments": [
         {
           "text": "よっと！",
           "voice": "白上虎太郎",
-          "style": "ふつう",
-          "styleId": 12
+          "style": "おこ",
+          "styleId": 34
         }
       ]
     },
     {
       "clip": "volt-dash",
-      "seconds": 0.619,
-      "bytes": 29740,
-      "peak": 28507,
-      "rms": 5422.9,
-      "sha256": "01e494712791f8a760a687d7199a2b53f3c110c7e0796622c11b7cebd3d6c26b",
+      "seconds": 0.72,
+      "bytes": 34622,
+      "peak": 28800,
+      "rms": 5879.3,
+      "sha256": "178c191df67defac17db38dbbdda0a1bf135bb79c8fe7cc49d4bd92aa16ac1ae",
       "segments": [
         {
           "text": "遅いぜ！",
           "voice": "白上虎太郎",
-          "style": "ふつう",
-          "styleId": 12
+          "style": "おこ",
+          "styleId": 34
         }
       ]
     },
     {
       "clip": "volt-hurt0",
-      "seconds": 0.469,
-      "bytes": 22572,
-      "peak": 28507,
-      "rms": 6761.4,
-      "sha256": "c24af5d5db527f5950af352235f7741c5377d8dc731be013b607f434aa16abe4",
+      "seconds": 0.483,
+      "bytes": 23218,
+      "peak": 28800,
+      "rms": 7204.7,
+      "sha256": "4fd36a8735f334dd7264d7a733e2efe92e9b84bc8d795e4c06c08f32fb6c200b",
       "segments": [
         {
           "text": "くっ！",
@@ -460,11 +460,11 @@
     },
     {
       "clip": "volt-hurt1",
-      "seconds": 0.655,
-      "bytes": 31496,
-      "peak": 28507,
-      "rms": 7339.5,
-      "sha256": "e9b1f43060acc34e8e6f4117599370a04695c09fa72215ccf7deeda52551c132",
+      "seconds": 0.667,
+      "bytes": 32078,
+      "peak": 28800,
+      "rms": 6825.2,
+      "sha256": "498aba3f69e5121e479fe36407878bcfee704557777ca60797fa79d542a5c4fd",
       "segments": [
         {
           "text": "ぐあっ！",
@@ -476,11 +476,11 @@
     },
     {
       "clip": "volt-throw",
-      "seconds": 0.597,
-      "bytes": 28716,
-      "peak": 28507,
-      "rms": 5132.2,
-      "sha256": "af07f8a981fd28bafd2c1e5802d5ffde3a5186fc0c799f88a7f13a76d9b64681",
+      "seconds": 0.567,
+      "bytes": 27240,
+      "peak": 28800,
+      "rms": 5368.3,
+      "sha256": "138d560994392eb35563bfd380de53f119c33730d9cd1ed79a0b049852854875",
       "segments": [
         {
           "text": "よしっ！",
@@ -492,11 +492,11 @@
     },
     {
       "clip": "volt-burst",
-      "seconds": 0.725,
-      "bytes": 34860,
-      "peak": 28507,
-      "rms": 5822.0,
-      "sha256": "0022000e22b89c47c2aabda900f6a187674e63a8445d757b44f609500fa7450b",
+      "seconds": 0.708,
+      "bytes": 34040,
+      "peak": 28800,
+      "rms": 5860.4,
+      "sha256": "a080495a2dc50796e40b3ad139802bd469bcea1731c69aa23c7425ddf8bbbf68",
       "segments": [
         {
           "text": "離れろっ！",
@@ -508,14 +508,14 @@
     },
     {
       "clip": "volt-sp1",
-      "seconds": 1.013,
-      "bytes": 48672,
-      "peak": 28507,
-      "rms": 3948.2,
-      "sha256": "29422f050fda2af5a9240821f8b2bc6dfb15e9f89fc02c2b267afa37f8e7bd34",
+      "seconds": 1.101,
+      "bytes": 52910,
+      "peak": 28800,
+      "rms": 5252.0,
+      "sha256": "ee1e2f4cc087bbc02a1ab8dff29c1620d5bb28ab2bdb2c79885dedf667fa0eec",
       "segments": [
         {
-          "text": "プラズマショット！",
+          "text": "プラズマ、ショット！",
           "voice": "白上虎太郎",
           "style": "おこ",
           "styleId": 34
@@ -524,14 +524,14 @@
     },
     {
       "clip": "volt-sp2",
-      "seconds": 1.28,
-      "bytes": 61484,
-      "peak": 28507,
-      "rms": 4513.0,
-      "sha256": "5a7d48ed631fe545b616b0443d83c8abe9fa98abf704bc2465b4355e3286330c",
+      "seconds": 1.372,
+      "bytes": 65886,
+      "peak": 28800,
+      "rms": 4802.4,
+      "sha256": "88cf7f0a9d0e6f67c64323a4445b6d628c721cc008fe2f552bcc34888aeec859",
       "segments": [
         {
-          "text": "ライトニングドライブ！",
+          "text": "ライトニング、ドライブ！",
           "voice": "白上虎太郎",
           "style": "おこ",
           "styleId": 34
@@ -540,14 +540,14 @@
     },
     {
       "clip": "volt-sp3",
-      "seconds": 1.035,
-      "bytes": 49708,
-      "peak": 28507,
-      "rms": 5062.6,
-      "sha256": "9bf93473e6ad5fc1e0277945c47ed8165f862a513844e65fec3b4b1e06040245",
+      "seconds": 1.115,
+      "bytes": 53588,
+      "peak": 28800,
+      "rms": 5791.4,
+      "sha256": "24f1d12ac27a6c19b3770c44df97b334244a2cc748cfeb18947514d0b7d22679",
       "segments": [
         {
-          "text": "サンダーサマー！",
+          "text": "サンダー、サマー！",
           "voice": "白上虎太郎",
           "style": "おこ",
           "styleId": 34
@@ -556,17 +556,17 @@
     },
     {
       "clip": "volt-super",
-      "seconds": 1.888,
-      "bytes": 90684,
-      "peak": 28507,
-      "rms": 5813.2,
-      "sha256": "8de8c26284bc037fdbbcd1d53c9c83a42a9b71eaf3847bec7a43260596954aed",
+      "seconds": 1.885,
+      "bytes": 90536,
+      "peak": 28800,
+      "rms": 5216.9,
+      "sha256": "7d1a3cd0705da07d24fe0f90fc9da37656efe5723a844f3ae8edbb02aca5dc0a",
       "segments": [
         {
-          "text": "オーバードライブ。",
+          "text": "オーバードライブ！",
           "voice": "白上虎太郎",
-          "style": "ふつう",
-          "styleId": 12
+          "style": "おこ",
+          "styleId": 34
         },
         {
           "text": "ラグナロク！",
@@ -578,27 +578,27 @@
     },
     {
       "clip": "volt-select",
-      "seconds": 1.524,
-      "bytes": 73194,
-      "peak": 26869,
-      "rms": 3526.0,
-      "sha256": "96c3d51a59ba1dc42b8bfde931f47dce9de7d4eb5e0adf95439e6953abdeb601",
+      "seconds": 1.627,
+      "bytes": 78142,
+      "peak": 27197,
+      "rms": 6032.3,
+      "sha256": "2987b0339be629478fb62e4bec3e3d6c7063d8c1f574472bbe5ec8a5abf5ee6b",
       "segments": [
         {
           "text": "最高速で行こうぜ！",
           "voice": "白上虎太郎",
-          "style": "ふつう",
-          "styleId": 12
+          "style": "わーい",
+          "styleId": 32
         }
       ]
     },
     {
       "clip": "volt-win",
-      "seconds": 0.949,
-      "bytes": 45612,
-      "peak": 26869,
-      "rms": 3602.8,
-      "sha256": "0cfbc02d7c645bc1c2ffd43e4a99c811ef81284cfc6828c19e46bddcb3b198af",
+      "seconds": 0.961,
+      "bytes": 46186,
+      "peak": 27197,
+      "rms": 4136.1,
+      "sha256": "64310c88f5719138e720f7b99e31d7df675c4180eb04928c5646837a01ee2105",
       "segments": [
         {
           "text": "俺の勝ちだ！",
@@ -610,11 +610,11 @@
     },
     {
       "clip": "volt-ko",
-      "seconds": 0.875,
-      "bytes": 42028,
+      "seconds": 0.912,
+      "bytes": 43840,
       "peak": 24903,
-      "rms": 3994.1,
-      "sha256": "f9e061e1744390103fa4162adb7d8aa8ba38717a76d2496404aa5412cf0c7bbc",
+      "rms": 3433.1,
+      "sha256": "dea82f2ff50a2fb4a235302be61987dd338db09a21855f773e952fce24b27826",
       "segments": [
         {
           "text": "マジかよ。",
@@ -626,11 +626,11 @@
     },
     {
       "clip": "volt-grabbed",
-      "seconds": 0.64,
-      "bytes": 30764,
-      "peak": 28507,
-      "rms": 4829.4,
-      "sha256": "5919f359d937ee5bbbd85ad8e114ecf7087b95a81a24fd9ef8c5da1c6e8747c9",
+      "seconds": 0.631,
+      "bytes": 30356,
+      "peak": 28800,
+      "rms": 5414.6,
+      "sha256": "990f26650176d6885742e7d60e3c2e31d67ad6d442ba2fab07cd6bdc42ac523b",
       "segments": [
         {
           "text": "しまった！",
@@ -642,11 +642,11 @@
     },
     {
       "clip": "volt-throw_release",
-      "seconds": 0.683,
-      "bytes": 32812,
-      "peak": 28507,
-      "rms": 6325.8,
-      "sha256": "1af14601c513945016fe57f325ae7aee2702f51e84aca2102e121e8c9b22b8ed",
+      "seconds": 0.658,
+      "bytes": 31610,
+      "peak": 28800,
+      "rms": 6441.6,
+      "sha256": "2ec561b0091dc0922a8d22147fdcb32c0b47f1b004fc4e6847fcc088d66b8b9e",
       "segments": [
         {
           "text": "そらよっ！",
@@ -658,11 +658,11 @@
     },
     {
       "clip": "volt-thrown",
-      "seconds": 0.501,
-      "bytes": 24108,
-      "peak": 28507,
-      "rms": 7243.2,
-      "sha256": "f58c14cc6fdb19bff4763ee90f8a12aa4968fd35f5116a03ac7b5496ea2ad95f",
+      "seconds": 0.524,
+      "bytes": 25176,
+      "peak": 25217,
+      "rms": 7536.4,
+      "sha256": "09f93a36d2313266ff21df655d25e097719891fa7aadb5fcbf785de08f4e0a4f",
       "segments": [
         {
           "text": "うわっ！",
@@ -674,11 +674,11 @@
     },
     {
       "clip": "volt-throw_impact",
-      "seconds": 0.587,
-      "bytes": 28204,
-      "peak": 28507,
-      "rms": 5047.3,
-      "sha256": "9baf26ea01b0b02f4e0946d98530a06cc5ecc0722f87bedb3c1d82ca79c2bbee",
+      "seconds": 0.553,
+      "bytes": 26602,
+      "peak": 28800,
+      "rms": 4778.4,
+      "sha256": "91d960628d09630940d8f41332f61937668b35b16e9def0df4ece08e05d04a7b",
       "segments": [
         {
           "text": "がはっ！",
@@ -690,11 +690,11 @@
     },
     {
       "clip": "freya-light0",
-      "seconds": 0.279,
-      "bytes": 13446,
-      "peak": 28507,
-      "rms": 4891.9,
-      "sha256": "b69946660212d439e2ca6fcbd1aaa060722d50e5248363027710f23b792ec5a1",
+      "seconds": 0.282,
+      "bytes": 13594,
+      "peak": 28800,
+      "rms": 5634.5,
+      "sha256": "8930f52a3268ee1292c47119d129ac2fc3f0e64b4fcb504746fb74159a581a2b",
       "segments": [
         {
           "text": "はっ！",
@@ -706,11 +706,11 @@
     },
     {
       "clip": "freya-light1",
-      "seconds": 0.471,
-      "bytes": 22640,
-      "peak": 28507,
-      "rms": 4525.3,
-      "sha256": "508b46c37226ca015195f685b293d46455a2576398a6edd0f0abf6a0a8b5e0dd",
+      "seconds": 0.43,
+      "bytes": 20704,
+      "peak": 28800,
+      "rms": 4949.1,
+      "sha256": "b4352f324091e38c4551fd991da0e7bbfba5b4ee8863419b9af4380ee6816800",
       "segments": [
         {
           "text": "せいっ！",
@@ -722,11 +722,11 @@
     },
     {
       "clip": "freya-heavy0",
-      "seconds": 0.747,
-      "bytes": 35900,
-      "peak": 28507,
-      "rms": 6316.4,
-      "sha256": "a79956880fd4512a83352ade113299aea76a99292ed030de60667bf19ee5d970",
+      "seconds": 0.806,
+      "bytes": 38734,
+      "peak": 28800,
+      "rms": 5584.2,
+      "sha256": "9760f2334f3a2a640f92d53f11d93deba5f904b548d30e226d25367c8f0e0689",
       "segments": [
         {
           "text": "凍りなさい！",
@@ -738,11 +738,11 @@
     },
     {
       "clip": "freya-heavy1",
-      "seconds": 0.704,
-      "bytes": 33836,
-      "peak": 28507,
-      "rms": 3363.6,
-      "sha256": "f5b55a2a4682307c4c1ebbbaed8cde66ab0bdaf1275cbdceb56d0f80b2361c67",
+      "seconds": 0.617,
+      "bytes": 29642,
+      "peak": 28800,
+      "rms": 3545.8,
+      "sha256": "2dd5129d5243b948b241005fd30229214991cedef3d1ac7ffbb94dd5d4869dc8",
       "segments": [
         {
           "text": "貫く！",
@@ -754,43 +754,43 @@
     },
     {
       "clip": "freya-jump",
-      "seconds": 0.267,
-      "bytes": 12844,
-      "peak": 28507,
-      "rms": 4821.2,
-      "sha256": "7a141cc390c451adb3486c5e90c99815aa1138b15d364efd6a82e8de63438a60",
+      "seconds": 0.292,
+      "bytes": 14074,
+      "peak": 28800,
+      "rms": 5453.3,
+      "sha256": "d978bb4bf04057d16656055228beb9640d3d8c443aa26471580a39125fe4be7e",
       "segments": [
         {
           "text": "ふっ！",
           "voice": "四国めたん",
-          "style": "ノーマル",
-          "styleId": 2
+          "style": "ツンツン",
+          "styleId": 6
         }
       ]
     },
     {
       "clip": "freya-dash",
-      "seconds": 0.614,
-      "bytes": 29506,
-      "peak": 28507,
-      "rms": 5952.4,
-      "sha256": "398973000d5f37a2aae675d39b1ff779b8717c21b5c8974b4702413923bdff60",
+      "seconds": 0.691,
+      "bytes": 33232,
+      "peak": 28800,
+      "rms": 4754.5,
+      "sha256": "eb101c8377d634feac55c5fd6647f1a11432a137017100688a920b5f23fb7c39",
       "segments": [
         {
           "text": "参ります！",
           "voice": "四国めたん",
-          "style": "ノーマル",
-          "styleId": 2
+          "style": "ツンツン",
+          "styleId": 6
         }
       ]
     },
     {
       "clip": "freya-hurt0",
-      "seconds": 0.344,
-      "bytes": 16572,
-      "peak": 28507,
-      "rms": 5632.4,
-      "sha256": "d268f8f6d056ae15989079881237d0f33373c64085521612bb352564ecba27c2",
+      "seconds": 0.355,
+      "bytes": 17098,
+      "peak": 28800,
+      "rms": 5778.0,
+      "sha256": "1d19134cd36f1825bbc7a114f0eb451a73c4ae6b2bdea866ac2c1a22fad88f82",
       "segments": [
         {
           "text": "くっ！",
@@ -802,11 +802,11 @@
     },
     {
       "clip": "freya-hurt1",
-      "seconds": 0.34,
-      "bytes": 16362,
-      "peak": 28507,
-      "rms": 5015.3,
-      "sha256": "4219abc2ec07814d6d60a5139d22e85634ac1d48c8c6b606f1116cae6305230e",
+      "seconds": 0.357,
+      "bytes": 17180,
+      "peak": 28800,
+      "rms": 5545.6,
+      "sha256": "70e71e00b4780dc60b4e5f5aa13c646b86abb47c76e08111e4ae333f4c14d452",
       "segments": [
         {
           "text": "あっ！",
@@ -818,11 +818,11 @@
     },
     {
       "clip": "freya-throw",
-      "seconds": 0.482,
-      "bytes": 23202,
-      "peak": 28507,
-      "rms": 4438.3,
-      "sha256": "3e5ffa2fd3b180c766ee45704256254e76a91923cf9fab1ffb654ef6c0ec0b8f",
+      "seconds": 0.468,
+      "bytes": 22490,
+      "peak": 28800,
+      "rms": 4391.6,
+      "sha256": "634d0fcbd0453a719ccddac1223b7a99865cf731cbe4fd179070a80b60bd0244",
       "segments": [
         {
           "text": "そこっ！",
@@ -834,11 +834,11 @@
     },
     {
       "clip": "freya-burst",
-      "seconds": 0.898,
-      "bytes": 43134,
-      "peak": 28507,
-      "rms": 4431.0,
-      "sha256": "9ef9e9a42ba131c7e5ce5086c0b54703803ce72ddec1c3bc5f82aca092379113",
+      "seconds": 0.871,
+      "bytes": 41842,
+      "peak": 28800,
+      "rms": 5638.7,
+      "sha256": "0b55aec1d8965608e02ae0b5c6a165889b18d5698c854da1de72fcfd21021467",
       "segments": [
         {
           "text": "近寄らないで！",
@@ -850,14 +850,14 @@
     },
     {
       "clip": "freya-sp1",
-      "seconds": 1.026,
-      "bytes": 49316,
-      "peak": 28507,
-      "rms": 4503.5,
-      "sha256": "7364768fea72b21ade4698660c63957e6a415c615bdbb3135571e0b8c6f4f674",
+      "seconds": 1.084,
+      "bytes": 52086,
+      "peak": 28800,
+      "rms": 6021.9,
+      "sha256": "ae6479ebe760ae8d21171443a85681faf9a6d57d3ccf13aada952655630164dc",
       "segments": [
         {
-          "text": "グレイシャーピラー！",
+          "text": "グレイシャー、ピラー！",
           "voice": "四国めたん",
           "style": "ツンツン",
           "styleId": 6
@@ -866,14 +866,14 @@
     },
     {
       "clip": "freya-sp2",
-      "seconds": 1.041,
-      "bytes": 50004,
-      "peak": 28507,
-      "rms": 3783.4,
-      "sha256": "d0bee604a4fb5d7cfa307018466a075bc457a8ff77a42703f1f0faf9cf6f13c3",
+      "seconds": 1.157,
+      "bytes": 55564,
+      "peak": 28800,
+      "rms": 4509.3,
+      "sha256": "c9c79635d86921b75aadad901cbc83a5ef00e15f044214960b85a8822f476e14",
       "segments": [
         {
-          "text": "ヴァルキリーランス！",
+          "text": "ヴァルキリー、ランス！",
           "voice": "四国めたん",
           "style": "ツンツン",
           "styleId": 6
@@ -882,14 +882,14 @@
     },
     {
       "clip": "freya-sp3",
-      "seconds": 0.792,
-      "bytes": 38038,
-      "peak": 28507,
-      "rms": 4848.5,
-      "sha256": "1d3dfbd7a3052644abe6aae686a13a8f0ea67706cdd736e84e094766a1e79ef4",
+      "seconds": 0.87,
+      "bytes": 41788,
+      "peak": 28800,
+      "rms": 5208.9,
+      "sha256": "8a42ee40a97d32be8aa0859d6c514b933b1445a6ed611e0ac20237c6cda8ea65",
       "segments": [
         {
-          "text": "フロストノヴァ！",
+          "text": "フロスト、ノヴァ！",
           "voice": "四国めたん",
           "style": "ツンツン",
           "styleId": 6
@@ -898,17 +898,17 @@
     },
     {
       "clip": "freya-super",
-      "seconds": 1.743,
-      "bytes": 83686,
-      "peak": 28507,
-      "rms": 4825.8,
-      "sha256": "d71db9f043d5ec124e518fe335c384d0f241746ae2589675efb5760bb319d116",
+      "seconds": 1.837,
+      "bytes": 88214,
+      "peak": 28800,
+      "rms": 4141.1,
+      "sha256": "9d8aaffaacaf29f80be209da8cce8c87de1a5c2d659947a65912ec69c79f94df",
       "segments": [
         {
-          "text": "アブソリュートゼロ。",
+          "text": "アブソリュート、ゼロ！",
           "voice": "四国めたん",
-          "style": "ノーマル",
-          "styleId": 2
+          "style": "ツンツン",
+          "styleId": 6
         },
         {
           "text": "カリバー！",
@@ -920,11 +920,11 @@
     },
     {
       "clip": "freya-select",
-      "seconds": 1.248,
-      "bytes": 59948,
-      "peak": 26869,
-      "rms": 3756.4,
-      "sha256": "1af6bc466b03c456846661376722a8c504d577008444311b3aaf786c287dc81c",
+      "seconds": 1.247,
+      "bytes": 59882,
+      "peak": 27197,
+      "rms": 3902.7,
+      "sha256": "cbb5676751c2f1e78fce6562f04c2821a457d376653f684153dbc893f8bc197d",
       "segments": [
         {
           "text": "静かな決着を。",
@@ -936,11 +936,11 @@
     },
     {
       "clip": "freya-win",
-      "seconds": 1.099,
-      "bytes": 52780,
-      "peak": 26869,
-      "rms": 5563.6,
-      "sha256": "3cbdfcfefef4640e85e51138edb1f6e939d5642ae92709010a90008fdfa71a8c",
+      "seconds": 1.109,
+      "bytes": 53266,
+      "peak": 27197,
+      "rms": 6051.3,
+      "sha256": "125159bc4254bc30d6d3842b19f54ec10b77784e5cfadaf1e788f1d41063ef1e",
       "segments": [
         {
           "text": "お眠りなさい。",
@@ -952,11 +952,11 @@
     },
     {
       "clip": "freya-ko",
-      "seconds": 0.577,
-      "bytes": 27762,
+      "seconds": 0.6,
+      "bytes": 28860,
       "peak": 24903,
-      "rms": 4901.0,
-      "sha256": "236f3fd5b215502d9479d9a0917a3a5b899b8c2cad430702ec2bdc14a3122a49",
+      "rms": 4430.2,
+      "sha256": "7f3d80848ece619efc67e9ec656e4cfc64b22a117b2f2d24c5f1977d982eac98",
       "segments": [
         {
           "text": "そんな。",
@@ -968,11 +968,11 @@
     },
     {
       "clip": "freya-grabbed",
-      "seconds": 0.335,
-      "bytes": 16136,
-      "peak": 28507,
-      "rms": 4406.2,
-      "sha256": "d9f4133bbaa141beafba5147944a6cad70eb537ac3dc9938453e49e238ab866a",
+      "seconds": 0.343,
+      "bytes": 16510,
+      "peak": 28800,
+      "rms": 5239.9,
+      "sha256": "94eb7744cd9572b6075012a6893bd3fb20a947d59729e9a3cb09ad4075fcbe9e",
       "segments": [
         {
           "text": "あっ！",
@@ -984,14 +984,14 @@
     },
     {
       "clip": "freya-throw_release",
-      "seconds": 0.462,
-      "bytes": 22230,
-      "peak": 28507,
-      "rms": 4239.9,
-      "sha256": "7c9823c68442f405459c05019879b4542790bb2b07d6d1800c89ff2c77ae9617",
+      "seconds": 0.436,
+      "bytes": 20986,
+      "peak": 28800,
+      "rms": 5198.0,
+      "sha256": "d74312a428a26aa2cab8bf4864aa87b1990a074f0100b9f95d0e3a3ec5b7ed37",
       "segments": [
         {
-          "text": "はあっ！",
+          "text": "ハアッ！",
           "voice": "四国めたん",
           "style": "ツンツン",
           "styleId": 6
@@ -1000,11 +1000,11 @@
     },
     {
       "clip": "freya-thrown",
-      "seconds": 0.446,
-      "bytes": 21450,
-      "peak": 28507,
-      "rms": 4952.1,
-      "sha256": "a059a42e8e5f88d0bee0b7b76a93dbe775d97893a69ea2c65de71505719e6bab",
+      "seconds": 0.427,
+      "bytes": 20548,
+      "peak": 28800,
+      "rms": 5854.9,
+      "sha256": "d79b3be76e711ca84c38c5984c8392a7adbd9978c46e842d714720d9a7fdc270",
       "segments": [
         {
           "text": "ああっ！",
@@ -1016,11 +1016,11 @@
     },
     {
       "clip": "freya-throw_impact",
-      "seconds": 0.334,
-      "bytes": 16084,
-      "peak": 28507,
-      "rms": 5387.7,
-      "sha256": "fbcc6de4ec67fd3ab7751ae1eee1a2b85b883c3a9acb260303c172cab4414a25",
+      "seconds": 0.327,
+      "bytes": 15756,
+      "peak": 28800,
+      "rms": 5295.5,
+      "sha256": "fb7c937ba7ec9a066d7aace84b9f616f58c30e7dc6a7045eabe05401177a391e",
       "segments": [
         {
           "text": "くっ！",
@@ -1032,11 +1032,11 @@
     },
     {
       "clip": "titan-light0",
-      "seconds": 0.587,
-      "bytes": 28204,
-      "peak": 28507,
-      "rms": 6786.4,
-      "sha256": "54fe853df0809f8301533d8f8def3e6527f1c92f1957cb09dfebb94bb9d41c7c",
+      "seconds": 0.553,
+      "bytes": 26604,
+      "peak": 25852,
+      "rms": 7536.4,
+      "sha256": "263df126bd79eefad557e77db9eb91444f5a633df8d442cff3558644dee868e8",
       "segments": [
         {
           "text": "ふんっ！",
@@ -1048,11 +1048,11 @@
     },
     {
       "clip": "titan-light1",
-      "seconds": 0.597,
-      "bytes": 28716,
-      "peak": 28507,
-      "rms": 5780.0,
-      "sha256": "a8db8743e122f3aad8de51796ad09e37b9c63ab17e30ff18cb72e043decaa5fd",
+      "seconds": 0.574,
+      "bytes": 27606,
+      "peak": 28800,
+      "rms": 5811.3,
+      "sha256": "220dba8c884f87cc23206859e90e07e4b22d4489c3476c72f63a21101de15c26",
       "segments": [
         {
           "text": "どりゃっ！",
@@ -1064,11 +1064,11 @@
     },
     {
       "clip": "titan-heavy0",
-      "seconds": 0.64,
-      "bytes": 30764,
-      "peak": 28507,
-      "rms": 7041.5,
-      "sha256": "925f9e65b8e849700aff5691bb2d7a90a14823e06b13606f5b465963b03830e6",
+      "seconds": 0.597,
+      "bytes": 28696,
+      "peak": 24729,
+      "rms": 7536.4,
+      "sha256": "ff6d71305984abca23b82f9e58789c65324d41582f9723f1b9a02ad1492ddf78",
       "segments": [
         {
           "text": "うおおっ！",
@@ -1080,11 +1080,11 @@
     },
     {
       "clip": "titan-heavy1",
-      "seconds": 0.736,
-      "bytes": 35372,
-      "peak": 28507,
-      "rms": 6484.3,
-      "sha256": "c73e05f7c8f963f9387135281de969cf61e48a5a04f429c0eac06d5914ff273c",
+      "seconds": 0.637,
+      "bytes": 30640,
+      "peak": 28800,
+      "rms": 6441.2,
+      "sha256": "0e2c244331f7665ed8b1a4d58ee176c0546a0e5366f5e856215276267144130d",
       "segments": [
         {
           "text": "砕けろ！",
@@ -1096,11 +1096,11 @@
     },
     {
       "clip": "titan-jump",
-      "seconds": 0.427,
-      "bytes": 20524,
-      "peak": 28507,
-      "rms": 5723.4,
-      "sha256": "b30f16c0d6aa8a586c21d4184a79e864adce4fe170ba71529b7a00cd2350443e",
+      "seconds": 0.418,
+      "bytes": 20088,
+      "peak": 28800,
+      "rms": 6405.2,
+      "sha256": "e282a4d918c53f0d871288594f5d63d4d4a2d86c1feb6ae3886db9265a68262d",
       "segments": [
         {
           "text": "ぬっ！",
@@ -1112,11 +1112,11 @@
     },
     {
       "clip": "titan-dash",
-      "seconds": 0.725,
-      "bytes": 34860,
-      "peak": 28507,
-      "rms": 5643.4,
-      "sha256": "159c6cf2c8f06e1b8e65d09a230411b955fff346e5383a98ee45b8b2f3f96929",
+      "seconds": 0.731,
+      "bytes": 35124,
+      "peak": 26638,
+      "rms": 7536.4,
+      "sha256": "17a441a5cff627a689fd164eaaf5c3ef35854182164dea4612a506a33b9b57a2",
       "segments": [
         {
           "text": "突き進む！",
@@ -1128,11 +1128,11 @@
     },
     {
       "clip": "titan-hurt0",
-      "seconds": 0.533,
-      "bytes": 25644,
-      "peak": 28507,
-      "rms": 7254.6,
-      "sha256": "6aa8916e8313726a517483627d06685b03763ad2d4d0a04c2fff6f236c3ea071",
+      "seconds": 0.536,
+      "bytes": 25794,
+      "peak": 28097,
+      "rms": 7536.4,
+      "sha256": "e5d0c2179dc2681b2199390e84915cba4b8c19c86a50a28d468fb12a3a7e5d43",
       "segments": [
         {
           "text": "ぐぬっ！",
@@ -1144,11 +1144,11 @@
     },
     {
       "clip": "titan-hurt1",
-      "seconds": 0.661,
-      "bytes": 31788,
-      "peak": 28507,
-      "rms": 6112.8,
-      "sha256": "3382c62e123f473b98531e377f028ea31c67ed4c50b0ab9f714ab97784fb63c9",
+      "seconds": 0.665,
+      "bytes": 31974,
+      "peak": 28800,
+      "rms": 5286.5,
+      "sha256": "69bc3e8459d08ed093e72a6c9bcb6950b8975c206e10d07291fe5cd864e34ee9",
       "segments": [
         {
           "text": "がはっ！",
@@ -1160,11 +1160,11 @@
     },
     {
       "clip": "titan-throw",
-      "seconds": 0.672,
-      "bytes": 32300,
-      "peak": 28507,
-      "rms": 7238.7,
-      "sha256": "c825f6aef22e71e2eb5d8f4d66cd40425dc128f545711e9166da1ca19052299b",
+      "seconds": 0.587,
+      "bytes": 28210,
+      "peak": 28800,
+      "rms": 6627.3,
+      "sha256": "8a9b24e099ee15082ddec38ab3ecca6ac4c17c43e6fcc0e39904decb77f187bd",
       "segments": [
         {
           "text": "捉えた！",
@@ -1176,11 +1176,11 @@
     },
     {
       "clip": "titan-burst",
-      "seconds": 0.896,
-      "bytes": 43052,
-      "peak": 28507,
-      "rms": 6249.3,
-      "sha256": "db9c26e70ede09addccca9f386d4d34a8638123453ab60a4f7a872eaf6acb8b2",
+      "seconds": 0.769,
+      "bytes": 36954,
+      "peak": 28800,
+      "rms": 5927.6,
+      "sha256": "2e11b97644ad81b85828333417c9b13c345d62a2f126041753221dd5f7c78b80",
       "segments": [
         {
           "text": "吹き飛べっ！",
@@ -1192,20 +1192,20 @@
     },
     {
       "clip": "titan-sp1",
-      "seconds": 1.664,
-      "bytes": 79932,
-      "peak": 28507,
-      "rms": 4617.4,
-      "sha256": "de321007a4e03a4281d4cd23019fdead11bd7332080f3eebcb256266ba26322a",
+      "seconds": 1.715,
+      "bytes": 82362,
+      "peak": 28800,
+      "rms": 4365.6,
+      "sha256": "6838069a98976aad1f3c9ad1908b4d0736bd19f0106fe16ef27ef68773715d76",
       "segments": [
         {
-          "text": "しんきゃく。",
+          "text": "しんきゃく！",
           "voice": "麒ヶ島宗麟",
           "style": "ノーマル",
           "styleId": 53
         },
         {
-          "text": "大地砕き！",
+          "text": "大地、砕き！",
           "voice": "麒ヶ島宗麟",
           "style": "ノーマル",
           "styleId": 53
@@ -1214,14 +1214,14 @@
     },
     {
       "clip": "titan-sp2",
-      "seconds": 1.024,
-      "bytes": 49196,
-      "peak": 28507,
-      "rms": 5004.5,
-      "sha256": "bb8ceeab716f2f9f3f62a096c42e9e5fb8553f299c20a03e9b9ed754675708cc",
+      "seconds": 1.115,
+      "bytes": 53588,
+      "peak": 28800,
+      "rms": 4295.1,
+      "sha256": "617f4c638e716e65f1e8126b6d5d904dc924aceb067617dfe743e98cac34bdf0",
       "segments": [
         {
-          "text": "ギガントタックル！",
+          "text": "ギガント、タックル！",
           "voice": "麒ヶ島宗麟",
           "style": "ノーマル",
           "styleId": 53
@@ -1230,14 +1230,14 @@
     },
     {
       "clip": "titan-sp3",
-      "seconds": 0.875,
-      "bytes": 42028,
-      "peak": 28507,
-      "rms": 5928.4,
-      "sha256": "5d5df3b2c1e13ae37ba933865084a650a0429241aed7e649ae0f41654a5eb5a8",
+      "seconds": 0.973,
+      "bytes": 46724,
+      "peak": 28800,
+      "rms": 5059.3,
+      "sha256": "49694bec4fa6301a5fc6b7b33a37ab69ded962e4c3c6dcfc2118e90bd674c07a",
       "segments": [
         {
-          "text": "ガイアバスター！",
+          "text": "ガイア、バスター！",
           "voice": "麒ヶ島宗麟",
           "style": "ノーマル",
           "styleId": 53
@@ -1246,14 +1246,14 @@
     },
     {
       "clip": "titan-super",
-      "seconds": 1.419,
-      "bytes": 68156,
-      "peak": 28507,
-      "rms": 5685.3,
-      "sha256": "bce276ce1bb28a517246f69ef5ec6741948eadf071de71266e3d91df1b49128f",
+      "seconds": 1.413,
+      "bytes": 67862,
+      "peak": 28800,
+      "rms": 4827.7,
+      "sha256": "8d93cd29abe57288a8abe32b31256aa9d10e0e733b265781b2cda21a0e143193",
       "segments": [
         {
-          "text": "メテオ。",
+          "text": "メテオ！",
           "voice": "麒ヶ島宗麟",
           "style": "ノーマル",
           "styleId": 53
@@ -1268,11 +1268,11 @@
     },
     {
       "clip": "titan-select",
-      "seconds": 1.355,
-      "bytes": 65068,
-      "peak": 26869,
-      "rms": 4328.9,
-      "sha256": "b6f69f45ea2e39a9274def879bcdb285f84945aa86b125ef14dfeac3994fd743",
+      "seconds": 1.384,
+      "bytes": 66464,
+      "peak": 27197,
+      "rms": 5140.7,
+      "sha256": "20a408c75104bab7dadc0fc7d9f8d589b102121ea68b885a1732b0419e4cd12e",
       "segments": [
         {
           "text": "さあ、かかって来い！",
@@ -1284,11 +1284,11 @@
     },
     {
       "clip": "titan-win",
-      "seconds": 0.843,
-      "bytes": 40492,
-      "peak": 26869,
-      "rms": 5195.7,
-      "sha256": "9e089e8384a29d8a8c743276b00f1f5f6463114a54b64005533dd215dc41a7e2",
+      "seconds": 0.845,
+      "bytes": 40600,
+      "peak": 27197,
+      "rms": 4616.6,
+      "sha256": "98b76dca05ff9f70f5033a8705f25beab801d02fb67b921520bd0d89cd67b280",
       "segments": [
         {
           "text": "まだまだじゃ。",
@@ -1300,11 +1300,11 @@
     },
     {
       "clip": "titan-ko",
-      "seconds": 0.864,
-      "bytes": 41516,
+      "seconds": 0.835,
+      "bytes": 40102,
       "peak": 24903,
-      "rms": 5139.0,
-      "sha256": "be3985960aaa56305cce016aaf3331632c397a87bf164a11af61e4a49833be0b",
+      "rms": 4805.0,
+      "sha256": "b527bfad3311d340abf0a36b2005bdcc2bee1245b0bf8f190803c0cd15a06a99",
       "segments": [
         {
           "text": "見事じゃ。",
@@ -1316,11 +1316,11 @@
     },
     {
       "clip": "titan-grabbed",
-      "seconds": 0.533,
-      "bytes": 25644,
-      "peak": 28507,
-      "rms": 6410.9,
-      "sha256": "5c1a85ed4970a6cd4b66407a5d6dc8c532f9f6a9eecb0bbb18c2ceba27a8cce9",
+      "seconds": 0.515,
+      "bytes": 24772,
+      "peak": 28800,
+      "rms": 5802.5,
+      "sha256": "d0e3ac9a9043efc24d04fd6378053b3bedcd9a25cdc9247346ba6c4881d438a7",
       "segments": [
         {
           "text": "ぬおっ！",
@@ -1332,11 +1332,11 @@
     },
     {
       "clip": "titan-throw_release",
-      "seconds": 0.715,
-      "bytes": 34348,
-      "peak": 28507,
-      "rms": 6424.8,
-      "sha256": "d07f83b6884cd78b7a8d06c23bd23c94a8c80e30c0820bb0a47a000b88caec7b",
+      "seconds": 0.668,
+      "bytes": 32096,
+      "peak": 28800,
+      "rms": 6307.4,
+      "sha256": "0fe778355ed96eaecb3e2394a7b80d6db1625eb65e7c950656d1c5186aaf001e",
       "segments": [
         {
           "text": "どりゃあっ！",
@@ -1348,11 +1348,11 @@
     },
     {
       "clip": "titan-thrown",
-      "seconds": 0.672,
-      "bytes": 32300,
-      "peak": 26537,
-      "rms": 7372.6,
-      "sha256": "d2acfc576d7864ac4a0e81f59b83e09e7c2da7b72de0dfcd9671760d253110a0",
+      "seconds": 0.687,
+      "bytes": 33030,
+      "peak": 26616,
+      "rms": 7536.4,
+      "sha256": "8215e5f5ece4f6c4dfa465db1cef90a013cb77d1a1ed95cc6e72380019aeb389",
       "segments": [
         {
           "text": "ぐおおっ！",
@@ -1364,11 +1364,11 @@
     },
     {
       "clip": "titan-throw_impact",
-      "seconds": 0.619,
-      "bytes": 29740,
-      "peak": 28507,
-      "rms": 6176.0,
-      "sha256": "10269e207ff11346f701ae0132018bf2b23325d16db5f8227a82ec40eadb33bb",
+      "seconds": 0.558,
+      "bytes": 26830,
+      "peak": 28800,
+      "rms": 4637.8,
+      "sha256": "8c97e930251272cf6800ebef81f96e4502fcb8e5ded217d0e36cfb32564d70ff",
       "segments": [
         {
           "text": "がはっ！",
@@ -1380,107 +1380,107 @@
     },
     {
       "clip": "ayame-light0",
-      "seconds": 0.437,
-      "bytes": 21036,
-      "peak": 28507,
-      "rms": 6035.7,
-      "sha256": "a669555cedbf172d9545800fefabd0c2a61b4ffc74d5c47c98fdfe4830878fa8",
+      "seconds": 0.418,
+      "bytes": 20088,
+      "peak": 28800,
+      "rms": 4065.6,
+      "sha256": "fe875e792d7667e3b32ad6279d47459be746e3406d05a4091a85648f548ee524",
       "segments": [
         {
           "text": "はっ！",
           "voice": "中国うさぎ",
-          "style": "ノーマル",
-          "styleId": 61
+          "style": "おどろき",
+          "styleId": 62
         }
       ]
     },
     {
       "clip": "ayame-light1",
-      "seconds": 0.523,
-      "bytes": 25132,
-      "peak": 28507,
-      "rms": 6766.1,
-      "sha256": "768cbfa88f30ceec46f05f485263ce3d973731adf6f0268c1e2763709a3f113c",
+      "seconds": 0.491,
+      "bytes": 23596,
+      "peak": 28800,
+      "rms": 5356.1,
+      "sha256": "c04580134585d40b4d9864e0eb5769e8e5c0b17e63fc0b91c66483d5cb154b51",
       "segments": [
         {
           "text": "えいっ！",
           "voice": "中国うさぎ",
-          "style": "ノーマル",
-          "styleId": 61
+          "style": "おどろき",
+          "styleId": 62
         }
       ]
     },
     {
       "clip": "ayame-heavy0",
-      "seconds": 0.672,
-      "bytes": 32300,
-      "peak": 26837,
-      "rms": 7372.6,
-      "sha256": "40d3aa4210e61598e7fc167c26e0883fe37e53898a9b09b1e0e38eef3c41df0f",
+      "seconds": 0.597,
+      "bytes": 28696,
+      "peak": 28800,
+      "rms": 5245.7,
+      "sha256": "6dbae594fb16e7cbfb305faf0c1f8bd2addd86ed765f1a90c4373c096c45a0ab",
       "segments": [
         {
           "text": "そこね！",
           "voice": "中国うさぎ",
-          "style": "ノーマル",
-          "styleId": 61
+          "style": "おどろき",
+          "styleId": 62
         }
       ]
     },
     {
       "clip": "ayame-heavy1",
-      "seconds": 0.747,
-      "bytes": 35884,
-      "peak": 28507,
-      "rms": 7369.9,
-      "sha256": "72c246c837c4063afe8df7dedf9be960ff94971799fd80a7371dc75fe6d07ec4",
+      "seconds": 0.718,
+      "bytes": 34524,
+      "peak": 28800,
+      "rms": 5594.3,
+      "sha256": "6ab8f7daa85095f1b82bc124fef7951d10d57400edd73e75be45c4aa07ee15f6",
       "segments": [
         {
           "text": "舞いなさい！",
           "voice": "中国うさぎ",
-          "style": "ノーマル",
-          "styleId": 61
+          "style": "おどろき",
+          "styleId": 62
         }
       ]
     },
     {
       "clip": "ayame-jump",
-      "seconds": 0.32,
-      "bytes": 15404,
-      "peak": 28507,
-      "rms": 6092.0,
-      "sha256": "eb32d5175f4cbb757a8965ed78ef625e62d900363bde3982209d415031af5b2b",
+      "seconds": 0.324,
+      "bytes": 15578,
+      "peak": 28800,
+      "rms": 6852.6,
+      "sha256": "cfb9399fffad58ae8db15fff3b2a3ff4b4f1ad9c34981e9c6a598a39dabec0a0",
       "segments": [
         {
           "text": "よっ！",
           "voice": "中国うさぎ",
-          "style": "ノーマル",
-          "styleId": 61
+          "style": "おどろき",
+          "styleId": 62
         }
       ]
     },
     {
       "clip": "ayame-dash",
-      "seconds": 0.736,
-      "bytes": 35372,
-      "peak": 28507,
-      "rms": 5582.9,
-      "sha256": "2e91221fa99433f924b1caead5f80f28de5c292ae2beb7db19ca080f7736cad8",
+      "seconds": 0.658,
+      "bytes": 31616,
+      "peak": 28800,
+      "rms": 5764.4,
+      "sha256": "aab020fce2cfd3e269df86bf48c407ba076bac75c08a311aa2594e160d37b95b",
       "segments": [
         {
           "text": "こちらよ！",
           "voice": "中国うさぎ",
-          "style": "ノーマル",
-          "styleId": 61
+          "style": "おどろき",
+          "styleId": 62
         }
       ]
     },
     {
       "clip": "ayame-hurt0",
-      "seconds": 0.405,
-      "bytes": 19500,
-      "peak": 28507,
-      "rms": 4543.5,
-      "sha256": "1129f8c7ddc5dfc59c5d478307e0f43eab48b1fcb23bbd234d777bbefea127a9",
+      "seconds": 0.429,
+      "bytes": 20644,
+      "peak": 28800,
+      "rms": 5700.8,
+      "sha256": "eb555a3575aa2216ae91d5a32967f4acc59d4653352ddfed16d7a603b1c5d495",
       "segments": [
         {
           "text": "くっ！",
@@ -1492,11 +1492,11 @@
     },
     {
       "clip": "ayame-hurt1",
-      "seconds": 0.363,
-      "bytes": 17452,
-      "peak": 28507,
-      "rms": 4762.3,
-      "sha256": "7db58d885e46bf0676dd6c8f171e4d7ed413b0aab35402d2ae02260e83fbbd18",
+      "seconds": 0.371,
+      "bytes": 17846,
+      "peak": 28800,
+      "rms": 4749.8,
+      "sha256": "84814866770c334e717f578db66aeae0d9c649e6019fd51317c6ec031094f49f",
       "segments": [
         {
           "text": "あっ！",
@@ -1508,113 +1508,113 @@
     },
     {
       "clip": "ayame-throw",
-      "seconds": 0.661,
-      "bytes": 31788,
-      "peak": 27153,
-      "rms": 7372.6,
-      "sha256": "bd143522724569abf49d60fdad9c160f3c70726c30cb139d56e9e576092782ac",
+      "seconds": 0.597,
+      "bytes": 28696,
+      "peak": 28800,
+      "rms": 5319.6,
+      "sha256": "2a0053f64d323ce9eca5388047612fe608a63f217fa11b112409f9f4c7a61cfb",
       "segments": [
         {
           "text": "そこね！",
           "voice": "中国うさぎ",
-          "style": "ノーマル",
-          "styleId": 61
+          "style": "おどろき",
+          "styleId": 62
         }
       ]
     },
     {
       "clip": "ayame-burst",
-      "seconds": 0.832,
-      "bytes": 39980,
-      "peak": 28507,
-      "rms": 6049.1,
-      "sha256": "904014b5063b93a9941e452cb380930a471018b81a09667d22641535618d3f27",
+      "seconds": 0.718,
+      "bytes": 34524,
+      "peak": 28800,
+      "rms": 4802.4,
+      "sha256": "a9753c88f8ab161ba0c48f45efb61f1da2380e63dc24b8afe02c9d336d5e1d6c",
       "segments": [
         {
           "text": "お下がりっ！",
           "voice": "中国うさぎ",
-          "style": "ノーマル",
-          "styleId": 61
+          "style": "おどろき",
+          "styleId": 62
         }
       ]
     },
     {
       "clip": "ayame-sp1",
-      "seconds": 0.907,
-      "bytes": 43564,
-      "peak": 28507,
-      "rms": 3703.7,
-      "sha256": "7337311146e8d7edfcea8c35186e7c10f806f6054714d1901fef514e8c67d9d1",
+      "seconds": 0.983,
+      "bytes": 47218,
+      "peak": 28800,
+      "rms": 5513.6,
+      "sha256": "722acf5f71df3bcf45fb19a7571b4b0f3f1bc52f7571fb4295de980f6e1aba6c",
       "segments": [
         {
-          "text": "しげつせん！",
+          "text": "しげつ、せん！",
           "voice": "中国うさぎ",
-          "style": "ノーマル",
-          "styleId": 61
+          "style": "おどろき",
+          "styleId": 62
         }
       ]
     },
     {
       "clip": "ayame-sp2",
-      "seconds": 0.907,
-      "bytes": 43564,
-      "peak": 26164,
-      "rms": 7372.5,
-      "sha256": "686c13dda4284aafde040500f4b4d14b21577c15ed3c8674530698d35c279ef5",
+      "seconds": 0.911,
+      "bytes": 43762,
+      "peak": 28800,
+      "rms": 6599.4,
+      "sha256": "f257343155faf07ea610b7b606310fcd72eea202c18ef87a22061b4de4865041",
       "segments": [
         {
-          "text": "ひえんのまい！",
+          "text": "ひえんの、まい！",
           "voice": "中国うさぎ",
-          "style": "ノーマル",
-          "styleId": 61
+          "style": "おどろき",
+          "styleId": 62
         }
       ]
     },
     {
       "clip": "ayame-sp3",
-      "seconds": 1.003,
-      "bytes": 48172,
-      "peak": 28507,
-      "rms": 6999.9,
-      "sha256": "54d7cb3788446726ef0a0ae7a0b2034d19275988de558a337720edbda90383fb",
+      "seconds": 0.983,
+      "bytes": 47218,
+      "peak": 28800,
+      "rms": 5045.0,
+      "sha256": "2b75d0410a7400b6e22da8ee07525baa90e84a069f6466fc46ba9ab1df19c1cd",
       "segments": [
         {
-          "text": "かすみばしり！",
+          "text": "かすみ、ばしり！",
           "voice": "中国うさぎ",
-          "style": "ノーマル",
-          "styleId": 61
+          "style": "おどろき",
+          "styleId": 62
         }
       ]
     },
     {
       "clip": "ayame-super",
-      "seconds": 1.878,
-      "bytes": 90172,
-      "peak": 28507,
-      "rms": 5853.5,
-      "sha256": "1a4ff8209ebcb3345c2af18cec19ec63a2949a86ff0517182f358dddce357ac0",
+      "seconds": 1.838,
+      "bytes": 88284,
+      "peak": 28800,
+      "rms": 5556.8,
+      "sha256": "96aa2834618cca8d5bf8922b424314cb6e5023c24e4026c73f221b65173d4124",
       "segments": [
         {
-          "text": "秘奥義。",
+          "text": "秘奥義！",
           "voice": "中国うさぎ",
           "style": "ノーマル",
           "styleId": 61
         },
         {
-          "text": "ひゃっかりょうらん！",
+          "text": "ひゃっか、りょうらん！",
           "voice": "中国うさぎ",
-          "style": "ノーマル",
-          "styleId": 61
+          "style": "おどろき",
+          "styleId": 62
         }
       ]
     },
     {
       "clip": "ayame-select",
-      "seconds": 1.781,
-      "bytes": 85548,
-      "peak": 26869,
-      "rms": 4835.5,
-      "sha256": "eca2392481395b8b8a3aec57adb7842cb2e9b1a25442223efa8960fb4dcbaa25",
+      "seconds": 1.743,
+      "bytes": 83708,
+      "peak": 27197,
+      "rms": 3905.5,
+      "sha256": "a9392cc4ed02962cbc9e1086ba119c4b09ffc59d659fe04975223d429adee5e6",
       "segments": [
         {
           "text": "ついてこられるかしら？",
@@ -1626,11 +1626,11 @@
     },
     {
       "clip": "ayame-win",
-      "seconds": 1.301,
-      "bytes": 62508,
-      "peak": 26869,
-      "rms": 6329.9,
-      "sha256": "3ae76fef4037024da37aeec292e2f0160287544a59f96b5779cf85b580d76cc8",
+      "seconds": 1.3,
+      "bytes": 62422,
+      "peak": 27197,
+      "rms": 6307.9,
+      "sha256": "afd224f629ec3c2b6a97490c2707dfa5b838f98d5a8388db392698b2002abd57",
       "segments": [
         {
           "text": "舞はここまで。",
@@ -1642,11 +1642,11 @@
     },
     {
       "clip": "ayame-ko",
-      "seconds": 0.832,
-      "bytes": 39980,
+      "seconds": 0.868,
+      "bytes": 41700,
       "peak": 24903,
-      "rms": 4590.2,
-      "sha256": "fe07a639f548468c0c582b2dcd32059df2633e099966aad10601fb7d42fc6fc0",
+      "rms": 4589.3,
+      "sha256": "430f05dd5d8c64c2428b634b838ccc7636ffc1992cbfe291d3fc6e9f4806337d",
       "segments": [
         {
           "text": "不覚ね。",
@@ -1658,11 +1658,11 @@
     },
     {
       "clip": "ayame-grabbed",
-      "seconds": 0.309,
-      "bytes": 14892,
-      "peak": 28507,
-      "rms": 4268.3,
-      "sha256": "1ef448addf317e0caf907008beccb34fc56b10d546724758a78d894c71fc9e2a",
+      "seconds": 0.322,
+      "bytes": 15494,
+      "peak": 28800,
+      "rms": 4960.0,
+      "sha256": "32f1a6d469589987133f3820996fc3536f3d2a40f57cd8873464bd2ba87f97bf",
       "segments": [
         {
           "text": "えっ！",
@@ -1674,27 +1674,27 @@
     },
     {
       "clip": "ayame-throw_release",
-      "seconds": 0.672,
-      "bytes": 32300,
-      "peak": 28507,
-      "rms": 5984.2,
-      "sha256": "38e1e10cb43a666ab39b518a80420bdbe8fae9d3982202d2a68e47086de41f56",
+      "seconds": 0.587,
+      "bytes": 28210,
+      "peak": 28800,
+      "rms": 4715.2,
+      "sha256": "28c6c50dd82fdb5b2e286103ef4bb39e85a33ac7a533d76b39905da022d77c4c",
       "segments": [
         {
           "text": "せいっ！",
           "voice": "中国うさぎ",
-          "style": "ノーマル",
-          "styleId": 61
+          "style": "おどろき",
+          "styleId": 62
         }
       ]
     },
     {
       "clip": "ayame-thrown",
-      "seconds": 0.587,
-      "bytes": 28204,
-      "peak": 28507,
-      "rms": 5229.3,
-      "sha256": "ae74bb60977e2151b1ceaceab12753c27405a6a70fbd37a89d50215c6d87089f",
+      "seconds": 0.611,
+      "bytes": 29354,
+      "peak": 28800,
+      "rms": 4895.5,
+      "sha256": "6167ffffcd1d662c4e51e6a166c4e461e879bc1a42168aa8f144d19e3cd2b77d",
       "segments": [
         {
           "text": "きゃあっ！",
@@ -1706,11 +1706,11 @@
     },
     {
       "clip": "ayame-throw_impact",
-      "seconds": 0.277,
-      "bytes": 13356,
-      "peak": 28507,
-      "rms": 5446.2,
-      "sha256": "f602d34797072beeead07c2100116fa4a9731101f0a2608d363b70ae98b9a203",
+      "seconds": 0.268,
+      "bytes": 12918,
+      "peak": 28800,
+      "rms": 5505.1,
+      "sha256": "896c4eee3064096f2dc618f0dd63157d60a7d580fcfa52a5a862c5d56241578b",
       "segments": [
         {
           "text": "うっ！",
@@ -1722,11 +1722,11 @@
     },
     {
       "clip": "celine-light0",
-      "seconds": 0.211,
-      "bytes": 10182,
-      "peak": 28507,
-      "rms": 3132.4,
-      "sha256": "b4854fee4dbd9dc8bdb113ef111f4aacf4fcedf5f58ce6988bd505c925392c61",
+      "seconds": 0.313,
+      "bytes": 15076,
+      "peak": 28800,
+      "rms": 3130.5,
+      "sha256": "e1448c7eff97444e38a8fac4c35e29675488eaffa9105213da03cda0edd7f3e0",
       "segments": [
         {
           "text": "はっ！",
@@ -1739,10 +1739,10 @@
     {
       "clip": "celine-light1",
       "seconds": 0.449,
-      "bytes": 21594,
-      "peak": 28507,
-      "rms": 5661.6,
-      "sha256": "fea0210b5c658edcb585d3bc031f111df791b2009dffa9dbc801c357f309d04f",
+      "bytes": 21592,
+      "peak": 28800,
+      "rms": 5562.5,
+      "sha256": "ae6bb8976e6ca1b0575505159d8c7bf090b3808b9eded6c5e62ff16612a4a193",
       "segments": [
         {
           "text": "えいっ！",
@@ -1754,11 +1754,11 @@
     },
     {
       "clip": "celine-heavy0",
-      "seconds": 0.832,
-      "bytes": 39980,
-      "peak": 28507,
-      "rms": 4147.7,
-      "sha256": "8e5264f2335d668be9f3675c1fcbcce133c94e2e2481015c36539595ae44cc51",
+      "seconds": 0.799,
+      "bytes": 38410,
+      "peak": 28800,
+      "rms": 5253.0,
+      "sha256": "b7fcb830a0b464753453dee580ed77b283c2a0cc5518eba1c719fa0a3e6d027f",
       "segments": [
         {
           "text": "そこです！",
@@ -1770,11 +1770,11 @@
     },
     {
       "clip": "celine-heavy1",
-      "seconds": 1.035,
-      "bytes": 49708,
-      "peak": 28507,
-      "rms": 6244.0,
-      "sha256": "bec182cee16290d13730c84d25f80bb5a1e01a2590a9e58fd84bc6c7db0f252a",
+      "seconds": 1.042,
+      "bytes": 50066,
+      "peak": 28800,
+      "rms": 5745.4,
+      "sha256": "dd3e5ec19a8ef3487252c698b242b20ff60f9421e28478ef18fc0ace1278ba2e",
       "segments": [
         {
           "text": "貫きます！",
@@ -1786,11 +1786,11 @@
     },
     {
       "clip": "celine-jump",
-      "seconds": 0.352,
-      "bytes": 16940,
-      "peak": 28507,
-      "rms": 6801.4,
-      "sha256": "e4b1d598e909e478141ba1c392cea1b0a2df89a52162c7d6a65ae0f5500f64c5",
+      "seconds": 0.365,
+      "bytes": 17582,
+      "peak": 28800,
+      "rms": 6630.7,
+      "sha256": "9e508ee639c70e2f32a59e6357c30615b480817c3c05a4afea5f1fd7027c011f",
       "segments": [
         {
           "text": "ふっ！",
@@ -1803,10 +1803,10 @@
     {
       "clip": "celine-dash",
       "seconds": 0.667,
-      "bytes": 32050,
-      "peak": 28507,
-      "rms": 6843.1,
-      "sha256": "e8035c0d6cb5fcb1b7ff1dad15784547847b4ae04d724655dbf8806a834a4731",
+      "bytes": 32044,
+      "peak": 28800,
+      "rms": 6972.0,
+      "sha256": "a27e1578ba2d19c6560a5c4a665c96d600ec3d0189d65acd2e26dfa0bf2583f0",
       "segments": [
         {
           "text": "失礼！",
@@ -1818,11 +1818,11 @@
     },
     {
       "clip": "celine-hurt0",
-      "seconds": 0.491,
-      "bytes": 23596,
-      "peak": 28507,
-      "rms": 4716.7,
-      "sha256": "08e317d64f563a35bf4abf71e835aded66521ac178114f245465886df96b67c0",
+      "seconds": 0.526,
+      "bytes": 25284,
+      "peak": 28800,
+      "rms": 4676.0,
+      "sha256": "1b6516fdd6bacfa07542af4e446f585f9ceb868a2f254623a7f5350b798c371d",
       "segments": [
         {
           "text": "くっ！",
@@ -1834,11 +1834,11 @@
     },
     {
       "clip": "celine-hurt1",
-      "seconds": 0.68,
-      "bytes": 32694,
-      "peak": 28507,
-      "rms": 3027.5,
-      "sha256": "7892e340132164f12db3378879cda57d5ac2d543a034437491b885684b5b4589",
+      "seconds": 0.678,
+      "bytes": 32612,
+      "peak": 28800,
+      "rms": 4189.8,
+      "sha256": "afb68b739bbc5a018eae40c00b23d5ceb201bd7a87a6193b19f43e46288d71ec",
       "segments": [
         {
           "text": "ああっ！",
@@ -1850,11 +1850,11 @@
     },
     {
       "clip": "celine-throw",
-      "seconds": 0.661,
-      "bytes": 31788,
-      "peak": 28507,
-      "rms": 3610.3,
-      "sha256": "93b7081e2e6b03549d829b2228a40d8cf81c9757fb77198ba2bce49c41fdbc6b",
+      "seconds": 0.647,
+      "bytes": 31124,
+      "peak": 28800,
+      "rms": 3355.4,
+      "sha256": "37427104de9470be810ae57944a1ab8fedbfd236145c5a2789b834448d02c55e",
       "segments": [
         {
           "text": "そこっ！",
@@ -1866,11 +1866,11 @@
     },
     {
       "clip": "celine-burst",
-      "seconds": 1.099,
-      "bytes": 52780,
-      "peak": 28507,
-      "rms": 5526.4,
-      "sha256": "6174331bd0448d76264cef1dddd2176fa5e1a8763a8433d0efcc0aa3c7435791",
+      "seconds": 1.062,
+      "bytes": 51038,
+      "peak": 28800,
+      "rms": 5343.7,
+      "sha256": "0ed7f91fd14b3904be9b81db8165c6e5e5797d6ec5787037e8a39300b4d3993c",
       "segments": [
         {
           "text": "お離れなさい！",
@@ -1882,11 +1882,11 @@
     },
     {
       "clip": "celine-sp1",
-      "seconds": 1.216,
-      "bytes": 58412,
-      "peak": 28507,
-      "rms": 6128.5,
-      "sha256": "ac46e6fac4d97a930d33d17638012c35d094129abed87b7e7dee9d6372f9570a",
+      "seconds": 1.198,
+      "bytes": 57540,
+      "peak": 28800,
+      "rms": 7127.9,
+      "sha256": "683fe6e25f9b9cc53ee510da4dd19c5807886c58b74be6a78579a1f086828bdb",
       "segments": [
         {
           "text": "ローズ、エクレール！",
@@ -1898,11 +1898,11 @@
     },
     {
       "clip": "celine-sp2",
-      "seconds": 1.259,
-      "bytes": 60460,
-      "peak": 28114,
-      "rms": 7372.6,
-      "sha256": "0ef7c8febc36755e8e185b971e0dfe595a4ad65f3b2f5287d833f35472beb1c5",
+      "seconds": 1.157,
+      "bytes": 55564,
+      "peak": 28800,
+      "rms": 6709.1,
+      "sha256": "df85d74e810dec4164c6ad30245545e1339a49dcd8ca7881cde44fd9eefe6e2e",
       "segments": [
         {
           "text": "フルール、ランジイ！",
@@ -1914,11 +1914,11 @@
     },
     {
       "clip": "celine-sp3",
-      "seconds": 1.365,
-      "bytes": 65580,
-      "peak": 28507,
-      "rms": 5393.4,
-      "sha256": "646a4c434ac0352579e881e3658e93683539f2953ecc47b8b8429dde3faed2f2",
+      "seconds": 1.239,
+      "bytes": 59502,
+      "peak": 28800,
+      "rms": 5996.0,
+      "sha256": "47330d31c94fce97b33d041db5308e9e5797f8d05f5234c0c90793d8dabd0c66",
       "segments": [
         {
           "text": "エメラルド、リポストオ！",
@@ -1930,20 +1930,20 @@
     },
     {
       "clip": "celine-super",
-      "seconds": 2.011,
-      "bytes": 96554,
-      "peak": 28507,
-      "rms": 5991.9,
-      "sha256": "458bac38504becab7f945ba811ae6925f5250400364281b99133aa279b391f21",
+      "seconds": 1.78,
+      "bytes": 85492,
+      "peak": 28800,
+      "rms": 5240.0,
+      "sha256": "eb249d967cdc5252165d1773a66c94a956703458c2e221e1c53652baf7733dbd",
       "segments": [
         {
-          "text": "エトワール。",
+          "text": "エトワール！",
           "voice": "九州そら",
-          "style": "ノーマル",
-          "styleId": 16
+          "style": "セクシー",
+          "styleId": 17
         },
         {
-          "text": "デュ・ソワール！",
+          "text": "デュ、ソワール！",
           "voice": "九州そら",
           "style": "ノーマル",
           "styleId": 16
@@ -1952,27 +1952,27 @@
     },
     {
       "clip": "celine-select",
-      "seconds": 1.717,
-      "bytes": 82476,
-      "peak": 26869,
-      "rms": 5888.2,
-      "sha256": "f8af5985a3d0791bac6de25831d05e1c82d576af768e42409773b577d99504e4",
+      "seconds": 1.7,
+      "bytes": 81660,
+      "peak": 27197,
+      "rms": 3474.6,
+      "sha256": "a1647ca77d600334255a1624a993aceba11c6c97dadcdaadbdf0c3027b22138c",
       "segments": [
         {
           "text": "美しい決闘を。",
           "voice": "九州そら",
-          "style": "ノーマル",
-          "styleId": 16
+          "style": "セクシー",
+          "styleId": 17
         }
       ]
     },
     {
       "clip": "celine-win",
-      "seconds": 1.803,
-      "bytes": 86572,
-      "peak": 26869,
-      "rms": 3782.6,
-      "sha256": "b51303a330de9a0db6c006a3668d12419a7e1e7ab960fa4b9c6998daa95d3ab6",
+      "seconds": 1.817,
+      "bytes": 87274,
+      "peak": 27197,
+      "rms": 4394.4,
+      "sha256": "5d5e290da9d90cf6f52f523caf5c67a9d6cffb9c0bf781f28ef48bb9bc0229d5",
       "segments": [
         {
           "text": "見事な勝負でした。",
@@ -1984,11 +1984,11 @@
     },
     {
       "clip": "celine-ko",
-      "seconds": 1.088,
-      "bytes": 52268,
-      "peak": 24850,
-      "rms": 5734.2,
-      "sha256": "7beb70456da0db4bb4057d5d59ed32d2cd011c5aea586d3d72da7b7e647ffe51",
+      "seconds": 1.146,
+      "bytes": 55056,
+      "peak": 24903,
+      "rms": 4788.5,
+      "sha256": "15b74dbef385edeb79e4fbb3fd23ba67f996c546b28f33b7ae4a05c688fc9386",
       "segments": [
         {
           "text": "参りました。",
@@ -2000,11 +2000,11 @@
     },
     {
       "clip": "celine-grabbed",
-      "seconds": 0.313,
-      "bytes": 15066,
-      "peak": 28507,
-      "rms": 2413.5,
-      "sha256": "62bc26a81346a68ee7ad4b167cc50fdd8869dd0a122b3269743a048f9e83ba72",
+      "seconds": 0.312,
+      "bytes": 15008,
+      "peak": 28800,
+      "rms": 2220.0,
+      "sha256": "4b666895534812d1c4cde9368582f6b92573a5ec246f76304bd53b92085ca4af",
       "segments": [
         {
           "text": "あっ！",
@@ -2016,14 +2016,14 @@
     },
     {
       "clip": "celine-throw_release",
-      "seconds": 0.565,
-      "bytes": 27180,
-      "peak": 28507,
-      "rms": 4421.9,
-      "sha256": "0f32096d5cfc343a9a1143ce2f68878aa631519f167503af4fdb136e7e16cadd",
+      "seconds": 0.497,
+      "bytes": 23878,
+      "peak": 28800,
+      "rms": 3712.5,
+      "sha256": "acdaf2d3eced68c7abf9dec1616bcd86d2a9130faa4c1290abe78edca6b49b22",
       "segments": [
         {
-          "text": "はあっ！",
+          "text": "ハアッ！",
           "voice": "九州そら",
           "style": "ノーマル",
           "styleId": 16
@@ -2032,11 +2032,11 @@
     },
     {
       "clip": "celine-thrown",
-      "seconds": 0.691,
-      "bytes": 33226,
-      "peak": 28507,
-      "rms": 3065.9,
-      "sha256": "c6acac3c282c22db967f3f19d2d2d5a3a16bbc5519c904d6cf85c3645400c88f",
+      "seconds": 0.773,
+      "bytes": 37162,
+      "peak": 28800,
+      "rms": 4944.1,
+      "sha256": "26eb4b2f780ad0827d3707f96b8537699e5f194086a32b78837604a35a17d0bc",
       "segments": [
         {
           "text": "ああっ！",
@@ -2048,11 +2048,11 @@
     },
     {
       "clip": "celine-throw_impact",
-      "seconds": 0.491,
-      "bytes": 23596,
-      "peak": 28507,
-      "rms": 4062.8,
-      "sha256": "3ef62462f6a9d45f9e7b2de01f501697a0b3cc9f1a75053d2cc86e05699e70cc",
+      "seconds": 0.483,
+      "bytes": 23218,
+      "peak": 28800,
+      "rms": 4374.1,
+      "sha256": "55e405845812f3e1589992cfac2d86897b0c9d7843c3d28821240c2a94691ed1",
       "segments": [
         {
           "text": "くっ！",
@@ -2063,16 +2063,5 @@
       ]
     }
   ],
-  "warnings": [
-    {
-      "clip": "titan-throw_release",
-      "seconds": 0.7146666666666667,
-      "recommendedMaximum": 0.7
-    },
-    {
-      "clip": "titan-throw_impact",
-      "seconds": 0.6186666666666667,
-      "recommendedMaximum": 0.6
-    }
-  ]
+  "warnings": []
 }

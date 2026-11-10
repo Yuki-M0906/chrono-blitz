@@ -1,5 +1,5 @@
 {
-  "version": "2.6.0",
+  "version": "2.7.0",
   "loaded": {
     "images": 9,
     "districts": 5,
@@ -33,7 +33,7 @@
     "randomCalls": 0,
     "fallback": true,
     "bossStates": true,
-    "meanRenderMs": 0.18499999940395356
+    "meanRenderMs": 0.20166666706403097
   },
   "browserErrors": []
 }

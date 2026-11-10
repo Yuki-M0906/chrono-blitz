@@ -4,6 +4,7 @@ const BeltArt = {
   boards: new Map(),
   bossCells: new Map(),
   bossSheets: new Map(),
+  dashSheets: new Map(),
   props: [],
   errors: [],
   ready: null,
@@ -20,6 +21,7 @@ const BeltArt = {
           if (id.startsWith('district-')) this.prepareBoard(Number(id.slice(-1)), img, entry.horizon);
           else if (id === 'props') this.prepareProps(img);
           else if (id.startsWith('voss-')) this.prepareBoss(id, img);
+          else if (id.startsWith('dash-')) this.prepareDash(id.slice(5), img);
         } catch (error) { this.errors.push(id + ': ' + error.message); }
         resolve();
       };
@@ -27,6 +29,48 @@ const BeltArt = {
       img.src = entry.src;
     })));
     return this.ready;
+  },
+
+  prepareDash(id, image) {
+    if (image.width !== 1536 || image.height !== 1024) throw Error('Dash atlas must be 1536 × 1024');
+    const atlas = document.createElement('canvas'); atlas.width = 960; atlas.height = 640;
+    const c = atlas.getContext('2d', { willReadFrequently: true }); c.imageSmoothingEnabled = false;
+    for (let f = 0; f < 24; f++) {
+      // Hand-audited: these two large slash tips extend 24px into the next source cell.
+      const slash = ['kagura', 'freya'].includes(id), width = slash && f === 13 ? 280 : 256;
+      c.drawImage(image, f % 6 * 256, Math.floor(f / 6) * 256, width, 256,
+        f % 6 * 160 + 16, Math.floor(f / 6) * 160 + 16, width / 2, 128);
+      if (slash && f === 14) c.clearRect(f % 6 * 160 + 16, Math.floor(f / 6) * 160 + 16, 12, 128);
+      FighterSprites.cleanCell(c, f % 6 * 160, Math.floor(f / 6) * 160, f >= 12 && f <= 17);
+      this.bounds(c, f % 6 * 160, Math.floor(f / 6) * 160, 160, 160);
+    }
+    this.dashSheets.set(id, atlas);
+  },
+
+  dashFrame(actor) {
+    if (actor.state === 'STREET_DASH') return Math.floor(actor.f / 3) % 8;
+    if (actor.state !== 'DASH_ATTACK') return null;
+    const d = STREET.dash;
+    if (actor.f < d.active) return 8 + Math.min(3, Math.floor(actor.f * 4 / d.active));
+    if (actor.f <= d.until) return 12 + Math.min(5, Math.floor((actor.f - d.active) * 6 / (d.until - d.active + 1)));
+    return 18 + Math.min(5, Math.floor((actor.f - d.until - 1) * 6 / (d.end - d.until - 1)));
+  },
+
+  drawDash(actor, c) {
+    const f = this.dashFrame(actor), image = this.dashSheets.get(actor.data.id);
+    if (f === null || !image) return false;
+    const scale = actor.data.id === 'titan' ? 1.48 : 1.36;
+    c.save(); c.scale(actor.facing, 1); c.imageSmoothingEnabled = false;
+    if (actor.invuln > 0 && Math.floor(actor.animTick / 3) % 2) c.globalAlpha *= .72;
+    const draw = offset => c.drawImage(image, f % 6 * 160, Math.floor(f / 6) * 160, 160, 160,
+      -Math.round(80 * scale) + offset, -Math.round(138 * scale), Math.round(160 * scale), Math.round(160 * scale));
+    const alpha = c.globalAlpha;
+    if (actor.state === 'STREET_DASH' || actor.f <= STREET.dash.until) {
+      c.globalAlpha = alpha * .12; draw(-32);
+      c.globalAlpha = alpha * .22; draw(-16);
+      c.globalAlpha = alpha;
+    }
+    draw(0); c.restore(); return true;
   },
 
   prepareBoard(index, image, horizon = .685) {

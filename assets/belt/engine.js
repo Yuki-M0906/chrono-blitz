@@ -2,7 +2,8 @@
 // Coordinates: x = street distance, y = floor depth, z = height above that floor.
 // Fixed 60 Hz simulation. Draw methods must not change simulation or consume random values.
 const STREET = {
-  version: '2.6.0',
+  version: '2.8.1',
+  dash: { tapWindow: 14, speed: 2.2, damage: 112, active: 8, until: 19, end: 38 },
   // v2.6.0 hit detection tuning. One table so the feel can be adjusted without hunting through the methods.
   // Rule of thumb: the player's attacks are generous (wide lane, several active frames), enemy attacks are honest
   // (one frame, narrow lane) so that stepping up/down out of a telegraphed blow reliably works.
@@ -216,8 +217,10 @@ class StreetActor extends Fighter {
                 ? 'SP_1'
                 : this.state;
     const poseFrame = this.state === 'WINDUP' ? 4 : this.f;
-    if (!(this.kind === 'boss' && BeltArt.drawBoss(this, c, state, poseFrame)))
-      this.drawBody(c, 0, 0, this.facing, state, poseFrame, false);
+    if (!(this.team === 0 && BeltArt.drawDash(this, c)) &&
+        !(this.kind === 'boss' && BeltArt.drawBoss(this, c, state, poseFrame)))
+      this.drawBody(c, 0, 0, this.facing, this.state === 'STREET_DASH' ? 'DASH_F' :
+        this.state === 'DASH_ATTACK' ? 'ATK_H' : state, poseFrame, false);
     c.filter = 'none';
     if (this.weapon > 0) {
       c.save();
@@ -246,6 +249,7 @@ class NeonUprising {
     this.owner = owner;
     this.character = index;
     this.tick = 0;
+    this.resetDashTap();
     this.nextId = 1;
     this.area = 0;
     this.wave = 0;
@@ -507,6 +511,10 @@ class NeonUprising {
     }
     if (a.attack) {
       const atk = a.attack;
+      if (atk.dash && a.f <= atk.until) {
+        a.x += a.facing * a.speed * (a.f < atk.active ? 1.2 : 1.65);
+        a.x = STREET.clamp(a.x, this.backWall + 8, this.gate - 8);
+      }
       // The strike is live from `active` through `until`; atk.hit / atk.props keep every target to one hit per swing.
       if (a.f >= atk.active && a.f <= (atk.until ?? atk.active)) this.swing(a, atk);
       if (a.f >= atk.end) {
@@ -531,6 +539,7 @@ class NeonUprising {
       thr = STREET.press('KeyI');
     const special =
       STREET.press('KeyL', 'KeyC') || (attack && STREET.down('KeyK', 'KeyX')) || (jump && STREET.down('KeyJ', 'KeyZ'));
+    const dashTap = this.readDashTap(dx);
     if (special && p.z === 0 && !['KNOCKDOWN', 'WAKEUP', 'HIT_AIR', 'THROWING'].includes(p.state) && p.cooldown <= 0) {
       this.burst();
       return;
@@ -553,14 +562,38 @@ class NeonUprising {
       return;
     }
     if (p.attack) {
-      if (attack) p.queue = 12;
+      if (attack && !p.attack.dash) p.queue = 12;
       return;
     }
     if (p.z > 0) {
       if (attack && p.state === 'JUMP') this.attack(p, true);
       return;
     }
+    if (p.state === 'STREET_DASH') {
+      if (attack && (!dx || dx === p.facing)) {
+        this.dashAttack();
+        return;
+      }
+      if (dx !== p.facing || jump || thr) p.pose('IDLE');
+      else {
+        const next = STREET.clamp(p.x + p.facing * p.speed * STREET.dash.speed, this.backWall + 8, this.gate - 8);
+        if (next === p.x) p.pose('IDLE');
+        p.x = next;
+        p.y = STREET.clamp(p.y + dy * p.speed * 0.4, STREET.top, STREET.bottom);
+        return;
+      }
+    }
     if (!STREET.ready(p)) return;
+    if (dashTap && !jump && !thr) {
+      p.pose('STREET_DASH');
+      p.chain = 0;
+      p.chainHit = false;
+      p.comboTTL = 0;
+      p.queue = 0;
+      p.speak('dash', 25);
+      if (attack) this.dashAttack();
+      return;
+    }
     if (jump) {
       p.pose('JUMP');
       p.vz = 12.5;
@@ -609,6 +642,50 @@ class NeonUprising {
         ['IDLE', 'WALK_F', 'HIT_STAND'].includes(e.state) &&
         (e.kind !== 'boss' || e.cooldown > 22)
     );
+  }
+  resetDashTap() {
+    this.dashTapKey = null;
+    this.dashTapDir = 0;
+    this.dashTapTick = -1000;
+  }
+  readDashTap(dx) {
+    const p = this.player;
+    if (!STREET.ready(p) || p.z > 0 || p.attack || this.tick - this.dashTapTick > STREET.dash.tapWindow) {
+      this.resetDashTap();
+      if (!STREET.ready(p) || p.z > 0 || p.attack) return false;
+    }
+    if ((!dx && STREET.down('KeyA', 'ArrowLeft', 'KeyD', 'ArrowRight')) ||
+        (dx && this.dashTapDir && dx !== this.dashTapDir)) this.resetDashTap();
+    if (!dx) return false;
+    // Input.just is a real keydown edge: the shared Input ignores OS repeat events.
+    // Requiring the same physical key also prevents holding D then adding Right from counting as two taps.
+    const key = (dx > 0 ? ['KeyD', 'ArrowRight'] : ['KeyA', 'ArrowLeft']).find(k => input.just[k]);
+    if (!key) return false;
+    if (key === this.dashTapKey && dx === p.facing) {
+      this.resetDashTap();
+      return true;
+    }
+    this.dashTapKey = key;
+    this.dashTapDir = dx;
+    this.dashTapTick = this.tick;
+    return false;
+  }
+  dashAttack() {
+    const p = this.player, d = STREET.dash;
+    if (p.state !== 'STREET_DASH') return;
+    p.pose('DASH_ATTACK');
+    p.chain = 0;
+    p.chainHit = false;
+    p.comboTTL = 0;
+    p.queue = 0;
+    p.attack = {
+      dash: true, active: d.active, until: d.until, end: d.end,
+      damage: Math.round(d.damage * p.power + (p.weapon ? 32 : 0)),
+      reach: p.reach + (p.weapon ? 45 : 15), depth: STREET.hit.playerDepth, rear: 12,
+      knock: true, hit: new Set(), props: new Set()
+    };
+    p.speak('heavy1', 65);
+    sound.playSwing(true);
   }
   attack(a, air = false) {
     // Final Fight style chain: punch -> body blow -> uppercut. A stage is reachable only while the previous one connected
@@ -660,11 +737,11 @@ class NeonUprising {
         Math.abs(b.z - a.z) < 115 &&
         !atk.hit.has(b.uid)
       ) {
-        if (this.hurt(b, atk.damage, a.facing, atk.knock, atk.upper ? 'upper' : 'strike')) {
+        if (this.hurt(b, atk.damage, a.facing, atk.knock, atk.dash ? 'dash' : atk.upper ? 'upper' : 'strike')) {
           atk.hit.add(b.uid);
           struck = true;
           if (a.team === 0) {
-            a.chainHit = true;
+            if (!atk.dash) a.chainHit = true;
             this.combo++;
             this.comboTime = 90;
             // Lane assist: a staggered enemy slides toward the player's lane, so a chain started at the edge of the
@@ -685,7 +762,7 @@ class NeonUprising {
         ) {
           atk.props?.add(prop);
           prop.hp -= atk.damage;
-          a.chainHit = true;
+          if (!atk.dash) a.chainHit = true;
           this.effects(prop.x, prop.y - 28, '#bb996d');
           sound.playBreak(prop.type === 'barrel' ? 'metal' : 'wood');
           if (prop.hp <= 0) {
@@ -694,10 +771,13 @@ class NeonUprising {
           }
         }
     if (struck) {
-      this.hitstop = 4;
-      this.shake = atk.knock ? 5 : 2;
+      this.hitstop = atk.dash ? 7 : 4;
+      this.shake = atk.dash ? 9 : atk.knock ? 5 : 2;
       sound.playHit(a.weapon ? 'block' : atk.knock ? 'heavy' : 'light');
-      if (a.weapon > 0 && a.team === 0) a.weapon--;
+      if (a.weapon > 0 && a.team === 0 && (!atk.dash || !atk.weaponSpent)) {
+        a.weapon--;
+        atk.weaponSpent = true;
+      }
     }
   }
   hurt(a, damage, dir, knock = false, source = 'strike') {
@@ -708,6 +788,7 @@ class NeonUprising {
     a.flashTimer = 100;
     this.effects(a.x, a.y - a.z - 85, a.team === 0 ? '#ffca9a' : '#fff0bc');
     if (a.team === 0) {
+      this.resetDashTap();
       a.chain = 0;
       a.chainHit = false;
       a.weapon = 0;
@@ -988,6 +1069,7 @@ class NeonUprising {
     }
   }
   respawn() {
+    this.resetDashTap();
     if (this.lives <= 0) {
       this.finish(false);
       return;
@@ -1132,7 +1214,7 @@ class NeonUprising {
     c.fillRect(0, 641, W, 79);
     STREET.text(
       c,
-      '移動 WASD / 矢印    攻撃・拾う J / Z    ジャンプ K / X / SPACE    緊急技 L / C',
+      '移動 WASD / 矢印    前×2：ダッシュ → J / Z：ダッシュ攻撃    ジャンプ K / X / SPACE    緊急技 L / C',
       W / 2,
       654,
       13,
@@ -1536,6 +1618,7 @@ Game.prototype.togglePause = function () {
   if (this.scene === 'STREET') {
     if (this.street.result) return;
     this.paused = !this.paused;
+    this.street.resetDashTap();
     if (this.paused) {
       fighterVoice.stopAll();
       input.keys = {};
@@ -1549,13 +1632,25 @@ Game.prototype.update = function () {
     return;
   }
   if (this.isPaused()) {
+    if (this.scene === 'STREET') this.street.resetDashTap();
     input.clear();
     return;
   }
   this.stageTick++;
   if (this.scene === 'STREET') this.street.update();
   else if (this.scene === 'HUB') {
-    if (STREET.press('ArrowLeft', 'ArrowRight', 'KeyA', 'KeyD', 'ArrowUp', 'ArrowDown', 'KeyW', 'KeyS')) {
+    // v2.8.1 start gate: browsers keep audio locked until a user gesture, and the first click on a card used to
+    // leave the HUB at once, so its music was never heard. The first click / key now only starts (the input
+    // handlers already called sound.init() and ensureBGM()). Escape and modifier keys are not gestures for browsers.
+    if (this.awaitStart) {
+      if (input.clicked || Object.keys(input.just).some((code) => !/^(Escape|Shift|Control|Alt|Meta|OS)/.test(code))) {
+        this.awaitStart = false;
+        sound.playUI('confirm');
+      }
+      input.clear();
+      return;
+    }
+    if (STREET.press('ArrowLeft','ArrowRight', 'KeyA', 'KeyD', 'ArrowUp', 'ArrowDown', 'KeyW', 'KeyS')) {
       this.hubChoice = 1 - (this.hubChoice || 0);
       sound.playUI('cursor');
     }
@@ -1659,6 +1754,17 @@ Game.prototype.draw = function () {
       '#b8cad8',
       'center'
     );
+    if (this.awaitStart) {
+      // Draw only: pulse comes from stageTick, no state or RNG is touched.
+      const pulse = 0.72 + 0.28 * Math.sin(this.stageTick * 0.09);
+      ctx.fillStyle = 'rgba(3,8,17,.62)';
+      ctx.fillRect(0, 0, W, H);
+      STREET.panel(ctx, W / 2 - 330, 300, 660, 150, '#0d1826', '#71dce2');
+      ctx.globalAlpha = pulse;
+      STREET.text(ctx, 'PRESS ANY KEY  /  CLICK TO START', W / 2, 362, 30, '#f1efea', 'center', '900');
+      ctx.globalAlpha = 1;
+      STREET.text(ctx, 'キーを押すか、画面をクリックするとスタートします（音楽が流れます）', W / 2, 408, 16, '#b8cad8', 'center');
+    }
   } else {
     STREET.text(ctx, 'NEON UPRISING', 44, 65, 18, '#efb980', 'left', '900');
     STREET.text(ctx, 'VERSION ' + STREET.version, W - 44, 65, 13, '#7c93a3', 'right', '800');
@@ -1706,6 +1812,7 @@ window.addEventListener('blur', () => {
   input.keys = {};
   input.clear();
   if (game.scene === 'STREET' && !game.street.result) {
+    game.street.resetDashTap();
     game.paused = true;
     fighterVoice.stopAll();
   }

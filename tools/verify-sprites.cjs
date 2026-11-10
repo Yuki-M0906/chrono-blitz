@@ -12,7 +12,7 @@ new vm.Script(code);
 // v2.6.0: assets live in data/*.js packs, the HTML holds code only.
 const packed = require('./packs.cjs').readPacks().all;
 assert.equal((code.match(/data:(image|audio)\//g) || []).length, 0, 'HTML must not embed assets any more');
-assert.equal((packed.match(/data:image\/png;base64,/g) || []).length, 31);
+assert.equal((packed.match(/data:image\/png;base64,/g) || []).length, 37);
 assert.equal((packed.match(/data:audio\/wav;base64,/g) || []).length, 126);
 const { chromium } = require('playwright');
 let browser;
@@ -176,6 +176,7 @@ let browser;
     await FighterSprites.ready;
     sound.init = () => {}; sound.playBGM = () => {}; sound.announce = () => {};
     game.mode = 3;
+    game.awaitStart = false; // v2.8.1 start gate is covered by tools/verify-start.cjs
   });
   await live.keyboard.press('Enter');
   await live.waitForFunction(() => game.scene === 'TITLE');

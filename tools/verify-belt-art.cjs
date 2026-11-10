@@ -2,21 +2,24 @@
 const fs = require('node:fs'), path = require('node:path'), assert = require('node:assert/strict');
 const { pathToFileURL } = require('node:url');
 const { chromium } = require('playwright');
-const root = path.resolve(__dirname, '..'), out = path.join(root, 'verification');
+const root = path.resolve(__dirname, '..'), out = path.join(root, 'verification', 'belt-art-v28');
+fs.mkdirSync(out, {recursive:true});
 const read = name => fs.readFileSync(path.join(root, name), 'utf8').replace(/\r\n/g, '\n');
 const current = read('ai_studio_code.html'), old = read('ai_studio_code.v2.4.0.backup.html');
 const block = (html, name) => html.match(new RegExp('^// '+name+'_BEGIN$([\\s\\S]*?)^// '+name+'_END$', 'm'))[1];
 // v2.6.0: the three asset tables moved to data/*.js. Compare the code with those tables removed, and the asset
 // data itself (pack contents versus what the v2.4.0 file embedded).
 const packs = require('./packs.cjs').readPacks().assets;
-const oldBlock = block(old, 'SPRITE_ASSETS'), codeStart = text => text.slice(text.indexOf('const VOICE_PROFILES = '));
+const oldBlock = block(old, 'SPRITE_ASSETS'), codeStart = text => text.slice(text.indexOf('const ThrowMotion = '));
 const oldTable = (name, next) => JSON.parse(oldBlock.slice(oldBlock.indexOf('const '+name+' = ')+name.length+9, oldBlock.indexOf(';\nconst '+next+' = ')));
 assert.equal(codeStart(block(current, 'SPRITE_ASSETS')), codeStart(oldBlock), 'SPRITE_ASSETS code changed');
 assert.deepEqual(packs.sprites, oldTable('SPRITE_SOURCES', 'STAGE_SOURCES'), 'Sprite data changed');
 assert.deepEqual(packs.stages, oldTable('STAGE_SOURCES', 'VOICE_SOURCES'), 'Stage data changed');
-assert.deepEqual(packs.voices, oldTable('VOICE_SOURCES', 'VOICE_PROFILES'), 'Voice data changed');
-assert.equal(block(current, 'AUDIO_ENGINE'), block(old, 'AUDIO_ENGINE'), 'AUDIO_ENGINE changed');
-const core = html => html.match(/<script>([\s\S]*?)<\/script>/)[1].replace(/^\/\/ (SPRITE_ASSETS|AUDIO_ENGINE|BELT_ENGINE)_BEGIN$[\s\S]*?^\/\/ \1_END$/gm, '');
+// v2.7.0 intentionally updated character voices and SE synthesis (verified by verify-voice-update.cjs and verify-audio.cjs).
+assert.deepEqual(Object.keys(packs.voices), Object.keys(oldTable('VOICE_SOURCES', 'VOICE_PROFILES')), 'Voice fighter keys changed');
+assert.equal(block(current, 'AUDIO_ENGINE').trim(), read('assets/audio/engine.js').trim(), 'AUDIO_ENGINE out of sync with assets/audio/engine.js');
+const core = html => html.match(/<script>([\s\S]*?)<\/script>/)[1].replace(/^\/\/ (SPRITE_ASSETS|AUDIO_ENGINE|BELT_ENGINE)_BEGIN$[\s\S]*?^\/\/ \1_END$/gm, '')
+  .replace(/^\/\/ START_GATE_BEGIN$[\s\S]*?^\/\/ START_GATE_END\n/gm, ''); // v2.8.1 start gate, covered by verify-start.cjs
 assert.equal(core(current), core(old), 'Shared game code changed');
 let browser;
 (async () => {
@@ -34,8 +37,9 @@ let browser;
     }));
     // v2.6.0 retuned hit detection on purpose: STREET.hit and the methods listed after the draw methods are excluded
     // from the v2.4.0 comparison (tools/verify-hit.cjs covers them). Everything else must still match the baseline.
-    const spec = {...STREET}; delete spec.version; delete spec.hit;
-    return {actor:methods(StreetActor,['render']), street:methods(NeonUprising,['drawStreet','drawProp','drawItem','updateActor','playerInput','grabbable','attack','swing','pickup','enemyAI']), spec:JSON.stringify(spec)};
+    // v2.8 explicitly adds dash gameplay; dedicated keyboard/knockdown tests cover the additional exclusions.
+    const spec = {...STREET}; delete spec.version; delete spec.hit; delete spec.dash;
+    return {actor:methods(StreetActor,['render']), street:methods(NeonUprising,['drawStreet','drawProp','drawItem','updateActor','playerInput','grabbable','attack','swing','pickup','enemyAI','constructor','resetDashTap','readDashTap','dashAttack','hurt','respawn','drawHUD']), spec:JSON.stringify(spec)};
   };
   assert.deepEqual(await page.evaluate(signatures), await baseline.evaluate(signatures), 'Nonvisual street methods or balance changed');
   await baseline.close();
@@ -46,7 +50,7 @@ let browser;
         const b=document.createElement('canvas'); b.width=img.width; b.height=img.height; const c=b.getContext('2d'); c.drawImage(img,0,0);const a=c.getImageData(0,0,b.width,b.height).data;let clear=0;for(let i=3;i<a.length;i+=4)if(a[i]<25)clear++;return {id,ratio:clear/(b.width*b.height)};
       })};
   });
-  assert.equal(loaded.images,9); assert.equal(loaded.districts,5); assert.equal(loaded.props,8); assert.equal(loaded.bossPoses,72); assert.deepEqual(loaded.errors,[]);
+  assert.equal(loaded.images,15); assert.equal(loaded.districts,5); assert.equal(loaded.props,8); assert.equal(loaded.bossPoses,72); assert.deepEqual(loaded.errors,[]);
   for(const a of loaded.transparent)assert(a.ratio>.35 && a.ratio<.9, a.id+' alpha');
   const stage = async (area, seam=false) => {
     await page.evaluate(({area,seam})=>{

@@ -1,7 +1,22 @@
-# NEON UPRISING — Stage 1 / v2.6.0
+# NEON UPRISING — Stage 1 / v2.8.1
 
 `ai_studio_code.html`の起動メニューから選ぶ、1人用ベルトスクロールアクション。
 既存の対戦ゲームは「OVERDRIVE」として同じメニューから起動する。
+
+## v2.8.1 起動時のスタート待ち
+
+- 起動直後の HUB は `game.awaitStart = true`。最初のクリック / キー押下（Escape・修飾キー以外）は選択や決定に使わず、スタートとして消費する。
+  ブラウザは操作があるまで音を出せないため、この操作で HUB の BGM が始まる。`openHub()` で戻ったときは再表示しない。
+- 待ち画面の描画は `stageTick` だけを参照し、状態・乱数・音声に触れない。検証は `node tools/verify-start.cjs`。
+
+## v2.8.0 ダッシュとダッシュ攻撃
+
+- `→→` / `←←` / `D D` / `A A` を14F以内に入力し、2回目を保持して走る。解除・逆入力・ゲートで停止し、ジャンプ/投げで通常操作へ戻る。長押しリピートでは発動しない。
+- 走行中 `J` / `Z` で専用攻撃。素手114〜128ダメージ（通常の強攻撃の約1.65倍）、発生8F・持続8〜19F・全体38F。ボスの突進/床叩きアーマーを貫通し、有効命中は必ず吹き飛び→ダウン。無敵中など元から攻撃できない対象の条件は維持。
+- 調整値は `STREET.dash`、操作は `readDashTap()` / `playerInput()`、技は `dashAttack()`。`STREET_DASH` / `DASH_ATTACK` は街のプレイヤー専用。走行中の自動掴みとアイテム拾いより攻撃を優先。新技は無敵なし・被弾中断あり・通常チェーンへの予約なし。
+- 描画は `BeltArt.prepareDash()` / `dashFrame()` / `drawDash()`。`art/dash-<キャラ>.png` の6枚・144姿勢を built-in image_gen で制作。生成指示は `art/prompts-v2.8-dash.json`。0〜7走行、8〜11予備動作、12〜17攻撃、18〜23復帰。神楽/フレイヤのコマ13・14は斬撃先端の切り出し補正あり。
+- `data/belt-dash.js`（約18.6MB）を追加し、既存10パックと音響/音声エンジンは SHA-256 一致。基準は `verification/v27-source-hashes.json`。既存の `dash` / `heavy1` ボイスと強攻撃SEを使用。
+- `node tools/verify-dash.cjs` で実キー入力・全6人・ボス・停止/中断・パイプ・回復・描画純粋性を検査。`verification/dash-report.json` と `dash-six-heroes.png` / `dash-<キャラ>.png` を保存する。
 
 ## 編集とビルド
 
@@ -13,14 +28,16 @@
 - `tools/build-sprites.mjs`: 画像・音声を既存領域へ、新モードをBELT_ENGINE領域へ埋め込む。
 
 `node tools/build-sprites.mjs`を実行して配布用HTMLを更新する。埋め込み領域を直接編集しない。
-共通キャラ18枚・対戦背景4枚・v2.4のWAV126本に、街専用PNG9枚（背景5・ボス3・物体1）を追加。
-すべて埋込済みなので単一HTMLをそのまま開いて遊べる。今回の変更前は`ai_studio_code.v2.4.0.backup.html`、旧街コードは`engine.v2.4.js`。
+共通キャラ18枚・対戦背景4枚・v2.7のWAV126本に、街専用PNG15枚（背景5・ボス3・物体1・ダッシュ6）を使用。
+配布はHTMLと`data/`の11パックをセットにする。今回の変更前は`ai_studio_code.v2.7.0.backup.html`、旧街コードは`engine.v2.7.js`、旧描画は`art.v2.7.js`。既存10パックは変更なし。
 
 ## 操作
 
 | 操作 | 入力 |
 |---|---|
 | 左右・奥行き移動 | WASD / 矢印 |
+| ダッシュ | 前方向を素早く2回（→→ / ←← / D D / A A）、2回目を保持。離すと停止 |
+| ダッシュ攻撃 | ダッシュ中 J / Z。強打で確定ダウン。ボスのアーマーも貫通 |
 | 連続攻撃（パンチ→ボディ→アッパー）、地面のアイテムを拾う | J / Z。前の一撃が当たった時だけ次段へ |
 | チェーン投げ | ↓（S）を入れたまま3発目。吹き飛ばさず自動で投げる |
 | ジャンプ、空中で攻撃 | K / X / Space、その後 J / Z |
@@ -78,6 +95,7 @@ NodeからPlaywrightとChromeを使う（このPCのNODE_PATHはC:/Users/User/.c
 
 ```powershell
 node tools/verify-belt.cjs
+node tools/verify-dash.cjs
 node tools/verify-belt-art.cjs
 node tools/verify-sprites.cjs
 node tools/verify-throws.cjs
@@ -105,7 +123,7 @@ node tools/verify-voice-update.cjs
 - `attack()`: ファイナルファイト方式。段階は `chainHit`（直前の段が命中）かつ `comboTTL` 内でのみ進む。1 段目 ATK_L、2 段目 ATK_C_L（ボディブロー）、3 段目 ATK_H（アッパー、`upper: true`）。空振りはパンチに戻る。
 - `swing()`: 敵・破壊物への命中で `a.chainHit = true`。アッパーは `hurt(..., 'upper')` で vz 11 / knockX 5 と高く短く飛ぶ。ボスのアーマーは 'upper' も打撃扱い。
 - チェーン投げ: 3 段目に入る瞬間に S / ↓ が押されていて正面 `reach` 以内に `grabbable()` の敵がいれば `beginGrab()` → `throwHeld(facing)` を即実行。投げた敵の体が他の敵に当たる処理は既存の `throwFlight` と共通。鉄パイプ所持中は投げに変化しない。
-- `STREET.version`（現在 '2.6.0'）を HUB / STREET_SELECT の右上と HUD 右下に表示。バージョンを上げるときはここと HTML ヘッダー・index.html・README.md を揃える。
+- `STREET.version`（現在 '2.8.1'）を HUB / STREET_SELECT の右上と HUD 右下に表示。バージョンを上げるときはここと HTML ヘッダー・index.html・README.md を揃える。
 
 ## v2.3.1 の変更
 
@@ -136,3 +154,9 @@ node tools/verify-voice-update.cjs
 - 投げた体の巻き込み 74×42px、アイテム拾得 62×38px、I キー投げの奥行き 34px、↓＋3 発目の投げ 38px。
 - 配布は `ai_studio_code.html`＋`data/*.js`（10 本）。`node tools/build-sprites.mjs` が両方を生成する。`BELT_ART_SOURCES` は `CB_ASSETS.beltArt` を指す。
 - `tools/verify-hit.cjs` が判定 24 項目と分割配布の整合を検査。`verify-belt-art.cjs` の v2.4.0 比較からは、今回変更した 7 メソッドと `STREET.hit` を除外している。
+
+## v2.7.0 の変更（キャラクター音声の棒読み解消・効果音刷新）
+
+- `STREET.version` を `'2.7.0'` に更新。ゲームロジック・当たり判定・物理・AI・スプライト・背景・BGM 譜面は v2.6.0 から一切変更なし。
+- キャラクター音声（全 6 人・126 クリップ）の棒読み解消（`assets/voices/voicevox-config.json`、`tools/generate-voicevox.py`、`data/voices.js`）：長母音・二重母音・撥音を統合した音節単位のアクセント制御、複合必殺技の後半クライマックスリフト、時変エルミート補間による音節内 F0 演技コンター（立ち上がりしゃくり・気合の語尾フォール・被弾トレモロ）、誤読（`はあっ！`→`ハアッ！` 等）と疑問文イントネーション誤適用の修正。
+- 効果音（SE）の爽快感強化（`assets/audio/engine.js`）：`synthImpact`（`punch / heavy / slash / metal / wood`）、`synthWhoosh`、`synthCatch`、`synthLanding`、`synthEnergy`、`synthReverse` に高速 FM トランジェント・ヒットスパーク倍音・2 段ショックウェーブ・金属分散チャープを導入し、`playHit / playGrapple / playSuper / playBreak` のステレオ・レイヤリングを強化。

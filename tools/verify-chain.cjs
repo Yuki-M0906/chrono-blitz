@@ -60,7 +60,7 @@ const root=path.resolve(__dirname,'..');let browser;
   s=setup();p=s.player;const prop=s.props[0];p.x=prop.x-60;p.y=prop.y;s.attack(p);s.swing(p,p.attack);check(p.chainHit,'Crate hit continues the chain');
   // 9. Drawing never mutates the simulation.
   s=setup();p=s.player;e=s.spawnEnemy('punk',p.x+60,p.y);s.attack(p);const frozen=JSON.stringify([s.tick,p.x,p.chain,p.chainHit,e.hp,e.state]);for(let i=0;i<5;i++)s.draw(ctx);check(JSON.stringify([s.tick,p.x,p.chain,p.chainHit,e.hp,e.state])===frozen,'Draw is pure');
-  game.scene='HUB';game.draw();
+  game.scene='HUB';game.awaitStart=false;game.draw();
   return out;
  });
  await page.screenshot({path:path.join(root,'verification/chain-hub.png')});

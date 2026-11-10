@@ -6,7 +6,7 @@ const {readPacks,root}=require('./packs.cjs');let browser;
 // ---- Distribution: every file must be uploadable (GitHub rejects > 100 MB, warns > 50 MB) and match its source.
 const htmlSize=fs.statSync(path.join(root,'ai_studio_code.html')).size,packs=readPacks();
 assert(htmlSize<2*1048576,'HTML must stay small: '+htmlSize);
-assert.equal(packs.files.length,10);
+assert.equal(packs.files.length,11);
 for(const f of packs.files)assert(f.size<50*1048576,f.name+' is too large: '+f.size);
 const b64=(...p)=>fs.readFileSync(path.join(root,...p)).toString('base64');
 for(const [id,uri] of Object.entries(packs.assets.sprites))assert.equal(uri,'data:image/png;base64,'+b64('assets/sprites',id+'.png'),id);
@@ -14,7 +14,7 @@ for(const s of packs.assets.stages)assert.equal(s.src,'data:image/png;base64,'+b
 for(const [id,uri] of Object.entries(packs.assets.voices))assert.equal(uri,'data:audio/wav;base64,'+b64('assets/voices',id+'.wav'),id);
 for(const [id,e] of Object.entries(packs.assets.beltArt))assert.equal(e.src,'data:image/png;base64,'+b64('assets/belt/art',e.file),id);
 assert.equal(Object.keys(packs.assets.sprites).length,18);assert.equal(packs.assets.stages.length,4);
-assert.equal(Object.keys(packs.assets.voices).length,126);assert.equal(Object.keys(packs.assets.beltArt).length,9);
+assert.equal(Object.keys(packs.assets.voices).length,126);assert.equal(Object.keys(packs.assets.beltArt).length,15);
 (async()=>{
  browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||'C:/Users/User/AppData/Local/Google/Chrome/Application/chrome.exe',args:['--mute-audio']});
  const context=await browser.newContext({viewport:{width:1280,height:800}});
@@ -23,7 +23,7 @@ assert.equal(Object.keys(packs.assets.voices).length,126);assert.equal(Object.ke
  await page.goto(pathToFileURL(path.join(root,'ai_studio_code.html')).href);
  const boot=await page.evaluate(async()=>{await Promise.all([FighterSprites.ready,StageArt.ready,BeltArt.ready]);game.draw();
   return {overlayGone:!document.getElementById('cbLoading'),loaded:CB_ASSETS.loaded,total:CB_ASSETS.total,failed:CB_ASSETS.failed,sprites:FighterSprites.atlases?.size??null,belt:BeltArt.images.size,beltErrors:BeltArt.errors,inline:[...document.scripts].reduce((n,s)=>n+(s.src?0:s.textContent.length),0)};});
- assert.equal(boot.overlayGone,true);assert.equal(boot.loaded,boot.total);assert.deepEqual(boot.failed,[]);assert.equal(boot.belt,9);assert.deepEqual(boot.beltErrors,[]);assert(boot.inline<1048576);
+ assert.equal(boot.overlayGone,true);assert.equal(boot.loaded,boot.total);assert.deepEqual(boot.failed,[]);assert.equal(boot.belt,15);assert.deepEqual(boot.beltErrors,[]);assert(boot.inline<1048576);
  const checks=await page.evaluate(()=>{
   sound.playBGM=()=>{};sound.announce=()=>{};fighterVoice.play=()=>false;
   const out={};const check=(b,m)=>{if(!b)throw Error(m);out[m]=true;};const H=STREET.hit;

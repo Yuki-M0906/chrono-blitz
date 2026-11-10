@@ -1,8 +1,8 @@
-# Arcade Soundtrack & Sound Engine / v2.4.0
+# Arcade Soundtrack & Sound Engine / v2.7.0
 
 `engine.js` が現行 `SoundEngine` の編集元。`node tools/build-sprites.mjs` で `ai_studio_code.html` の `AUDIO_ENGINE` 領域に反映する。
-配布物は従来どおり単一ファイル `ai_studio_code.html` のみ。
-復元用に `ai_studio_code.v2.3.1.backup.html`、`assets/audio/engine.v2.3.1.js`、`assets/voices/engine.v2.3.1.js`（および旧版 `ai_studio_code.v2.0.0.backup.html` / `assets/audio/engine.v2.0.js`）を保存している。
+配布物は `ai_studio_code.html` ＋ `data/*.js`（10 パック）。
+復元用に `ai_studio_code.v2.6.0.backup.html`、`assets/audio/engine.v2.6.0.js`（および旧版 `v2.5.0` / `v2.4.0` / `v2.3.1` / `v2.0.0` バックアップ）を保存している。
 
 ## 曲と編集箇所（全8曲・完全独立ダイアトニック編成）
 
@@ -30,7 +30,7 @@
   - `guitar, lead, keys, brass, pad, bell`: MIDI `[48, 54, 60, 66, 72, 78, 84]`（各7音域）
 - 旧版では単一のC3/C4サンプルを `playbackRate` で最大±18半音伸縮していたため、エンベロープやビブラート速度が崩壊しエイリアシングノイズが発生していた。v2.4.0 では `note()` が最近傍のマルチサンプルを選択し、ピッチシフト幅を最大±3半音以内に抑えることで自然な倍音と減衰を維持する。
 - 全楽器の合成に時変 State Variable Filter (`svf`)、ユニゾン・デチューン、FMベル倍音、ギター4×オーバーサンプリング・チューブ飽和＋キャビネットフィルタを採用。
-- 21種の効果音バッファ（`punch0..2, heavy0..2, slash0..2, metal0..2, wood0..2, swing, swingHeavy, catch, landing, energy, reverse`）と手続き合成レイヤーを全面刷新し、打撃のサブベース衝撃・中域ボディ・高域クラック、斬撃の金属倍音、オブジェクト破壊の材質感を強化。
+- 21種の効果音バッファ（`punch0..2, heavy0..2, slash0..2, metal0..2, wood0..2, swing, swingHeavy, catch, landing, energy, reverse`）と手続き合成レイヤーを全面刷新。v2.7.0 ではさらに爽快感を高めるため、全打撃・斬撃・破壊・投げ・超必殺SEに高速FMアタック・トランジェント（ウィップクラック／ヒットスパーク倍音／2段ショックウェーブ／分散金属チャープ）とステレオ・マルチレイヤー演出（`playHit / playGrapple / playSuper / playBreak`）を導入。
 - 公開API（`playUI / playSwing / playHit / playGrapple / playSuper / playBreak / playPickup / playCue / announce`）およびプロパティ契約は100%互換維持。
 - 音色の乱数は独立xorshiftを使用し、ゲームの `Math.random` を一切変更・消費しない。
 

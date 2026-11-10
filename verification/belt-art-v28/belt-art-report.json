@@ -1,0 +1,63 @@
+{
+  "version": "2.8.1",
+  "loaded": {
+    "images": 15,
+    "districts": 5,
+    "props": 8,
+    "bossPoses": 72,
+    "errors": [],
+    "transparent": [
+      {
+        "id": "props",
+        "ratio": 0.6717910766601562
+      },
+      {
+        "id": "voss-base",
+        "ratio": 0.5898043314615885
+      },
+      {
+        "id": "voss-motion",
+        "ratio": 0.5855458577473959
+      },
+      {
+        "id": "voss-throw",
+        "ratio": 0.6362889607747396
+      },
+      {
+        "id": "dash-kagura",
+        "ratio": 0.7371641794840494
+      },
+      {
+        "id": "dash-volt",
+        "ratio": 0.7465413411458334
+      },
+      {
+        "id": "dash-freya",
+        "ratio": 0.7134208679199219
+      },
+      {
+        "id": "dash-titan",
+        "ratio": 0.6319707234700521
+      },
+      {
+        "id": "dash-ayame",
+        "ratio": 0.7182903289794922
+      },
+      {
+        "id": "dash-celine",
+        "ratio": 0.7774677276611328
+      }
+    ]
+  },
+  "checks": {
+    "sharedImagesVoicesAndAudioIdentical": true,
+    "sharedGameIdentical": true,
+    "nonvisualStreetMethodsIdentical": true,
+    "pureDraw": true,
+    "randomCalls": 0,
+    "fallback": true,
+    "bossStates": true,
+    "meanRenderMs": 0.1816666672627131
+  },
+  "browserErrors": []
+}
