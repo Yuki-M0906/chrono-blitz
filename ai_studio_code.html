@@ -2,74 +2,623 @@
 <!--
 ================================================================================
   CHRONO BLITZ: ARCADE COLLECTION - 技術仕様書 兼 開発引き継ぎドキュメント
-  Version: 2.8.1 (Street Dash / Start Gate for HUB Music)
+  Version: 3.6.1 (Infernal Works / Docs and Test Sync)
 ================================================================================
 
-【0. 現行構成サマリ / v2.8.1 時点 — 引き継ぐ人はまずここを読む】
+【0. 現行構成サマリ / v3.6.1 時点 — 引き継ぐ人はまずここを読む】
   ■ 配布物（v2.6.0 から 2 点セット。必ず同じフォルダに置く）
-    ai_studio_code.html（約 0.4MB。コードとこの文書だけ）＋ data フォルダ（アセットパック 11 本、計 約 135MB、最大 22MB）。
+    ai_studio_code.html（約 0.5MB。コードとこの文書だけ）＋ data フォルダ（アセットパック 11 本、計 約 184MB、最大 約 42MB）。
     data/sprites-<キャラ>.js ×6、stages.js、voices.js、belt-backgrounds.js、belt-actors.js、belt-dash.js。中身は data URI
-    （22 PNG＋街専用 15 PNG・WAV 126 本）で、1 ファイル 1 行の CB_ASSETS.add("種類",{...},バイト数); 形式。
-    PNG 内訳: 共通キャラ 18 アトラス（432 姿勢）、対戦背景 4、街背景 5、ボス 3（72 姿勢）、物体 1（8 コマ）、ダッシュ 6（144 姿勢）。
+    （PNG 50 枚・WAV 136 本）で、1 ファイル 1 行の CB_ASSETS.add("種類",{...},バイト数); 形式。
+    PNG 内訳: 共通キャラ 18 アトラス（432 姿勢）、対戦背景 4、街背景 5、工場背景 5、物体 1（8 コマ）、IRON VOSS 3（72 姿勢）、
+              ダッシュ 6（144 姿勢）、3 段上昇技 6（144 姿勢）、炎 1（24 コマ）、FURNACE MAW 1（24 姿勢）。
+              街専用の 28 枚は assets/belt/art/manifest.json が一覧（belt-backgrounds に背景 10、belt-dash にダッシュ 6、残りは belt-actors）。
+    WAV 内訳: 主人公 6 人 × 22（従来 21 ＋決め台詞 finish）＝132、ボス 2 体（voss / maw）× 登場 intro・絶叫 defeat ＝4。
     file:// 直開きでも、python -m http.server などの静的配信でも動く。外部通信・追加インストールは不要。
     data フォルダが無い / 読めない場合は起動画面に赤字で案内を出す（CB_ASSETS.fail）。
-    ai_studio_code.vX.Y.Z.backup.html は各版の変更直前の完全なバックアップ（同じフォルダ）。
+    復元用: v3.4.0 までは ai_studio_code.vX.Y.Z.backup.html、v3.4.1 以降は backups/vX.Y.Z/（変更直前の HTML と編集元）。
 
   ■ 2 つのゲームと画面遷移
     起動時 scene = 'HUB'（ゲーム選択）。起動直後だけ game.awaitStart = true で、最初のクリック / キー押下は
     「スタート」として消費する（ブラウザは操作があるまで音を出せないため。ここで HUB の BGM が始まる。[FIX-81]）。
     OVERDRIVE（対戦格闘）  : TITLE → SELECT → BATTLE →(ARCADE 全員撃破)→ RESULT。ESC でポーズ、ポーズ中 Q でタイトル。
-    NEON UPRISING（ベルト）: STREET_SELECT → STREET（ステージ 1 のみ）。ESC でポーズ、ポーズ中 Q で HUB。
+    NEON UPRISING（ベルト）: STREET_SELECT → STREET（ステージ 1 BLACK VEIN）→ クリア画面で Enter → STREET（ステージ 2 INFERNAL WORKS）
+                             → クリア画面で Enter → ステージ 1 から。GAME OVER で Enter は同じステージをやり直す。
+                             ステージ 1→2 はスコア・撃破数・残機・1UP 取得済みを引き継ぎ、体力は全回復。ESC でポーズ、ポーズ中 Q で HUB。
+                             ステージは STREET_STAGES（区画・ボス・曲）で定義。game.startStreet(キャラ, ステージ番号, 引き継ぎ元)。
     共通: H で技表モーダル（進行停止）、ツールバー「ゲーム選択へ」で HUB。ウィンドウのフォーカス喪失で両ゲームともポーズ。
 
   ■ コードの置き場所（HTML 内のマーカーと編集元）
     HTML 直書き（編集元はこの HTML 自身）:
-      CSS / DOM / Input / 定数 / CHARACTERS / STAGES / Fighter / Game（対戦ロジック・HUD）/ UI 配線 / メインループ
+      CSS / DOM（技表を含む）/ Input / 定数 / CHARACTERS / STAGES / Fighter / Game（対戦ロジック・HUD）/ UI 配線 / メインループ
     DATA_PACKS の BEGIN〜END マーカー（HTML コメント形式、メイン script の直前）← ビルドが再生成。手で編集しない
       読み込み画面（#cbLoading）、CB_ASSETS（sprites / stages / voices / beltArt の受け皿と進捗表示）、
       data/*.js を読む script タグ 11 本（?v=内容ハッシュ。中身が変わったパックだけ再ダウンロードされる）。
     SPRITE_ASSETS の BEGIN〜END マーカー ← tools/build-sprites.mjs が再生成。手で編集しない
       SPRITE_SOURCES・STAGE_SOURCES・VOICE_SOURCES（CB_ASSETS への参照）・VOICE_PROFILES
       assets/sprites/throws.js    ThrowMotion（投げの同期・姿勢補間。両ゲーム共用）
-      assets/sprites/renderer.js  FighterSprites（432 姿勢のアトラス描画）
+      assets/sprites/renderer.js  FighterSprites（432 姿勢のアトラス描画。384px セル。画像は assets/sprites/design-v33/）
       assets/stages/renderer.js   StageArt（4 背景＋動く装飾）
-      assets/voices/engine.js     FighterVoiceBank（126 クリップの再生・優先度・ダッキング）
+      assets/voices/engine.js     FighterVoiceBank（136 クリップの再生・優先度・ダッキング）
     AUDIO_ENGINE の BEGIN〜END マーカー ← assets/audio/engine.js（ARCADE_TRACKS / SoundEngine / sound）
     BELT_ENGINE の BEGIN〜END マーカー ← BELT_ART_SOURCES（CB_ASSETS.beltArt への参照）、assets/belt/art.js（BeltArt）、
-      assets/belt/engine.js（STREET / StreetPalettes / StreetActor / NeonUprising / Game への差し込み / blur 処理）
+      assets/belt/engine.js（STREET / FACTORY_AREAS / STREET_STAGES / StreetPalettes / StreetActor / NeonUprising /
+      Game への差し込み / blur 処理）
+    START_GATE の目印 2 組（直書き部）: 起動時のスタート待ち [FIX-81]。
     編集元を直したら node tools/build-sprites.mjs で再埋込する。マーカー内を直接編集すると次のビルドで消える。
     このヘッダーに「// 」で始まるマーカー名の行を書かないこと（v2.3.0 でビルドが誤認して本文を削った。[FIX-60]）。
+    HTML と編集元の改行はすべて LF（v3.0.0 以降。それ以前の HTML は CRLF と LF が混在していた）。混在させないこと。
 
   ■ 主要クラス
-    SoundEngine      Web Audio。35 個の共通 PCM 音源（bank）＋47 個の音域別マルチサンプル楽器音源（noteBank）をローカル合成し、全 8 曲の独立ダイアトニック編成（TRACK_COMPOSITIONS）を 25ms 間隔・120ms 先読みで予約。打撃・斬撃・破壊等の効果音は高速 FM トランジェント＋ヒットスパーク倍音＋2 段ショックウェーブを統合合成。prebuild() で操作前に準備。
-    FighterVoiceBank VOICEVOX 由来の 126 クリップ（v2.7.0 音節プロソディ構築＆時変 F0 演技コンター・スタジオマスタリング版）。チャンネル 2 本、優先度、クールダウン、BGM ダッキング。
+    SoundEngine      Web Audio。42 個の共通 PCM 音源（bank）＋47 個の音域別楽器音源（noteBank）をローカル合成し、全 8 曲を
+                     25ms 間隔・120ms 先読みで予約。打撃は punch / heavy などの基本音に impactBody / impactCrush（v3.6.0 再設計）を
+                     重ねる。上昇技 3 種・炎 2 種は synthArcadeAction。同時発音の上限は効果音 32・音楽 72。効果音は上限に達すると
+                     最も古い音を数 ms で消して新しい音を鳴らす（steal。[FIX-134]）。prebuild() で操作前に準備。
+    FighterVoiceBank VOICEVOX 由来の 136 クリップ。チャンネル 2 本、優先度、クールダウン、BGM ダッキング。
     Input            キーボード・マウス。getPlayer(idx, is2P) が 1P/2P の抽象入力を返す。
     Fighter          対戦用キャラ。ステート、コマンド履歴、当たり判定、物理（updatePhysics は 1F に 1 回）。
     Game             対戦の進行・AI・HUD。NEON UPRISING 側は prototype 差し替えで HUB/STREET を追加。
     ThrowMotion      投げの成立・拘束・放し・着地（対戦）と sample(u) の姿勢補間（両ゲーム）。
-    StreetActor      Fighter 継承。x=横, y=奥行き, z=高さ。vy には -vz を写して共通描画の上昇/下降姿勢に使う。
-    NeonUprising     ステージ進行・敵 AI・掴み/投げ・物体・残機・ボス・描画。
-    BeltArt          街専用の背景・物体・ボスの描画と画像キャッシュ。戦闘状態・入力・乱数・音声には触れない。
+    StreetActor      Fighter 継承。x=横, y=奥行き, z=高さ。monster=true は FURNACE MAW（専用描画・音声なしの被弾）。
+    NeonUprising     ステージ進行・敵 9 種の AI・掴み/投げ・3 段上昇技・炎ダッシュ・物体・残機・ボス・決着演出（finale）・描画。
+    BeltArt          街専用の背景（boards / factoryBoards）・物体・ボス・怪物・上昇技・炎の描画と画像キャッシュ。
+                     戦闘状態・入力・乱数・音声には触れない。
 
   ■ 設計上の約束事（壊すと検証スクリプトが落ちる）
     - 更新は固定 60Hz。描画は戦闘状態を変えず、Math.random も消費しない（画面シェイクは Game.shakeJitter()）。
     - 物理の積分は Fighter.updatePhysics() の 1 回だけ。吹き飛び速度は getHitbox の値を applyHit で 2 倍する。
     - 音の乱数は SoundEngine.random（独立 xorshift）。音声・背景装飾は stageTick / animTick で進める。
     - 新キャラは CHARACTERS に足せば選択画面・アーケード・HUB プレビュー・街の選択が追従する（人数の直書きはしない）。
-    - 新曲は ARCADE_TRACKS に 1 行追加し、STAGES[].bgm で参照する。
+    - 新曲は ARCADE_TRACKS に 1 行追加し、STAGES[].bgm（対戦）/ STREET_STAGES[].music（街）で参照する。
+    - 街のステージを足すときは STREET_STAGES に 1 行と区画配列を追加する。曲番号やボス名をコードに直書きしない
+      （v3.6.0 で ensureBGM に 5 番の直書きが残っていた。[FIX-128]）。
+    - 検証スクリプトに「枚数」「本数」「旧版と同一」を直書きしない。manifest から数える（v3.6.1 [TEST-129] の経緯を参照）。
 
-  ■ 検証（Playwright + Chrome。NODE_PATH でパッケージ、CHROME_BIN で Chrome を指定可）
-    node tools/verify-sprites.cjs      対戦 2,880F 回帰・432 姿勢・126 音復号・実キー操作
-    node tools/verify-throws.cjs       72 組の投げ・音声・致死投げ
-    node tools/verify-belt.cjs         街モードの仕様検査＋全 6 人のキーボード自動プレイでクリア
-    node tools/verify-dash.cjs         実キー2回入力・走行/停止・全6人の強打・ボスの確定ダウン・専用画像・v2.7旧パック保持
-    node tools/verify-belt-art.cjs     v2.4.0 との非描画処理・共通画像/音声/音響の一致、街専用画像の復号、5 区画・4 継ぎ目・72 ボス姿勢の画面記録
-    node tools/verify-chain.cjs        ファイナルファイト方式チェーン＆↓押しっぱなし自動投げの 25 項目検証
-    node tools/verify-hit.cjs          v2.6.0 の当たり判定（STREET.hit）24 項目＋分割配布の整合（各ファイル 50MB 未満・編集元と一致）
-    node tools/verify-audio.cjs        8 曲 32 小節の実レンダリング・効果音・ダッキング（単独実行すること）
-    node tools/verify-voice-update.cjs 音声埋込の一致
-    node tools/verify-start.cjs        起動時のスタート待ちと HUB の BGM（実マウス・実キー、出力レベルを実測）
+  ■ 検証（Playwright + Chrome。NODE_PATH でパッケージ、CHROME_BIN で Chrome を指定可。1 本ずつ実行する）
+    対戦・共通
+      node tools/verify-sprites.cjs        対戦 2,880F 回帰・432 姿勢・全音声の復号・実キー操作
+      node tools/verify-throws.cjs         72 組の投げ・音声・致死投げ
+      node tools/verify-anime.cjs          キャラ 27 枚 648 姿勢の寸法・透過・切り出し・パック一致、両ゲームの表示
+      node tools/verify-start.cjs          起動時のスタート待ちと HUB の BGM（実マウス・実キー、出力レベルを実測）
+    街モード
+      node tools/verify-belt.cjs           仕様検査＋全 6 人のキーボード自動プレイでステージ 1 クリア
+      node tools/verify-belt-art.cjs       埋込コードと編集元の一致、街画像 28 枚の復号、両ステージ各 5 区画・4 継ぎ目、描画の純粋性
+      node tools/verify-hit.cjs            当たり判定（STREET.hit）＋分割配布の整合（各パック 50MB 未満・編集元と一致）
+      node tools/verify-chain.cjs          連続攻撃と ↓ 押しっぱなしの自動投げ
+      node tools/verify-dash.cjs           実キー 2 回入力のダッシュ・全 6 人の炎ダッシュ攻撃・ボスの確定ダウン
+      node tools/verify-rising.cjs         3 段上昇技（全 6 人 × 通常 / 掴み）と掴みの追撃
+      node tools/verify-accessibility.cjs  上昇技の入力猶予・先行入力、掴みと初段の届きやすさ
+      node tools/verify-actions-v342.cjs   上昇技・炎の専用画像と専用音、前方投げと巻き込み
+      node tools/verify-hud-v343.cjs       固定 HUD（敵名・体力・ダメージ残像）、炎上の向き
+      node tools/verify-idle-fire-v344.cjs 待機姿勢の安定、炎上ダウン画像の余白
+      node tools/verify-boss-v350.cjs      敵 9 種、ボス登場台詞、撃破スローと決め台詞（全 6 人 × 3 通り）
+      node tools/verify-stage2-v360.cjs    ステージ 2 の進行・引き継ぎ・再挑戦、FURNACE MAW、136 音声
+    音
+      node tools/verify-audio.cjs          8 曲 32 小節の実レンダリング・効果音・ダッキング・連打時に音が捨てられないこと（約 2 分半）
+      node tools/verify-voice-update.cjs   音声 136 本の埋込一致と配役
+      node tools/verify-weight-v350.cjs    打撃の低域（重ね音が全バリエーション・全再生速度で低域を増やすこと）と追加台詞の実再生
+      node tools/verify-impact-v360.cjs    打撃音の v3.5 との比較（低域・初音）と試聴 WAV
     結果は verification/ 配下。構文だけなら script 要素の中身を切り出して node --check（ヘッダー内に script タグの文字列を書かないこと）。
+    手元にしか無いファイルを使う検証（git 管理外。clone しただけの環境では失敗、または一部を省略する）:
+      verify-sprites（ai_studio_code.v1.6.0.backup.html との 2,880F 比較）、verify-voice-update（assets/voices/backup-v1.6 / v1.7）、
+      verify-anime（旧 anime-v3 原画との差異検査。無ければ省略して続行）。
+
+  ■ リポジトリに含めるもの / 含めないもの（v3.6.1 [REPO-136]。管理対象は約 339MB）
+    含める  : HTML、data/（実行に必要な約 184MB）、ビルドが読む原画と音声（design-v33、街・工場背景、上昇技、炎、怪物、WAV 136 本）、
+              デザイン基準絵（assets/characters/v33/concepts）、編集元、tools/、検証レポートの JSON、backups/（検証 2 本が参照）。
+    含めない: 検証の画面記録と試聴音声（verification 配下の PNG / WAV。検証を実行すれば再生成される）、
+              ビルドが使わない旧版の原画（assets/sprites 直下のドット絵 18 枚、anime-v3、街の旧 voss / dash、actions-v342 の旧上昇技 6 枚）、
+              追加台詞の試聴用 WAV。どれも手元のフォルダには残してあり、v2.8.1（コミット 32b446b）までの履歴にも残っている。
+    規則は .gitignore の末尾。GitHub Pages の公開上限は 1GB、リポジトリは 1GB 未満が推奨。原画を作り直すと 1 回で数十〜百 MB 増えるので、
+    旧版の原画を管理対象へ戻さないこと。
+
+  ■ 聞いて確かめてほしい点（数値では決めきれない）
+    通常打撃の胴鳴りを 53Hz → 46Hz、減衰を少し長くした（[AUDIO-135]）。低域の量は v3.5.0 と同等以上、初音の鋭さは v3.6.0 のまま。
+    聞き比べ: verification/boss-v350/impact-before-after.wav（重ね音なし → あり）、verification/stage2-v360/impact-old-new.wav（v3.5.0 → 現行）。
+
+【v3.6.1 更新・引き継ぎ / 2026-11-14 / Claude Fable 5.2 (Claude Code)】
+  依頼内容: v3.6.0 の冒頭文書を精読し、全体の整合性・エラー・改善事項を確認。見つかった文書と検証の不整合を修正する。
+  復元    : ai_studio_code.v3.6.0.backup.html、backups/v3.6.0/（変更前の検証 6 本・index.html・README.md）。
+            data/ の 11 パックは v3.6.0 から無変更。
+  確認結果: 再ビルドで HTML と全パックが不変（冪等）。構文エラーなし。街画像 28 枚・音声 136 本はすべて実在。
+            実機でステージ 2 と FURNACE MAW の表示、ボス曲への切替、コンソールエラーなしを確認。
+            v3.6.0 の時点で検証 20 本中 6 本が失敗していた（下記 [TEST-129]。ゲームの不具合ではなく期待値が古い）。
+
+  [FIX-128] ステージ 2 で最初の操作から BGM を始めると、ステージ 1 の曲になる
+    症状   : ensureBGM()（最初の操作で場面に合う曲を始める処理）が、街モードの曲を 5 番と決め打ちしていた。
+    原因   : v3.6.0 でステージごとの曲を STREET_STAGES[].music に持たせたが、HTML 直書きのこの 1 行が追従していなかった。
+             通常はステージ開始時に playBGM 済みなので表面化しにくい（曲が止まった状態で街モードにいる場合だけ通る）。
+    修正   : game.street.stage.music を参照（ボス区画は従来どおり 6 番）。
+    変更箇所: ai_studio_code.html 直書き部 ensureBGM()。
+    検証   : 実機で曲を止めた状態から ensureBGM() を呼び、ステージ 1 は 5 番、ステージ 2 は 3 番、ボス区画は 6 番になることを確認。
+
+  [TEST-129] 古い期待値のまま失敗していた検証 6 本を修正
+    症状   : verify-sprites / dash / voice-update / belt-art / anime / weight-v350 が開始直後に失敗し、
+             対戦格闘の 2,880F 回帰やダッシュの検査が実行されない状態だった（v3.4.2 以降の更新で順に発生）。
+    原因   : 「画像 37 枚」「音声 126 本」「待機 6 コマ」「manifest の版は 1.7.0」といった数の直書きと、
+             「v2.4.0 / v2.7 / v3.2.0 と同一であること」という比較が、意図した追加・変更で成り立たなくなっていた。
+    修正   : verify-sprites      画像数と音声数を manifest から数える。待機は 1 コマ（v3.4.4 [FIX-113]）。
+             verify-dash         v2.7 保持の対象から belt-backgrounds を外す（工場背景の追加。stages と音声エンジンは引き続き検査）。
+             verify-voice-update 主人公 22 本 × 6 と、ボス 2 体の intro / defeat を検査。追加 10 本は旧版比較の対象外。
+             verify-belt-art     v2.4.0 バックアップ（git 管理外の 85MB）との比較を廃止し、埋込コードと編集元の一致検査へ変更。
+                                 画像数は manifest から。ステージ 2 の 5 区画・4 継ぎ目の画面記録と FURNACE MAW 全状態の描画を追加。
+             verify-anime        v3.2.0 との同一比較を廃止（街エンジン・待機コマ・音響・音声・背景は意図して変更済み）。
+                                 以後も変えない前提の 5 ファイルのハッシュ検査と、画像・表示の検査は維持。
+             verify-weight-v350  通常打撃の低域比較は [AUDIO-135] の修正で再び成立。重ね音が全 18 通り（打撃 3 種 × 再生速度 3 通り ×
+                                 通常 / 強打）で低域を 8% 以上増やすことの検査を追加。
+             verify-audio        連打の負荷テストに「破棄 0 回」「効果音は 32 音以内」「終了時も打撃音が出ている」の検査を追加（[FIX-134]）。
+             期待値だけを直した版で、対戦 2,880F 回帰・投げ・ダッシュが v3.6.0 でも壊れていないことを確認済み。
+    変更箇所: tools/verify-sprites.cjs、verify-dash.cjs、verify-voice-update.cjs、verify-belt-art.cjs、verify-anime.cjs、
+             verify-weight-v350.cjs、verify-audio.cjs。
+
+  [DOC-130] 文書・案内・技表を v3.6 の内容に同期
+    症状   : index.html が VERSION 3.5.0 のまま。README とこの文書の構成サマリが「ステージ 1 のみ・音声 126 本・画像 37 枚・
+             データ約 160MB・検証 11 本」のまま。構成サマリは v3.3.0 時点の内容で履歴の途中（v3.2.0 の下）に埋もれていた。
+             技表（H キー）に 3 段上昇技・掴みの追撃回数・ステージ 2 が載っていなかった。
+    修正   : 構成サマリを現状に合わせて書き直し、先頭へ戻した。未解決事項 [OPEN-131]〜[OPEN-133] を同じ場所に明記。
+             index.html、README.md、assets/belt/README.md、assets/audio/README.md を更新（版数・データ量・ステージ・音声数・クレジット）。
+             技表に 3 段上昇技・掴みの追撃・ステージ進行を追記。HUD 下段の操作案内に「↓→↑：3段上昇技」を追加。
+             .gitignore に tools/__pycache__/ を追加。STREET.version = '3.6.1'。
+    変更箇所: 本ヘッダー、ai_studio_code.html 直書き部（技表）、assets/belt/engine.js（version、drawHUD の案内文）、
+             index.html、README.md、assets/belt/README.md、assets/audio/README.md、.gitignore。
+
+  [FIX-134] 連打すると打撃音が抜ける（同時発音の上限で新しい音が捨てられていた）
+    症状   : verify-audio の負荷テスト（23ms 間隔で 80 発）で、効果音 約 235 回の再生に対し 約 110 回が鳴らずに捨てられていた
+             （v2.8.1 では 0 回）。敵が多い場面や連続技で、当たったのに音がしない一撃が出る。
+    原因   : SoundEngine.sample() は効果音が 32 音に達すると、新しい音の再生を断っていた。v3.5.0 / v3.6.0 で 1 発ごとに重ねる
+             impactBody / impactCrush は 0.48 秒 / 0.92 秒と長く、しかも打撃音本体より先に再生するので、余韻が枠を埋めて
+             肝心の打撃音本体が断られていた。検証は破棄数を見ていなかったため気づかれなかった。
+    修正   : 効果音が上限に達したら、最も早く鳴り始めた効果音（減衰が進んで最も小さい音）を 4ms の時定数で消して解放し、
+             新しい音を必ず鳴らす（SoundEngine.steal）。消し始めた音は上限の数に含めない。stats.stolen で回数を記録。
+             音楽側（上限 72）の扱い、音量、コンプレッサー、リミッター、各効果音の中身は変更なし。
+    変更箇所: assets/audio/engine.js（constructor の stats、sample、steal を新設）。
+    検証   : verify-audio の負荷テストで 破棄 0 回・効果音の同時数は最大 32・全音が解放（started = ended）を確認し、検査に追加。
+             通常の遊び方（毎秒 8 発程度まで）では上限に届かず、消される音は出ない。
+
+  [AUDIO-135] 通常打撃に重ね音を足すと、かえって低音が減る組み合わせがあった
+    症状   : 通常打撃（punch ＋ impactBody）の低域が、重ね音なしの punch 単体より小さくなる場合があった。
+             verify-weight-v350 の測り方で 0.074（単体）に対し v3.6.0 は 0.063。v3.5.0 でも打撃の種類と再生速度によっては同じことが起きていた。
+    原因   : impactBody の胴鳴りが落ち着く周波数（v3.6.0 は 53Hz、v3.5.0 は 69Hz）が、punch0〜2 自身の胸の響き
+             （58 / 62 / 66Hz。再生速度の揺らぎ 0.96〜1.05 倍で 56〜69Hz）と重なり、位相がずれた組で打ち消し合っていた。
+             実測（打撃 3 種 × 再生速度 3 通り、単体比）: v3.6.0 は 0.82〜1.26 倍、v3.5.0 は 0.84〜1.22 倍で、9 通り中 1〜2 通りが 1 倍未満。
+    修正   : 通常打撃の胴鳴りを 46Hz（punch の帯域の下）へ移し、減衰を 12 → 9.5 に少し長くした。初音（スナップ）・サブ・残響・
+             音量は v3.6.0 のまま。強打の impactCrush（38Hz）は 1.16〜1.64 倍で問題がないため変更なし。
+             実測: 単体比 1.18〜1.26 倍（9 通りすべてで増加）。verify-weight の値 0.063 → 0.090（v3.5.0 と同等）。
+             素の波形ではサブ帯域 0.105 → 0.120、初音 0.231 → 0.233（v3.6.0 比）。ミックスのピークは 0.76 で変化なし。
+    変更箇所: assets/audio/engine.js（synthImpactBody の通常側 2 か所）。
+    検証   : verify-weight-v350（全 18 通りで 8% 以上の増加を検査。最小 1.16 倍）、verify-impact-v360（v3.5.0 より低域・初音とも増加）。
+             聞き比べ用 WAV は構成サマリ「聞いて確かめてほしい点」を参照。聞いた印象の評価はしていない。
+
+  [REPO-136] 公開対象の整理（アップロード量の削減）
+    症状   : 未コミットが約 500MB、管理対象の一式が約 650MB になり、GitHub の推奨（1GB 未満）と Pages の公開上限（1GB）に近づいていた。
+    原因   : 検証のたびに増える画面記録（約 176MB）と、作り直し前の原画（約 147MB）まで管理対象になっていた。
+             ゲームの実行に必要なのは HTML＋data の約 184MB、ビルドに必要な原画・音声を足しても約 320MB。
+    修正   : .gitignore に規則を追加し、該当ファイルを管理対象から外した（git rm --cached。手元のファイルは消していない）。
+             管理対象は約 650MB → 約 339MB、今回のアップロードは約 500MB → 約 285MB。内訳と方針は構成サマリを参照。
+             verify-anime は旧 anime-v3 原画が無い環境では、その差異検査だけ省略して続行する。
+    変更箇所: .gitignore、tools/verify-anime.cjs、README.md（Repository layout）。
+    検証   : ビルドが読む 186 ファイル（PNG 50・WAV 136）がすべて管理対象に残っていることを確認。除外後も検証 20 本が通過。
+
+  ■ 検証結果（v3.6.1）
+    検証 20 本を 1 本ずつ実行し、すべて exit 0、ブラウザ例外 0（v3.6.0 の時点では 14 本通過・6 本失敗）。
+      verify-weight-v350: 通常打撃の低域 0.0743（単体）→ 0.0899（重ね音あり）。全 18 通りの最小は 1.16 倍。
+      verify-audio の負荷テスト: 破棄 0 回、効果音の同時数は最大 32（上限どおり）、全音が解放。
+    ビルド再実行で HTML の SHA-256 不変（冪等）。data/ の 11 パックは v3.6.0 と同一。メイン script の構文検査 OK。
+    実機（アプリ内ブラウザ、http://localhost 配信）: 版数 3.6.1 表示、ステージ 2 の開始曲 3 番、ensureBGM() が
+      ステージ 1 = 5 / ステージ 2 = 3 / ボス区画 = 6 を選ぶこと、技表の追記 4 行、HUD 下段の案内、コンソールエラーなしを確認。
+    実機の音: 毎秒 8 発（40 発）では同時 12 音まで・消された音 0・全発が出力。毎秒 40 発（60 発）でも破棄 0・全発が出力。
+    改行は HTML・編集元とも LF のみ（CR 0 個）。
+
+【v3.6.0 更新・引き継ぎ / 2026-11-13】
+  [ART-121] VOLT/FREYA/AYAME/CELINEの3段上昇技を各24コマ、計96姿勢で再制作。
+    通常画像design-v33を体格・頭・胴体・手足の基準とし、細長い等身を修正。
+    actions-v360/へ保存。TITAN=v343/KAGURA=v344は維持。技の入力・威力・3ヒット時刻は不変。
+    全生成プロンプトと元画像パス: assets/belt/art/generation-v360.json。
+  [AUDIO-122] impactBody/impactCrushを再設計。短い広帯域クラック、38/53Hzへ降下する胴鳴り、
+    34/43Hzの低域、短い室内残響を重ねる。二段のソフト飽和で鋭い初音を保持。
+    通常打撃・強打・上昇技・炎命中・投げ着地に共用。SE/VOICE/BGM音量とリミッターは維持。
+  [STAGE-123] ステージ2 INFERNAL WORKS追加。廃搬入口→停止製造ライン→ボイラー室→
+    変異実験区画→炉心の5区画。専用背景5枚、蒸気・火の粉、既存9種の敵を再編成。
+    factory-v360/、factory-generation-v360.jsonに画像と生成記録。歩行床440～626は従来通り。
+    STREET_STAGES / FACTORY_AREASでステージを設定。座標0～6200をステージごとに再利用。
+    ステージ1クリア画面Enterで2へ進行。キャラ・スコア・撃破数・残機・1UP獲得状況を継承、
+    体力は全回復。GAME OVER後Enterは同じステージを新規再挑戦。2クリア後Enterで1から再開。
+    BGMは既存track3を再利用。対戦格闘とステージ1の敵配置・入力・通常バランスは維持。
+  [BOSS-124] オリジナル巨大怪物FURNACE MAW。溶炉を宿す黒い装甲、角、鋼の爪と鎖。
+    maw.png専用24姿勢。scale1.85/HP2300/攻撃70/速度1.7/報酬10000。
+    予告付き突進・叩きつけ、HP45%以下で激怒と増援。叩きつけ範囲210×82、予告表示も一致。
+    Monster用描画分岐を全状態に適用。炎上時は怪物本体の色と発光を変更し、人型炎画像を使わない。
+    256pxセル厳密抽出で隣接姿勢の混入を防止、接地は姿勢ごとの不透明領域下端で合わせる。
+  [VOICE-125] MAW登場台詞「炉の底で、灰になれ！」と断末魔を追加。総136音。
+    同意済みVOICEVOX:麒ヶ島宗麟を低めの声・遅めの発話で生成。追加モデル取得なし。
+    tools/generate-monster-voices.py / assets/voices/cinematic-v360/report.json に生成条件を保存。
+    ボスごとの音声IDで登場、絶叫、1/4速フィニッシュ、各主人公の決め台詞へ接続。
+  [BUILD-126] node tools/build-sprites.mjsでHTMLとdata/*.jsを再構築。
+    工場背景はbelt-backgroundsに収録。11パック維持、最大41.8MBで各50MB未満。
+    配布時はHTMLとdataフォルダを一緒に渡す。更新前コードはbackups/v3.5.0に保存。
+  [QA-127] tools/verify-stage2-v360.cjs: 進行・引継ぎ・再挑戦・全波・全6人×3撃破手段・
+    専用画像/136音声のデコード・音割れ確認。verification/stage2-v360に画面とレポート。
+    tools/verify-impact-v360.cjsで旧3.5との低域/初音比較と試聴WAVを出力。
+    verify-hit / verify-boss-v350 / verify-actions-v342 / verify-chain の既存回帰も確認。
+
+【v3.5.0 更新・引き継ぎ / 2026-11-13】
+  [ENEMY-116] 雑魚敵を3→9種類へ増加。既存6人の通常/補間/投げ画像を色替えキャッシュで再利用。
+    追加: SABLE（フレイヤ）/RAVEN（綾女）/VIPER（セリーヌ）/GHOST（神楽）/
+          SURGE（ヴォルト）/GOLIATH（タイタン）。GOLIATHは暗色衣装も青緑に変更。
+    各種にroleを設定し、既存punk/knife/bruteのHP・攻撃AI・移動・報酬・ドロップを継承。
+    2区画目以降の編成へ順次導入。ウェーブ数・人数は維持。ボスは専用VOSS画像を継続。
+  [AUDIO-117] 通常/強打/斬撃/上昇技/炎命中/投げ着地に低域の衝撃と短い残響を追加。
+    synthImpactBodyでimpactBody / impactCrushの2種を合成、既存のアタック音へ重ねる。
+    胸に響く中低音＋サブベース＋破裂音＋短い室内残響。音量を上げるだけの処理にせず、
+    共通SEバス・コンプレッサー・リミッターを継承。BGM楽曲・VOICE音量は変更なし。
+  [VOICE-118] ボス登場台詞/絶叫と主人公6人の専用決め台詞、計8音を追加（総134音）。
+    同意済みローカルVOICEVOXモデルのみ使用。VOSSは麒ヶ島宗麟、各主人公は従来の配役。
+    台詞・音源・クエリ・長さ・PCM検証・ハッシュ: assets/voices/cinematic-v350/report.json。
+    再生成: tools/voicevox-runtime/venv/Scripts/python.exe -X utf8 tools/generate-boss-voices.py。
+    既存126音は再生成せず保持。台詞はmanifest.jsonに登録、data/voices.jsへビルドで同梱。
+  [SCENE-119] ボス登場で「この街は俺のものだ。逆らう奴は、叩き潰す！」を字幕付きで発話。
+    登場待ち時間は音声の実長＋0.55秒（未復号時は安全な代替時間）で決める。
+    ボスへの致命打で絶叫を一度発声、ワールドの飛翔/落下を1/4速度にする。音声の速度は維持。
+    3段上昇技は最終打まで完遂してから演出開始。投げによる撃破も対象。
+    着地・絶叫終了後、主人公の勝利姿勢＋専用台詞＋字幕を表示。その終了後にクリアへ遷移。
+    演出中は追加入力/敵AI/タイマー/次ウェーブを停止。決め台詞の途中で既存win音が重ならない。
+  編集元: assets/belt/engine.js / assets/audio/engine.js / assets/voices/manifest.json。
+    ビルド: node tools/build-sprites.mjs。HTML＋data全11パックを配布。
+    復元: backups/v3.4.4/ にHTML・街/音響エンジン・音声manifestを保存。
+  検証: verify-boss-v350.cjs の149項目通過。9種類/6元キャラ/各role/全134音の復号、
+    全6人×炎ダッシュ/投げ/3段上昇の18ケースでスロー比率・タイマー停止・ポーズ・音声順序・
+    二重発声なし・クリア到達を確認。ボス登場/決着/勝利台詞/敵一覧を実画面で目視確認。
+    verify-weight-v350.cjsで追加8台詞の実再生信号、VOICE0・全体消音・SE0を確認。
+    変更前後の低域RMS: 通常0.0743→0.0903、強打0.1154→0.1603。ミックスピーク0.77未満。
+    verification/boss-v350/ に画面、report.json、audio-report.json、impact-before-after.wavを保存。
+    verify-hit / verify-actions-v342 / verify-chainも通過。配布パック原本一致・50MiB未満を確認。
+    verify-hitの音声数126→134、verify-audioのバンク数40→42を追加資産に合わせ更新。
+    今回BGM楽曲の変更はなく、全8曲の長時間再検証は実施せず、変更したSE/音声を集中検証。
+    ポーズ復帰時は途中の登場/絶叫/決め台詞を再生し直し、表示時間もリセット。
+    残留ポップアップを決着開始時に消去、勝利台詞中も倒れたボスの炎/体/HP残像を減衰させる。
+
+【v3.4.4 更新・引き継ぎ / 2026-11-13】
+  [FIX-113] 選択画面・両ゲーム中の待機姿勢が鼓動するように見える問題を修正。
+    原因: 体格・輪郭の異なる待機画像6枚を6F間隔で循環し、身長や体幅が連続して変化していた。
+    FighterSprites.frameのIDLEを基準コマ0に固定。ボスのbossFrameも同様に安定化。
+    画像読込失敗時のdrawLegacyBodyもIDLEの正弦上下動を撤去。歩行/攻撃/その他の技は維持。
+    HUB/キャラクター選択/対戦格闘/ベルトアクションで同じ安定した待機姿勢を使用。
+  [FIX-114] 炎上ダウン時に上側へ別の炎上人物が現れる問題を修正。
+    原因: prepareAtlasで元コマの上下左右64pxも読む処理が、横倒し画像の上段の人物を取り込み、
+          cleanCellがその大きな断片を主成分として残す場合があった。
+    fx-fireのみ256pxの自セルを厳密に切り出し、384pxキャッシュの中央へ配置。周囲64pxは透明。
+    通常キャラクターの長い剣/髪/衣装を守る既存の余白読込は維持。炎上の方向/持続/ダメージは不変。
+  [ART-115] KAGURAの3段上昇技24コマを通常画像の頭身・頭/胴/脚の比率へ合わせて再制作。
+    通常のassets/sprites/design-v33/kagura.pngを基準とし、細長すぎる体と小さい頭を修正。
+    刀を使う炎の3段上昇斬りに統一。1536x1024、6列4行、共通足元アンカーは維持。
+    新画像: assets/belt/art/actions-v344/kagura.png。built-in image_genで制作。
+    同フォルダkagura-prompt.jsonに生成指示・原本パスを保存。旧画像はactions-v342に保持。
+  編集元: assets/sprites/renderer.js / assets/belt/art.js / art/manifest.json / engine.js（版番号）/
+          ai_studio_code.htmlのdrawLegacyBody。ビルド: node tools/build-sprites.mjs。
+  復元: backups/v3.4.3/ に変更前HTML・各編集エンジン・manifestを保存。
+  検証: tools/verify-idle-fire-v344.cjs通過。全6人の選択プレビュー/共有IDLEを72F比較し、
+    待機画像が同一で歩行は引き続きアニメーションすることを確認。ボスIDLEも安定。
+    旧版を読み込み、炎上コマ16/17の余白に別人物由来の10696/10675画素が残ることを再現。
+    修正版では炎全24コマの余白の非透明画素が0。着地/ダウン/消火まで動作確認。
+    KAGURA新PNGの寸法/透過を確認。実画面と左右のダウン全6段階を目視確認。
+    verification/idle-fire-v344/ にreport.json、kagura-and-fire-down.png、fire-down-cells.png。
+    verify-hud-v343 / verify-actions-v342 / verify-hitも通過。ブラウザー例外なし。
+    11パックの原本一致と50MiB未満、今回編集ファイルのdiff空白検査も確認。
+
+【v3.4.3 更新・引き継ぎ / 2026-11-13】
+  [ART-110] TITANの3段上昇技24コマを全面描き直し。
+    通常のdesign-v33/titan.pngを頭身・肩幅・胴体・手足・線の太さの基準に使用。
+    旧上昇画像の小さな頭/細長い体を、通常時の大柄な重量級体型に統一。
+    新画像: assets/belt/art/actions-v343/titan.png。built-in image_genで制作。
+    同ディレクトリtitan-prompt.jsonに原本パスと生成指示を保存。旧画像はactions-v342に保持。
+  [FIX-111] 炎上専用画像の反転基準を修正。
+    通常被弾は敵が攻撃者を向くが、炎上原画は右へ倒れる構図のため通常facingと基準が逆。
+    dash命中時に攻撃方向dirをburnDirectionとして保存し、飛翔/接地/KOまでその向きを使用。
+    drawActionの方向指定を追加、通常画像は従来どおり。左右の反転は描画だけで移動/判定は不変。
+  [HUD-112] NEON UPRISINGの体力表示を画面固定のアーケード風へ全面改修。
+    敵頭上の小ゲージと中央の独立ボスゲージを撤去。自分のゲージ直下に敵名＋体力ゲージを配置。
+    最後に命中/掴みを行った敵（巻き込み・掴み打撃・投げを含む）を4秒表示、掴み中は保持。
+    KO後は0体力で90F保持。対象期限後は生存ボスへ、ボス不在時はNO TARGET。
+    炎上中も本来の敵名/maxHp/hpを表示、キャラクター高度/画像/パレットに依存しない。
+    鋼色の枠、凹型トラック、細目盛、ハイライト、低体力色、24F保留後に減るダメージ残像を追加。
+    体力比率は0〜1に制限。残像はupdateActorで更新、drawHealth/drawHUDは状態を変更しない。
+    プレイヤー/敵ゲージ、残機、得点、タイマー、エリア表示の余白・文字サイズ・配色を統一。
+    コンボ表示を中央へ移し、敵名/敵HPと重ならない配置に変更。対戦格闘のHUDは変更なし。
+  編集元: assets/belt/engine.js / art.js / art/manifest.json。
+  ビルド: node tools/build-sprites.mjs。配布はHTMLとdata/全11本をセットで更新。
+  復元: backups/v3.4.2/ に変更前HTML・2エンジン・manifest・README・indexを保存。
+  検証: tools/verify-hud-v343.cjs の17項目通過。左右命中方向の保持・反転ピクセル比較、
+    炎上時の敵名/実HP/maxHp、KO表示/期限切れ/ボス復帰/掴み対象、ゲージ幅の範囲制限、
+    ダメージ残像の保留と減衰、頭上ゲージ撤去、描画による状態不変を確認。
+    TITAN新PNGの1536x1024/透過を確認。左右の炎上とTITAN上昇技を実ゲーム画面で目視確認。
+    verification/hud-v343/ に report.json / fire-left.png / fire-right.png / titan-rise-hud.png。
+    verify-actions-v342（47項目）/ verify-hit / verify-dash も通過、ブラウザー例外なし。
+    画像パック内の原本一致・全11パック50MiB未満も確認。今回変更ファイルのdiff空白検査通過。
+
+【v3.4.2 更新・引き継ぎ / 2026-11-13】
+  [ART-105] 全6人の3段上昇技を専用24コマ画像へ変更（計144姿勢）。
+    assets/belt/art/actions-v342/ に1536x1024、6列×4行、256pxセルの透過PNGを追加。
+    6/12/18Fの打撃に画像を同期、溜め・上昇・頂点・着地を描画。既存の3ヒット/威力/入力仕様は維持。
+    built-in image_genで制作。prompts.jsonとkagura-revision.jsonに生成指示・原本パスを保存。
+    Volt/Celineの背景透過、Kaguraの炎属性色は画像生成で修正。描画時は既存のセル分離処理を共用。
+  [SE-106] 上昇技専用の打撃3種と炎の発動/命中2種、計5音を新規合成。
+    assets/audio/engine.js の synthArcadeAction / playRising / playFlame。
+    低音・鋭いアタック・空気音・火の破裂/燃焼音を重ねた固定シードPCM。SE音量/ミュートに従う。
+    上昇打撃音は命中時のみ。炎音は対象ごとに多重再生せず、命中フレームでまとめて再生。
+  [PLAY-107] 掴み判定をさらに緩和。
+    歩行掴み 横64→80px/奥行42→54px、I投げ 横88→104px/奥行46→60px。
+    正面判定の背後許容-8→-16px。通常敵のWINDUPも掴める。ボス条件と無敵/ダウン除外は維持。
+  [PLAY/ART-108] 全6人のダッシュ攻撃を炎攻撃化。
+    既存ダッシュ画像に専用炎画像を重ね、命中した敵は専用の全身炎上→吹き飛び→倒れ絵で表示。
+    fire.pngの0〜11は炎上飛翔、12〜17は地面での炎上、18〜23は攻撃側の炎。
+    burnTicksは72F。描画専用で継続ダメージは加えない。既存威力/ボスを含む確定ダウンを維持。
+  [PLAY-109] 投げを前方主体に変更し、敵の巻き込みを拡大。
+    掴みモーション中の高さを42%へ、前方オフセットを最大35px追加。
+    放出上昇速度13→6.5、水平速度11→18、飛翔減速0.98→0.99。
+    巻き込み判定 横74→84px/奥行42→60px。巻き込まれた敵も同方向へ飛び、連鎖可能。
+    巻き込み対象の履歴を初期化、同一飛翔中は同じ相手へ1回のみ。投げ92/巻き込み64の基礎威力は維持。
+  編集元: assets/belt/engine.js / art.js / art/manifest.json / assets/audio/engine.js /
+          assets/sprites/renderer.js。対戦格闘の状態遷移・当たり判定、音声、背景、BGM楽曲は変更なし。
+  ビルド: node tools/build-sprites.mjs。画像はdata/belt-actors.jsに同梱。他の既存パックと合わせて配布。
+  復元: backups/v3.4.1/ に変更前HTMLおよび今回編集する各エンジン/画像manifestを保存。
+  検証: verify-actions-v342.cjs の47項目通過。7画像の寸法/透過、全6人の3ヒット/専用音、
+        炎によるボス強制ダウン/1振り1回/炎終了、左右の前方投げ/複数巻き込み/低軌道、描画純粋性、
+        専用5音の有限PCM/音量/ピーク/音源解放を検証。画像一覧をブラウザー描画で目視確認。
+        verify-accessibility / verify-rising / verify-chain / verify-hit / verify-dash も通過。
+        verify-audio は全8曲、既存SE、音量/ミュート/音声ダッキング/音源解放/場面切替を通過。
+        追加音は波形・ルーティング検証。主観的な試聴評価は含まない。試聴用WAVを出力。
+        結果: verification/actions-v342/report.json / actions-six-heroes.png / special-effects.wav。
+        パックは11本/計157MiB、最大33.4MiB。全画像原本との一致と各50MiB未満を確認。
+        verify-hit の画像数15→22、verify-audio の音数35→40を追加資産に合わせ更新。
+        対戦格闘を含む共通ゲームスクリプトは3つの埋込領域以外v3.4.1と一致。
+        音響も今回追加の5バンク/3メソッド以外はv3.4.1と一致。
+
+【v3.4.1 更新・引き継ぎ / 2026-11-13】
+  [PLAY-103] 3段上昇技の入力しづらさを改善。
+    原因: 14F以内かつ下キー完全解放が必須で、攻撃硬直中は入力を破棄していた。
+    修正: 下入力の最終保持フレームから30F（通常約0.5秒）へ拡大。下を残した上押しも受付。
+          最初から上下同時押しは不成立。通常攻撃の硬直中は12F先行入力し、復帰後に発動。
+          地上ダッシュ中からも発動可。被弾/空中/投げ等では破棄、ポーズ/フォーカス喪失で履歴リセット。
+  [PLAY-104] 接近掴みと通常初段の取りこぼしを低減。
+    修正: 歩行掴みの横40→64px、奥行き24→42px。縦・斜め接近も対象にする。
+          背後の敵が探索順で先に見つかって正面の掴みを妨害する問題を修正し、正面の最寄りを優先。
+          I投げ範囲は横72→88px、奥行き34→46px。ボスの掴み条件と無敵は維持。
+          プレイヤー地上通常攻撃のリーチ+32px、奥行き38→52px、持続4→7F。
+          次段も同じ拡張に合わせ、初段だけ当たり次が空振りになることを防ぐ。チェーン投げも追従。
+          敵の攻撃範囲・ダメージ・3段技のダメージは不変。1振り1回の命中制限は維持。
+  編集元: assets/belt/engine.js（risingInput / playerInput / grabbable / attack）。ビルドは従来どおり。
+  復元: ai_studio_code.v3.4.0.backup.html / assets/belt/engine.v3.4.0.js。
+  検証: verify-accessibility.cjsで猶予/押し重なり/同時押し拒否/期限切れ/ポーズ/硬直先行入力、
+        背後囮・縦接近の掴み、全6人の拡大初段・1振り1回・範囲外空振りの22項目を確認。
+        verify-rising / verify-chain / verify-hit / verify-dashも通過。
+        verify-hitの掴み境界テストを固定30pxからgrabDepth+2へ更新。対戦格闘・画像・音声・背景は変更なし。
+
+【v3.4.0 更新・引き継ぎ / 2026-11-13】
+  [GAME-101] 街モード全6人に下→上の3段上昇技を追加。
+    入力: ↓→↑ または S→W を14更新フレーム以内に入力。下を離して上を押す。
+    地上の待機/移動/掴みから発動。長押しリピート・同時押しでは発動しない。
+    6/12/18Fで24/24/52×powerの3段。初段命中相手を拘束し、最終段でボスのアーマーも貫通して吹き飛ばす。
+    44Fで着地復帰。既存SP_2画像・sp2音声と上昇軌道・キャラ色のエフェクトを共有。
+    掴み中も拘束を引き継いで発動。ダッシュ入力履歴の内部リセットとは独立してコマンドを保持。
+  [GAME-102] 掴みJ/Zは2回まで拘束追撃。次のJ/Zは72×powerの吹き飛ばし強打。
+    Iまたは方向＋Jで投げ、下上で3段技も選べる。追撃間隔20F、追撃で保持時間リセット。
+    放置180Fで拘束解除（旧100F自動投げを撤去）。ジャンプで解除は継承。
+    HUD操作案内更新。対戦格闘・音声素材・背景・画像・通常チェーンは変更なし。
+  編集元: assets/belt/engine.js。node tools/build-sprites.mjsでHTMLへ再埋込。
+  復元: ai_studio_code.v3.3.0.backup.html / assets/belt/engine.v3.3.0.js。
+  検証: tools/verify-rising.cjs 全6人×通常/掴みの12ケースで3ヒット・ダメージ・ボス吹き飛ばし・復帰、
+        拘束追撃2回と最終攻撃、既存ダッシュ・通常チェーンをChromeで確認。旧verify-animeの街処理完全一致条件は本機能追加により対象外。
+
+【v3.3.0 更新・引き継ぎ / 2026-11-13】
+  依頼内容: 外部更新された v3.2.0 の冒頭コメントを読み、既存のコンセプトを維持しながら全キャラクターの
+            顔・髪型・衣装・体形・シルエットを現代的で洗練されたアニメ調へ全面刷新する。
+  継承    : v3.2.0 の126音声・発音/抑揚改善、v3.1.0 の効果音、BGM、両ゲームの戦闘/操作/進行を維持。
+  復元    : ai_studio_code.v3.2.0.backup.html、assets/characters/v33/backup/（変更前の編集元）、
+            assets/characters/v33/baseline-hashes.json（変更前SHA-256）。旧 anime-v3/ のPNGも残している。
+
+  [ART-97] 全6人＋IRON VOSS の新キャラクターデザインと全648姿勢への展開
+    症状   : 従来は短めの体形と細かな装飾が目立ち、顔や衣装の個性をより現代的に整理する余地があった。
+    修正   : built-in image_gen で7人の全身/顔デザイン基準を先に制作し、各基準を衣装・顔・配色の参照、
+             旧アトラスを姿勢と配置のみの参照として、通常/補間/投げ/ダッシュの全27枚を描き直した。
+             ・神楽: 長い黒髪ポニーテール、墨色の短羽織、深紅の胴着とマフラー、細身の袴/脛当て。
+             ・ヴォルト: 金髪アンダーカット、紺/白/シアンのテクニカルウェア、シャープなスポーツシューズ。
+             ・フレイヤ: 編み込んだ銀髪、軽量な分節銀鎧、紺のスプリットコート、コバルトの片マント。
+             ・タイタン: 整えた銀髪/髭、炭色と黄土色の武闘着、角張った真鍮ガントレット。
+             ・綾女: 艶のある長い黒髪、非対称の紫の短着物、黒の戦闘服、三日月金具の白帯と二枚扇。
+             ・セリーヌ: 赤褐色のボブ、深緑の仕立てた燕尾服、白ブラウス、臙脂のサッシュとレイピア。
+             ・IRON VOSS: 銀のこめかみ、金属の顎マスク、暗赤色のコート、片肩装甲と油圧ガントレット。
+             雑魚敵にも従来の色替え処理を通じて新しい衣装・輪郭を反映。選択/HUB/対戦/街で同一素材を共有。
+    変更箇所: assets/sprites/design-v33/（18枚432姿勢）、assets/belt/art/design-v33/（9枚216姿勢）。
+             assets/characters/v33/concepts/（7人の基準絵）、concepts.json、prompts.json、HANDOFF.md。
+    引き継ぎ: PNGは1536×1024・6列4行・透過RGBA。全ての採用元/プロンプト/参照順を記録。
+             再生成時は新基準絵の顔と衣装を固定し、旧絵からは姿勢とセル順だけを引き継ぐこと。
+
+  [RENDER-98] 新素材への切替と既存フレーム契約の維持
+    修正   : ビルドの共通PNG参照先と街アートmanifestを design-v33/ へ変更。
+             256px元セル→384pxキャッシュ/64px余白、接地点(192,308)、表示倍率1.15を維持。
+             旧素材固有の補正を見直し、セリーヌ待機3は絵を修正して旧フレーム差替えを撤去。
+             タイタン通常15のみ隣の走行16の岩片を除去。フレイヤの斬撃はコマ間で繋がらないよう再生成。
+             透過不足3枚とセリーヌ空中剣先も画像生成で修正し、最終プロンプトと採用元を記録。
+             通常/投げ/ダッシュのフレーム番号・イベント時刻・判定・音声呼出は変更しない。
+    変更箇所: assets/sprites/renderer.js、assets/belt/art/manifest.json、tools/build-sprites.mjs。
+
+  [BUILD-99] 配布パック・バージョン・引き継ぎ情報の同期
+    修正   : STREET.version と案内を3.3.0へ更新。既存11パック形式を保ち、新キャラPNGを再パック。
+             音声/音響/背景/小物の編集元は変更せず、音声・ステージ・街背景パックはSHA-256一致で検証。
+             v3.2.0の履歴は下記に全文保存。音声専用の文書はその音声版を示す3.2.0表記のまま保持。
+
+  [TEST-100] 新素材とv3.2.0継承の検証
+    修正   : verify-anime の比較基準を今回の3.2.0バックアップへ更新し、27枚648姿勢の寸法/透過/
+             パック一致/旧画像との差異/キャッシュ端の欠け、両ゲーム全6人とボスの表示を検査。
+             対戦の本体コード一致、街エンジンはversion以外一致、共通フレーム選択処理一致も検査。
+    変更箇所: tools/verify-anime.cjs、tools/verify-hit.cjs（新素材参照）、verification/design-v33/。
+    検証結果: 全11本（verify-anime / sprites / throws / belt / dash / belt-art / hit / chain / start /
+             voice-update / audio）が exit 0。648姿勢非空・端欠け0、対戦2,880F一致、投げ72組、
+             街全6人33体撃破クリア、音声126本復号、BGM全8曲32小節・SE実出力を確認。
+             ブラウザ例外0。新旧の判定/入力/進行コード一致、音声・音響・背景のSHA-256不変。
+
+
+【アップデート履歴 / v3.2.0 — 2026-11-13】
+  依頼内容: v3.1.0（全126音声新規作り直し＋アーケードSE刷新）を踏まえ、ゲームの動作・判定・画像・ステージ・
+            BGM・効果音（SE）には一切手を触れず、キャラクター音声の棒読みをさらに徹底的に改善する。
+            冒頭コメント領域へ詳細を追記し、v3.1.0 の作業内容をアップデート履歴へ適切に移動・保存する。
+  復元    : ai_studio_code.v3.1.0.backup.html、assets/voices/backup-v1.6/（v3.1.0直前は backup-v1.7/）。
+  記法    : [種別-連番] 症状 / 原因 / 修正 / 変更箇所 / 検証。
+
+  [VOICE-93] 全126キャラクター音声の棒読み・ロボット感・発音破綻の徹底根絶（音韻精密化＆無歪み演技合成）
+    症状   : (1) v3.1.0 では intonation_scale=1.68 と sculpt_query 内の倍率増幅（1.65倍）が二重に重なり、
+                 特にタイタン（super / select / win 等）で F0 が 30〜39 半音以上に過剰跳躍して不自然な抑揚になっていた。
+             (2) 長い台詞や必殺技名全体へ時間軸リサンプリング（expressive_warp）を掛けた結果、母音フォルマント変調・
+                 速度ずれ・位相シマー（金属的な揺らぎ）が発生し、生身らしさを損ねていた。
+             (3) OpenJTalk 任せの日本語解析により、カタカナ＋促音の途中分断（ソコデ/スッ, オハナ/レナサイッ,
+                 チカヨラナイデ/ッ, コオリナ/サイッ, フキ/トベッ, ラグナロッッ/クッ, マダ/マダジャ）や
+                 漢字技名の誤読（瞬獄閃→マドカゴク、震脚→フルエアシ、紫月閃→シズキ、霞走り→カスミハシリ、
+                 紅蓮天翔斬→アマガケキ）が生じていた。
+             (4) 九州そらスタイル17（セクシー/囁き調）や四国めたんスタイル4、中国うさぎスタイル61等の配役により、
+                 静かな勝利・掛け合い台詞が眠たげ・棒読み気味に聞こえ、単音節「ハッ」の子音脱落や
+                 綾女「ヒエ'ンノ/マ'イ」の「エ」飲み込みも発生していた。
+    原因   : (1) VOICEVOX 神経ボコーダの自然な F0 分布を外れる二重抑揚スケーリングと、テキストベース解析の揺らぎ。
+             (2) モーラ長・フォルマントを保護しないナイーブな波形伸縮を多音節フレーズへ一律適用したこと。
+             (3) 平板な H/L モーラ連結（プラトー）を崩すアクセント句内プロソディ制御が未導入だったこと。
+    修正   : 1. 全126音声 + 分割セグメント（計133区間）への AquesTalk かなアクセント精密記述 (`assets/voices/voicevox-config.json`):
+                - カタカナ・漢字・助詞の誤読と促音分断を AquesTalk かな記法（`シゲツ'/セ'ンッ`, `カスミ'/バ'シリッ`,
+                  `ダ'イチ/クダ'キッ`, `ウ_ツクシ'イ、ケットオオ'`, `デュ'/ソワ'アルッ`, `フロ'スト/ノ'ヴァッ` 等）で完全解消。
+                - 演技スタイル再配役:
+                  * 神楽（玄野武宏）: 導入・勝利 11（ノーマル）/ 技・被弾 40（ツンギレ）/ KO 41（悲しみ）
+                  * ヴォルト（白上虎太郎）: セレクト・勝利 32（わーい）/ 技・被弾 34（おこ）/ KO 35（びえーん）
+                  * フレイヤ（四国めたん）: セレクト・勝利・KO・導入 2（ノーマル）/ 技・被弾 6（ツンツン）、light0「ハ'アッ」明確化
+                  * タイタン（麒ヶ島宗麟）: スタイル 53（ノーマル）、pitch=-0.045、自然域での重厚なアクセント造形
+                  * 綾女（中国うさぎ）: 通常・勝利・技 62（おどろき）/ KO 63（こわがり）/ 超必殺導入 61（ノーマル）
+                  * セリーヌ（九州そら）: セレクト・勝利・導入 16（ノーマル）/ 技・被弾・KO 18（ツンツン）
+             2. 無歪みプラトー打破プロソディ整形 (`tools/generate-voicevox.py` `sculpt_query`):
+                - `query.intonation_scale = 1.0` 固定により二重歪みを完全撤廃。
+                - アクセント句内の平板プラトーを崩す前昇アーチ・アクセント核強調・自然な語尾下降、読点ポーズ整理（0.095s）、
+                  過剰な促音 `cl` トリミング（0.055〜0.095s）、単音節気合の頭子音最小長確保、`ヒエンノマイ`「エ」長確保（>=0.120s）を実装。
+             3. 4モーラ以上の無歪み HiFi-GAN 化と NCC-PSOLA 短気合い制御 (`ncc_psola`):
+                - 4モーラ以上の台詞・技名は位相シマーゼロの純粋なニューラル HiFi-GAN 波形をそのまま使用。
+                - 3モーラ以下の鋭い掛け声・被弾・KO語尾のみに自己相関同期 TD-PSOLA（フォルマント・音長完全保存）で
+                  自然な立ち上がりしゃくり・気合いフォール・声帯トレモロを付与。
+             4. 24kHz 4バンドスタジオマスタリング（`master_voice`）の上で全126音を実聴検査・配備。
+    変更箇所: assets/voices/voicevox-config.json, tools/generate-voicevox.py, assets/voices/*.wav, data/voices.js。
+    検証   : generated-v1.7/preview.wav 及び全キャラ主要イベント結合音声を直接聴取し棒読み・誤読・シマー解消を確認。
+             node tools/verify-voice-update.cjs 及び node tools/verify-audio.cjs パス。
+
+  [BUILD-94] バージョン同期・アセット再ビルド・ベースラインハッシュ更新
+    修正   : STREET.version = '3.2.0'、node tools/build-sprites.mjs による data/voices.js・HTML 内埋込の再生成、
+             assets/characters/v3/baseline-hashes.json の SHA-256 更新（SE・BGM・ゲーム判定・スプライトは不変）。
+    変更箇所: assets/belt/engine.js, assets/characters/v3/baseline-hashes.json, data/voices.js, ai_studio_code.html。
+    検証   : node tools/build-sprites.mjs、assets/audio/engine.js の SHA-256（ae0e0952…）が v3.1.0 から不変を確認。
+
+  [TEST-95] 全11本テストスイート回帰検証
+    修正   : tools/verify-anime.cjs のバージョン許容正規表現を 3.0.0〜3.2.0 対応へ更新。
+    変更箇所: tools/verify-anime.cjs。
+    検証   : verify-voice-update, verify-audio, verify-anime, verify-dash, verify-belt-art, verify-hit,
+             verify-chain, verify-start, verify-sprites, verify-throws, verify-belt の全11本が exit 0。
+
+  [UI-96] バージョン表記および引き継ぎ履歴の同期（v3.2.0）
+    修正   : HTML冒頭（v3.1.0内容をアップデート履歴欄へ移設・保存）、STREET.version、index.html、README.md、
+             assets/belt/README.md、assets/audio/README.md、assets/voices/PERFORMANCE.md を v3.2.0 へ同期。
+
+【アップデート履歴 / v3.1.0 — 2026-11-12】
+  依頼内容: v3.0.0（セルアニメ調キャラクター刷新）を踏まえ、ゲームの動作や機能、判定、セルアニメ画像、
+            ステージ、BGM等には一切手を触れず、音声合成機能をフル活用して以下の2点のみを徹底改修する：
+            (1) キャラクター音声の棒読みを徹底的に解消する → 完全に新規で作り直す（全6名・126クリップ）。
+            (2) 打撃音などの効果音をもっともっと爽快感のあるものに差し替える。
+  復元    : ai_studio_code.v3.0.0.backup.html、assets/audio/engine.v3.0.0.js、assets/voices/backup-v1.7/。
+  記法    : [種別-連番] 症状 / 原因 / 修正 / 変更箇所 / 検証。
+
+  [VOICE-88] 全キャラクター音声126本の完全新規作り直し（徹底的な棒読み解消・劇場的演技プロソディ・F0ダイナミクス・24kHzマスタリング）
+    症状   : (1) 被弾・攻撃・投げ等の掛け声にTTS特有の平坦さや音節末の脱力感が残り、戦闘時の緊迫感や気合の迫真性が不足していた。
+             (2) 必殺技・超必殺技のコールにおいて、後半の技名でのエネルギーの高揚やクライマックスの絶叫感が不十分であった。
+             (3) セリーヌの声質がやや穏やかで、勝気なプライドの高い女剣士としてのキャラクター性に物足りなさがあった。
+    原因   : (1) OpenJTalkのデフォルトF0曲線が平坦であり、音節間のピッチ跳躍（Pitch Lift）やアタック子音の推進力が不足していた。
+             (2) 超必殺技のセグメント構成において前置きと技名の間の溜め・気合の爆発が分断されていた。
+             (3) 句読点による不要な脱力や、セリーヌのスタイル配役（旧ノーマル16）が穏やかすぎたこと。
+    修正   : 1. voicevox-config.json の全面刷新:
+                - セリーヌの主スタイルをスタイル18（「ツンツン」）に変更し、凛とした気品と勝気さを両立。
+                - 全6キャラの台詞・ルビ（pronunciations）から読点や平坦な母音を徹底排除し、格闘ゲーム専用の鋭い気合文字列（促音「ッ」、長音「ー」、アタック子音強調）へ最適化。
+                - 超必殺技は2フレーズ構成（神楽「奥義ッ！ 紅蓮天翔斬！」等）へ統一し、前半の気迫と後半の絶叫を緊密に連動。
+             2. tools/generate-voicevox.py の生成パイプライン完全新規再構築:
+                - sculpt_query(): クライマックス音節でのF0急上昇（+0.45〜+0.65 log-F0）、前置き音節の母音圧縮、アタック子音のバースト伸長、語尾の急峻なピッチフォールによる武術的気合の再現。
+                - expressive_warp(): モーラ内定数ピッチというTTSの制約を打破するため、武道家の踏み込みに伴う声帯緊張を物理モデル化。24kHz波形に対する連続位相保持リサンプリングにより、語頭の急峻なしゃくり、クライマックスの絶叫、鋭いフォール、被弾・KO時の声帯トレモロ（14〜19.5Hz）を動的付与。
+                - master_voice(): 2msオンセットフェード（クリックノイズ皆無）、3.0kHzボーカルプレゼンス強調（BGM・激しいSEの中でも明瞭に抜ける帯域設計）、6.8kHzエア成分、ソフトニー・ダイナミックコンプレッション＋チューブサチュレーション倍音付加によるアーケード筐体基準の極上マスター音質。
+             3. 全126クリップを新規生成・ハッシュ検証の上 assets/voices/*.wav へ完全配備。
+    変更箇所: assets/voices/voicevox-config.json, tools/generate-voicevox.py, tools/install-voicevox.py, assets/voices/*.wav, data/voices.js。
+    検証   : node tools/verify-voice-update.cjs（126クリップ・6話者全検証パス）、Playwright実機音響テスト、試聴wav確認。
+
+  [AUDIO-89] 打撃音・効果音（SE）のアーケード爽快感極大化（多段FMウィップクラック・ヒットストップ骨砕き・地響きサブベース）
+    症状   : 連打時やダッシュ攻撃・必殺技ヒット時の手応えが軽く、アーケード格闘・ベルトスクロール特有の爽快感・重量感が不足していた。
+    原因   : 基本PCMサンプルのFM変調深さ・トランジェントの急峻さ・低域サブベース成分が控えめだった。
+    修正   : 1. assets/audio/engine.js の SoundEngine.prototype.synthImpact を全面再設計:
+                - punch（軽打撃・連打・チェーン始動）: 4レイヤー多段FM（6.8kHz→420Hz超高速指数スイープのウィップクラック＋ナックル打突音＋130Hz→48Hzのボディヒット低域＋エアスナップ）。素早い連打でも極めて粒立ちが良く爽快。
+                - heavy（強打撃・ダッシュ攻撃・超必殺・フィニッシュ）: 稲妻のような超高速アタック（8.2kHz→360Hz 4ms）＋デュアルオシレーターFMによる骨砕きグロウル（520Hz→110Hz）＋地響きサブベース（260Hz→36Hz）＋きらびやかなヒットスパーク多重倍音（1.8k/3.4k/5.1k/7.2kHz）。ダッシュ攻撃や強攻撃が命中した瞬間の圧倒的な手応えと重厚感。
+                - slash（刃物・斬撃）: 剃刀の如き超高域エッジ（7.8kHz→1.65kHz）＋6モード・ダマスカス鋼レゾナンス（820/1480/2240/3350/4920/7150Hz）＋肉薄・装甲断ちの衝撃波（320Hz→55Hz）。神楽・フレイヤ・セリーヌの斬撃が極めて鮮烈に。
+                - metal, wood: アンビル打撃と多段破砕インパルスによるリアルな箱割れ・鉄パイプ手応え。
+                - catch, landing: 骨関節ロック感のある掴みクリックスナップと2段階接地スタンプ。
+             2. ミックスバランス調整: seGain を 0.82 に調整し、BGM・ボイスと完全調和する最適なアーケードミックスを実現。
+    変更箇所: assets/audio/engine.js。
+    検証   : tools/verify-audio.cjs（8曲・35音色バンク・効果音全レイヤー検査通過、ドロップボイス0、例外0）。
+
+  [BUILD-90] バージョン同期・ビルド・アセットパック再パック
+    修正   : STREET.version = '3.1.0'、assets/characters/v3/baseline-hashes.json の音声/音響ハッシュ更新、
+             node tools/build-sprites.mjs による HTML 内 AUDIO_ENGINE・DATA_PACKS・SPRITE_ASSETS・BELT_ENGINE の
+             一括再埋込と data/voices.js 更新。
+    変更箇所: assets/belt/engine.js, assets/characters/v3/baseline-hashes.json, data/voices.js, ai_studio_code.html。
+    検証   : node tools/build-sprites.mjs。
+
+  [TEST-91] 全11本テストスイートの通過と回帰防止
+    修正   : tools/verify-anime.cjs のバージョン照合正規表現（3.0.0および3.1.0）、tools/verify-dash.cjs の差分除外設定を更新。
+    検証   : verify-voice-update, verify-audio, verify-hit, verify-chain, verify-dash, verify-start, verify-anime,
+             verify-belt-art, verify-sprites, verify-throws, verify-belt の全11本が exit 0。
+
+  [UI-92] バージョン表記の完全同期（v3.1.0）
+    修正   : STREET.version = '3.1.0'、HTML冒頭、index.html、README.md、assets/belt/README.md、assets/audio/README.md、assets/voices/PERFORMANCE.md。
+
+【アップデート履歴 / v3.0.0 — 2026-11-12】
+  依頼内容: 全キャラクターをドット絵からセルアニメ調へ全面刷新。648姿勢の新規描画・表示サイズ約15％拡大。
+  復元    : ai_studio_code.v2.8.1.backup.html、assets/sprites/renderer.v2.8.1.js、assets/belt/art.v2.8.1.js、assets/belt/engine.v2.8.1.js。
+  記法    : [種別-連番] 症状 / 原因 / 修正 / 変更箇所 / 検証。
+
+  [ART-84] 全キャラクターをドット絵から、太細のある輪郭線・面で分けた陰影・表情を持つセルアニメ調へ全面刷新。
+    神楽・ヴォルト・フレイヤ・タイタン・綾女・セリーヌの base / motion / throw 各24コマ（18枚432姿勢）、
+    街専用 dash 各24コマ（6枚144姿勢）、オリジナルボス IRON VOSS の3枚72姿勢、合計27枚648姿勢。
+    対戦・街・HUB・選択プレビューすべてに適用。雑魚敵は従来の StreetPalettes で新絵の衣装を色変えする。
+    内蔵 image_gen で新規描画。顔・髪・衣装・武器・各人の色を資料から引き継ぎ、透過PNGを採用。
+    投げは宙返り・水平飛行が曖昧だった初稿を不採用にし、旧投げ画像を姿勢資料として再生成。
+    セリーヌのダッシュも魔法ポーズに逸れた初稿を不採用にし、レイピアの前方突進に描き直した。
+    採用画像: assets/sprites/anime-v3/*.png 18枚、assets/belt/art/anime-v3/*.png 9枚。
+    生成プロンプト・参照画像・採用元は assets/characters/v3/prompts.json。旧PNGは元の場所に保存。
+
+  [RENDER-85] 元画像1536×1024 / 6列4行 / 256pxセルは維持。半解像度への縮小を廃止。
+    FighterSprites.cell = 384、64px余白付きの2304×1536キャッシュへ元画像を等倍転写する。
+    共通 prepareAtlas() を通常・投げ・ダッシュ・ボスで使い、旧ピクセル画像専用の切り出し補正を撤去。
+    全方向64pxの余白で長い剣・マント・横倒れの頭を保持。アルファ24以上で連結成分を判定し、
+    最大の身体とセル内の独立エフェクトを残す。輪郭1pxの元アルファは保持し、ごく薄い背景ノイズを除去する。
+    神楽base16・タイタンbase15・フレイヤmotion20・VOSSbase16の隣コマ由来の断片を個別条件で除去。
+    セリーヌmotion3は歩き姿勢になっているため、待機スロットには同シートの接地したmotion0を使用。
+    visualScale=1.15、scaleFor() は旧倍率×0.5×1.15。描画の大きさのみ約15％拡大する。
+    足元原点は(192,308)。キャラ描画には高品質の縮小補間を使い、輪郭線を滑らかに保つ。
+    ボスは従来どおり接地時にコマ下端へ足元を合わせる。街の敵HPバー/予告!のみ、頭と重ならない高さへ移動。
+    攻撃判定・移動速度・投げ拘束座標・当たり判定・攻撃発生F・ダッシュ確定ダウン・AIは変更しない。
+    2.8.1 の START_GATE と起動時BGM、音声126本、音響エンジン、ステージ/物体画像も引き継ぐ。
+
+  [BUILD-86] tools/build-sprites.mjs は共通キャラの読込元を anime-v3 へ変更。
+    街のボス/ダッシュは assets/belt/art/manifest.json の file を anime-v3/ に変更。配布は引き続きHTML＋data11本。
+    再ビルド: node tools/build-sprites.mjs。旧画像に戻す際はHTMLだけを戻さないこと（dataも再生成が必要）。
+    復元元: ai_studio_code.v2.8.1.backup.html、assets/sprites/renderer.v2.8.1.js、
+    assets/belt/art.v2.8.1.js、assets/belt/engine.v2.8.1.js、assets/characters/v3/build-sprites.v2.8.1.mjs と
+    belt-manifest.v2.8.1.json。これらを各編集元へ戻してビルドすれば、残してある旧PNGから旧パックを作り直せる。
+    変更前のSHA256は assets/characters/v3/baseline-hashes.json。音声・背景パックは書換えず同一ハッシュを維持。
+
+  [TEST-87] tools/verify-anime.cjs を追加。27枚/648コマの復号・本物の透過・輪郭アルファ・新旧差分・
+    パックとPNGの一致・キャッシュの欠落/外端切れ・2.8.1のゲーム本体一致・街ロジック一致・描画の純粋性を検査。
+    全員の全姿勢一覧、両モードの実画面、HUBとレポートは verification/anime-v3/ に出力。
+    既存の sprite / dash / belt-art 検証は可変セル幅(FighterSprites.cell)を参照。旧画像の完全一致という検査だけを今回の新画像へ更新。
+    verify-hit は新PNGとパックを比較。投げ・全6人の街クリア・チェーン・当たり判定・起動音声も回帰確認する。
+    検証結果: anime / sprites / throws / belt / dash / belt-art / chain / hit / voice-update / start の10本成功。
+    648姿勢復号、対戦2880F一致、投げ72組、街全6人クリア、起動16項目とBGM実出力、ブラウザ例外0を確認。
+    音響エンジン・声エンジン・音声/背景パックは変更前SHA256と一致。音響合成自体の再調整は行っていない。
+    検証結果の詳細は verification/anime-v3/report.json と各 verify-* のレポートを参照。
 
 【アップデート履歴 / v2.8.1 — 2026-11-10 / Claude Fable 5.2 (Claude Code)】
   依頼内容: v2.8.0 を GitHub へ上げる前の全体整合チェックと、起動時のゲーム選択画面（HUB）で音楽が鳴らない
@@ -912,7 +1461,7 @@ node --check: OK（メイン script を切り出して検査）。ビルドは 2
     配役    : 神楽=VOICEVOX:玄野武宏（normal11/force40/hurt41/win39/ko41）
               ヴォルト=VOICEVOX:白上虎太郎（12/34/33/32/35）
               フレイヤ=VOICEVOX:四国めたん（2/6/2/0/2）
-              タイタン=VOICEVOX:麒ヶ島宗麟（全イベント53）
+              タイタン=VOICEVOX:麒ヶ島宗麟（TITAN / IRON VOSS）（全イベント53）
               綾女=VOICEVOX:中国うさぎ（61/61/62/61/64）
               セリーヌ=VOICEVOX:九州そら（16/18/16/15/16）
               同一人物の音色を保ち、提供されているスタイルと発声パラメータを使い分ける。
@@ -1713,14 +2262,16 @@ node --check: OK（メイン script を切り出して検査）。ビルドは 2
         <div class="card" id="streetHelp" style="grid-column:1/-1;border-color:#dca46b;">
           <h3>NEON UPRISING — ベルトスクロールアクション / 1人用</h3>
           <div class="row"><span>移動（上下は奥行き）</span><span>WASD / 矢印キー</span></div>
-          <div class="row"><span>ダッシュ / ダッシュ攻撃</span><span>前方向を素早く2回（→→ / ←← / D D / A A）、2回目を保持して走る。走行中 J / Z で大ダメージ＋確定ダウン。キーを離すと停止</span></div>
+          <div class="row"><span>ダッシュ / ダッシュ攻撃</span><span>前方向を素早く2回（→→ / ←← / D D / A A）、2回目を保持して走る。走行中 J / Z で炎ダッシュ攻撃（全身炎上＋確定ダウン）。キーを離すと停止</span></div>
           <div class="row"><span>連続攻撃 / アイテムを拾う</span><span>J / Z。パンチ → ボディブロー → アッパー（吹き飛ばし）。前の一撃が当たった時だけ次へ進む</span></div>
           <div class="row"><span>チェーン投げ</span><span>↓（S）を入れたまま3発目 → 吹き飛ばさず自動で投げる。投げた敵の体は他の敵にも当たる</span></div>
           <div class="row"><span>ジャンプ / ジャンプ攻撃</span><span>K / X / Space → 空中で J / Z</span></div>
-          <div class="row"><span>掴む / 追撃 / 投げる</span><span>敵へ歩いて接近 → Jで追撃 / 方向＋J または Iで投げ</span></div>
+          <div class="row"><span>掴む / 追撃 / 投げる</span><span>敵へ歩いて接近すると掴む → J / Z で追撃（2回まで、3回目は吹き飛ばす強打）/ 方向＋J または I で前方へ投げる。ジャンプで離す</span></div>
+          <div class="row"><span>3段上昇技</span><span>↓ → ↑（S → W）を約0.5秒以内に入力。3ヒットし、最後の一撃はボスも吹き飛ばす。掴み中・ダッシュ中からも出せる</span></div>
           <div class="row"><span>緊急回転攻撃</span><span>L / C または 攻撃＋ジャンプ。命中時に最大体力の7.5%消費（残り1まで）</span></div>
           <div class="row"><span>木箱・ドラム缶 / 拾う</span><span>攻撃で壊す → 食料で回復、現金で得点、鉄パイプは8命中まで使用</span></div>
-          <div class="row"><span>進行 / 残機</span><span>各区画の敵を倒しGO方向へ。残機3、20,000点で1UP。各区画150秒</span></div>
+          <div class="row"><span>進行 / 残機</span><span>各区画の敵を倒しGO方向へ。残機3、20,000点で1UP（1回）。各区画150秒</span></div>
+          <div class="row"><span>ステージ</span><span>ステージ1 BLACK VEIN（ボス IRON VOSS）→ クリア画面で Enter → ステージ2 INFERNAL WORKS（ボス FURNACE MAW）。スコア・残機は引き継ぎ、体力は全回復</span></div>
           <div class="row"><span>ボス / 中断</span><span>赤い攻撃予告を奥行き移動・ジャンプで避ける。ESC:ポーズ、Q:ゲーム選択</span></div>
           <p>以下はOVERDRIVE（格闘ゲーム）の操作・技表です。NEON UPRISINGでは上記の操作を使います。</p>
         </div>
@@ -1790,7 +2341,7 @@ node --check: OK（メイン script を切り出して検査）。ビルドは 2
           <div class="row"><span>神楽</span><span>VOICEVOX:玄野武宏</span></div>
           <div class="row"><span>ヴォルト</span><span>VOICEVOX:白上虎太郎</span></div>
           <div class="row"><span>フレイヤ</span><span>VOICEVOX:四国めたん</span></div>
-          <div class="row"><span>タイタン</span><span>VOICEVOX:麒ヶ島宗麟</span></div>
+          <div class="row"><span>タイタン / IRON VOSS / FURNACE MAW</span><span>VOICEVOX:麒ヶ島宗麟</span></div>
           <div class="row"><span>綾女</span><span>VOICEVOX:中国うさぎ</span></div>
           <div class="row"><span>セリーヌ</span><span>VOICEVOX:九州そら</span></div>
           <p style="font-size:12px;line-height:1.7;margin-top:12px;color:#bbc9da;">キャラクターボイスはVOICEVOXによる合成音声です。音声を再利用・配布する場合も、該当するクレジットと各音源の規約を引き継いでください。<br>
@@ -1813,7 +2364,7 @@ node --check: OK（メイン script を切り出して検査）。ビルドは 2
 <script data-cb-loader>
 // Asset registry filled by data/*.js. The main script reads CB_ASSETS.sprites / stages / voices / beltArt.
 const CB_ASSETS = {
-  sprites: {}, stages: [], voices: {}, beltArt: {}, total: 142030310, loaded: 0, failed: [],
+  sprites: {}, stages: [], voices: {}, beltArt: {}, total: 192645532, loaded: 0, failed: [],
   add(kind, data, bytes) {
     if (Array.isArray(this[kind])) this[kind].push(...data); else Object.assign(this[kind], data);
     this.loaded += bytes;
@@ -1830,17 +2381,17 @@ const CB_ASSETS = {
 };
 document.addEventListener('DOMContentLoaded', () => { if (!CB_ASSETS.failed.length) document.getElementById('cbLoading').remove(); });
 </script>
-<script src="data/sprites-kagura.js?v=8b1710ad4d" onerror="CB_ASSETS.fail('sprites-kagura')"></script>
-<script src="data/sprites-volt.js?v=6cef11e944" onerror="CB_ASSETS.fail('sprites-volt')"></script>
-<script src="data/sprites-freya.js?v=82a5b010cd" onerror="CB_ASSETS.fail('sprites-freya')"></script>
-<script src="data/sprites-titan.js?v=003e97a32a" onerror="CB_ASSETS.fail('sprites-titan')"></script>
-<script src="data/sprites-ayame.js?v=b5606b5849" onerror="CB_ASSETS.fail('sprites-ayame')"></script>
-<script src="data/sprites-celine.js?v=f1ed800970" onerror="CB_ASSETS.fail('sprites-celine')"></script>
+<script src="data/sprites-kagura.js?v=d56544f088" onerror="CB_ASSETS.fail('sprites-kagura')"></script>
+<script src="data/sprites-volt.js?v=b3557b809c" onerror="CB_ASSETS.fail('sprites-volt')"></script>
+<script src="data/sprites-freya.js?v=eb9ed8c158" onerror="CB_ASSETS.fail('sprites-freya')"></script>
+<script src="data/sprites-titan.js?v=6666bf5d09" onerror="CB_ASSETS.fail('sprites-titan')"></script>
+<script src="data/sprites-ayame.js?v=b29efb740c" onerror="CB_ASSETS.fail('sprites-ayame')"></script>
+<script src="data/sprites-celine.js?v=d63ab94ae3" onerror="CB_ASSETS.fail('sprites-celine')"></script>
 <script src="data/stages.js?v=d036b44337" onerror="CB_ASSETS.fail('stages')"></script>
-<script src="data/voices.js?v=fa786ab3b1" onerror="CB_ASSETS.fail('voices')"></script>
-<script src="data/belt-backgrounds.js?v=6cce6c8df0" onerror="CB_ASSETS.fail('belt-backgrounds')"></script>
-<script src="data/belt-actors.js?v=f9bd8b61ca" onerror="CB_ASSETS.fail('belt-actors')"></script>
-<script src="data/belt-dash.js?v=5aabf32814" onerror="CB_ASSETS.fail('belt-dash')"></script>
+<script src="data/voices.js?v=8c75f48beb" onerror="CB_ASSETS.fail('voices')"></script>
+<script src="data/belt-backgrounds.js?v=d8b882a937" onerror="CB_ASSETS.fail('belt-backgrounds')"></script>
+<script src="data/belt-actors.js?v=fea6292532" onerror="CB_ASSETS.fail('belt-actors')"></script>
+<script src="data/belt-dash.js?v=49653fc7a5" onerror="CB_ASSETS.fail('belt-dash')"></script>
 <!-- DATA_PACKS_END -->
 
 <script>
@@ -1866,7 +2417,7 @@ function drawRoundRect(ctx, x, y, w, h, r) {
 const SPRITE_SOURCES = CB_ASSETS.sprites;
 const STAGE_SOURCES = CB_ASSETS.stages;
 const VOICE_SOURCES = CB_ASSETS.voices;
-const VOICE_PROFILES = {"kagura":{"voice":"玄野武宏","models":[4,10],"styles":{"normal":39,"force":40,"hurt":40,"win":11,"ko":41,"intro":40},"speed":1.01,"pitch":-0.01,"superSegments":["奥義！","紅蓮、天翔斬！"],"credit":"VOICEVOX:玄野武宏","lines":{"light0":"はっ！","light1":"せいっ！","heavy0":"やあっ！","heavy1":"斬る！","jump":"ふっ！","dash":"行くぞ！","hurt0":"ぐっ！","hurt1":"うっ！","throw":"捉えた！","burst":"退けっ！","sp1":"エンゲツ！","sp2":"ヒエン！","sp3":"シュンゴクセン！","super":"奥義。グレンテンショーザン！","select":"我が太刀、見切れるか？","win":"勝負あり。","ko":"無念。","grabbed":"なにっ！","throw_release":"せいっ！","thrown":"うわあっ！","throw_impact":"ぐはっ！"}},"volt":{"voice":"白上虎太郎","models":[9],"styles":{"normal":32,"force":34,"hurt":33,"win":32,"ko":33,"intro":34},"speed":1.03,"pitch":-0.01,"eventSpeeds":{"grabbed":1.24},"superSegments":["オーバードライブ！","ラグナロク！"],"credit":"VOICEVOX:白上虎太郎","lines":{"light0":"はっ！","light1":"そらっ！","heavy0":"くらえっ！","heavy1":"決めるぜ！","jump":"よっと！","dash":"遅いぜ！","hurt0":"くっ！","hurt1":"ぐあっ！","throw":"よしっ！","burst":"離れろっ！","sp1":"プラズマショット！","sp2":"ライトニングドライブ！","sp3":"サンダーサマー！","super":"オーバードライブ。ラグナロク！","select":"最高速で行こうぜ！","win":"俺の勝ちだ！","ko":"マジかよ。","grabbed":"しまった！","throw_release":"そらよっ！","thrown":"うわっ！","throw_impact":"がはっ！"}},"freya":{"voice":"四国めたん","models":[0],"styles":{"normal":2,"force":6,"hurt":6,"win":4,"ko":2,"intro":6},"speed":1.01,"pitch":-0.015,"superSegments":["アブソリュート、ゼロ！","カリバー！"],"credit":"VOICEVOX:四国めたん","lines":{"light0":"はっ！","light1":"せいっ！","heavy0":"凍りなさい！","heavy1":"貫く！","jump":"ふっ！","dash":"参ります！","hurt0":"くっ！","hurt1":"あっ！","throw":"そこっ！","burst":"近寄らないで！","sp1":"グレイシャーピラー！","sp2":"ヴァルキリーランス！","sp3":"フロストノヴァ！","super":"アブソリュートゼロ。カリバー！","select":"静かな決着を。","win":"お眠りなさい。","ko":"そんな。","grabbed":"あっ！","throw_release":"はあっ！","thrown":"ああっ！","throw_impact":"くっ！"}},"titan":{"voice":"麒ヶ島宗麟","models":[12],"styles":{"normal":53,"force":53,"hurt":53,"win":53,"ko":53,"intro":53},"speed":1.01,"pitch":-0.025,"superSegments":["メテオ！","カタストロフィ！"],"credit":"VOICEVOX:麒ヶ島宗麟","lines":{"light0":"ふんっ！","light1":"どりゃっ！","heavy0":"うおおっ！","heavy1":"砕けろ！","jump":"ぬっ！","dash":"突き進む！","hurt0":"ぐぬっ！","hurt1":"がはっ！","throw":"捉えた！","burst":"吹き飛べっ！","sp1":"シンキャク。大地砕き！","sp2":"ギガントタックル！","sp3":"ガイアバスター！","super":"メテオ。カタストロフィ！","select":"さあ、かかって来い！","win":"まだまだじゃ。","ko":"見事じゃ。","grabbed":"ぬおっ！","throw_release":"どりゃあっ！","thrown":"ぐおおっ！","throw_impact":"がはっ！"}},"ayame":{"voice":"中国うさぎ","models":[3],"styles":{"normal":61,"force":62,"hurt":62,"win":61,"ko":64,"intro":61},"speed":1.04,"pitch":0.01,"superSegments":["秘奥義！","ひゃっか、りょうらん！"],"credit":"VOICEVOX:中国うさぎ","lines":{"light0":"はっ！","light1":"えいっ！","heavy0":"そこね！","heavy1":"舞いなさい！","jump":"よっ！","dash":"こちらよ！","hurt0":"くっ！","hurt1":"あっ！","throw":"そこね！","burst":"お下がりっ！","sp1":"シゲツセン！","sp2":"ヒエンの舞！","sp3":"カスミバシリ！","super":"秘奥義。ヒャッカリョーラン！","select":"ついてこられるかしら？","win":"舞はここまで。","ko":"不覚ね。","grabbed":"えっ！","throw_release":"せいっ！","thrown":"きゃあっ！","throw_impact":"うっ！"}},"celine":{"voice":"九州そら","models":[2],"styles":{"normal":17,"force":16,"hurt":18,"win":17,"ko":16,"intro":17},"speed":1.04,"pitch":-0.01,"eventSpeeds":{"light1":1.22,"hurt1":1.14,"sp1":1.1,"sp2":1.08,"sp3":1.08},"superSegments":["エトワール！","デュ、ソワール！"],"credit":"VOICEVOX:九州そら","lines":{"light0":"はっ！","light1":"えいっ！","heavy0":"そこです！","heavy1":"貫きます！","jump":"ふっ！","dash":"失礼！","hurt0":"くっ！","hurt1":"ああっ！","throw":"そこっ！","burst":"お離れなさい！","sp1":"ローズエクレール！","sp2":"フルールランジ！","sp3":"エメラルドリポスト！","super":"エトワール。デュ・ソワール！","select":"美しい決闘を。","win":"見事な勝負でした。","ko":"参りました。","grabbed":"あっ！","throw_release":"はあっ！","thrown":"ああっ！","throw_impact":"くっ！"}}};
+const VOICE_PROFILES = {"kagura":{"voice":"玄野武宏","models":[4,10],"styles":{"normal":40,"force":40,"hurt":40,"win":11,"ko":41,"intro":11},"speed":1.02,"pitch":-0.015,"superSegments":["奥義……","紅蓮・天翔斬っ！"],"credit":"VOICEVOX:玄野武宏","lines":{"light0":"はっ！","light1":"せいっ！","heavy0":"やあっ！","heavy1":"斬る！","jump":"ふっ！","dash":"行くぞ！","hurt0":"ぐっ！","hurt1":"うっ！","throw":"捉えた！","burst":"退けっ！","sp1":"エンゲツ！","sp2":"ヒエン！","sp3":"シュンゴクセン！","super":"奥義。グレンテンショーザン！","select":"我が太刀、見切れるか？","win":"勝負あり。","ko":"無念。","grabbed":"なにっ！","throw_release":"せいっ！","thrown":"うわあっ！","throw_impact":"ぐはっ！","finish":"悪の炎は、俺が断つ。"}},"volt":{"voice":"白上虎太郎","models":[9],"styles":{"normal":32,"force":34,"hurt":34,"win":32,"ko":35,"intro":34},"speed":1.05,"pitch":-0.01,"eventSpeeds":{"grabbed":1.18,"light0":1.18,"light1":1.18,"jump":1.2},"superSegments":["オーバードライブっ！","ラグナロクっ！"],"credit":"VOICEVOX:白上虎太郎","lines":{"light0":"はっ！","light1":"そらっ！","heavy0":"くらえっ！","heavy1":"決めるぜ！","jump":"よっと！","dash":"遅いぜ！","hurt0":"くっ！","hurt1":"ぐあっ！","throw":"よしっ！","burst":"離れろっ！","sp1":"プラズマショット！","sp2":"ライトニングドライブ！","sp3":"サンダーサマー！","super":"オーバードライブ。ラグナロク！","select":"最高速で行こうぜ！","win":"俺の勝ちだ！","ko":"マジかよ。","grabbed":"しまった！","throw_release":"そらよっ！","thrown":"うわっ！","throw_impact":"がはっ！","finish":"これで終わりだ！街は返してもらうぜ！"}},"freya":{"voice":"四国めたん","models":[0],"styles":{"normal":2,"force":6,"hurt":6,"win":2,"ko":2,"intro":2},"speed":1.03,"pitch":-0.01,"superSegments":["アブソリュート・ゼロ……","カリバーっ！"],"credit":"VOICEVOX:四国めたん","lines":{"light0":"はっ！","light1":"せいっ！","heavy0":"凍りなさい！","heavy1":"貫く！","jump":"ふっ！","dash":"参ります！","hurt0":"くっ！","hurt1":"あっ！","throw":"そこっ！","burst":"近寄らないで！","sp1":"グレイシャーピラー！","sp2":"ヴァルキリーランス！","sp3":"フロストノヴァ！","super":"アブソリュートゼロ。カリバー！","select":"静かな決着を。","win":"お眠りなさい。","ko":"そんな。","grabbed":"あっ！","throw_release":"はあっ！","thrown":"ああっ！","throw_impact":"くっ！","finish":"あなたの支配は、ここで終わりよ。"}},"titan":{"voice":"麒ヶ島宗麟","models":[12],"styles":{"normal":53,"force":53,"hurt":53,"win":53,"ko":53,"intro":53},"speed":1.02,"pitch":-0.045,"superSegments":["メテオ……","カタストロフィっ！"],"credit":"VOICEVOX:麒ヶ島宗麟","lines":{"light0":"ふんっ！","light1":"どりゃっ！","heavy0":"うおおっ！","heavy1":"砕けろ！","jump":"ぬっ！","dash":"突き進む！","hurt0":"ぐぬっ！","hurt1":"がはっ！","throw":"捉えた！","burst":"吹き飛べっ！","sp1":"シンキャク。大地砕き！","sp2":"ギガントタックル！","sp3":"ガイアバスター！","super":"メテオ。カタストロフィ！","select":"さあ、かかって来い！","win":"まだまだじゃ。","ko":"見事じゃ。","grabbed":"ぬおっ！","throw_release":"どりゃあっ！","thrown":"ぐおおっ！","throw_impact":"がはっ！","finish":"力は、守るために使うものだ。"}},"ayame":{"voice":"中国うさぎ","models":[3],"styles":{"normal":62,"force":62,"hurt":62,"win":62,"ko":63,"intro":61},"speed":1.02,"pitch":0,"superSegments":["秘奥義……","百花・繚乱っ！"],"credit":"VOICEVOX:中国うさぎ","lines":{"light0":"はっ！","light1":"えいっ！","heavy0":"そこね！","heavy1":"舞いなさい！","jump":"よっ！","dash":"こちらよ！","hurt0":"くっ！","hurt1":"あっ！","throw":"そこね！","burst":"お下がりっ！","sp1":"シゲツセン！","sp2":"ヒエンの舞！","sp3":"カスミバシリ！","super":"秘奥義。ヒャッカリョーラン！","select":"ついてこられるかしら？","win":"舞はここまで。","ko":"不覚ね。","grabbed":"えっ！","throw_release":"せいっ！","thrown":"きゃあっ！","throw_impact":"うっ！","finish":"悪の花は、ここで散りなさい。"}},"celine":{"voice":"九州そら","models":[2],"styles":{"normal":16,"force":18,"hurt":18,"win":16,"ko":18,"intro":16},"speed":1.04,"pitch":-0.01,"eventSpeeds":{"light0":1.06,"light1":1.08,"heavy0":1.06,"heavy1":1.04,"dash":1.06,"burst":1.06},"superSegments":["エトワール……","デュ・ソワールっ！"],"credit":"VOICEVOX:九州そら","lines":{"light0":"はっ！","light1":"えいっ！","heavy0":"そこです！","heavy1":"貫きます！","jump":"ふっ！","dash":"失礼！","hurt0":"くっ！","hurt1":"ああっ！","throw":"そこっ！","burst":"お離れなさい！","sp1":"ローズエクレール！","sp2":"フルールランジ！","sp3":"エメラルドリポスト！","super":"エトワール。デュ・ソワール！","select":"美しい決闘を。","win":"見事な勝負でした。","ko":"参りました。","grabbed":"あっ！","throw_release":"はあっ！","thrown":"ああっ！","throw_impact":"くっ！","finish":"幕引きよ。勝利は、私のもの。"}},"voss":{"voice":"麒ヶ島宗麟","models":[12],"styles":{"normal":53,"force":53,"hurt":53,"win":53,"ko":53,"intro":53},"speed":1.02,"pitch":-0.045,"superSegments":["メテオ……","カタストロフィっ！"],"credit":"VOICEVOX:麒ヶ島宗麟","lines":{"intro":"この街は俺のものだ。逆らう奴は、叩き潰す！","defeat":"ぐああああああっ！"}},"maw":{"voice":"麒ヶ島宗麟","models":[12],"styles":{"normal":53,"force":53,"hurt":53,"win":53,"ko":53,"intro":53},"speed":1.02,"pitch":-0.045,"superSegments":["メテオ……","カタストロフィっ！"],"credit":"VOICEVOX:麒ヶ島宗麟","lines":{"intro":"炉の底で、灰になれ！","defeat":"ぐおおおおおっ！"}}};
 // v1.7 throw choreography. Simulation owns timing; drawing never mutates these values.
 const ThrowMotion = {
   locked(f) { return f && (f.state === 'GRABBED' || f.state === 'THROWING'); },
@@ -1966,9 +2517,15 @@ const ThrowMotion = {
   }
 };
 
-// Source of the embedded v1.7 sprite renderer. Run: node tools/build-sprites.mjs
-// 6 columns x 4 rows; 256px source cells, 160px cached cells including 16px gutters.
+// v3.0 cel-animation renderer (v3.3 redesigned atlases). Run: node tools/build-sprites.mjs
+// Full-resolution 256px art in 384px cells / 64px gutters; visual scale only (+15%).
 const FighterSprites = {
+  cell: 384,
+  gutter: 64,
+  pivotX: 192,
+  pivotY: 308,
+  visualScale: 1.15,
+  scaleFor(id) { return (id === 'titan' ? 1.48 : 1.36) * .5 * this.visualScale; },
   sheets: new Map(),
   errors: [],
   ready: null,
@@ -1979,37 +2536,7 @@ const FighterSprites = {
       const image = new Image();
       image.onload = () => {
         try {
-          if (image.width !== 1536 || image.height !== 1024) throw new Error('Expected 1536x1024 atlas');
-          const atlas = document.createElement('canvas');
-          atlas.width = 960; atlas.height = 640;
-          const c = atlas.getContext('2d', { willReadFrequently: true }); // cleanCell reads every cell back
-          c.imageSmoothingEnabled = false;
-          for (let frame = 0; frame < 24; frame++) {
-            // Hand-audited slice corrections: generated sheets are not perfectly grid-aligned.
-            // Gutters preserve extended sword tips and the left edge of horizontal knockdowns.
-            const col = frame % 6, row = Math.floor(frame / 6);
-            let left = 0, top = 0, right = 256, bottom = 256;
-            if (!motion && frame === 20) { left = -32; right = 264; }
-            if (!motion && frame === 9) bottom = 244;
-            if (!motion && id === 'freya' && frame === 15) top = -16;
-            if (!motion && id === 'freya' && frame === 10) right = 288;
-            c.save();
-            c.translate(col * 160 + 16, row * 160 + 16);
-            c.scale(0.5, 0.5);
-            c.beginPath();
-            c.rect(left, top, right - left, bottom - top); c.clip();
-            c.drawImage(image, -col * 256, -row * 256);
-            // Remove only identified fragments of an adjacent pose, retaining the sprite's alpha.
-            if (!motion && frame === 19) c.clearRect(224, 180, 32, 76);
-            if (!motion && id === 'freya' && frame === 11) c.clearRect(0, 86, 34, 40);
-            if (!motion && id === 'freya' && frame === 10) {
-              c.clearRect(256, 0, 32, 86); c.clearRect(256, 126, 32, 130);
-            }
-            c.restore();
-            // A generated pose can spill into a neighboring cell. Isolate this pose's
-            // connected silhouette; retain separate substantial spell effects in cast frames.
-            this.cleanCell(c, col * 160, row * 160, motion ? frame === 20 || frame === 22 : frame === 14 || frame === 17);
-          }
+          const atlas = this.prepareAtlas(image, id);
           const ghost = document.createElement('canvas');
           ghost.width = atlas.width; ghost.height = atlas.height;
           const g = ghost.getContext('2d');
@@ -2027,28 +2554,72 @@ const FighterSprites = {
     return this.ready;
   },
 
-  cleanCell(ctx, x, y, keepEffects) {
-    const image = ctx.getImageData(x, y, 160, 160), pixels = image.data;
-    const labels = new Int32Array(160 * 160), sizes = [0];
-    const queue = new Int32Array(labels.length);
+  prepareAtlas(image, key) {
+    if (image.width !== 1536 || image.height !== 1024) throw Error('Expected 1536x1024 anime atlas');
+    const atlas = document.createElement('canvas'), cell = this.cell;
+    atlas.width = cell * 6; atlas.height = cell * 4;
+    const c = atlas.getContext('2d', { willReadFrequently: true });
+    const motion = key.endsWith('-motion'), throwing = key.endsWith('-throw'), dash = key.startsWith('dash-');
+    for (let frame = 0; frame < 24; frame++) {
+      const col = frame % 6, row = Math.floor(frame / 6);
+      // Full 64px bleed preserves long blades, capes and horizontal defeats. Components
+      // of neighboring poses are removed below; never crop at the nominal 256px cell edge.
+      const sourceFrame = frame;
+      if (key === 'fx-fire' || key === 'maw') {
+        // VFX cells contain complete figures. Bleeding the previous row imports a second burning body,
+        // especially above the low, lying-down poses. Keep exactly one 256px source cell.
+        c.drawImage(image, col * 256, row * 256, 256, 256,
+          col * cell + this.gutter, row * cell + this.gutter, 256, 256);
+      } else {
+        c.drawImage(image, sourceFrame % 6 * 256 - this.gutter, Math.floor(sourceFrame / 6) * 256 - this.gutter, cell, cell,
+          col * cell, row * cell, cell, cell);
+      }
+      const effects = key.startsWith('rise-') || key.startsWith('fx-') ? true : dash ? frame >= 12 && frame <= 17 : motion ? [18,20,21,22].includes(frame) : !throwing && [12,14,15,16,17].includes(frame);
+      // Titan uppercut15 otherwise captures detached rock chips from the neighboring rush16.
+      this.cleanCell(c, col * cell, row * cell, effects && !(key === 'titan' && frame === 15));
+    }
+    return atlas;
+  },
+
+  cleanCell(ctx, x, y, keepEffects, effectRight = this.cell - this.gutter) {
+    const size = this.cell, image = ctx.getImageData(x, y, size, size), pixels = image.data;
+    const labels = new Int32Array(size * size), sizes = [0], centers = [null], queue = new Int32Array(labels.length);
+    // Label opaque silhouettes, then preserve their original antialiased one-pixel fringe.
+    // Generated alpha sometimes contains faint background haze; it must not connect every pose.
     for (let seed = 0; seed < labels.length; seed++) {
-      if (labels[seed] || pixels[seed * 4 + 3] < 32) continue;
+      if (labels[seed] || pixels[seed * 4 + 3] < 24) continue;
       const label = sizes.length;
-      let read = 0, write = 1; queue[0] = seed; labels[seed] = label;
+      let read = 0, write = 1, sumX = 0, sumY = 0, edge = false; queue[0] = seed; labels[seed] = label;
       while (read < write) {
-        const p = queue[read++], px = p % 160, py = Math.floor(p / 160);
+        const p = queue[read++], px = p % size, py = Math.floor(p / size);
+        sumX += px; sumY += py;
+        if (px === 0 || py === 0 || px === size - 1 || py === size - 1) edge = true;
         for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
-          if (px + dx < 0 || px + dx >= 160 || py + dy < 0 || py + dy >= 160) continue;
-          const n = p + dy * 160 + dx;
-          if (!labels[n] && pixels[n * 4 + 3] >= 32) { labels[n] = label; queue[write++] = n; }
+          if (px + dx < 0 || px + dx >= size || py + dy < 0 || py + dy >= size) continue;
+          const n = p + dy * size + dx;
+          if (!labels[n] && pixels[n * 4 + 3] >= 24) { labels[n] = label; queue[write++] = n; }
         }
       }
       sizes.push(write);
+      centers.push({ x: sumX / write, y: sumY / write, edge });
     }
-    const largest = sizes.indexOf(Math.max(...sizes));
+    let largest = 0;
+    for (let i = 1; i < sizes.length; i++) if (sizes[i] > sizes[largest]) largest = i;
+    const keep = label => {
+      if (!label) return false;
+      if (label === largest) return true;
+      const q = centers[label], g = this.gutter;
+      return keepEffects && sizes[label] >= 32 && !q.edge && q.x >= g && q.x < effectRight && q.y >= g && q.y < size - g;
+    };
     for (let p = 0; p < labels.length; p++) {
-      const label = labels[p];
-      if (!label || (label !== largest && !(keepEffects && sizes[label] >= 50))) pixels[p * 4 + 3] = 0;
+      if (keep(labels[p])) continue;
+      let fringe = false;
+      if (!labels[p] && pixels[p * 4 + 3]) {
+        const px = p % size, py = Math.floor(p / size);
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++)
+          if (px + dx >= 0 && px + dx < size && py + dy >= 0 && py + dy < size && keep(labels[p + dy * size + dx])) fringe = true;
+      }
+      if (!fringe) pixels[p * 4 + 3] = 0;
     }
     ctx.putImageData(image, x, y);
   },
@@ -2059,7 +2630,8 @@ const FighterSprites = {
     const phase = (windup, end, active, follow = 35) => f < Math.ceil(windup / 2) ? 34 : f < windup ? 8 :
       f <= end ? (f < windup + 4 ? active : follow) : f < end + 5 ? 36 : 11;
     switch (state) {
-      case 'IDLE': return cycle([0, 24, 1, 25, 26, 27], 6);
+      // Independently painted idle cells vary in anatomy; cycling them makes the whole body pulse.
+      case 'IDLE': return 0;
       case 'WALK_F': return cycle([2, 28, 3, 29, 4, 30, 5, 31], 3);
       case 'WALK_B': return cycle([31, 5, 30, 4, 29, 3, 28, 2], 3);
       case 'DASH_F': return cycle([39, 16, 40, 16], 3);
@@ -2106,14 +2678,15 @@ const FighterSprites = {
     if (!silhouette && fighter.streetPalette) sheet = fighter.streetPalette.get(frame >= 48 ? '-throw' : frame >= 24 ? '-motion' : '') || sheet;
     frame %= 24;
     const tick = fighter.animTick;
-    const cell = 160;
-    const scale = fighter.data.id === 'titan' ? 1.48 : 1.36;
-    // Half-resolution source anchor. Shared across frames: no bounding-box recentering/jitter.
-    const pivotX = 80, pivotY = 138;
+    const cell = this.cell;
+    const scale = this.scaleFor(id);
+    // Full-resolution source anchor. Shared across frames: no bounding-box recentering/jitter.
+    const { pivotX, pivotY } = this;
     ctx.save();
     ctx.translate(Math.round(x), Math.round(y));
     ctx.scale(facing, 1);
-    ctx.imageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     if (!silhouette && fighter.invuln > 0 && Math.floor(tick / 3) % 2) ctx.globalAlpha *= 0.72;
     ctx.drawImage(silhouette ? sheet.ghost : sheet.atlas,
       (frame % 6) * cell, Math.floor(frame / 6) * cell, cell, cell,
@@ -2705,7 +3278,7 @@ class SoundEngine {
     this.ducked = false;
     this.voiceBound = false;
     this.musicLevel = 0.48;
-    this.stats = { started: 0, ended: 0, dropped: 0, peakVoices: 0 };
+    this.stats = { started: 0, ended: 0, dropped: 0, stolen: 0, peakVoices: 0 };
     this.jobs = [];
     this.bankOwner = new Map();
     this.noteBankOwner = new Map();
@@ -2816,7 +3389,7 @@ class SoundEngine {
     this.adoptBank(context);
     this.musicBus = this.newMusicBus();
     this.bgmGain.gain.value = this.muted ? 0 : this.bgmVol * this.musicLevel;
-    this.seGain.gain.value = this.muted ? 0 : this.seVol * 0.74;
+    this.seGain.gain.value = this.muted ? 0 : this.seVol * 0.82;
     if (bindVoices && typeof fighterVoice !== 'undefined') {
       fighterVoice.bind(this);
       if (fighterVoice.ready && !this.offline) {
@@ -3085,137 +3658,72 @@ class SoundEngine {
   }
   synthImpact(context, rate, kind, variant = 0) {
     const dt = 1 / rate;
-    const vScale = 1 + variant * 0.065;
+    const vScale = 1 + variant * 0.07;
     if (kind === 'punch') {
-      let pBody = 0,
-        pMid = 0,
-        pWhip = 0,
+      let pWhip = 0,
+        pKnuckle = 0,
+        pBody = 0,
         lp = 0,
         hp = 0;
-      return this.makeBuffer(context, rate, 0.25, (t, i) => {
-        const fWhip = (4200 * Math.exp(-t * 250) + 380) * vScale;
-        const fMid = (175 + 640 * Math.exp(-t * 72)) * vScale;
-        const fBody = (58 + 205 * Math.exp(-t * 42)) * vScale;
+      return this.makeBuffer(context, rate, 0.24, (t, i) => {
+        // Stage 1: Ultra-fast transient whip-crack (6800 -> 420 Hz)
+        const fWhip = (6800 * Math.exp(-t * 310) + 420) * vScale;
         pWhip += Math.PI * 2 * fWhip * dt;
-        pMid += Math.PI * 2 * fMid * dt;
+        const whip = Math.sin(pWhip + Math.sin(pWhip * 2.2) * 1.2) * Math.exp(-t * 140) * 0.72;
+
+        // Stage 2: Knuckle bone smack (980 -> 210 Hz with tube saturation)
+        const fKnuckle = (210 + 770 * Math.exp(-t * 85)) * vScale;
+        pKnuckle += Math.PI * 2 * fKnuckle * dt;
+        const smack = Math.sin(pKnuckle + Math.sin(pKnuckle * 1.8) * 0.8) * Math.exp(-t * 38) * 0.78;
+
+        // Stage 3: Low-end chest thump (180 -> 52 Hz)
+        const fBody = (52 + 160 * Math.exp(-t * 44)) * vScale;
         pBody += Math.PI * 2 * fBody * dt;
-        const whip = Math.sin(pWhip + Math.sin(pWhip * 1.8) * 0.9) * Math.exp(-t * 115) * 0.58;
-        const chest = Math.sin(pBody + Math.sin(pBody * 2) * 0.35 * Math.exp(-t * 28)) * Math.exp(-t * 14.5) * 0.88;
-        const crack =
-          Math.sin(pMid + Math.sin(pBody * 2.6) * 1.45 * Math.exp(-t * 34)) * Math.exp(-t * 28) * 0.66;
-        const raw = this.noise(i, 37 + variant * 7);
-        lp += (raw - lp) * 0.62;
-        hp += (lp - hp) * 0.11;
-        const snapEnv =
-          Math.exp(-t * 88) * 0.96 +
-          (t > 0.007 ? Math.exp(-(t - 0.007) * 32) * 0.42 : 0) +
-          0.22 * Math.exp(-t * 22);
-        const spark =
-          Math.sin(Math.PI * 2 * 3350 * vScale * t + raw * 1.7) * Math.exp(-t * 92) * 0.34;
-        const snap = (lp - hp) * snapEnv + spark;
-        return Math.tanh((whip + chest + crack + snap) * 1.88) * 0.92;
+        const chest = Math.sin(pBody + 0.3 * Math.sin(pBody * 2)) * Math.exp(-t * 18) * 0.92;
+
+        // Stage 4: High-frequency air snap & impact grit
+        const raw = this.noise(i, 41 + variant * 9);
+        lp += (raw - lp) * 0.68;
+        hp += (lp - hp) * 0.12;
+        const snapEnv = Math.exp(-t * 110) * 1.1 + (t > 0.005 ? Math.exp(-(t - 0.005) * 45) * 0.5 : 0);
+        const snap = (lp - hp) * snapEnv;
+
+        const spark = Math.sin(Math.PI * 2 * 3850 * vScale * t + raw * 1.5) * Math.exp(-t * 115) * 0.42;
+        return Math.tanh((whip * 1.1 + smack * 1.0 + chest * 0.95 + snap * 0.85 + spark * 0.6) * 1.95) * 0.94;
       });
     }
     if (kind === 'heavy') {
       let pSub = 0,
         pCrunch = 0,
-        pBite = 0,
         pCrack = 0,
+        pBite = 0,
         ic1 = 0,
         ic2 = 0;
-      return this.makeBuffer(context, rate, 0.44, (t, i) => {
-        const fCrack = (4800 * Math.exp(-t * 210) + 320) * vScale;
-        const fBite = (290 + 880 * Math.exp(-t * 58)) * vScale;
-        const fCrunch = (92 + 440 * Math.exp(-t * 38)) * vScale;
-        const fSub = (40 + 185 * Math.exp(-t * 28)) * vScale;
+      return this.makeBuffer(context, rate, 0.48, (t, i) => {
+        // Stage 1: Blinding lightning transient crack (8200 -> 360 Hz)
+        const fCrack = (8200 * Math.exp(-t * 260) + 360) * vScale;
         pCrack += Math.PI * 2 * fCrack * dt;
-        pBite += Math.PI * 2 * fBite * dt;
+        const crack =
+          Math.sin(pCrack + Math.sin(pCrack * 2.0) * 1.35) *
+          (Math.exp(-t * 120) * 0.82 + (t > 0.010 ? Math.exp(-(t - 0.010) * 90) * 0.65 : 0));
+
+        // Stage 2: Dual-stage hit-stop bone crunch (520 -> 110 Hz with heavy FM growl)
+        const fCrunch = (110 + 520 * Math.exp(-t * 42)) * vScale;
+        const fBite = (340 + 1100 * Math.exp(-t * 68)) * vScale;
         pCrunch += Math.PI * 2 * fCrunch * dt;
-        pSub += Math.PI * 2 * fSub * dt;
-        const crackSnap =
-          Math.sin(pCrack + Math.sin(pCrack * 1.7) * 1.1) *
-          (Math.exp(-t * 95) * 0.64 + (t > 0.012 ? Math.exp(-(t - 0.012) * 78) * 0.48 : 0));
-        const sub = Math.sin(pSub + 0.35 * Math.sin(pSub * 2)) * Math.exp(-t * 7.6) * 0.96;
+        pBite += Math.PI * 2 * fBite * dt;
         const crunch =
-          Math.sin(pCrunch + Math.sin(pSub * 3.4) * 1.85 * Math.exp(-t * 16)) * Math.exp(-t * 12) * 0.72 +
-          Math.sin(pBite + Math.sin(pCrunch * 2.1) * 1.3) * Math.exp(-t * 26) * 0.52;
-        const raw = this.noise(i, 53 + variant * 11);
-        const cutoff = Math.max(480, Math.min(rate * 0.43, 4400 * Math.exp(-t * 20) + 680));
-        const g = Math.tan((Math.PI * cutoff) / rate);
-        const k = 0.56;
-        const a1 = 1 / (1 + g * (g + k));
-        const a2 = g * a1;
-        const a3 = g * a2;
-        const v3 = raw - ic2;
-        const v1 = a1 * ic1 + a2 * v3;
-        const v2 = ic2 + a2 * ic1 + a3 * v3;
-        ic1 = 2 * v1 - ic1;
-        ic2 = 2 * v2 - ic2;
-        const shockEnv =
-          Math.exp(-t * 50) * 0.92 + (t > 0.013 ? Math.exp(-(t - 0.013) * 21) * 0.68 : 0);
-        const spark =
-          (Math.sin(Math.PI * 2 * 3950 * vScale * t + raw * 1.6) * 0.28 +
-            Math.sin(Math.PI * 2 * 5680 * vScale * t + raw * 1.2) * 0.18) *
-          (Math.exp(-t * 72) + (t > 0.013 ? Math.exp(-(t - 0.013) * 48) * 0.65 : 0));
-        const shock = (v1 * 0.95 + (raw - v2) * 0.38) * shockEnv + spark;
-        return Math.tanh((crackSnap + sub + crunch + shock) * 1.92) * 0.94;
-      });
-    }
-    if (kind === 'slash') {
-      let pBody = 0,
-        pEdge = 0,
-        ic1 = 0,
-        ic2 = 0;
-      const bladeModes = [2280, 3420, 4860, 6480, 7950].map((f) => f * vScale);
-      return this.makeBuffer(context, rate, 0.32, (t, i) => {
-        const fEdge = (6400 * Math.exp(-t * 88) + 1420) * vScale;
-        const fBody = (54 + 190 * Math.exp(-t * 38)) * vScale;
-        pEdge += Math.PI * 2 * fEdge * dt;
-        pBody += Math.PI * 2 * fBody * dt;
-        const schwing = Math.sin(pEdge + Math.sin(pEdge * 1.5) * 0.85) * Math.exp(-t * 48) * 0.56;
-        const cleave = Math.sin(pBody + Math.sin(pBody * 2.2) * 0.8 * Math.exp(-t * 28)) * Math.exp(-t * 16.5) * 0.72;
-        const raw = this.noise(i, 71 + variant * 13);
-        const cutoff = Math.max(580, Math.min(rate * 0.44, 6200 * Math.exp(-t * 17) + 640));
-        const g = Math.tan((Math.PI * cutoff) / rate);
-        const k = 0.48;
-        const a1 = 1 / (1 + g * (g + k));
-        const a2 = g * a1;
-        const a3 = g * a2;
-        const v3 = raw - ic2;
-        const v1 = a1 * ic1 + a2 * v3;
-        const v2 = ic2 + a2 * ic1 + a3 * v3;
-        ic1 = 2 * v1 - ic1;
-        ic2 = 2 * v2 - ic2;
-        const swishEnv = Math.exp(-t * 14) * 1.05 + (t > 0.008 ? Math.exp(-(t - 0.008) * 28) * 0.52 : 0);
-        const swish = (v1 * 1.08 + (raw - v2) * 0.32) * swishEnv;
-        const glide = 1 + 0.062 * Math.exp(-t * 36);
-        let steel = 0;
-        for (let m = 0; m < bladeModes.length; m++) {
-          const mf = bladeModes[m] * glide;
-          steel +=
-            Math.sin(Math.PI * 2 * mf * t + this.noise(i, m + 9) * 0.42 * Math.exp(-t * 44)) *
-            Math.exp(-t * (19 + m * 5.2)) *
-            (0.28 / (1 + m * 0.2));
-        }
-        return Math.tanh((schwing + swish + steel + cleave) * 1.82) * 0.93;
-      });
-    }
-    if (kind === 'metal') {
-      let pKnock = 0,
-        pPing = 0,
-        ic1 = 0,
-        ic2 = 0;
-      const modes = [1180, 1590, 2120, 2780, 3540, 4480, 5620, 6940].map((f) => f * vScale);
-      const weights = [0.24, 0.22, 0.2, 0.18, 0.16, 0.13, 0.11, 0.09];
-      return this.makeBuffer(context, rate, 0.32, (t, i) => {
-        const fPing = (5200 * Math.exp(-t * 175) + 1240) * vScale;
-        const fKnock = (74 + 165 * Math.exp(-t * 46)) * vScale;
-        pPing += Math.PI * 2 * fPing * dt;
-        pKnock += Math.PI * 2 * fKnock * dt;
-        const ping = Math.sin(pPing) * Math.exp(-t * 72) * 0.46;
-        const knock = Math.sin(pKnock) * Math.exp(-t * 24) * 0.58;
-        const raw = this.noise(i, 89 + variant * 17);
-        const cutoff = Math.max(950, Math.min(rate * 0.43, 4800 * Math.exp(-t * 22) + 1450));
+          Math.sin(pCrunch + Math.sin(pBite * 1.9) * 2.1) * Math.exp(-t * 14) * 0.88 +
+          Math.sin(pBite + Math.sin(pCrunch * 2.5) * 1.6) * Math.exp(-t * 28) * 0.62;
+
+        // Stage 3: Earth-shattering sub-bass boom (260 -> 36 Hz)
+        const fSub = (36 + 224 * Math.exp(-t * 30)) * vScale;
+        pSub += Math.PI * 2 * fSub * dt;
+        const sub = Math.sin(pSub + Math.sin(pSub * 2) * 0.42 * Math.exp(-t * 16)) * Math.exp(-t * 7.8) * 1.05;
+
+        // Stage 4: SVF Shockwave burst + secondary delayed explosion
+        const raw = this.noise(i, 59 + variant * 13);
+        const cutoff = Math.max(520, Math.min(rate * 0.43, 5600 * Math.exp(-t * 22) + 750));
         const g = Math.tan((Math.PI * cutoff) / rate);
         const k = 0.52;
         const a1 = 1 / (1 + g * (g + k));
@@ -3226,35 +3734,123 @@ class SoundEngine {
         const v2 = ic2 + a2 * ic1 + a3 * v3;
         ic1 = 2 * v1 - ic1;
         ic2 = 2 * v2 - ic2;
+
+        const shockEnv = Math.exp(-t * 46) * 1.1 + (t > 0.014 ? Math.exp(-(t - 0.014) * 24) * 0.85 : 0);
+        const shock = (v1 * 1.05 + (raw - v2) * 0.45) * shockEnv;
+
+        // Stage 5: Sizzling arcade hit-sparks (3.6kHz, 5.4kHz, 7.6kHz)
+        const spark =
+          (Math.sin(Math.PI * 2 * 3650 * vScale * t + raw * 1.8) * 0.38 +
+            Math.sin(Math.PI * 2 * 5420 * vScale * t + raw * 1.4) * 0.28 +
+            Math.sin(Math.PI * 2 * 7680 * vScale * t + raw * 1.1) * 0.20) *
+          (Math.exp(-t * 68) + (t > 0.014 ? Math.exp(-(t - 0.014) * 44) * 0.72 : 0));
+
+        return Math.tanh((crack * 1.15 + crunch * 1.1 + sub * 1.0 + shock * 0.95 + spark * 0.75) * 2.15) * 0.95;
+      });
+    }
+    if (kind === 'slash') {
+      let pBody = 0,
+        pEdge = 0,
+        ic1 = 0,
+        ic2 = 0;
+      const bladeModes = [2450, 3680, 5240, 6980, 8620, 10200].map((f) => f * vScale);
+      return this.makeBuffer(context, rate, 0.36, (t, i) => {
+        const fEdge = (7800 * Math.exp(-t * 96) + 1650) * vScale;
+        pEdge += Math.PI * 2 * fEdge * dt;
+        const schwing = Math.sin(pEdge + Math.sin(pEdge * 1.7) * 1.05) * Math.exp(-t * 52) * 0.68;
+
+        const fBody = (48 + 220 * Math.exp(-t * 36)) * vScale;
+        pBody += Math.PI * 2 * fBody * dt;
+        const cleave = Math.sin(pBody + Math.sin(pBody * 2.4) * 0.95 * Math.exp(-t * 24)) * Math.exp(-t * 15) * 0.84;
+
+        const raw = this.noise(i, 77 + variant * 17);
+        const cutoff = Math.max(680, Math.min(rate * 0.44, 7200 * Math.exp(-t * 18) + 820));
+        const g = Math.tan((Math.PI * cutoff) / rate);
+        const k = 0.45;
+        const a1 = 1 / (1 + g * (g + k));
+        const a2 = g * a1;
+        const a3 = g * a2;
+        const v3 = raw - ic2;
+        const v1 = a1 * ic1 + a2 * v3;
+        const v2 = ic2 + a2 * ic1 + a3 * v3;
+        ic1 = 2 * v1 - ic1;
+        ic2 = 2 * v2 - ic2;
+        const swish =
+          (v1 * 1.2 + (raw - v2) * 0.38) *
+          (Math.exp(-t * 16) * 1.15 + (t > 0.007 ? Math.exp(-(t - 0.007) * 32) * 0.6 : 0));
+
+        let steel = 0;
+        const glide = 1 + 0.075 * Math.exp(-t * 32);
+        for (let m = 0; m < bladeModes.length; m++) {
+          const mf = bladeModes[m] * glide;
+          steel +=
+            Math.sin(Math.PI * 2 * mf * t + this.noise(i, m + 13) * 0.48 * Math.exp(-t * 40)) *
+            Math.exp(-t * (18 + m * 4.8)) *
+            (0.32 / (1 + m * 0.18));
+        }
+
+        return Math.tanh((schwing * 1.1 + cleave * 1.05 + swish * 0.95 + steel * 1.25) * 2.05) * 0.95;
+      });
+    }
+    if (kind === 'metal') {
+      let pKnock = 0,
+        pPing = 0,
+        ic1 = 0,
+        ic2 = 0;
+      const modes = [1240, 1680, 2260, 2980, 3840, 4850, 6100, 7520].map((f) => f * vScale);
+      const weights = [0.26, 0.24, 0.21, 0.18, 0.16, 0.13, 0.11, 0.09];
+      return this.makeBuffer(context, rate, 0.34, (t, i) => {
+        const fPing = (6400 * Math.exp(-t * 220) + 1480) * vScale;
+        const fKnock = (85 + 210 * Math.exp(-t * 52)) * vScale;
+        pPing += Math.PI * 2 * fPing * dt;
+        pKnock += Math.PI * 2 * fKnock * dt;
+        const ping = Math.sin(pPing + Math.sin(pPing * 1.6) * 0.6) * Math.exp(-t * 80) * 0.58;
+        const knock = Math.sin(pKnock) * Math.exp(-t * 26) * 0.64;
+
+        const raw = this.noise(i, 91 + variant * 17);
+        const cutoff = Math.max(1100, Math.min(rate * 0.44, 5800 * Math.exp(-t * 26) + 1650));
+        const g = Math.tan((Math.PI * cutoff) / rate);
+        const k = 0.48;
+        const a1 = 1 / (1 + g * (g + k));
+        const a2 = g * a1;
+        const a3 = g * a2;
+        const v3 = raw - ic2;
+        const v1 = a1 * ic1 + a2 * v3;
+        const v2 = ic2 + a2 * ic1 + a3 * v3;
+        ic1 = 2 * v1 - ic1;
+        ic2 = 2 * v2 - ic2;
+
         const strikeBurst =
-          v1 * (Math.exp(-t * 52) * 0.98 + (t > 0.008 ? Math.exp(-(t - 0.008) * 38) * 0.62 : 0));
+          v1 * (Math.exp(-t * 62) * 1.15 + (t > 0.006 ? Math.exp(-(t - 0.006) * 44) * 0.72 : 0));
         const fmChaos =
-          (Math.sin(Math.PI * 2 * 1840 * vScale * t) * 2.0 + raw * 0.85) * Math.exp(-t * 32);
+          (Math.sin(Math.PI * 2 * 2150 * vScale * t) * 2.2 + raw * 0.95) * Math.exp(-t * 36);
+
         let clang = 0;
         for (let m = 0; m < modes.length; m++) {
-          const damp = 18.5 + m * 4.4;
+          const damp = 17.0 + m * 4.2;
           clang +=
-            Math.sin(Math.PI * 2 * modes[m] * t + fmChaos * (0.55 + m * 0.14)) *
+            Math.sin(Math.PI * 2 * modes[m] * t + fmChaos * (0.6 + m * 0.15)) *
             Math.exp(-t * damp) *
             weights[m];
         }
-        return Math.tanh((ping + knock + strikeBurst + clang * 1.22) * 1.78) * 0.92;
+        return Math.tanh((ping * 1.1 + knock * 1.05 + strikeBurst * 1.0 + clang * 1.45) * 1.92) * 0.94;
       });
     }
     let pBox1 = 0,
       pBox2 = 0,
       ic1 = 0,
       ic2 = 0;
-    return this.makeBuffer(context, rate, 0.28, (t, i) => {
-      const f1 = (76 + 145 * Math.exp(-t * 48)) * vScale;
-      const f2 = (158 + 240 * Math.exp(-t * 54)) * vScale;
+    return this.makeBuffer(context, rate, 0.30, (t, i) => {
+      const f1 = (84 + 185 * Math.exp(-t * 54)) * vScale;
+      const f2 = (175 + 290 * Math.exp(-t * 62)) * vScale;
       pBox1 += Math.PI * 2 * f1 * dt;
       pBox2 += Math.PI * 2 * f2 * dt;
-      const boxThud = (Math.sin(pBox1) * 0.74 + Math.sin(pBox2) * 0.48) * Math.exp(-t * 30) * 0.76;
-      const raw = this.noise(i, 107 + variant * 19);
-      const cutoff = (1950 + 1650 * Math.exp(-t * 26)) * vScale;
-      const g = Math.tan((Math.PI * Math.min(rate * 0.43, cutoff)) / rate);
-      const k = 0.58;
+      const boxThud = (Math.sin(pBox1) * 0.82 + Math.sin(pBox2) * 0.52) * Math.exp(-t * 32) * 0.85;
+
+      const raw = this.noise(i, 113 + variant * 19);
+      const cutoff = (2200 + 2100 * Math.exp(-t * 28)) * vScale;
+      const g = Math.tan((Math.PI * Math.min(rate * 0.44, cutoff)) / rate);
+      const k = 0.54;
       const a1 = 1 / (1 + g * (g + k));
       const a2 = g * a1;
       const a3 = g * a2;
@@ -3263,17 +3859,20 @@ class SoundEngine {
       const v2 = ic2 + a2 * ic1 + a3 * v3;
       ic1 = 2 * v1 - ic1;
       ic2 = 2 * v2 - ic2;
+
       const cracks =
-        Math.exp(-t * 78) * 1.0 +
-        (t > 0.009 ? Math.exp(-(t - 0.009) * 92) * 0.82 : 0) +
-        (t > 0.021 ? Math.exp(-(t - 0.021) * 105) * 0.66 : 0) +
-        (t > 0.036 ? Math.exp(-(t - 0.036) * 118) * 0.48 : 0) +
-        (t > 0.052 ? Math.exp(-(t - 0.052) * 130) * 0.34 : 0);
+        Math.exp(-t * 88) * 1.15 +
+        (t > 0.007 ? Math.exp(-(t - 0.007) * 105) * 0.95 : 0) +
+        (t > 0.018 ? Math.exp(-(t - 0.018) * 115) * 0.78 : 0) +
+        (t > 0.032 ? Math.exp(-(t - 0.032) * 125) * 0.58 : 0) +
+        (t > 0.048 ? Math.exp(-(t - 0.048) * 140) * 0.42 : 0);
+
       const grain =
-        (Math.sin(Math.PI * 2 * 680 * vScale * t + raw * 1.2) * 0.38 +
-          Math.sin(Math.PI * 2 * 1420 * vScale * t + raw * 0.9) * 0.26) *
-        Math.exp(-t * 42);
-      return Math.tanh((boxThud + v1 * cracks * 1.35 + grain) * 1.78) * 0.91;
+        (Math.sin(Math.PI * 2 * 750 * vScale * t + raw * 1.4) * 0.44 +
+          Math.sin(Math.PI * 2 * 1580 * vScale * t + raw * 1.0) * 0.32) *
+        Math.exp(-t * 46);
+
+      return Math.tanh((boxThud + v1 * cracks * 1.55 + grain) * 1.95) * 0.93;
     });
   }
   synthWhoosh(context, rate, seconds, startFreq, endFreq, seed) {
@@ -3313,20 +3912,20 @@ class SoundEngine {
       hp = 0;
     const dt = 1 / rate;
     return this.makeBuffer(context, rate, 0.24, (t, i) => {
-      const f = 58 + 175 * Math.exp(-t * 38);
-      const fSnap = 420 + 2100 * Math.exp(-t * 140);
+      const f = 64 + 210 * Math.exp(-t * 42);
+      const fSnap = 480 + 2600 * Math.exp(-t * 160);
       p1 += Math.PI * 2 * f * dt;
       pSnap += Math.PI * 2 * fSnap * dt;
-      const thud = Math.sin(p1) * Math.exp(-t * 15) * 0.78;
-      const gripSnap = Math.sin(pSnap) * Math.exp(-t * 68) * 0.46;
-      const raw = this.noise(i, 73);
-      lp += (raw - lp) * 0.52;
-      hp += (lp - hp) * 0.09;
+      const thud = Math.sin(p1) * Math.exp(-t * 16) * 0.84;
+      const gripSnap = Math.sin(pSnap) * Math.exp(-t * 75) * 0.55;
+      const raw = this.noise(i, 79);
+      lp += (raw - lp) * 0.58;
+      hp += (lp - hp) * 0.08;
       const cloth =
-        (lp - hp) * (Math.exp(-t * 48) * 0.92 + (t > 0.018 ? Math.exp(-(t - 0.018) * 34) * 0.72 : 0));
+        (lp - hp) * (Math.exp(-t * 52) * 1.05 + (t > 0.016 ? Math.exp(-(t - 0.016) * 38) * 0.8 : 0));
       const slap =
-        t > 0.014 ? Math.sin(Math.PI * 2 * 440 * (t - 0.014)) * Math.exp(-(t - 0.014) * 44) * 0.42 : 0;
-      return Math.tanh((thud + gripSnap + cloth + slap) * 1.75) * 0.91;
+        t > 0.012 ? Math.sin(Math.PI * 2 * 480 * (t - 0.012)) * Math.exp(-(t - 0.012) * 48) * 0.48 : 0;
+      return Math.tanh((thud + gripSnap + cloth + slap) * 1.88) * 0.93;
     });
   }
   synthLanding(context, rate) {
@@ -3336,25 +3935,25 @@ class SoundEngine {
       lp = 0;
     const dt = 1 / rate;
     return this.makeBuffer(context, rate, 0.56, (t, i) => {
-      const f1 = 42 + 135 * Math.exp(-t * 28);
-      const fCrack = 260 + 1850 * Math.exp(-t * 110);
+      const f1 = 44 + 155 * Math.exp(-t * 30);
+      const fCrack = 290 + 2200 * Math.exp(-t * 120);
       p1 += Math.PI * 2 * f1 * dt;
       pCrack += Math.PI * 2 * fCrack * dt;
-      const heel = Math.sin(p1 + 0.3 * Math.sin(p1 * 2)) * Math.exp(-t * 8.5) * 0.88;
-      const slamCrack = Math.sin(pCrack) * Math.exp(-t * 58) * 0.48;
+      const heel = Math.sin(p1 + 0.35 * Math.sin(p1 * 2)) * Math.exp(-t * 8.0) * 0.94;
+      const slamCrack = Math.sin(pCrack) * Math.exp(-t * 62) * 0.56;
       let sole = 0;
-      if (t >= 0.018) {
-        const ts = t - 0.018;
-        const f2 = 58 + 140 * Math.exp(-ts * 32);
+      if (t >= 0.016) {
+        const ts = t - 0.016;
+        const f2 = 62 + 160 * Math.exp(-ts * 34);
         p2 += Math.PI * 2 * f2 * dt;
-        sole = Math.sin(p2) * Math.exp(-ts * 10.5) * 0.66;
+        sole = Math.sin(p2) * Math.exp(-ts * 10.0) * 0.72;
       }
-      const raw = this.noise(i, 89);
-      lp += (raw - lp) * 0.42;
+      const raw = this.noise(i, 95);
+      lp += (raw - lp) * 0.46;
       const grit =
-        (lp * 0.75 + raw * 0.25) *
-        (Math.exp(-t * 26) * 0.62 + (t >= 0.018 ? Math.exp(-(t - 0.018) * 16) * 0.54 : 0));
-      return Math.tanh((heel + slamCrack + sole + grit) * 1.72) * 0.92;
+        (lp * 0.78 + raw * 0.22) *
+        (Math.exp(-t * 28) * 0.72 + (t >= 0.016 ? Math.exp(-(t - 0.016) * 18) * 0.6 : 0));
+      return Math.tanh((heel + slamCrack + sole + grit) * 1.82) * 0.93;
     });
   }
   synthEnergy(context, rate) {
@@ -3486,6 +4085,11 @@ class SoundEngine {
     addBank('landing', () => this.synthLanding(context, rate));
     addBank('energy', () => this.synthEnergy(context, rate));
     addBank('reverse', () => this.synthReverse(context, rate));
+    for (let phase = 0; phase < 3; phase++) addBank('rising' + phase, () => this.synthArcadeAction(context, rate, phase));
+    addBank('fireLaunch', () => this.synthArcadeAction(context, rate, 3));
+    addBank('fireHit', () => this.synthArcadeAction(context, rate, 4));
+    addBank('impactBody', () => this.synthImpactBody(context, rate, false));
+    addBank('impactCrush', () => this.synthImpactBody(context, rate, true));
 
     if (deferred) this.scheduleJobs();
     else this.flushBank();
@@ -3554,7 +4158,7 @@ class SoundEngine {
     if (!this.offline && this.ctx.state === 'suspended' && typeof this.ctx.resume === 'function') {
       this.ctx.resume();
     }
-    this.seGain.gain.setTargetAtTime(this.muted ? 0 : this.seVol * 0.74, this.ctx.currentTime, 0.02);
+    this.seGain.gain.setTargetAtTime(this.muted ? 0 : this.seVol * 0.82, this.ctx.currentTime, 0.02);
     this.duckMusic(this.ducked);
     if (this.voiceBound && typeof fighterVoice !== 'undefined') {
       fighterVoice.updateVolume();
@@ -3568,9 +4172,19 @@ class SoundEngine {
       this.ctx.resume();
     }
     const cap = group === 'music' ? 72 : 32;
-    if (!this.offline && [...this.active].filter((v) => v.group === group).length >= cap) {
-      this.stats.dropped++;
-      return;
+    if (!this.offline) {
+      const voices = [...this.active].filter((v) => v.group === group && !v.stolen);
+      if (voices.length >= cap) {
+        if (group !== 'effect') {
+          this.stats.dropped++;
+          return;
+        }
+        // v3.6.1 [FIX-134]: at the effect cap the new sound used to be refused. The long impact tails (up to 0.92 s,
+        // played before the hit itself) filled the 32 slots during rapid hits, so the hits went silent. Retire the
+        // voice that started first instead: every effect decays from its attack, so the oldest one is the quietest,
+        // and the new hit is always heard.
+        this.steal(voices.reduce((a, b) => (b.start < a.start ? b : a)));
+      }
     }
     const clampedRate = Math.max(0.25, Math.min(4, rate));
     const at = Math.max(this.ctx.currentTime, t),
@@ -3591,7 +4205,7 @@ class SoundEngine {
     gain.connect(panner);
     const destination = bus || (group === 'music' ? this.musicBus : this.seGain);
     panner.connect(destination);
-    const entry = { source, gain, panner, group, bus: destination, end: at + length };
+    const entry = { source, gain, panner, group, bus: destination, start: at, end: at + length };
     this.active.add(entry);
     this.stats.started++;
     this.stats.peakVoices = Math.max(this.stats.peakVoices, this.active.size);
@@ -3605,6 +4219,17 @@ class SoundEngine {
     source.start(at);
     source.stop(at + length + 0.005);
     return entry;
+  }
+  // Fade a playing voice out in a few milliseconds (no click) and release it. It stops counting toward the cap at once.
+  steal(entry) {
+    const now = this.ctx.currentTime;
+    entry.stolen = true;
+    this.stats.stolen++;
+    entry.gain.gain.cancelScheduledValues(now);
+    entry.gain.gain.setTargetAtTime(0, now, 0.004);
+    try {
+      entry.source.stop(now + 0.03);
+    } catch (e) {}
   }
   note(name, midi, t, duration, volume = 0.3, pan = 0, bus = null, group = 'music') {
     let buffer = null;
@@ -3920,8 +4545,66 @@ class SoundEngine {
         0.96 + this.random() * 0.1
       );
   }
+  // Dedicated v3.4.2 one-shots: ascending snap/body/air layers, then a heavy final crack.
+  // Seeded noise and offline PCM keep synthesis out of the combat update loop.
+  synthArcadeAction(context, rate, kind) {
+    let seed = 342 + kind * 7919, low = 0, phase = 0;
+    const fire = kind >= 3, final = kind === 2, duration = fire ? (kind === 4 ? .62 : .38) : final ? .43 : .23;
+    return this.makeBuffer(context, rate, duration, t => {
+      seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+      const n = seed / 2147483648 - 1;
+      low += (n - low) * (fire ? .12 : .22);
+      const high = n - low;
+      phase += 2 * Math.PI * (fire ? 65 + 110 * Math.exp(-t * 19) : 72 + kind * 20 + 150 * Math.exp(-t * 40)) / rate;
+      if (fire) {
+        const blast = kind === 4 ? Math.sin(phase) * Math.exp(-t * 14) * .75 : 0;
+        const envelope = (1 - Math.exp(-t * (kind === 4 ? 500 : 75))) * Math.exp(-t * (kind === 4 ? 5.7 : 8));
+        const crackle = high * (.32 + .68 * Math.pow(Math.max(0, Math.sin(t * 173) * Math.sin(t * 347)), 5));
+        return blast + (low * 2.6 + crackle) * envelope;
+      }
+      const crack = high * Math.exp(-t * (final ? 57 : 85)) * 1.2;
+      const body = Math.sin(phase) * Math.exp(-t * (final ? 12 : 23)) * .82;
+      const air = low * (1 - Math.exp(-t * 180)) * Math.exp(-t * (final ? 9 : 21)) * 1.3;
+      const bright = Math.sin(2 * Math.PI * (1050 + kind * 260) * t) * Math.exp(-t * 65) * .13;
+      return crack + body + air + bright;
+    });
+  }
+  // v3.5: chest-level punch + sub-bass shock + short room tail. No louder master gain.
+  synthImpactBody(context, rate, heavy) {
+    let seed = heavy ? 3609 : 3603, phase = 0, low = 0;
+    return this.makeBuffer(context, rate, heavy ? .92 : .48, t => {
+      seed = (Math.imul(seed,1664525)+1013904223) >>> 0;
+      const n = seed/2147483648-1; low += (n-low)*.075;
+      // v3.6.1 [AUDIO-135]: the normal body settles at 46 Hz (was 53) and rings a little longer (decay 9.5, was 12).
+      // 53 Hz sat inside the chest band of punch0-2 (56-69 Hz with the playback jitter), so for some variant / pitch
+      // pairs the two cancelled and the layered hit had less low end than the punch alone. Heavy (38 Hz) is clear.
+      phase += 2*Math.PI*((heavy?38:46)+145*Math.exp(-t*48))/rate;
+      const body = (Math.sin(phase)+.28*Math.sin(phase*2.03)) * Math.exp(-t*(heavy?4.8:9.5));
+      const sub = Math.sin(2*Math.PI*(heavy?34:43)*t) * (1-Math.exp(-t*120)) * Math.exp(-t*(heavy?5:13));
+      const crunch = low * 2.0 * Math.exp(-t*30);
+      const snap = (n-low)*Math.exp(-t*145)*1.2;
+      const room = t>.035 ? Math.sin(2*Math.PI*86*(t-.035)) * Math.exp(-(t-.035)*12)*.14 : 0;
+      return Math.tanh(Math.tanh(body*1.35+sub*.85+crunch+room)*(heavy?1.3:.92) + snap)*.93;
+    });
+  }
+  impactWeight(heavy = false, gain = .75, pan = 0) {
+    this.effect(heavy ? 'impactCrush' : 'impactBody', gain, pan, 0, 1);
+  }
+  playRising(phase) {
+    if (this.allow('rising', .045)) {
+      this.effect('rising' + Math.max(0, Math.min(2, phase)), .95, 0, 0, 1);
+      this.impactWeight(phase === 2, phase === 2 ? .95 : .75);
+    }
+  }
+  playFlame(phase) {
+    if (this.allow('flame-' + phase, .055)) {
+      this.effect(phase === 'launch' ? 'fireLaunch' : 'fireHit', phase === 'launch' ? .78 : .95, 0, 0, 1);
+      if (phase === 'hit') this.impactWeight(true, .95);
+    }
+  }
   playHit(style = 'light') {
     if (!this.allow('hit', 0.018)) return;
+    if (!['block','justguard'].includes(style)) this.impactWeight(style !== 'light', style === 'light' ? .8 : .95);
     if (style === 'justguard') {
       this.effect(this.variant('metal'), 0.82, 0, 0, 1.18);
       this.effect('energy', 0.48, 0.16, 0.01, 1.28);
@@ -3967,6 +4650,7 @@ class SoundEngine {
       this.effect('swingHeavy', 1.14, -0.15, 0, 1.04);
       this.effect('swing', 0.42, 0.18, 0.015, 1.24);
     } else {
+      this.impactWeight(true, .85);
       this.effect('landing', 1.08, 0);
       this.effect(this.variant('heavy'), 0.56, -0.15, 0.012, 0.86);
       this.effect(this.variant('wood'), 0.46, 0.2, 0.048, 0.92);
@@ -4713,7 +5397,7 @@ class Fighter {
     let by = -62, tilt = 0, fa = 0.3, ba = -0.4, fl = 0.15, bl = -0.2, wa = -0.4, atk = false;
 
     if (state === 'IDLE') {
-      by += Math.sin(t) * 3.5; tilt = 0.06; fa = 0.4 + Math.sin(t) * 0.08;
+      tilt = 0.06; fa = 0.4; // Stable idle even when image loading falls back.
     } else if (state === 'WALK_F' || state === 'WALK_B') {
       const w = Math.sin(t * 2.2);
       by -= Math.abs(w) * 4; tilt = state === 'WALK_F' ? 0.14 : -0.1;
@@ -5732,13 +6416,17 @@ class Game {
 // ============================================================================
 // BELT_ENGINE_BEGIN
 const BELT_ART_SOURCES = CB_ASSETS.beltArt;
-// v2.5 visual layer only. No combat state, RNG, input, AI, audio or hitboxes are changed here.
+// v3.0 anime characters / v2.5 scenery. Visual layer only. No combat state, RNG, input, AI, audio or hitboxes are changed here.
 const BeltArt = {
   images: new Map(),
   boards: new Map(),
+  factoryBoards: new Map(),
+  monsterSheet: null,
+  monsterCells: [],
   bossCells: new Map(),
   bossSheets: new Map(),
   dashSheets: new Map(),
+  actionSheets: new Map(),
   props: [],
   errors: [],
   ready: null,
@@ -5753,9 +6441,16 @@ const BeltArt = {
         try {
           this.images.set(id, img);
           if (id.startsWith('district-')) this.prepareBoard(Number(id.slice(-1)), img, entry.horizon);
+          else if (id.startsWith('factory-')) this.prepareBoard(Number(id.slice(-1)), img, entry.horizon, this.factoryBoards);
+          else if (id === 'maw') {
+            this.monsterSheet = FighterSprites.prepareAtlas(img, 'maw');
+            const c=this.monsterSheet.getContext('2d',{willReadFrequently:true}),cell=FighterSprites.cell;
+            this.monsterCells=Array.from({length:24},(_,i)=>this.bounds(c,i%6*cell,Math.floor(i/6)*cell,cell,cell));
+          }
           else if (id === 'props') this.prepareProps(img);
           else if (id.startsWith('voss-')) this.prepareBoss(id, img);
           else if (id.startsWith('dash-')) this.prepareDash(id.slice(5), img);
+          else if (id.startsWith('rise-') || id === 'fx-fire') this.actionSheets.set(id, FighterSprites.prepareAtlas(img, id));
         } catch (error) { this.errors.push(id + ': ' + error.message); }
         resolve();
       };
@@ -5766,19 +6461,7 @@ const BeltArt = {
   },
 
   prepareDash(id, image) {
-    if (image.width !== 1536 || image.height !== 1024) throw Error('Dash atlas must be 1536 × 1024');
-    const atlas = document.createElement('canvas'); atlas.width = 960; atlas.height = 640;
-    const c = atlas.getContext('2d', { willReadFrequently: true }); c.imageSmoothingEnabled = false;
-    for (let f = 0; f < 24; f++) {
-      // Hand-audited: these two large slash tips extend 24px into the next source cell.
-      const slash = ['kagura', 'freya'].includes(id), width = slash && f === 13 ? 280 : 256;
-      c.drawImage(image, f % 6 * 256, Math.floor(f / 6) * 256, width, 256,
-        f % 6 * 160 + 16, Math.floor(f / 6) * 160 + 16, width / 2, 128);
-      if (slash && f === 14) c.clearRect(f % 6 * 160 + 16, Math.floor(f / 6) * 160 + 16, 12, 128);
-      FighterSprites.cleanCell(c, f % 6 * 160, Math.floor(f / 6) * 160, f >= 12 && f <= 17);
-      this.bounds(c, f % 6 * 160, Math.floor(f / 6) * 160, 160, 160);
-    }
-    this.dashSheets.set(id, atlas);
+    this.dashSheets.set(id, FighterSprites.prepareAtlas(image, 'dash-' + id));
   },
 
   dashFrame(actor) {
@@ -5793,11 +6476,11 @@ const BeltArt = {
   drawDash(actor, c) {
     const f = this.dashFrame(actor), image = this.dashSheets.get(actor.data.id);
     if (f === null || !image) return false;
-    const scale = actor.data.id === 'titan' ? 1.48 : 1.36;
-    c.save(); c.scale(actor.facing, 1); c.imageSmoothingEnabled = false;
+    const scale = FighterSprites.scaleFor(actor.data.id), cell = FighterSprites.cell;
+    c.save(); c.scale(actor.facing, 1); c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
     if (actor.invuln > 0 && Math.floor(actor.animTick / 3) % 2) c.globalAlpha *= .72;
-    const draw = offset => c.drawImage(image, f % 6 * 160, Math.floor(f / 6) * 160, 160, 160,
-      -Math.round(80 * scale) + offset, -Math.round(138 * scale), Math.round(160 * scale), Math.round(160 * scale));
+    const draw = offset => c.drawImage(image, f % 6 * cell, Math.floor(f / 6) * cell, cell, cell,
+      -Math.round(FighterSprites.pivotX * scale) + offset, -Math.round(FighterSprites.pivotY * scale), Math.round(cell * scale), Math.round(cell * scale));
     const alpha = c.globalAlpha;
     if (actor.state === 'STREET_DASH' || actor.f <= STREET.dash.until) {
       c.globalAlpha = alpha * .12; draw(-32);
@@ -5807,7 +6490,37 @@ const BeltArt = {
     draw(0); c.restore(); return true;
   },
 
-  prepareBoard(index, image, horizon = .685) {
+  // v3.4.2: Render-only action atlases, synchronized to fixed simulation frames.
+  drawAction(key, frame, actor, c, offsetX = 0, offsetY = 0, alpha = 1, direction = actor.facing) {
+    const image = this.actionSheets.get(key);
+    if (!image) return false;
+    const scale = FighterSprites.scaleFor(actor.data.id), cell = FighterSprites.cell;
+    c.save(); c.scale(direction, 1); c.globalAlpha *= alpha;
+    c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
+    c.drawImage(image, frame % 6 * cell, Math.floor(frame / 6) * cell, cell, cell,
+      -FighterSprites.pivotX * scale + offsetX, -FighterSprites.pivotY * scale + offsetY, cell * scale, cell * scale);
+    c.restore(); return true;
+  },
+  drawRising(actor, c) {
+    if (actor.state !== 'SP_2') return false;
+    const t = actor.f;
+    const frame = t < 18 ? Math.floor(t / 2) : t < 30 ? 9 + Math.floor((t - 18) * 9 / 12) : 18 + Math.min(5, Math.floor((t - 30) * 6 / 14));
+    return this.drawAction('rise-' + actor.data.id, frame, actor, c);
+  },
+  drawBurn(actor, c) {
+    if (!(actor.burnTicks > 0) || !['HIT_AIR','KNOCKDOWN','DEAD'].includes(actor.state)) return false;
+    if (actor.monster) return this.drawMonster(actor, c);
+    const frame = actor.state === 'HIT_AIR' ? Math.min(11, Math.floor(actor.f / 2)) : 12 + Math.min(5, Math.floor(actor.f / 5));
+    // Fire atlas tumbles to the RIGHT: orient by the captured launch vector, not the victim facing the attacker.
+    return this.drawAction('fx-fire', frame, actor, c, 0, 0, 1, actor.burnDirection || Math.sign(actor.knockX) || -actor.facing);
+  },
+  drawFlameDash(actor, c) {
+    if (actor.state !== 'DASH_ATTACK' || actor.f > STREET.dash.until + 5) return;
+    const alpha = actor.f < STREET.dash.active ? .45 : actor.f > STREET.dash.until ? .55 : .9;
+    this.drawAction('fx-fire', 18 + Math.floor(actor.f / 2) % 6, actor, c, 24, -12, alpha);
+  },
+
+  prepareBoard(index, image, horizon = .685, boards = this.boards) {
     const board = document.createElement('canvas');
     board.width = this.boardWidth; board.height = this.floorBottom;
     const c = board.getContext('2d'), split = Math.round(image.height * horizon);
@@ -5821,7 +6534,7 @@ const BeltArt = {
       blend.addColorStop(0, 'rgba(0,0,0,0)'); blend.addColorStop(1, 'rgba(0,0,0,1)');
       c.fillStyle = blend; c.fillRect(0, 0, board.width, board.height);
     }
-    this.boards.set(index, board);
+    boards.set(index, board);
   },
 
   bounds(c, x, y, width, height) {
@@ -5847,34 +6560,23 @@ const BeltArt = {
   },
 
   prepareBoss(id, image) {
-    if (image.width !== 1536 || image.height !== 1024) throw Error('Boss atlas must be 1536 × 1024');
-    // Same 160px cached cells / 16px gutters as the shared fighter renderer.
-    // The defeated base pose extends 24px into the preceding source cell.
-    const board = document.createElement('canvas'); board.width = 960; board.height = 640;
-    const c = board.getContext('2d', { willReadFrequently: true }); c.imageSmoothingEnabled = false;
-    const cells = [];
-    for (let i = 0; i < 24; i++) {
-      const col = i % 6, row = Math.floor(i / 6), left = id !== 'voss-motion' && i === 20 ? -32 : 0;
-      c.save(); c.translate(col * 160 + 16, row * 160 + 16); c.scale(.5, .5);
-      c.beginPath(); c.rect(left, 0, 256 - left, 256); c.clip(); c.drawImage(image, -col * 256, -row * 256);
-      if (id !== 'voss-motion' && i === 19) c.clearRect(224, 180, 32, 76);
-      c.restore();
-      FighterSprites.cleanCell(c, col * 160, row * 160, id === 'voss-base' ? [14, 17].includes(i) : [20, 22].includes(i));
-      cells.push(this.bounds(c, col * 160, row * 160, 160, 160));
-    }
+    const board = FighterSprites.prepareAtlas(image, id), cell = FighterSprites.cell;
+    const c = board.getContext('2d', { willReadFrequently: true }), cells = [];
+    for (let i = 0; i < 24; i++) cells.push(this.bounds(c, i % 6 * cell, Math.floor(i / 6) * cell, cell, cell));
     this.bossSheets.set(id, board);
     this.bossCells.set(id, cells);
   },
 
   drawStreet(street, c) {
-    if (this.boards.size !== 5) return false;
+    const boards = street.stageIndex === 1 ? this.factoryBoards : this.boards;
+    if (boards.size !== 5) return false;
     c.save(); c.imageSmoothingEnabled = false;
     c.fillStyle = '#101924'; c.fillRect(0, 0, W, H);
     c.translate(-Math.round(street.camera), 0);
     for (let i = 0; i < 5; i++) {
       const x = i * 1240 - 96;
       if (x > street.camera + W || x + this.boardWidth < street.camera) continue;
-      c.drawImage(this.boards.get(i), x, 0);
+      c.drawImage(boards.get(i), x, 0);
     }
     // Subtle moving reflections/steam/rain sit over painted detail without obscuring the lane warnings.
     const t = street.tick;
@@ -5895,10 +6597,10 @@ const BeltArt = {
       }
     }
     c.restore();
-    c.save(); c.strokeStyle = 'rgba(176,207,223,.17)'; c.lineWidth = 1;
+    c.save(); c.strokeStyle = street.stageIndex === 1 ? 'rgba(255,147,65,.32)' : 'rgba(176,207,223,.17)'; c.lineWidth = 1;
     for (let i = 0; i < 62; i++) {
-      const x = (i * 173 + t * 2) % W, y = (i * 91 + t * 8) % 641;
-      c.beginPath(); c.moveTo(x, y); c.lineTo(x - 5, y + 14); c.stroke();
+      const x = (i * 173 + t * (street.stageIndex === 1 ? .3 : 2)) % W, y = (i * 91 + t * (street.stageIndex === 1 ? .7 : 8)) % 641;
+      c.beginPath(); c.moveTo(x, y); c.lineTo(x - (street.stageIndex === 1 ? 1 : 5), y + (street.stageIndex === 1 ? 2 : 14)); c.stroke();
     }
     c.restore(); return true;
   },
@@ -5940,23 +6642,45 @@ const BeltArt = {
   bossFrame(actor, state, f) {
     const thrown = ThrowMotion.sprite(actor, state, f);
     if (thrown !== null) return thrown;
-    // The generated motion sheet's 26/27 are walking poses; keep both feet planted while idle.
-    if (state === 'IDLE') return [0, 24, 1, 25, 1, 24][Math.floor(actor.animTick / 6) % 6];
+    // Keep the boss's silhouette stable too; idle atlases differ in size and stance.
+    if (state === 'IDLE') return 0;
     if (actor.state === 'WINDUP') return actor.plan === 'slam' ? 44 : 39;
     // Match the existing damage / sound event at SLAM frame 20 exactly.
     if (actor.state === 'SLAM') return f < 20 ? 44 : f < 33 ? 14 : f < 43 ? 47 : 11;
     return FighterSprites.frame('titan', state, f, actor.animTick, actor.blockstun > 0, actor.vy);
   },
 
+  monsterFrame(a) {
+    if (a.dead || a.state === 'KNOCKDOWN') return 21;
+    if (['HIT_AIR','GRABBED','THROWING'].includes(a.state)) return 20;
+    if (a.state === 'WAKEUP') return 22;
+    if (a.state === 'HIT_STAND') return 12 + Math.min(1,Math.floor(a.f/5));
+    if (a.state === 'WINDUP') return a.plan === 'slam' ? 14 + Math.min(1,Math.floor(a.f/20)) : 18;
+    if (a.state === 'SLAM') return a.f < 20 ? 15 : a.f < 33 ? 16 : 17;
+    if (a.state === 'CHARGE') return 19;
+    if (a.state === 'ATK_H') return 6 + Math.min(5,Math.floor(a.f/5));
+    if (a.state === 'WALK_F') return 2 + Math.floor(a.animTick/7)%4;
+    return 0;
+  },
+  drawMonster(actor, c) {
+    if (!this.monsterSheet) return false;
+    const frame=this.monsterFrame(actor), cell=FighterSprites.cell, scale=FighterSprites.scaleFor('titan'), foot=actor.z>0?FighterSprites.pivotY:this.monsterCells[frame].bottom+1;
+    c.save(); c.scale(actor.burnTicks>0 ? (actor.burnDirection || actor.facing) : actor.facing,1);
+    if (actor.burnTicks>0) { c.filter='sepia(.7) saturate(3)'; c.shadowColor='#ff6a14'; c.shadowBlur=16; }
+    c.imageSmoothingEnabled=true;
+    c.drawImage(this.monsterSheet,frame%6*cell,Math.floor(frame/6)*cell,cell,cell,-FighterSprites.pivotX*scale,-foot*scale,cell*scale,cell*scale);
+    c.restore(); return true;
+  },
   drawBoss(actor, c, state, f) {
+    if (actor.monster) return this.drawMonster(actor,c);
     if (this.bossCells.size !== 3) return false;
     const pose = this.bossFrame(actor, state, f);
     const id = pose >= 48 ? 'voss-throw' : pose >= 24 ? 'voss-motion' : 'voss-base';
     const frame = pose % 24, image = this.bossSheets.get(id), box = this.bossCells.get(id)[frame];
-    const scale = 1.48, foot = actor.z > 0 ? 138 : box.bottom + 1;
-    c.save(); c.scale(actor.facing, 1); c.imageSmoothingEnabled = false;
+    const scale = FighterSprites.scaleFor('titan'), cell = FighterSprites.cell, foot = actor.z > 0 ? FighterSprites.pivotY : box.bottom + 1;
+    c.save(); c.scale(actor.facing, 1); c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
     if (actor.invuln > 0 && Math.floor(actor.animTick / 3) % 2) c.globalAlpha *= .72;
-    c.drawImage(image, frame % 6 * 160, Math.floor(frame / 6) * 160, 160, 160, -80 * scale, -foot * scale, 160 * scale, 160 * scale);
+    c.drawImage(image, frame % 6 * cell, Math.floor(frame / 6) * cell, cell, cell, -FighterSprites.pivotX * scale, -foot * scale, cell * scale, cell * scale);
     c.restore(); return true;
   }
 };
@@ -5966,24 +6690,25 @@ BeltArt.load(BELT_ART_SOURCES);
 // Coordinates: x = street distance, y = floor depth, z = height above that floor.
 // Fixed 60 Hz simulation. Draw methods must not change simulation or consume random values.
 const STREET = {
-  version: '2.8.1',
+  version: '3.6.1',
+  risingInput: { window: 30, buffer: 12 },
   dash: { tapWindow: 14, speed: 2.2, damage: 112, active: 8, until: 19, end: 38 },
   // v2.6.0 hit detection tuning. One table so the feel can be adjusted without hunting through the methods.
   // Rule of thumb: the player's attacks are generous (wide lane, several active frames), enemy attacks are honest
   // (one frame, narrow lane) so that stepping up/down out of a telegraphed blow reliably works.
   hit: {
-    playerDepth: 38, // lane tolerance of player strikes (was 29)
+    playerDepth: 52, // lane tolerance of player strikes (was 29)
     playerRear: 30, // how far behind the player's centre a strike still connects (was 22)
-    playerActive: 4, // ground strikes stay active for this many frames (was 1)
+    playerActive: 7, // ground strikes stay active for this many frames (was 1)
     airActive: 12, // jump attack stays active this long, i.e. for most of the descent (was 1)
     propDepth: 44, // crates and barrels (was 35)
     enemyDepth: 22, // enemy punch lane (was 26); the AI only starts a punch inside this lane
     laneAssist: 0.5, // a struck enemy is pulled this fraction toward the player's lane so the chain keeps connecting
-    grabDepth: 24, // walking grab (was 22)
-    throwKeyDepth: 34, // I-key throw (was 22)
-    chainThrowDepth: 38, // down + third hit (was 29); equals playerDepth so anything the chain reached can be thrown
-    bodyDepth: 42, // thrown body versus other enemies (was 27)
-    bodyRange: 74, // (was 55)
+    grabDepth: 54, // walking grab (was 22)
+    throwKeyDepth: 60, // I-key throw (was 22)
+    chainThrowDepth: 52, // down + third hit (was 29); equals playerDepth so anything the chain reached can be thrown
+    bodyDepth: 60, // thrown body versus other enemies (was 27)
+    bodyRange: 84, // (was 55)
     pickupRange: 62, // (was 45)
     pickupDepth: 38, // (was 26)
     chargeDepth: 30, // boss charge lane (was 35)
@@ -6010,8 +6735,8 @@ const STREET = {
       name: '02 / DEAD END ARCADE',
       jp: '廃ゲームセンター前',
       waves: [
-        ['knife', 'punk', 'punk'],
-        ['brute', 'knife', 'punk', 'punk']
+        ['sable', 'punk', 'raven'],
+        ['brute', 'viper', 'ghost', 'punk']
       ]
     },
     {
@@ -6020,8 +6745,8 @@ const STREET = {
       name: '03 / UNDERPASS',
       jp: '高架下',
       waves: [
-        ['punk', 'brute', 'knife', 'punk'],
-        ['knife', 'brute', 'knife']
+        ['surge', 'brute', 'sable', 'raven'],
+        ['viper', 'goliath', 'ghost']
       ]
     },
     {
@@ -6030,16 +6755,22 @@ const STREET = {
       name: '04 / BLACK MARKET',
       jp: '闇市倉庫',
       waves: [
-        ['brute', 'punk', 'knife', 'punk'],
-        ['knife', 'brute', 'punk', 'knife']
+        ['goliath', 'raven', 'sable', 'surge'],
+        ['viper', 'brute', 'surge', 'ghost']
       ]
     },
-    { left: 4960, right: 6200, name: '05 / THE IRON GATE', jp: '鉄門の処刑場', waves: [['boss', 'punk', 'knife']] }
+    { left: 4960, right: 6200, name: '05 / THE IRON GATE', jp: '鉄門の処刑場', waves: [['boss', 'raven', 'viper']] }
   ],
   enemies: {
     punk: { char: 1, name: 'RAZOR', hp: 122, speed: 2.45, damage: 26, hue: 138, score: 300 },
     knife: { char: 0, name: 'SHIV', hp: 106, speed: 2.9, damage: 32, hue: 175, score: 400 },
     brute: { char: 3, name: 'BRICK', hp: 232, speed: 1.55, damage: 43, hue: 310, score: 650 },
+    sable: { char: 2, name: 'SABLE', role: 'knife', hp: 106, speed: 2.9, damage: 32, hue: 145, score: 400 },
+    raven: { char: 4, name: 'RAVEN', role: 'punk', hp: 122, speed: 2.45, damage: 26, hue: 150, score: 300 },
+    viper: { char: 5, name: 'VIPER', role: 'knife', hp: 106, speed: 2.9, damage: 32, hue: 190, score: 400 },
+    ghost: { char: 0, name: 'GHOST', role: 'knife', hp: 106, speed: 2.9, damage: 32, hue: 265, score: 400 },
+    surge: { char: 1, name: 'SURGE', role: 'punk', hp: 122, speed: 2.45, damage: 26, hue: 285, score: 300 },
+    goliath: { char: 3, name: 'GOLIATH', role: 'brute', hp: 232, speed: 1.55, damage: 43, hue: 170, tint: [25, 135, 155], score: 650 },
     boss: { char: 3, name: 'IRON VOSS', hp: 1500, speed: 2.05, damage: 62, hue: 345, score: 6000 }
   },
   clamp: (v, a, b) => Math.max(a, Math.min(b, v)),
@@ -6063,6 +6794,20 @@ const STREET = {
     }
   }
 };
+
+
+// Stage-local coordinates preserve the established camera, combat lanes and input system.
+const FACTORY_AREAS = [
+ ['01 / DEAD FREIGHT','廃搬入口',[['surge','raven','goliath'],['ghost','sable','brute','punk']]],
+ ['02 / BROKEN ASSEMBLY','停止した製造ライン',[['viper','surge','raven','brute'],['goliath','ghost','sable','surge']]],
+ ['03 / BOILER HELL','灼熱のボイラー室',[['brute','viper','surge','sable'],['goliath','goliath','ghost']]],
+ ['04 / MUTATION WARD','変異実験区画',[['ghost','raven','viper','surge'],['goliath','sable','brute','viper']]],
+ ['05 / FURNACE HEART','炉心の怪物',[['boss','goliath','ghost']]]
+].map(([name,jp,waves],i)=>({left:i*1240,right:(i+1)*1240,name,jp,waves}));
+const STREET_STAGES = [
+ {title:'BLACK VEIN',jp:'法の消えた街。鉄門の首領、IRON VOSSを倒せ。',areas:STREET.areas,boss:'voss',bossName:'IRON VOSS',music:5},
+ {title:'INFERNAL WORKS',jp:'闇に沈む廃工場。炉心に潜む巨大な怪物を倒せ。',areas:FACTORY_AREAS,boss:'maw',bossName:'FURNACE MAW',music:3}
+];
 
 const StreetPalettes = {
   cache: new Map(),
@@ -6098,6 +6843,10 @@ const StreetPalettes = {
           b[i + 1] = a[i + 1];
           b[i + 2] = a[i + 2];
         }
+      if (spec.tint) for (let i=0;i<a.length;i+=4) {
+        if (a[i+3] && Math.max(a[i],a[i+1],a[i+2]) < 100)
+          for(let k=0;k<3;k++) b[i+k] = Math.round(a[i+k]*.65 + spec.tint[k]*.35);
+      }
       c.putImageData(changed, 0, 0);
       result.set(suffix, { atlas, ghost: source.ghost });
     }
@@ -6114,6 +6863,7 @@ class StreetActor extends Fighter {
     this.team = team;
     this.uid = id;
     this.kind = kind;
+    this.role = STREET.enemies[kind]?.role || kind;
     this.dead = false;
     this.cooldown = 45 + (id % 4) * 16;
     this.attack = null;
@@ -6149,6 +6899,8 @@ class StreetActor extends Fighter {
       });
       this.streetPalette = StreetPalettes.get(kind);
     }
+    this.hudHp = this.hp;
+    this.hudHold = 0;
   }
   pose(state) {
     this.state = state;
@@ -6156,7 +6908,7 @@ class StreetActor extends Fighter {
     this.attack = null;
   }
   speak(event, priority = 40) {
-    fighterVoice.play(this.data.id, event, this.team === 0 ? 0 : 1, priority);
+    if (!this.monster) fighterVoice.play(this.data.id, event, this.team === 0 ? 0 : 1, priority);
   }
   render(c) {
     c.save();
@@ -6181,11 +6933,14 @@ class StreetActor extends Fighter {
                 ? 'SP_1'
                 : this.state;
     const poseFrame = this.state === 'WINDUP' ? 4 : this.f;
-    if (!(this.team === 0 && BeltArt.drawDash(this, c)) &&
+    if (!BeltArt.drawBurn(this, c) &&
+        !(this.team === 0 && BeltArt.drawRising(this, c)) &&
+        !(this.team === 0 && BeltArt.drawDash(this, c)) &&
         !(this.kind === 'boss' && BeltArt.drawBoss(this, c, state, poseFrame)))
       this.drawBody(c, 0, 0, this.facing, this.state === 'STREET_DASH' ? 'DASH_F' :
         this.state === 'DASH_ATTACK' ? 'ATK_H' : state, poseFrame, false);
     c.filter = 'none';
+    if (this.team === 0) BeltArt.drawFlameDash(this, c);
     if (this.weapon > 0) {
       c.save();
       c.translate(this.facing * 34, -67);
@@ -6199,17 +6954,14 @@ class StreetActor extends Fighter {
       c.restore();
     }
     c.restore();
-    if (this.team === 1 && !this.dead && (this.flashTimer > 0 || this.kind === 'boss')) {
-      STREET.panel(c, this.x - 33, this.y - this.z - 178 * this.scale, 66, 5, '#251c25', null);
-      c.fillStyle = this.kind === 'boss' ? '#ff644f' : '#f7b35a';
-      c.fillRect(this.x - 33, this.y - this.z - 178 * this.scale, (66 * this.hp) / this.maxHp, 5);
-    }
-    if (this.state === 'WINDUP') STREET.text(c, '!', this.x, this.y - 194 * this.scale, 28, '#ff755c', 'center', '900');
+    if (this.state === 'WINDUP') STREET.text(c, '!', this.x, this.y - 223 * this.scale, 28, '#ff755c', 'center', '900');
   }
 }
 
 class NeonUprising {
-  constructor(owner, index) {
+  constructor(owner, index, stage = 0, carry = null) {
+    this.stageIndex = stage === 1 ? 1 : 0;
+    this.stage = STREET_STAGES[this.stageIndex];
     this.owner = owner;
     this.character = index;
     this.tick = 0;
@@ -6219,6 +6971,8 @@ class NeonUprising {
     this.wave = 0;
     this.player = new StreetActor(CHARACTERS[index], 230, 552, 0, 0);
     this.enemies = [];
+    this.hudTarget = null;
+    this.hudTargetUntil = 0;
     this.items = [];
     this.props = [];
     this.particles = [];
@@ -6229,7 +6983,7 @@ class NeonUprising {
     this.extended = false;
     this.camera = 0;
     this.backWall = 60;
-    this.gate = STREET.areas[0].right - 65;
+    this.gate = this.stage.areas[0].right - 65;
     this.locked = true;
     this.wait = 0;
     this.timer = 150 * 60;
@@ -6238,6 +6992,7 @@ class NeonUprising {
     this.grapple = null;
     this.intro = 150;
     this.bossIntro = 0;
+    this.finale = null;
     this.result = null;
     this.resultTick = 0;
     this.combo = 0;
@@ -6249,12 +7004,13 @@ class NeonUprising {
         { x: base + 960, y: 603, hp: 48, type: 'barrel', loot: i % 2 ? 'cash' : 'pipe', id: 'barrel' + i }
       );
     }
+    if (carry) { this.score=carry.score; this.kills=carry.kills; this.lives=carry.lives; this.extended=carry.extended; }
     this.spawnWave();
-    sound.playBGM(5);
+    sound.playBGM(this.stage.music);
     this.player.speak('select', 60);
   }
   areaData() {
-    return STREET.areas[this.area];
+    return this.stage.areas[this.area];
   }
   alive() {
     return this.enemies.filter((e) => !e.dead && e.hp > 0);
@@ -6275,14 +7031,20 @@ class NeonUprising {
       e.cooldown = 80 + i * 14;
     });
     if (types.includes('boss')) {
-      this.bossIntro = 150;
+      this.bossIntro = this.voiceFrames(this.stage.boss, 'intro', 4);
+      fighterVoice.stopAll();
+      fighterVoice.play(this.stage.boss, 'intro', 1, 150);
       sound.playBGM(6);
       sound.playCue('boss');
-      this.announce('IRON VOSS — 街を支配する鉄拳', '#ff7c65');
+      // Entrance name and threat are shown in the fixed dialogue panel.
     }
   }
   spawnEnemy(kind, x, y) {
     const e = new StreetActor(CHARACTERS[STREET.enemies[kind].char], x, y, 1, this.nextId++, kind);
+    if (kind === 'boss' && this.stageIndex === 1) {
+      e.monster=true; e.label=this.stage.bossName; e.scale=1.85;
+      e.hp=e.maxHp=e.hudHp=2300; e.damage=70; e.speed=1.7; e.value=10000;
+    }
     this.enemies.push(e);
     return e;
   }
@@ -6313,9 +7075,10 @@ class NeonUprising {
     if (this.result) {
       this.resultTick++;
       if (this.resultTick > 45 && STREET.press('Enter', 'KeyJ', 'KeyZ', 'Space'))
-        this.owner.startStreet(this.character);
+        this.owner.startStreet(this.character, this.result === 'clear' ? (this.stageIndex === 0 ? 1 : 0) : this.stageIndex, this.result === 'clear' && this.stageIndex === 0 ? this : null);
       return;
     }
+    if (this.finale) { this.updateFinale(); return; }
     this.tick++;
     if (this.shake > 0) this.shake *= 0.82;
     if (this.intro > 0) {
@@ -6355,6 +7118,7 @@ class NeonUprising {
     if (this.grapple) this.updateGrab();
     this.updateActor(this.player);
     for (const e of this.enemies) this.updateActor(e);
+    if (this.finale) return;
     this.enemies = this.enemies.filter((e) => !(e.dead && e.f > 70));
     if (!this.player.dead) this.playerInput();
     for (const e of this.enemies) if (!e.dead) this.enemyAI(e);
@@ -6392,6 +7156,10 @@ class NeonUprising {
     this.player.x = STREET.clamp(this.player.x, this.backWall, this.gate);
   }
   updateActor(a) {
+    // Delayed damage band is presentation state, advanced only by fixed updates (never draw).
+    if (a.hudHp < a.hp) a.hudHp = a.hp;
+    if (a.hudHold > 0) a.hudHold--;
+    else a.hudHp = Math.max(a.hp, a.hudHp - a.maxHp / 65);
     a.f++;
     a.animTick++;
     a.vy = a.z > 0 ? -a.vz : 0;
@@ -6401,13 +7169,15 @@ class NeonUprising {
     if (a.comboTTL > 0) a.comboTTL--;
     else a.chain = 0;
     if (a.queue > 0) a.queue--;
+    if (a.burnTicks > 0) a.burnTicks--;
     if (a.dead) return;
+    if (a === this.player && this.rising) { this.updateRising(); return; }
     if (['GRABBED', 'THROWING', 'HOLD'].includes(a.state)) return;
     if (a.state === 'HIT_AIR') {
       a.z += a.vz;
       a.vz -= 0.85;
       a.x += a.knockX;
-      a.knockX *= 0.98;
+      a.knockX *= a.throwFlight ? 0.99 : 0.98;
       a.x = STREET.clamp(a.x, this.backWall + 8, this.gate - 8);
       if (a.throwFlight)
         for (const other of this.enemies)
@@ -6429,7 +7199,7 @@ class NeonUprising {
         a.throwLanding = true;
         this.effects(a.x, a.y, '#ad9d87', 16);
         sound.playGrapple('impact');
-        a.speak('throw_impact', 86);
+        if (!this.finale) a.speak('throw_impact', 86);
         this.shake = 8;
         if (a.hp <= 0) this.kill(a);
       }
@@ -6504,23 +7274,44 @@ class NeonUprising {
     const special =
       STREET.press('KeyL', 'KeyC') || (attack && STREET.down('KeyK', 'KeyX')) || (jump && STREET.down('KeyJ', 'KeyZ'));
     const dashTap = this.readDashTap(dx);
+    const down = STREET.down('KeyS', 'ArrowDown'), up = STREET.down('KeyW', 'ArrowUp');
+    const wasDown = this.riseDown, upEdge = up && !this.riseUp;
+    this.riseDown = down; this.riseUp = up;
+    const eligible = p.z === 0 && !p.attack && (STREET.ready(p) || p.state === 'HOLD' || p.state === 'STREET_DASH');
+    const canBuffer = eligible || (p.z === 0 && p.attack && !p.attack.dash);
+    if (this.rising) return;
+    if (!canBuffer) { this.riseTap = this.riseBuffered = null; }
+    else {
+      // Count the window from the last down-held frame. Down may overlap the subsequent up press.
+      // Fresh simultaneous down/up is not a command; a preceding down frame is required.
+      if (down && !up) this.riseTap = this.tick;
+      if (upEdge && (wasDown || !down) && this.riseTap != null && this.tick - this.riseTap <= STREET.risingInput.window) {
+        this.riseBuffered = this.tick + STREET.risingInput.buffer;
+        this.riseTap = null;
+        p.queue = 0;
+      }
+      if (this.riseBuffered != null && this.tick > this.riseBuffered) this.riseBuffered = null;
+      if (eligible && this.riseBuffered != null) { this.startRising(); return; }
+    }
     if (special && p.z === 0 && !['KNOCKDOWN', 'WAKEUP', 'HIT_AIR', 'THROWING'].includes(p.state) && p.cooldown <= 0) {
       this.burst();
       return;
     }
     if (p.state === 'HOLD') {
-      if (thr || (attack && dx)) {
+      if ((thr || (attack && dx)) && this.grapple?.rest <= 0) {
         this.throwHeld(dx || p.facing);
         return;
       }
       if (attack && this.grapple?.rest <= 0) {
         const g = this.grapple;
+        if (g.knees >= 2) { this.finishHeld(); return; }
+        g.t = 0;
         g.knees++;
         g.rest = 20;
         this.hurtHeld(24 * p.power);
         p.speak('light' + (g.knees % 2), 45);
         sound.playHit('heavy');
-        if (g.knees >= 3 || g.victim.hp <= 0) this.throwHeld(p.facing);
+        if (g.victim.hp <= 0) this.finishHeld();
       }
       if (jump) this.breakGrab();
       return;
@@ -6567,7 +7358,7 @@ class NeonUprising {
       return;
     }
     if (thr) {
-      const e = this.grabbable(72, STREET.hit.throwKeyDepth);
+      const e = this.grabbable(104, STREET.hit.throwKeyDepth);
       if (e) {
         this.beginGrab(e);
         this.throwHeld(dx || p.facing);
@@ -6589,25 +7380,28 @@ class NeonUprising {
       p.y += dy * p.speed * 0.64 * norm;
       if (dx) p.facing = dx;
       p.state = 'WALK_F';
-      if (dx) {
-        const e = this.grabbable(40);
-        if (e && (e.x - p.x) * dx >= 0) this.beginGrab(e);
-      }
+      // Walking on either axis can grab the nearest eligible enemy ahead.
+      const e = this.grabbable(80, STREET.hit.grabDepth, p.facing);
+      if (e) this.beginGrab(e);
     } else if (p.state === 'WALK_F') p.pose('IDLE');
   }
-  grabbable(range, depth = STREET.hit.grabDepth) {
+  grabbable(range, depth = STREET.hit.grabDepth, facing = 0) {
     const p = this.player;
-    return this.alive().find(
+    return this.alive().filter(
       (e) =>
+        (!facing || (e.x - p.x) * facing >= -16) &&
         Math.abs(e.x - p.x) < range &&
         Math.abs(e.y - p.y) < depth &&
         e.z === 0 &&
         e.invuln === 0 &&
-        ['IDLE', 'WALK_F', 'HIT_STAND'].includes(e.state) &&
+        (['IDLE', 'WALK_F', 'HIT_STAND'].includes(e.state) || (e.kind !== 'boss' && e.state === 'WINDUP')) &&
         (e.kind !== 'boss' || e.cooldown > 22)
-    );
+    ).sort((a, b) => Math.hypot(a.x-p.x, a.y-p.y) - Math.hypot(b.x-p.x, b.y-p.y))[0];
   }
-  resetDashTap() {
+  resetDashTap(keepRise = false) {
+    if (!keepRise) this.riseTap = this.riseBuffered = null;
+    if (!keepRise) this.riseDown = STREET.down('KeyS', 'ArrowDown');
+    if (!keepRise) this.riseUp = STREET.down('KeyW', 'ArrowUp');
     this.dashTapKey = null;
     this.dashTapDir = 0;
     this.dashTapTick = -1000;
@@ -6615,18 +7409,18 @@ class NeonUprising {
   readDashTap(dx) {
     const p = this.player;
     if (!STREET.ready(p) || p.z > 0 || p.attack || this.tick - this.dashTapTick > STREET.dash.tapWindow) {
-      this.resetDashTap();
+      this.resetDashTap(true);
       if (!STREET.ready(p) || p.z > 0 || p.attack) return false;
     }
     if ((!dx && STREET.down('KeyA', 'ArrowLeft', 'KeyD', 'ArrowRight')) ||
-        (dx && this.dashTapDir && dx !== this.dashTapDir)) this.resetDashTap();
+        (dx && this.dashTapDir && dx !== this.dashTapDir)) this.resetDashTap(true);
     if (!dx) return false;
     // Input.just is a real keydown edge: the shared Input ignores OS repeat events.
     // Requiring the same physical key also prevents holding D then adding Right from counting as two taps.
     const key = (dx > 0 ? ['KeyD', 'ArrowRight'] : ['KeyA', 'ArrowLeft']).find(k => input.just[k]);
     if (!key) return false;
     if (key === this.dashTapKey && dx === p.facing) {
-      this.resetDashTap();
+      this.resetDashTap(true);
       return true;
     }
     this.dashTapKey = key;
@@ -6649,7 +7443,56 @@ class NeonUprising {
       knock: true, hit: new Set(), props: new Set()
     };
     p.speak('heavy1', 65);
-    sound.playSwing(true);
+    sound.playFlame('launch');
+  }
+  finishHeld() {
+    const g = this.grapple;
+    if (!g) return;
+    const p = this.player, e = g.victim;
+    this.grapple = null;
+    e.throwFrame = p.throwFrame = null;
+    e.pose('IDLE'); e.invuln = 0;
+    p.pose('ATK_H');
+    p.attack = { active: 99, end: 24, hit: new Set(), props: new Set() };
+    this.hurt(e, 72 * p.power, p.facing, true, 'grappleFinish');
+    p.speak('heavy1', 65); sound.playHit('heavy');
+    this.combo++; this.comboTime = 90;
+  }
+  startRising() {
+    const p = this.player, held = this.grapple?.victim;
+    if (held) {
+      this.grapple = null;
+      held.throwFrame = null; held.pose('IDLE'); held.invuln = 0;
+    }
+    p.throwFrame = null; p.pose('SP_2');
+    p.chain = 0; p.queue = 0; p.comboTTL = 0;
+    this.rising = { targets: [], held };
+    p.invuln = 46;
+    p.speak('sp2', 80); sound.playSwing(true);
+    this.resetDashTap();
+  }
+  updateRising() {
+    const p = this.player, r = this.rising;
+    p.z = p.f < 6 ? 0 : Math.max(0, Math.sin((p.f - 6) / 36 * Math.PI) * 110);
+    p.vy = p.f < 24 ? -6 : 6;
+    if ([6, 12, 18].includes(p.f)) {
+      if (p.f === 6) r.targets = this.alive().filter(e => e === r.held ||
+        (!e.invuln && !['GRABBED','HIT_AIR','KNOCKDOWN','WAKEUP','THROWING'].includes(e.state) &&
+        (e.x-p.x)*p.facing > -18 && (e.x-p.x)*p.facing < p.reach+24 && Math.abs(e.y-p.y)<STREET.hit.playerDepth && e.z<80));
+      for (const e of r.targets) {
+        if (e.dead) continue;
+        const final = p.f === 18;
+        e.pose('IDLE'); e.invuln = 0; e.throwFrame = null;
+        this.hurt(e, (final ? 52 : 24) * p.power, p.facing, final, 'rising');
+        if (!final) { e.pose('GRABBED'); e.throwFrame = 62; e.z = p.z + 15; e.knockX = 0; }
+        else { e.vz = 13; e.knockX = p.facing * 8; if (e.kind === 'boss' && e.hp <= 0) this.beginFinale(e); }
+        this.combo++; this.comboTime = 90;
+      }
+      if (r.targets.some(e => !e.dead)) sound.playRising(p.f / 6 - 1);
+      this.effects(p.x+p.facing*35, p.y-p.z-75, p.data.color, 16);
+      if (r.targets.length) { this.hitstop = 4; this.shake = 6; }
+    }
+    if (p.f >= 44) { p.z = p.vz = p.vy = 0; this.rising = null; p.pose('IDLE'); }
   }
   attack(a, air = false) {
     // Final Fight style chain: punch -> body blow -> uppercut. A stage is reachable only while the previous one connected
@@ -6658,7 +7501,7 @@ class NeonUprising {
     if (!air && stage === 3 && a.team === 0 && !a.weapon && STREET.down('KeyS', 'ArrowDown')) {
       // Holding down on the third hit converts the uppercut into an automatic throw of the enemy in front.
       // Same depth tolerance as the strikes that led here, so whatever the body blow reached can be thrown.
-      const e = this.grabbable(a.reach, STREET.hit.chainThrowDepth);
+      const e = this.grabbable(a.reach + 32, STREET.hit.chainThrowDepth);
       if (e && (e.x - a.x) * a.facing >= 0) {
         a.chain = 0;
         a.chainHit = false;
@@ -6678,7 +7521,7 @@ class NeonUprising {
       until: active + (air ? STREET.hit.airActive : STREET.hit.playerActive) - 1,
       end: air ? 22 : stage === 3 ? 29 : stage === 2 ? 15 : 18,
       damage: Math.round((air ? 48 : stage === 3 ? 68 : stage === 2 ? 38 : 30) * a.power + (a.weapon ? 32 : 0)),
-      reach: a.reach + (a.weapon ? 45 : 0),
+      reach: a.reach + (a.team === 0 && !air ? 32 : 0) + (a.weapon ? 45 : 0),
       depth: STREET.hit.playerDepth,
       rear: STREET.hit.playerRear,
       knock: stage === 3,
@@ -6737,7 +7580,8 @@ class NeonUprising {
     if (struck) {
       this.hitstop = atk.dash ? 7 : 4;
       this.shake = atk.dash ? 9 : atk.knock ? 5 : 2;
-      sound.playHit(a.weapon ? 'block' : atk.knock ? 'heavy' : 'light');
+      if (atk.dash) sound.playFlame('hit');
+      else sound.playHit(a.weapon ? 'block' : atk.knock ? 'heavy' : 'light');
       if (a.weapon > 0 && a.team === 0 && (!atk.dash || !atk.weaponSpent)) {
         a.weapon--;
         atk.weaponSpent = true;
@@ -6748,8 +7592,10 @@ class NeonUprising {
     if (a.dead || a.invuln > 0 || ['GRABBED', 'THROWING', 'KNOCKDOWN', 'WAKEUP', 'HIT_AIR'].includes(a.state))
       return false;
     if (a.team === 0 && a.state === 'HOLD') this.breakGrab();
+    this.trackHudHit(a);
     a.hp = Math.max(0, a.hp - Math.round(damage));
     a.flashTimer = 100;
+    if (source === 'dash' && a.team === 1) { a.burnTicks = 72; a.burnDirection = dir; }
     this.effects(a.x, a.y - a.z - 85, a.team === 0 ? '#ffca9a' : '#fff0bc');
     if (a.team === 0) {
       this.resetDashTap();
@@ -6758,7 +7604,7 @@ class NeonUprising {
       a.weapon = 0;
       a.invuln = 36;
     }
-    a.speak(a.hp <= 0 ? 'ko' : 'hurt' + (a.uid % 2), a.hp <= 0 ? 110 : 45);
+    if (!(a.kind === 'boss' && a.hp <= 0)) a.speak(a.hp <= 0 ? 'ko' : 'hurt' + (a.uid % 2), a.hp <= 0 ? 110 : 45);
     const armor = a.kind === 'boss' && ['CHARGE', 'SLAM'].includes(a.state) && ['strike', 'upper'].includes(source);
     // Facing turns toward the attacker only when the hit actually staggers. An armored boss keeps its committed lane.
     if (a.hp <= 0 || (!armor && knock)) {
@@ -6769,6 +7615,7 @@ class NeonUprising {
       a.vz = source === 'upper' ? 11 : 8;
       a.knockX = dir * (source === 'upper' ? 5 : 7);
       a.throwFlight = source === 'body';
+      if (a.throwFlight) { a.facing = dir; a.vz = 6; a.knockX = dir * 13; a.jumpHits.clear(); }
       a.throwLanding = true;
     } else if (!armor) {
       a.facing = -dir;
@@ -6776,11 +7623,13 @@ class NeonUprising {
       a.knockX = dir * 3;
     }
     if (a.team === 1 && damage > 0) this.addScore(Math.min(100, Math.round(damage)));
+    if (a.kind === 'boss' && a.hp <= 0 && source !== 'rising') this.beginFinale(a);
     return true;
   }
   beginGrab(e) {
     const p = this.player;
     if (this.grapple) return;
+    this.trackHudTarget(e);
     p.pose('HOLD');
     p.throwFrame = 50;
     e.pose('GRABBED');
@@ -6804,6 +7653,7 @@ class NeonUprising {
   hurtHeld(n) {
     const g = this.grapple;
     if (!g) return;
+    this.trackHudHit(g.victim);
     g.victim.hp = Math.max(0, g.victim.hp - Math.round(n));
     g.victim.flashTimer = 80;
     this.effects(g.victim.x, g.victim.y - 85, '#ffe9af', 8);
@@ -6831,32 +7681,34 @@ class NeonUprising {
       e.facing = -p.facing;
       p.throwFrame = g.rest > 10 ? 52 : 50;
       e.throwFrame = g.rest > 10 ? 61 : 60;
-      if (g.t >= 100) this.throwHeld(p.facing);
+      if (g.t >= 180) this.breakGrab();
       return;
     }
     const sample = ThrowMotion.sample(g.t / g.duration);
     p.throwFrame = sample.attacker;
     e.throwFrame = sample.victim;
-    e.x = p.x + g.dir * sample.dx;
+    e.x = p.x + g.dir * (sample.dx + 35 * (g.t / g.duration));
     e.y = p.y + 1;
-    e.z = -sample.dy;
+    e.z = Math.max(0, -sample.dy * 0.42);
     e.facing = -g.dir;
     if (g.t >= g.duration) {
       this.grapple = null;
       p.pose('THROW_RECOVER');
+      this.trackHudHit(e);
       e.hp = Math.max(0, e.hp - Math.round(92 * p.power));
       e.pose('HIT_AIR');
       e.throwFlight = true;
       e.throwLanding = true;
       e.facing = g.dir;
-      e.vz = 13;
-      e.knockX = g.dir * 11;
+      e.vz = 6.5;
+      e.knockX = g.dir * 18;
       e.jumpHits.clear();
       e.speak('thrown', 84);
       p.speak('throw_release', 82);
       sound.playGrapple('release');
       this.addScore(80);
       this.shake = 5;
+      if (e.kind === 'boss' && e.hp <= 0) this.beginFinale(e);
     }
   }
   breakGrab() {
@@ -6929,9 +7781,9 @@ class NeonUprising {
             active: 5,
             end: 32,
             damage: e.damage,
-            reach: e.kind === 'knife' ? 115 : 95,
+            reach: e.role === 'knife' ? 115 : 95,
             depth: STREET.hit.enemyDepth,
-            knock: e.kind === 'brute',
+            knock: e.role === 'brute',
             hit: new Set()
           };
         }
@@ -6956,7 +7808,7 @@ class NeonUprising {
         this.effects(e.x, e.y, '#ffb862', 32);
         this.shake = 14;
         sound.playGrapple('impact');
-        if (Math.abs(p.x - e.x) < STREET.hit.slamRange && Math.abs(p.y - e.y) < STREET.hit.slamDepth && p.z < 48)
+        if (Math.abs(p.x - e.x) < (e.monster ? 210 : STREET.hit.slamRange) && Math.abs(p.y - e.y) < (e.monster ? 82 : STREET.hit.slamDepth) && p.z < 48)
           this.hurt(p, e.damage, e.facing, true, 'boss');
       }
       if (e.f >= 53) {
@@ -6968,7 +7820,7 @@ class NeonUprising {
     if (!STREET.ready(e)) return;
     if (e.kind === 'boss' && !e.enraged && e.hp < e.maxHp * 0.45) {
       e.enraged = true;
-      this.announce('VOSS IS ENRAGED', '#ff6c58');
+      this.announce(this.stage.bossName + ' IS ENRAGED', '#ff6c58');
       this.spawnEnemy('punk', Math.max(this.backWall + 50, e.x - 200), 465);
       this.spawnEnemy('knife', Math.min(this.gate - 50, e.x + 180), 600);
     }
@@ -6985,7 +7837,7 @@ class NeonUprising {
       }
       if (Math.abs(dx) < 85 && Math.abs(dy) < 22 && p.z < 55) {
         e.plan = 'punch';
-        e.windup = e.kind === 'brute' ? 35 : 24;
+        e.windup = e.role === 'brute' ? 35 : 24;
         e.pose('WINDUP');
         return;
       }
@@ -7016,6 +7868,7 @@ class NeonUprising {
       }
   }
   kill(a) {
+    if (a === this.hudTarget) this.hudTargetUntil = this.tick + 90;
     a.dead = true;
     a.pose('DEAD');
     a.z = 0;
@@ -7023,7 +7876,7 @@ class NeonUprising {
     if (a.team === 1) {
       this.kills++;
       this.addScore(a.value);
-      if (a.kind === 'brute') this.items.push({ x: a.x, y: a.y, type: 'cash', age: 0 });
+      if (a.role === 'brute') this.items.push({ x: a.x, y: a.y, type: 'cash', age: 0 });
     } else {
       this.lives--;
       this.combo = 0;
@@ -7050,14 +7903,55 @@ class NeonUprising {
     this.timer = Math.max(this.timer, 90 * 60);
     this.announce('GET UP!  残り ' + this.lives, '#83e7dc');
   }
+  voiceFrames(id, event, fallback = 3) {
+    const seconds = fighterVoice.buffers.get(id + '-' + event)?.duration || fallback;
+    return Math.ceil((seconds + .55) * 60);
+  }
+  beginFinale(boss) {
+    if (this.finale || this.result) return;
+    this.finale = { phase: 'slow', frame: 0, boss, minimum: this.voiceFrames(this.stage.boss, 'defeat', 2) };
+    this.hitstop = 0; this.player.queue = 0; this.player.attack = null;
+    this.popups = [];
+    this.resetDashTap(); input.keys = {}; input.just = {};
+    fighterVoice.stopAll(); fighterVoice.play(this.stage.boss, 'defeat', 1, 150);
+    sound.playHit('heavy'); this.shake = 12;
+  }
+  updateFinale() {
+    const f = this.finale; f.frame++;
+    // 1/4-speed world motion; voice playback stays at its original pitch and duration.
+    if (f.phase === 'slow') {
+      if (f.frame % 4 === 0) {
+        this.updateActor(f.boss);
+        this.shake *= .82;
+        for (const p of this.particles) { p.x += p.vx; p.y += p.vy; p.life--; }
+        this.particles = this.particles.filter(p => p.life > 0);
+      }
+      if (f.frame >= Math.max(150, f.minimum) && f.boss.dead) {
+        f.phase = 'victory'; f.frame = 0;
+        this.player.z = this.player.vz = 0; this.player.pose('VICTORY'); this.shake = 0;
+        fighterVoice.stopAll(); this.player.speak('finish', 150);
+        f.duration = this.voiceFrames(this.player.data.id, 'finish', 4);
+      }
+    } else {
+      this.updateActor(f.boss); // Let fire, the damage band and the defeated body fade during the final line.
+      if (f.frame >= f.duration) this.finish(true);
+    }
+  }
+  drawDialogue(c, name, line, color) {
+    this.hudPanel(c, 230, 530, 820, 96, color);
+    STREET.text(c, name, 254, 558, 15, color, 'left', '900');
+    STREET.text(c, line, 640, 597, 23, '#fff0d9', 'center', '800');
+  }
   finish(clear) {
+    const cinematicWin = clear && this.finale?.phase === 'victory';
+    this.finale = null;
     this.result = clear ? 'clear' : 'over';
     this.resultTick = 0;
     fighterVoice.stopAll();
     if (clear) {
       this.addScore(this.lives * 1000 + Math.ceil(this.timer / 60) * 10);
       this.player.pose('VICTORY');
-      this.player.speak('win', 100);
+      if (!cinematicWin) this.player.speak('win', 100);
       sound.playBGM(7);
       sound.playCue('clear');
     } else {
@@ -7085,7 +7979,7 @@ class NeonUprising {
           c.strokeRect(x, e.y - 33, 520, 66);
         } else {
           c.beginPath();
-          c.ellipse(e.x, e.y, 155, 78, 0, 0, Math.PI * 2);
+          c.ellipse(e.x, e.y, e.monster ? 215 : 155, e.monster ? 86 : 78, 0, 0, Math.PI * 2);
           c.fill();
           c.stroke();
         }
@@ -7116,69 +8010,101 @@ class NeonUprising {
       STREET.text(c, 'GO  ➜', Math.min(this.gate - 40, this.camera + 1150), 360, 40, '#ffd08b', 'center', '900');
     c.restore();
     this.drawHUD(c);
-    if (this.intro > 0) this.overlay(c, 'STAGE 01', 'BLACK VEIN', '法の消えた街。鉄門の首領、IRON VOSSを倒せ。');
-    if (this.bossIntro > 0)
-      this.overlay(c, 'WARNING / AREA BOSS', 'IRON VOSS', '赤い予告を見て、上下移動やジャンプで回避。');
+    if (this.intro > 0) this.overlay(c, 'STAGE 0' + (this.stageIndex+1), this.stage.title, this.stage.jp);
+    if (this.bossIntro > 0) {
+      STREET.text(c, 'WARNING / ' + this.stage.bossName, W/2, 245, 30, '#ff9876', 'center', '900');
+      this.drawDialogue(c, this.stage.bossName, VOICE_PROFILES[this.stage.boss].lines.intro, '#ff9876');
+    }
+    if (this.finale) {
+      const f = this.finale;
+      if (f.phase === 'slow') {
+        if (f.frame < 24) { c.fillStyle = 'rgba(255,228,180,' + (.22*(1-f.frame/24)) + ')'; c.fillRect(0,0,W,641); }
+        STREET.text(c, 'FINAL IMPACT', W/2, 245, 32, '#ffe3ad', 'center', '900');
+      } else this.drawDialogue(c, this.player.data.name, VOICE_PROFILES[this.player.data.id].lines.finish, '#9debd4');
+    }
     if (this.result) this.drawResult(c);
     if (this.owner.paused) this.overlay(c, 'PAUSED', 'TAKE A BREATH', 'ESC: 再開    Q: ゲーム選択に戻る');
   }
-  drawHUD(c) {
-    const p = this.player;
-    STREET.panel(c, 24, 20, 435, 91, 'rgba(6,15,24,.92)', '#41606c');
-    STREET.text(c, p.data.name, 42, 46, 20, p.data.color, 'left', '900');
-    STREET.text(c, 'LIFE × ' + this.lives, 437, 44, 15, '#f4d6a2', 'right');
-    STREET.panel(c, 42, 57, 397, 19, '#33212a', null);
-    c.fillStyle = p.data.color;
-    c.fillRect(44, 59, (393 * p.hp) / p.maxHp, 15);
-    STREET.text(c, 'SCORE  ' + String(this.score).padStart(7, '0'), 42, 97, 15, '#dce8ef');
-    STREET.text(c, p.weapon ? 'PIPE  ' + p.weapon + '/8' : '1UP  20,000', 437, 97, 12, '#9fb3bc', 'right');
-    STREET.text(c, 'NEON UPRISING', W / 2, 35, 15, '#9bb6c3', 'center', '800');
-    STREET.text(
-      c,
-      String(Math.max(0, Math.ceil(this.timer / 60))).padStart(3, '0'),
-      W / 2,
-      78,
-      34,
-      this.timer < 1800 ? '#ff7761' : '#f6d5a3',
-      'center',
-      '900'
-    );
-    STREET.panel(c, 900, 20, 356, 91, 'rgba(6,15,24,.92)', '#41606c');
-    STREET.text(c, this.areaData().name, 919, 45, 17, '#f5c07f');
-    STREET.text(
-      c,
-      this.areaData().jp + '  /  ' + (this.locked ? '敵を一掃せよ' : '先へ進め →'),
-      919,
-      69,
-      14,
-      '#c6d2da'
-    );
-    STREET.text(
-      c,
-      'WAVE ' +
-        Math.min(this.wave + 1, this.areaData().waves.length) +
-        ' / ' +
-        this.areaData().waves.length +
-        '   ENEMIES ' +
-        this.alive().length,
-      919,
-      96,
-      12,
-      '#9eb8c8'
-    );
-    const boss = this.alive().find((e) => e.kind === 'boss');
-    if (boss) {
-      STREET.panel(c, 365, 129, 550, 25, '#331d2a', '#ae6255');
-      c.fillStyle = '#ec7452';
-      c.fillRect(368, 132, (544 * boss.hp) / boss.maxHp, 19);
-      STREET.text(c, 'IRON VOSS' + (boss.enraged ? ' / ENRAGED' : ''), W / 2, 123, 15, '#ffc393', 'center', '900');
+  trackHudTarget(a) {
+    if (a.team !== 1) return;
+    this.hudTarget = a;
+    this.hudTargetUntil = this.tick + 240;
+  }
+  trackHudHit(a) {
+    a.hudHp = Math.max(a.hudHp ?? a.hp, a.hp);
+    a.hudHold = 24;
+    this.trackHudTarget(a);
+  }
+  hudEnemy() {
+    if (this.grapple) return this.grapple.victim;
+    if (this.hudTarget && this.tick <= this.hudTargetUntil) return this.hudTarget;
+    return this.alive().find(e => e.kind === 'boss') || null;
+  }
+  drawHealth(c, a, x, y, width, height, color) {
+    const fraction = value => STREET.clamp(Number.isFinite(value / a.maxHp) ? value / a.maxHp : 0, 0, 1);
+    const hp = fraction(a.hp), trail = Math.max(hp, fraction(a.hudHp ?? a.hp));
+    c.save();
+    // Inset steel surround, recessed dark track, warm damage memory, gloss and fine subdivisions.
+    const rim = c.createLinearGradient(0, y-3, 0, y+height+3);
+    rim.addColorStop(0, '#c4d3d9'); rim.addColorStop(.4, '#526b7b'); rim.addColorStop(1, '#213645');
+    STREET.panel(c, x-3, y-3, width+6, height+6, rim, '#0a111c');
+    STREET.panel(c, x, y, width, height, '#111823', '#030811');
+    const inner = width-4, h = height-4, yy = y+2;
+    c.fillStyle = '#efb876';c.fillRect(x+2, yy, inner*trail, h);
+    if (hp > 0) {
+      const fill = c.createLinearGradient(0, yy, 0, yy+h);
+      fill.addColorStop(0, hp < .25 ? '#ffb590' : '#f4ffe6');
+      fill.addColorStop(.22, hp < .25 ? '#ff765d' : color);
+      fill.addColorStop(1, hp < .25 ? '#af283f' : '#24766f');
+      c.fillStyle = fill;c.fillRect(x+2, yy, inner*hp, h);
+      c.fillStyle = 'rgba(255,255,255,.5)';c.fillRect(x+2, yy, inner*hp, 1);
     }
-    if (this.combo > 1) STREET.text(c, this.combo + ' HITS', 42, 153, 29, '#ffd497', 'left', '900');
+    c.fillStyle = 'rgba(7,17,29,.45)';
+    for(let i=1;i<20;i++)c.fillRect(Math.round(x+2+inner*i/20),yy,1,h);
+    c.restore();
+  }
+  hudPanel(c,x,y,w,h,accent) {
+    c.save();
+    const fill=c.createLinearGradient(0,y,0,y+h);fill.addColorStop(0,'rgba(22,38,54,.97)');fill.addColorStop(1,'rgba(5,13,24,.94)');
+    c.beginPath();c.moveTo(x+10,y);c.lineTo(x+w,y);c.lineTo(x+w,y+h-10);c.lineTo(x+w-10,y+h);c.lineTo(x,y+h);c.lineTo(x,y+10);c.closePath();
+    c.fillStyle=fill;c.fill();c.strokeStyle='#4c6274';c.lineWidth=1;c.stroke();
+    c.fillStyle=accent;c.fillRect(x+14,y+1,40,2);
+    c.fillStyle='rgba(203,226,243,.13)';c.fillRect(x+14,y+5,w-28,1);
+    c.restore();
+  }
+  drawHUD(c) {
+    const p = this.player, enemy = this.hudEnemy();
+    c.save();
+    this.hudPanel(c,24,20,440,184,'#7cedd4');
+    STREET.text(c,'1P',42,48,13,'#83aab8','left','900');
+    STREET.text(c,p.data.name,76,49,23,'#f1f7fa','left','900');
+    STREET.text(c,'LIFE  × '+this.lives,446,47,14,'#f3d19a','right','800');
+    this.drawHealth(c,p,44,62,400,22,'#83e8b9');
+    STREET.text(c,'SCORE  '+String(this.score).padStart(7,'0'),42,109,13,'#cddfea');
+    STREET.text(c,p.weapon?'PIPE  '+p.weapon+'/8':'1UP  20,000',446,109,12,'#8fa6b8','right');
+    c.fillStyle='#304454';c.fillRect(42,119,404,1);
+    STREET.text(c,enemy ? enemy.label : 'NO TARGET',44,145,17,enemy?'#ffe2b4':'#607888','left','900');
+    const status=enemy ? enemy.hp<=0?'K.O.':enemy.burnTicks>0?'BURN':enemy.kind==='boss'?(enemy.enraged?'ENRAGED':'BOSS'):'ENEMY' : '—';
+    STREET.text(c,status,444,144,11,enemy?.burnTicks>0?'#ff9a57':'#b0a28c','right','800');
+    this.drawHealth(c,enemy || {hp:0,maxHp:1,hudHp:0},44,156,400,17,enemy?.kind==='boss'?'#ffb578':'#f0d788');
+    STREET.text(c,enemy ? Math.max(0,Math.ceil(enemy.hp))+' / '+enemy.maxHp : '攻撃・掴みで相手を表示',444,192,11,'#8fa6b8','right');
+    this.hudPanel(c,W/2-61,20,122,94,'#f4d29a');
+    STREET.text(c,'TIME',W/2,44,11,'#a9bdca','center','800');
+    STREET.text(c,String(Math.max(0,Math.ceil(this.timer/60))).padStart(3,'0'),W/2,85,36,this.timer<1800?'#ff8069':'#fff0cd','center','900');
+    STREET.text(c,'NEON UPRISING',W/2,132,11,'#adc0ce','center','800');
+    this.hudPanel(c,900,20,356,108,'#e4ad78');
+    STREET.text(c,this.areaData().name,920,49,18,'#ffe0af','left','800');
+    STREET.text(c,this.areaData().jp+'  /  '+(this.locked?'敵を一掃せよ':'先へ進め →'),920,76,14,'#c6d2da');
+    c.fillStyle='#304454';c.fillRect(920,87,316,1);
+    STREET.text(c,'WAVE '+Math.min(this.wave+1,this.areaData().waves.length)+' / '+this.areaData().waves.length,920,111,12,'#91adbf');
+    STREET.text(c,'ENEMIES  '+this.alive().length,1236,111,12,'#d8c6a7','right');
+    if(this.combo>1)STREET.text(c,this.combo+' HITS',W/2,174,29,'#ffe2a8','center','900');
+    c.restore();
     c.fillStyle = 'rgba(5,12,20,.87)';
     c.fillRect(0, 641, W, 79);
     STREET.text(
       c,
-      '移動 WASD / 矢印    前×2：ダッシュ → J / Z：ダッシュ攻撃    ジャンプ K / X / SPACE    緊急技 L / C',
+      '移動 WASD / 矢印    前×2：ダッシュ → J / Z：炎ダッシュ攻撃    ↓→↑：3段上昇技    ジャンプ K / X / SPACE    緊急技 L / C',
       W / 2,
       654,
       13,
@@ -7187,7 +8113,7 @@ class NeonUprising {
     );
     STREET.text(
       c,
-      'パンチ→ボディ→アッパー（命中で続く）    ↓を入れたまま3発目=投げ    接近で掴む→J追撃 / 方向＋J・Iで投げ    H: 詳しい操作',
+      'パンチ→ボディ→アッパー（命中で続く）    ↓を入れたまま3発目=投げ    ↓↑:3段上昇 / 掴みJ×2→Jで強打・Iで投げ    H: 詳しい操作',
       W / 2,
       672,
       12,
@@ -7209,7 +8135,7 @@ class NeonUprising {
     const clear = this.result === 'clear';
     STREET.text(
       c,
-      clear ? 'BLACK VEIN / LIBERATED' : 'BLACK VEIN / FALLEN',
+      this.stage.title + (clear ? ' / LIBERATED' : ' / FALLEN'),
       W / 2,
       150,
       18,
@@ -7219,7 +8145,7 @@ class NeonUprising {
     );
     STREET.text(
       c,
-      clear ? 'STAGE 1 CLEAR' : 'GAME OVER',
+      clear ? 'STAGE ' + (this.stageIndex+1) + ' CLEAR' : 'GAME OVER',
       W / 2,
       244,
       64,
@@ -7229,7 +8155,7 @@ class NeonUprising {
     );
     STREET.text(
       c,
-      clear ? '犯罪都市の鉄門は、あなたの手で開かれた。' : 'もう一度、この街に挑む。',
+      clear ? (this.stageIndex === 0 ? '鉄門の先に、闇に沈む廃工場が待ち受ける。' : '炉心の怪物は倒れた。街に夜明けが訪れる。') : 'もう一度、この戦いに挑む。',
       W / 2,
       300,
       20,
@@ -7245,8 +8171,8 @@ class NeonUprising {
       '#f4d1a1',
       'center'
     );
-    STREET.text(c, 'Enter: 同じキャラクターで再挑戦     ESC: ゲーム選択', W / 2, 499, 18, '#a8beca', 'center');
-    if (clear) STREET.text(c, 'ステージ1 完結', W / 2, 551, 14, '#8497a6', 'center');
+    STREET.text(c, (clear && this.stageIndex === 0 ? 'Enter: ステージ2へ進む' : clear ? 'Enter: ステージ1から再挑戦' : 'Enter: このステージを再挑戦') + '     ESC: ゲーム選択', W / 2, 499, 18, '#a8beca', 'center');
+    if (clear) STREET.text(c, this.stageIndex === 0 ? '残機・スコアを引き継ぎ、体力を回復して次へ' : 'ALL STAGES CLEAR', W / 2, 551, 14, '#8497a6', 'center');
   }
   drawProp(c, p) {
     if (BeltArt.drawProp(c, p)) return;
@@ -7570,12 +8496,12 @@ Game.prototype.streetCard = function (i) {
     pitch = Math.min(200, Math.floor((W - 80) / n));
   return { x: 42 + i * pitch, y: 200, w: pitch - 12, h: 260 };
 };
-Game.prototype.startStreet = function (index) {
+Game.prototype.startStreet = function (index, stage = 0, carry = null) {
   fighterVoice.stopAll();
   this.paused = false;
   this.scene = 'STREET';
   this.p1Char = index;
-  this.street = new NeonUprising(this, index);
+  this.street = new NeonUprising(this, index, stage, carry);
   input.clear();
 };
 Game.prototype.togglePause = function () {
@@ -7586,6 +8512,13 @@ Game.prototype.togglePause = function () {
     if (this.paused) {
       fighterVoice.stopAll();
       input.keys = {};
+    } else if (this.street.bossIntro > 0) {
+      this.street.bossIntro = this.street.voiceFrames(this.street.stage.boss, 'intro', 4);
+      fighterVoice.play(this.street.stage.boss, 'intro', 1, 150);
+    } else if (this.street.finale) {
+      const f = this.street.finale; f.frame = 0;
+      if (f.phase === 'slow') fighterVoice.play(this.street.stage.boss, 'defeat', 1, 150);
+      else this.street.player.speak('finish', 150);
     }
     sound.playUI('cursor');
   } else classicPause.call(this);
@@ -7699,7 +8632,7 @@ Game.prototype.draw = function () {
       STREET.text(ctx, i ? '犯罪都市を、拳で切り拓け。' : '一対一、限界を超える決闘。', x + 24, 503, 17, '#bdd0da');
       STREET.text(
         ctx,
-        i ? '1 PLAYER  /  STAGE 01: BLACK VEIN' : 'ARCADE  /  VS CPU  /  VS 2P  /  TRAINING',
+        i ? '1 PLAYER  /  2 STAGES: CITY → FACTORY' : 'ARCADE  /  VS CPU  /  VS 2P  /  TRAINING',
         x + 24,
         540,
         12,
@@ -7733,7 +8666,7 @@ Game.prototype.draw = function () {
     STREET.text(ctx, 'NEON UPRISING', 44, 65, 18, '#efb980', 'left', '900');
     STREET.text(ctx, 'VERSION ' + STREET.version, W - 44, 65, 13, '#7c93a3', 'right', '800');
     STREET.text(ctx, 'CHOOSE YOUR REBEL', 44, 120, 44, '#efeee8', 'left', '900');
-    STREET.text(ctx, 'STAGE 01 / BLACK VEIN — 荒くれ者の巣くう犯罪都市へ', 44, 163, 17, '#9bb7c7');
+    STREET.text(ctx, 'BLACK VEIN → INFERNAL WORKS — 犯罪都市から闇の廃工場へ', 44, 163, 17, '#9bb7c7');
     for (let i = 0; i < CHARACTERS.length; i++) {
       const d = CHARACTERS[i],
         r = this.streetCard(i),
@@ -7813,7 +8746,8 @@ function toggleModal(force) {
 /** 最初のユーザー操作で現在のシーンに合った BGM を開始する（自動再生制限対策） */
 function ensureBGM() {
   if (!sound.ctx || sound.currentTrack >= 0) return;
-  sound.playBGM(game.scene === 'STREET' ? (game.street?.area===4?6:5) : game.scene === 'BATTLE' ? STAGES[game.stageIdx].bgm : 0);
+  // [FIX-128] 街モードの曲はステージごとに違う（STREET_STAGES[].music。ステージ 2 は 3）。以前は 5 の決め打ちだった。
+  sound.playBGM(game.scene === 'STREET' ? (game.street?.area===4 ? 6 : game.street?.stage?.music ?? 5) : game.scene === 'BATTLE' ? STAGES[game.stageIdx].bgm : 0);
 }
 
 // START_GATE_BEGIN

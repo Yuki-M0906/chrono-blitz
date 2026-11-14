@@ -12,8 +12,13 @@ new vm.Script(code);
 // v2.6.0: assets live in data/*.js packs, the HTML holds code only.
 const packed = require('./packs.cjs').readPacks().all;
 assert.equal((code.match(/data:(image|audio)\//g) || []).length, 0, 'HTML must not embed assets any more');
-assert.equal((packed.match(/data:image\/png;base64,/g) || []).length, 37);
-assert.equal((packed.match(/data:audio\/wav;base64,/g) || []).length, 126);
+// v3.6.1: expected counts follow the manifests (they were literals 37 / 126 and went stale at v3.4.2 / v3.5.0).
+const beltManifest = JSON.parse(fs.readFileSync(path.join(root, 'assets/belt/art/manifest.json'), 'utf8'));
+const voiceManifest = JSON.parse(fs.readFileSync(path.join(root, 'assets/voices/manifest.json'), 'utf8'));
+const PNG_TOTAL = 18 + 4 + Object.keys(beltManifest.assets).length; // 18 fighter atlases + 4 versus backgrounds + belt art
+const VOICE_TOTAL = Object.values(voiceManifest.profiles).reduce((n, p) => n + Object.keys(p.lines).length, 0);
+assert.equal((packed.match(/data:image\/png;base64,/g) || []).length, PNG_TOTAL);
+assert.equal((packed.match(/data:audio\/wav;base64,/g) || []).length, VOICE_TOTAL);
 const { chromium } = require('playwright');
 let browser;
 
@@ -114,13 +119,13 @@ let browser;
     let nonempty=0;
     for(const sheet of FighterSprites.sheets.values()) {
       const c=sheet.atlas.getContext('2d');
-      for(let n=0;n<24;n++) {const p=c.getImageData(n%6*160,Math.floor(n/6)*160,160,160).data;let visible=0;for(let i=3;i<p.length;i+=4)if(p[i]>32)visible++;if(visible>100)nonempty++;}
+      for(let n=0;n<24;n++) {const p=c.getImageData(n%6*FighterSprites.cell,Math.floor(n/6)*FighterSprites.cell,FighterSprites.cell,FighterSprites.cell).data;let visible=0;for(let i=3;i<p.length;i+=4)if(p[i]>32)visible++;if(visible>100)nonempty++;}
     }
     return {characters:CHARACTERS.length,stages:STAGES.length,results,coverage,nonempty};
   });
   assert.equal(additions.characters,6);assert.equal(additions.stages,4);assert.equal(additions.nonempty,432);
   for(const r of additions.results){assert.equal(r.recovered,true,JSON.stringify(r));assert.ok(r.special==='SP_1'?r.emitted>0:r.active>0,JSON.stringify(r));}
-  for(const c of Object.values(additions.coverage))assert.deepEqual(c,{idle:6,walk:8});
+  for(const c of Object.values(additions.coverage))assert.deepEqual(c,{idle:1,walk:8}); // v3.4.4 [FIX-113]: IDLE is one stable frame
 
   await current.evaluate(() => {
     game.p1Char=4; game.p2Char=5; game.toSelect(2); game.update(); game.draw();
@@ -153,7 +158,7 @@ let browser;
         c.fillStyle = '#a9bfd3'; c.font = '11px sans-serif';
         c.fillText(f.data.name + ' / ' + i, x + 5, y + 13);
         c.imageSmoothingEnabled = false;
-        c.drawImage(sheet, (local % 6) * 160, Math.floor(local / 6) * 160, 160, 160, x, y + 16, 128, 128);
+        c.drawImage(sheet, (local % 6) * FighterSprites.cell, Math.floor(local / 6) * FighterSprites.cell, FighterSprites.cell, FighterSprites.cell, x, y + 16, 128, 128);
       }
     }
     window.auditImage = board.toDataURL();
@@ -228,7 +233,7 @@ let browser;
     return {count:fighterVoice.buffers.size,errors:fighterVoice.errors,
       nonSilent:[...fighterVoice.buffers.values()].filter(b=>b.getChannelData(0).some(v=>Math.abs(v)>.005)).length};
   });
-  assert.deepEqual(decoded,{count:126,errors:[],nonSilent:126});
+  assert.deepEqual(decoded,{count:VOICE_TOTAL,errors:[],nonSilent:VOICE_TOTAL});
   for(let id=0;id<6;id++) {
     await voicePage.evaluate(id=>{game.mode=3;game.p1Char=id;game.p2Char=(id+1)%6;game.startMatch();game.f1.setState('SP_1');},id);
     await voicePage.waitForFunction(id=>fighterVoice.channels.get(0)?.key===CHARACTERS[id].id+'-sp1',id,{polling:20});

@@ -13,3 +13,21 @@ assets/voices/backup-*/
 .claude/
 Thumbs.db
 .DS_Store
+
+# Python のキャッシュ
+tools/__pycache__/
+
+# ---- v3.6.1: 公開対象の整理（[REPO-136]）。どれも手元には残す。ゲームの実行にもビルドにも不要 ----
+# 検証の画面記録・試聴音声（検証スクリプトを実行すれば再生成される。レポートの JSON は管理対象のまま）
+verification/**/*.png
+verification/**/*.wav
+# 現行ビルドが使わない旧版の原画（v2.8.1 のコミット 32b446b までの履歴には含まれる）
+assets/sprites/*.png
+assets/sprites/anime-v3/
+assets/belt/art/anime-v3/
+assets/belt/art/voss-*.png
+assets/belt/art/dash-*.png
+assets/belt/art/actions-v342/*.png
+!assets/belt/art/actions-v342/fire.png
+# 追加台詞の試聴用 WAV（採用版は assets/voices/*.wav）
+assets/voices/cinematic-v*/**/*.wav

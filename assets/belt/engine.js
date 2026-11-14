@@ -2,24 +2,25 @@
 // Coordinates: x = street distance, y = floor depth, z = height above that floor.
 // Fixed 60 Hz simulation. Draw methods must not change simulation or consume random values.
 const STREET = {
-  version: '2.8.1',
+  version: '3.6.1',
+  risingInput: { window: 30, buffer: 12 },
   dash: { tapWindow: 14, speed: 2.2, damage: 112, active: 8, until: 19, end: 38 },
   // v2.6.0 hit detection tuning. One table so the feel can be adjusted without hunting through the methods.
   // Rule of thumb: the player's attacks are generous (wide lane, several active frames), enemy attacks are honest
   // (one frame, narrow lane) so that stepping up/down out of a telegraphed blow reliably works.
   hit: {
-    playerDepth: 38, // lane tolerance of player strikes (was 29)
+    playerDepth: 52, // lane tolerance of player strikes (was 29)
     playerRear: 30, // how far behind the player's centre a strike still connects (was 22)
-    playerActive: 4, // ground strikes stay active for this many frames (was 1)
+    playerActive: 7, // ground strikes stay active for this many frames (was 1)
     airActive: 12, // jump attack stays active this long, i.e. for most of the descent (was 1)
     propDepth: 44, // crates and barrels (was 35)
     enemyDepth: 22, // enemy punch lane (was 26); the AI only starts a punch inside this lane
     laneAssist: 0.5, // a struck enemy is pulled this fraction toward the player's lane so the chain keeps connecting
-    grabDepth: 24, // walking grab (was 22)
-    throwKeyDepth: 34, // I-key throw (was 22)
-    chainThrowDepth: 38, // down + third hit (was 29); equals playerDepth so anything the chain reached can be thrown
-    bodyDepth: 42, // thrown body versus other enemies (was 27)
-    bodyRange: 74, // (was 55)
+    grabDepth: 54, // walking grab (was 22)
+    throwKeyDepth: 60, // I-key throw (was 22)
+    chainThrowDepth: 52, // down + third hit (was 29); equals playerDepth so anything the chain reached can be thrown
+    bodyDepth: 60, // thrown body versus other enemies (was 27)
+    bodyRange: 84, // (was 55)
     pickupRange: 62, // (was 45)
     pickupDepth: 38, // (was 26)
     chargeDepth: 30, // boss charge lane (was 35)
@@ -46,8 +47,8 @@ const STREET = {
       name: '02 / DEAD END ARCADE',
       jp: '廃ゲームセンター前',
       waves: [
-        ['knife', 'punk', 'punk'],
-        ['brute', 'knife', 'punk', 'punk']
+        ['sable', 'punk', 'raven'],
+        ['brute', 'viper', 'ghost', 'punk']
       ]
     },
     {
@@ -56,8 +57,8 @@ const STREET = {
       name: '03 / UNDERPASS',
       jp: '高架下',
       waves: [
-        ['punk', 'brute', 'knife', 'punk'],
-        ['knife', 'brute', 'knife']
+        ['surge', 'brute', 'sable', 'raven'],
+        ['viper', 'goliath', 'ghost']
       ]
     },
     {
@@ -66,16 +67,22 @@ const STREET = {
       name: '04 / BLACK MARKET',
       jp: '闇市倉庫',
       waves: [
-        ['brute', 'punk', 'knife', 'punk'],
-        ['knife', 'brute', 'punk', 'knife']
+        ['goliath', 'raven', 'sable', 'surge'],
+        ['viper', 'brute', 'surge', 'ghost']
       ]
     },
-    { left: 4960, right: 6200, name: '05 / THE IRON GATE', jp: '鉄門の処刑場', waves: [['boss', 'punk', 'knife']] }
+    { left: 4960, right: 6200, name: '05 / THE IRON GATE', jp: '鉄門の処刑場', waves: [['boss', 'raven', 'viper']] }
   ],
   enemies: {
     punk: { char: 1, name: 'RAZOR', hp: 122, speed: 2.45, damage: 26, hue: 138, score: 300 },
     knife: { char: 0, name: 'SHIV', hp: 106, speed: 2.9, damage: 32, hue: 175, score: 400 },
     brute: { char: 3, name: 'BRICK', hp: 232, speed: 1.55, damage: 43, hue: 310, score: 650 },
+    sable: { char: 2, name: 'SABLE', role: 'knife', hp: 106, speed: 2.9, damage: 32, hue: 145, score: 400 },
+    raven: { char: 4, name: 'RAVEN', role: 'punk', hp: 122, speed: 2.45, damage: 26, hue: 150, score: 300 },
+    viper: { char: 5, name: 'VIPER', role: 'knife', hp: 106, speed: 2.9, damage: 32, hue: 190, score: 400 },
+    ghost: { char: 0, name: 'GHOST', role: 'knife', hp: 106, speed: 2.9, damage: 32, hue: 265, score: 400 },
+    surge: { char: 1, name: 'SURGE', role: 'punk', hp: 122, speed: 2.45, damage: 26, hue: 285, score: 300 },
+    goliath: { char: 3, name: 'GOLIATH', role: 'brute', hp: 232, speed: 1.55, damage: 43, hue: 170, tint: [25, 135, 155], score: 650 },
     boss: { char: 3, name: 'IRON VOSS', hp: 1500, speed: 2.05, damage: 62, hue: 345, score: 6000 }
   },
   clamp: (v, a, b) => Math.max(a, Math.min(b, v)),
@@ -99,6 +106,20 @@ const STREET = {
     }
   }
 };
+
+
+// Stage-local coordinates preserve the established camera, combat lanes and input system.
+const FACTORY_AREAS = [
+ ['01 / DEAD FREIGHT','廃搬入口',[['surge','raven','goliath'],['ghost','sable','brute','punk']]],
+ ['02 / BROKEN ASSEMBLY','停止した製造ライン',[['viper','surge','raven','brute'],['goliath','ghost','sable','surge']]],
+ ['03 / BOILER HELL','灼熱のボイラー室',[['brute','viper','surge','sable'],['goliath','goliath','ghost']]],
+ ['04 / MUTATION WARD','変異実験区画',[['ghost','raven','viper','surge'],['goliath','sable','brute','viper']]],
+ ['05 / FURNACE HEART','炉心の怪物',[['boss','goliath','ghost']]]
+].map(([name,jp,waves],i)=>({left:i*1240,right:(i+1)*1240,name,jp,waves}));
+const STREET_STAGES = [
+ {title:'BLACK VEIN',jp:'法の消えた街。鉄門の首領、IRON VOSSを倒せ。',areas:STREET.areas,boss:'voss',bossName:'IRON VOSS',music:5},
+ {title:'INFERNAL WORKS',jp:'闇に沈む廃工場。炉心に潜む巨大な怪物を倒せ。',areas:FACTORY_AREAS,boss:'maw',bossName:'FURNACE MAW',music:3}
+];
 
 const StreetPalettes = {
   cache: new Map(),
@@ -134,6 +155,10 @@ const StreetPalettes = {
           b[i + 1] = a[i + 1];
           b[i + 2] = a[i + 2];
         }
+      if (spec.tint) for (let i=0;i<a.length;i+=4) {
+        if (a[i+3] && Math.max(a[i],a[i+1],a[i+2]) < 100)
+          for(let k=0;k<3;k++) b[i+k] = Math.round(a[i+k]*.65 + spec.tint[k]*.35);
+      }
       c.putImageData(changed, 0, 0);
       result.set(suffix, { atlas, ghost: source.ghost });
     }
@@ -150,6 +175,7 @@ class StreetActor extends Fighter {
     this.team = team;
     this.uid = id;
     this.kind = kind;
+    this.role = STREET.enemies[kind]?.role || kind;
     this.dead = false;
     this.cooldown = 45 + (id % 4) * 16;
     this.attack = null;
@@ -185,6 +211,8 @@ class StreetActor extends Fighter {
       });
       this.streetPalette = StreetPalettes.get(kind);
     }
+    this.hudHp = this.hp;
+    this.hudHold = 0;
   }
   pose(state) {
     this.state = state;
@@ -192,7 +220,7 @@ class StreetActor extends Fighter {
     this.attack = null;
   }
   speak(event, priority = 40) {
-    fighterVoice.play(this.data.id, event, this.team === 0 ? 0 : 1, priority);
+    if (!this.monster) fighterVoice.play(this.data.id, event, this.team === 0 ? 0 : 1, priority);
   }
   render(c) {
     c.save();
@@ -217,11 +245,14 @@ class StreetActor extends Fighter {
                 ? 'SP_1'
                 : this.state;
     const poseFrame = this.state === 'WINDUP' ? 4 : this.f;
-    if (!(this.team === 0 && BeltArt.drawDash(this, c)) &&
+    if (!BeltArt.drawBurn(this, c) &&
+        !(this.team === 0 && BeltArt.drawRising(this, c)) &&
+        !(this.team === 0 && BeltArt.drawDash(this, c)) &&
         !(this.kind === 'boss' && BeltArt.drawBoss(this, c, state, poseFrame)))
       this.drawBody(c, 0, 0, this.facing, this.state === 'STREET_DASH' ? 'DASH_F' :
         this.state === 'DASH_ATTACK' ? 'ATK_H' : state, poseFrame, false);
     c.filter = 'none';
+    if (this.team === 0) BeltArt.drawFlameDash(this, c);
     if (this.weapon > 0) {
       c.save();
       c.translate(this.facing * 34, -67);
@@ -235,17 +266,14 @@ class StreetActor extends Fighter {
       c.restore();
     }
     c.restore();
-    if (this.team === 1 && !this.dead && (this.flashTimer > 0 || this.kind === 'boss')) {
-      STREET.panel(c, this.x - 33, this.y - this.z - 178 * this.scale, 66, 5, '#251c25', null);
-      c.fillStyle = this.kind === 'boss' ? '#ff644f' : '#f7b35a';
-      c.fillRect(this.x - 33, this.y - this.z - 178 * this.scale, (66 * this.hp) / this.maxHp, 5);
-    }
-    if (this.state === 'WINDUP') STREET.text(c, '!', this.x, this.y - 194 * this.scale, 28, '#ff755c', 'center', '900');
+    if (this.state === 'WINDUP') STREET.text(c, '!', this.x, this.y - 223 * this.scale, 28, '#ff755c', 'center', '900');
   }
 }
 
 class NeonUprising {
-  constructor(owner, index) {
+  constructor(owner, index, stage = 0, carry = null) {
+    this.stageIndex = stage === 1 ? 1 : 0;
+    this.stage = STREET_STAGES[this.stageIndex];
     this.owner = owner;
     this.character = index;
     this.tick = 0;
@@ -255,6 +283,8 @@ class NeonUprising {
     this.wave = 0;
     this.player = new StreetActor(CHARACTERS[index], 230, 552, 0, 0);
     this.enemies = [];
+    this.hudTarget = null;
+    this.hudTargetUntil = 0;
     this.items = [];
     this.props = [];
     this.particles = [];
@@ -265,7 +295,7 @@ class NeonUprising {
     this.extended = false;
     this.camera = 0;
     this.backWall = 60;
-    this.gate = STREET.areas[0].right - 65;
+    this.gate = this.stage.areas[0].right - 65;
     this.locked = true;
     this.wait = 0;
     this.timer = 150 * 60;
@@ -274,6 +304,7 @@ class NeonUprising {
     this.grapple = null;
     this.intro = 150;
     this.bossIntro = 0;
+    this.finale = null;
     this.result = null;
     this.resultTick = 0;
     this.combo = 0;
@@ -285,12 +316,13 @@ class NeonUprising {
         { x: base + 960, y: 603, hp: 48, type: 'barrel', loot: i % 2 ? 'cash' : 'pipe', id: 'barrel' + i }
       );
     }
+    if (carry) { this.score=carry.score; this.kills=carry.kills; this.lives=carry.lives; this.extended=carry.extended; }
     this.spawnWave();
-    sound.playBGM(5);
+    sound.playBGM(this.stage.music);
     this.player.speak('select', 60);
   }
   areaData() {
-    return STREET.areas[this.area];
+    return this.stage.areas[this.area];
   }
   alive() {
     return this.enemies.filter((e) => !e.dead && e.hp > 0);
@@ -311,14 +343,20 @@ class NeonUprising {
       e.cooldown = 80 + i * 14;
     });
     if (types.includes('boss')) {
-      this.bossIntro = 150;
+      this.bossIntro = this.voiceFrames(this.stage.boss, 'intro', 4);
+      fighterVoice.stopAll();
+      fighterVoice.play(this.stage.boss, 'intro', 1, 150);
       sound.playBGM(6);
       sound.playCue('boss');
-      this.announce('IRON VOSS — 街を支配する鉄拳', '#ff7c65');
+      // Entrance name and threat are shown in the fixed dialogue panel.
     }
   }
   spawnEnemy(kind, x, y) {
     const e = new StreetActor(CHARACTERS[STREET.enemies[kind].char], x, y, 1, this.nextId++, kind);
+    if (kind === 'boss' && this.stageIndex === 1) {
+      e.monster=true; e.label=this.stage.bossName; e.scale=1.85;
+      e.hp=e.maxHp=e.hudHp=2300; e.damage=70; e.speed=1.7; e.value=10000;
+    }
     this.enemies.push(e);
     return e;
   }
@@ -349,9 +387,10 @@ class NeonUprising {
     if (this.result) {
       this.resultTick++;
       if (this.resultTick > 45 && STREET.press('Enter', 'KeyJ', 'KeyZ', 'Space'))
-        this.owner.startStreet(this.character);
+        this.owner.startStreet(this.character, this.result === 'clear' ? (this.stageIndex === 0 ? 1 : 0) : this.stageIndex, this.result === 'clear' && this.stageIndex === 0 ? this : null);
       return;
     }
+    if (this.finale) { this.updateFinale(); return; }
     this.tick++;
     if (this.shake > 0) this.shake *= 0.82;
     if (this.intro > 0) {
@@ -391,6 +430,7 @@ class NeonUprising {
     if (this.grapple) this.updateGrab();
     this.updateActor(this.player);
     for (const e of this.enemies) this.updateActor(e);
+    if (this.finale) return;
     this.enemies = this.enemies.filter((e) => !(e.dead && e.f > 70));
     if (!this.player.dead) this.playerInput();
     for (const e of this.enemies) if (!e.dead) this.enemyAI(e);
@@ -428,6 +468,10 @@ class NeonUprising {
     this.player.x = STREET.clamp(this.player.x, this.backWall, this.gate);
   }
   updateActor(a) {
+    // Delayed damage band is presentation state, advanced only by fixed updates (never draw).
+    if (a.hudHp < a.hp) a.hudHp = a.hp;
+    if (a.hudHold > 0) a.hudHold--;
+    else a.hudHp = Math.max(a.hp, a.hudHp - a.maxHp / 65);
     a.f++;
     a.animTick++;
     a.vy = a.z > 0 ? -a.vz : 0;
@@ -437,13 +481,15 @@ class NeonUprising {
     if (a.comboTTL > 0) a.comboTTL--;
     else a.chain = 0;
     if (a.queue > 0) a.queue--;
+    if (a.burnTicks > 0) a.burnTicks--;
     if (a.dead) return;
+    if (a === this.player && this.rising) { this.updateRising(); return; }
     if (['GRABBED', 'THROWING', 'HOLD'].includes(a.state)) return;
     if (a.state === 'HIT_AIR') {
       a.z += a.vz;
       a.vz -= 0.85;
       a.x += a.knockX;
-      a.knockX *= 0.98;
+      a.knockX *= a.throwFlight ? 0.99 : 0.98;
       a.x = STREET.clamp(a.x, this.backWall + 8, this.gate - 8);
       if (a.throwFlight)
         for (const other of this.enemies)
@@ -465,7 +511,7 @@ class NeonUprising {
         a.throwLanding = true;
         this.effects(a.x, a.y, '#ad9d87', 16);
         sound.playGrapple('impact');
-        a.speak('throw_impact', 86);
+        if (!this.finale) a.speak('throw_impact', 86);
         this.shake = 8;
         if (a.hp <= 0) this.kill(a);
       }
@@ -540,23 +586,44 @@ class NeonUprising {
     const special =
       STREET.press('KeyL', 'KeyC') || (attack && STREET.down('KeyK', 'KeyX')) || (jump && STREET.down('KeyJ', 'KeyZ'));
     const dashTap = this.readDashTap(dx);
+    const down = STREET.down('KeyS', 'ArrowDown'), up = STREET.down('KeyW', 'ArrowUp');
+    const wasDown = this.riseDown, upEdge = up && !this.riseUp;
+    this.riseDown = down; this.riseUp = up;
+    const eligible = p.z === 0 && !p.attack && (STREET.ready(p) || p.state === 'HOLD' || p.state === 'STREET_DASH');
+    const canBuffer = eligible || (p.z === 0 && p.attack && !p.attack.dash);
+    if (this.rising) return;
+    if (!canBuffer) { this.riseTap = this.riseBuffered = null; }
+    else {
+      // Count the window from the last down-held frame. Down may overlap the subsequent up press.
+      // Fresh simultaneous down/up is not a command; a preceding down frame is required.
+      if (down && !up) this.riseTap = this.tick;
+      if (upEdge && (wasDown || !down) && this.riseTap != null && this.tick - this.riseTap <= STREET.risingInput.window) {
+        this.riseBuffered = this.tick + STREET.risingInput.buffer;
+        this.riseTap = null;
+        p.queue = 0;
+      }
+      if (this.riseBuffered != null && this.tick > this.riseBuffered) this.riseBuffered = null;
+      if (eligible && this.riseBuffered != null) { this.startRising(); return; }
+    }
     if (special && p.z === 0 && !['KNOCKDOWN', 'WAKEUP', 'HIT_AIR', 'THROWING'].includes(p.state) && p.cooldown <= 0) {
       this.burst();
       return;
     }
     if (p.state === 'HOLD') {
-      if (thr || (attack && dx)) {
+      if ((thr || (attack && dx)) && this.grapple?.rest <= 0) {
         this.throwHeld(dx || p.facing);
         return;
       }
       if (attack && this.grapple?.rest <= 0) {
         const g = this.grapple;
+        if (g.knees >= 2) { this.finishHeld(); return; }
+        g.t = 0;
         g.knees++;
         g.rest = 20;
         this.hurtHeld(24 * p.power);
         p.speak('light' + (g.knees % 2), 45);
         sound.playHit('heavy');
-        if (g.knees >= 3 || g.victim.hp <= 0) this.throwHeld(p.facing);
+        if (g.victim.hp <= 0) this.finishHeld();
       }
       if (jump) this.breakGrab();
       return;
@@ -603,7 +670,7 @@ class NeonUprising {
       return;
     }
     if (thr) {
-      const e = this.grabbable(72, STREET.hit.throwKeyDepth);
+      const e = this.grabbable(104, STREET.hit.throwKeyDepth);
       if (e) {
         this.beginGrab(e);
         this.throwHeld(dx || p.facing);
@@ -625,25 +692,28 @@ class NeonUprising {
       p.y += dy * p.speed * 0.64 * norm;
       if (dx) p.facing = dx;
       p.state = 'WALK_F';
-      if (dx) {
-        const e = this.grabbable(40);
-        if (e && (e.x - p.x) * dx >= 0) this.beginGrab(e);
-      }
+      // Walking on either axis can grab the nearest eligible enemy ahead.
+      const e = this.grabbable(80, STREET.hit.grabDepth, p.facing);
+      if (e) this.beginGrab(e);
     } else if (p.state === 'WALK_F') p.pose('IDLE');
   }
-  grabbable(range, depth = STREET.hit.grabDepth) {
+  grabbable(range, depth = STREET.hit.grabDepth, facing = 0) {
     const p = this.player;
-    return this.alive().find(
+    return this.alive().filter(
       (e) =>
+        (!facing || (e.x - p.x) * facing >= -16) &&
         Math.abs(e.x - p.x) < range &&
         Math.abs(e.y - p.y) < depth &&
         e.z === 0 &&
         e.invuln === 0 &&
-        ['IDLE', 'WALK_F', 'HIT_STAND'].includes(e.state) &&
+        (['IDLE', 'WALK_F', 'HIT_STAND'].includes(e.state) || (e.kind !== 'boss' && e.state === 'WINDUP')) &&
         (e.kind !== 'boss' || e.cooldown > 22)
-    );
+    ).sort((a, b) => Math.hypot(a.x-p.x, a.y-p.y) - Math.hypot(b.x-p.x, b.y-p.y))[0];
   }
-  resetDashTap() {
+  resetDashTap(keepRise = false) {
+    if (!keepRise) this.riseTap = this.riseBuffered = null;
+    if (!keepRise) this.riseDown = STREET.down('KeyS', 'ArrowDown');
+    if (!keepRise) this.riseUp = STREET.down('KeyW', 'ArrowUp');
     this.dashTapKey = null;
     this.dashTapDir = 0;
     this.dashTapTick = -1000;
@@ -651,18 +721,18 @@ class NeonUprising {
   readDashTap(dx) {
     const p = this.player;
     if (!STREET.ready(p) || p.z > 0 || p.attack || this.tick - this.dashTapTick > STREET.dash.tapWindow) {
-      this.resetDashTap();
+      this.resetDashTap(true);
       if (!STREET.ready(p) || p.z > 0 || p.attack) return false;
     }
     if ((!dx && STREET.down('KeyA', 'ArrowLeft', 'KeyD', 'ArrowRight')) ||
-        (dx && this.dashTapDir && dx !== this.dashTapDir)) this.resetDashTap();
+        (dx && this.dashTapDir && dx !== this.dashTapDir)) this.resetDashTap(true);
     if (!dx) return false;
     // Input.just is a real keydown edge: the shared Input ignores OS repeat events.
     // Requiring the same physical key also prevents holding D then adding Right from counting as two taps.
     const key = (dx > 0 ? ['KeyD', 'ArrowRight'] : ['KeyA', 'ArrowLeft']).find(k => input.just[k]);
     if (!key) return false;
     if (key === this.dashTapKey && dx === p.facing) {
-      this.resetDashTap();
+      this.resetDashTap(true);
       return true;
     }
     this.dashTapKey = key;
@@ -685,7 +755,56 @@ class NeonUprising {
       knock: true, hit: new Set(), props: new Set()
     };
     p.speak('heavy1', 65);
-    sound.playSwing(true);
+    sound.playFlame('launch');
+  }
+  finishHeld() {
+    const g = this.grapple;
+    if (!g) return;
+    const p = this.player, e = g.victim;
+    this.grapple = null;
+    e.throwFrame = p.throwFrame = null;
+    e.pose('IDLE'); e.invuln = 0;
+    p.pose('ATK_H');
+    p.attack = { active: 99, end: 24, hit: new Set(), props: new Set() };
+    this.hurt(e, 72 * p.power, p.facing, true, 'grappleFinish');
+    p.speak('heavy1', 65); sound.playHit('heavy');
+    this.combo++; this.comboTime = 90;
+  }
+  startRising() {
+    const p = this.player, held = this.grapple?.victim;
+    if (held) {
+      this.grapple = null;
+      held.throwFrame = null; held.pose('IDLE'); held.invuln = 0;
+    }
+    p.throwFrame = null; p.pose('SP_2');
+    p.chain = 0; p.queue = 0; p.comboTTL = 0;
+    this.rising = { targets: [], held };
+    p.invuln = 46;
+    p.speak('sp2', 80); sound.playSwing(true);
+    this.resetDashTap();
+  }
+  updateRising() {
+    const p = this.player, r = this.rising;
+    p.z = p.f < 6 ? 0 : Math.max(0, Math.sin((p.f - 6) / 36 * Math.PI) * 110);
+    p.vy = p.f < 24 ? -6 : 6;
+    if ([6, 12, 18].includes(p.f)) {
+      if (p.f === 6) r.targets = this.alive().filter(e => e === r.held ||
+        (!e.invuln && !['GRABBED','HIT_AIR','KNOCKDOWN','WAKEUP','THROWING'].includes(e.state) &&
+        (e.x-p.x)*p.facing > -18 && (e.x-p.x)*p.facing < p.reach+24 && Math.abs(e.y-p.y)<STREET.hit.playerDepth && e.z<80));
+      for (const e of r.targets) {
+        if (e.dead) continue;
+        const final = p.f === 18;
+        e.pose('IDLE'); e.invuln = 0; e.throwFrame = null;
+        this.hurt(e, (final ? 52 : 24) * p.power, p.facing, final, 'rising');
+        if (!final) { e.pose('GRABBED'); e.throwFrame = 62; e.z = p.z + 15; e.knockX = 0; }
+        else { e.vz = 13; e.knockX = p.facing * 8; if (e.kind === 'boss' && e.hp <= 0) this.beginFinale(e); }
+        this.combo++; this.comboTime = 90;
+      }
+      if (r.targets.some(e => !e.dead)) sound.playRising(p.f / 6 - 1);
+      this.effects(p.x+p.facing*35, p.y-p.z-75, p.data.color, 16);
+      if (r.targets.length) { this.hitstop = 4; this.shake = 6; }
+    }
+    if (p.f >= 44) { p.z = p.vz = p.vy = 0; this.rising = null; p.pose('IDLE'); }
   }
   attack(a, air = false) {
     // Final Fight style chain: punch -> body blow -> uppercut. A stage is reachable only while the previous one connected
@@ -694,7 +813,7 @@ class NeonUprising {
     if (!air && stage === 3 && a.team === 0 && !a.weapon && STREET.down('KeyS', 'ArrowDown')) {
       // Holding down on the third hit converts the uppercut into an automatic throw of the enemy in front.
       // Same depth tolerance as the strikes that led here, so whatever the body blow reached can be thrown.
-      const e = this.grabbable(a.reach, STREET.hit.chainThrowDepth);
+      const e = this.grabbable(a.reach + 32, STREET.hit.chainThrowDepth);
       if (e && (e.x - a.x) * a.facing >= 0) {
         a.chain = 0;
         a.chainHit = false;
@@ -714,7 +833,7 @@ class NeonUprising {
       until: active + (air ? STREET.hit.airActive : STREET.hit.playerActive) - 1,
       end: air ? 22 : stage === 3 ? 29 : stage === 2 ? 15 : 18,
       damage: Math.round((air ? 48 : stage === 3 ? 68 : stage === 2 ? 38 : 30) * a.power + (a.weapon ? 32 : 0)),
-      reach: a.reach + (a.weapon ? 45 : 0),
+      reach: a.reach + (a.team === 0 && !air ? 32 : 0) + (a.weapon ? 45 : 0),
       depth: STREET.hit.playerDepth,
       rear: STREET.hit.playerRear,
       knock: stage === 3,
@@ -773,7 +892,8 @@ class NeonUprising {
     if (struck) {
       this.hitstop = atk.dash ? 7 : 4;
       this.shake = atk.dash ? 9 : atk.knock ? 5 : 2;
-      sound.playHit(a.weapon ? 'block' : atk.knock ? 'heavy' : 'light');
+      if (atk.dash) sound.playFlame('hit');
+      else sound.playHit(a.weapon ? 'block' : atk.knock ? 'heavy' : 'light');
       if (a.weapon > 0 && a.team === 0 && (!atk.dash || !atk.weaponSpent)) {
         a.weapon--;
         atk.weaponSpent = true;
@@ -784,8 +904,10 @@ class NeonUprising {
     if (a.dead || a.invuln > 0 || ['GRABBED', 'THROWING', 'KNOCKDOWN', 'WAKEUP', 'HIT_AIR'].includes(a.state))
       return false;
     if (a.team === 0 && a.state === 'HOLD') this.breakGrab();
+    this.trackHudHit(a);
     a.hp = Math.max(0, a.hp - Math.round(damage));
     a.flashTimer = 100;
+    if (source === 'dash' && a.team === 1) { a.burnTicks = 72; a.burnDirection = dir; }
     this.effects(a.x, a.y - a.z - 85, a.team === 0 ? '#ffca9a' : '#fff0bc');
     if (a.team === 0) {
       this.resetDashTap();
@@ -794,7 +916,7 @@ class NeonUprising {
       a.weapon = 0;
       a.invuln = 36;
     }
-    a.speak(a.hp <= 0 ? 'ko' : 'hurt' + (a.uid % 2), a.hp <= 0 ? 110 : 45);
+    if (!(a.kind === 'boss' && a.hp <= 0)) a.speak(a.hp <= 0 ? 'ko' : 'hurt' + (a.uid % 2), a.hp <= 0 ? 110 : 45);
     const armor = a.kind === 'boss' && ['CHARGE', 'SLAM'].includes(a.state) && ['strike', 'upper'].includes(source);
     // Facing turns toward the attacker only when the hit actually staggers. An armored boss keeps its committed lane.
     if (a.hp <= 0 || (!armor && knock)) {
@@ -805,6 +927,7 @@ class NeonUprising {
       a.vz = source === 'upper' ? 11 : 8;
       a.knockX = dir * (source === 'upper' ? 5 : 7);
       a.throwFlight = source === 'body';
+      if (a.throwFlight) { a.facing = dir; a.vz = 6; a.knockX = dir * 13; a.jumpHits.clear(); }
       a.throwLanding = true;
     } else if (!armor) {
       a.facing = -dir;
@@ -812,11 +935,13 @@ class NeonUprising {
       a.knockX = dir * 3;
     }
     if (a.team === 1 && damage > 0) this.addScore(Math.min(100, Math.round(damage)));
+    if (a.kind === 'boss' && a.hp <= 0 && source !== 'rising') this.beginFinale(a);
     return true;
   }
   beginGrab(e) {
     const p = this.player;
     if (this.grapple) return;
+    this.trackHudTarget(e);
     p.pose('HOLD');
     p.throwFrame = 50;
     e.pose('GRABBED');
@@ -840,6 +965,7 @@ class NeonUprising {
   hurtHeld(n) {
     const g = this.grapple;
     if (!g) return;
+    this.trackHudHit(g.victim);
     g.victim.hp = Math.max(0, g.victim.hp - Math.round(n));
     g.victim.flashTimer = 80;
     this.effects(g.victim.x, g.victim.y - 85, '#ffe9af', 8);
@@ -867,32 +993,34 @@ class NeonUprising {
       e.facing = -p.facing;
       p.throwFrame = g.rest > 10 ? 52 : 50;
       e.throwFrame = g.rest > 10 ? 61 : 60;
-      if (g.t >= 100) this.throwHeld(p.facing);
+      if (g.t >= 180) this.breakGrab();
       return;
     }
     const sample = ThrowMotion.sample(g.t / g.duration);
     p.throwFrame = sample.attacker;
     e.throwFrame = sample.victim;
-    e.x = p.x + g.dir * sample.dx;
+    e.x = p.x + g.dir * (sample.dx + 35 * (g.t / g.duration));
     e.y = p.y + 1;
-    e.z = -sample.dy;
+    e.z = Math.max(0, -sample.dy * 0.42);
     e.facing = -g.dir;
     if (g.t >= g.duration) {
       this.grapple = null;
       p.pose('THROW_RECOVER');
+      this.trackHudHit(e);
       e.hp = Math.max(0, e.hp - Math.round(92 * p.power));
       e.pose('HIT_AIR');
       e.throwFlight = true;
       e.throwLanding = true;
       e.facing = g.dir;
-      e.vz = 13;
-      e.knockX = g.dir * 11;
+      e.vz = 6.5;
+      e.knockX = g.dir * 18;
       e.jumpHits.clear();
       e.speak('thrown', 84);
       p.speak('throw_release', 82);
       sound.playGrapple('release');
       this.addScore(80);
       this.shake = 5;
+      if (e.kind === 'boss' && e.hp <= 0) this.beginFinale(e);
     }
   }
   breakGrab() {
@@ -965,9 +1093,9 @@ class NeonUprising {
             active: 5,
             end: 32,
             damage: e.damage,
-            reach: e.kind === 'knife' ? 115 : 95,
+            reach: e.role === 'knife' ? 115 : 95,
             depth: STREET.hit.enemyDepth,
-            knock: e.kind === 'brute',
+            knock: e.role === 'brute',
             hit: new Set()
           };
         }
@@ -992,7 +1120,7 @@ class NeonUprising {
         this.effects(e.x, e.y, '#ffb862', 32);
         this.shake = 14;
         sound.playGrapple('impact');
-        if (Math.abs(p.x - e.x) < STREET.hit.slamRange && Math.abs(p.y - e.y) < STREET.hit.slamDepth && p.z < 48)
+        if (Math.abs(p.x - e.x) < (e.monster ? 210 : STREET.hit.slamRange) && Math.abs(p.y - e.y) < (e.monster ? 82 : STREET.hit.slamDepth) && p.z < 48)
           this.hurt(p, e.damage, e.facing, true, 'boss');
       }
       if (e.f >= 53) {
@@ -1004,7 +1132,7 @@ class NeonUprising {
     if (!STREET.ready(e)) return;
     if (e.kind === 'boss' && !e.enraged && e.hp < e.maxHp * 0.45) {
       e.enraged = true;
-      this.announce('VOSS IS ENRAGED', '#ff6c58');
+      this.announce(this.stage.bossName + ' IS ENRAGED', '#ff6c58');
       this.spawnEnemy('punk', Math.max(this.backWall + 50, e.x - 200), 465);
       this.spawnEnemy('knife', Math.min(this.gate - 50, e.x + 180), 600);
     }
@@ -1021,7 +1149,7 @@ class NeonUprising {
       }
       if (Math.abs(dx) < 85 && Math.abs(dy) < 22 && p.z < 55) {
         e.plan = 'punch';
-        e.windup = e.kind === 'brute' ? 35 : 24;
+        e.windup = e.role === 'brute' ? 35 : 24;
         e.pose('WINDUP');
         return;
       }
@@ -1052,6 +1180,7 @@ class NeonUprising {
       }
   }
   kill(a) {
+    if (a === this.hudTarget) this.hudTargetUntil = this.tick + 90;
     a.dead = true;
     a.pose('DEAD');
     a.z = 0;
@@ -1059,7 +1188,7 @@ class NeonUprising {
     if (a.team === 1) {
       this.kills++;
       this.addScore(a.value);
-      if (a.kind === 'brute') this.items.push({ x: a.x, y: a.y, type: 'cash', age: 0 });
+      if (a.role === 'brute') this.items.push({ x: a.x, y: a.y, type: 'cash', age: 0 });
     } else {
       this.lives--;
       this.combo = 0;
@@ -1086,14 +1215,55 @@ class NeonUprising {
     this.timer = Math.max(this.timer, 90 * 60);
     this.announce('GET UP!  残り ' + this.lives, '#83e7dc');
   }
+  voiceFrames(id, event, fallback = 3) {
+    const seconds = fighterVoice.buffers.get(id + '-' + event)?.duration || fallback;
+    return Math.ceil((seconds + .55) * 60);
+  }
+  beginFinale(boss) {
+    if (this.finale || this.result) return;
+    this.finale = { phase: 'slow', frame: 0, boss, minimum: this.voiceFrames(this.stage.boss, 'defeat', 2) };
+    this.hitstop = 0; this.player.queue = 0; this.player.attack = null;
+    this.popups = [];
+    this.resetDashTap(); input.keys = {}; input.just = {};
+    fighterVoice.stopAll(); fighterVoice.play(this.stage.boss, 'defeat', 1, 150);
+    sound.playHit('heavy'); this.shake = 12;
+  }
+  updateFinale() {
+    const f = this.finale; f.frame++;
+    // 1/4-speed world motion; voice playback stays at its original pitch and duration.
+    if (f.phase === 'slow') {
+      if (f.frame % 4 === 0) {
+        this.updateActor(f.boss);
+        this.shake *= .82;
+        for (const p of this.particles) { p.x += p.vx; p.y += p.vy; p.life--; }
+        this.particles = this.particles.filter(p => p.life > 0);
+      }
+      if (f.frame >= Math.max(150, f.minimum) && f.boss.dead) {
+        f.phase = 'victory'; f.frame = 0;
+        this.player.z = this.player.vz = 0; this.player.pose('VICTORY'); this.shake = 0;
+        fighterVoice.stopAll(); this.player.speak('finish', 150);
+        f.duration = this.voiceFrames(this.player.data.id, 'finish', 4);
+      }
+    } else {
+      this.updateActor(f.boss); // Let fire, the damage band and the defeated body fade during the final line.
+      if (f.frame >= f.duration) this.finish(true);
+    }
+  }
+  drawDialogue(c, name, line, color) {
+    this.hudPanel(c, 230, 530, 820, 96, color);
+    STREET.text(c, name, 254, 558, 15, color, 'left', '900');
+    STREET.text(c, line, 640, 597, 23, '#fff0d9', 'center', '800');
+  }
   finish(clear) {
+    const cinematicWin = clear && this.finale?.phase === 'victory';
+    this.finale = null;
     this.result = clear ? 'clear' : 'over';
     this.resultTick = 0;
     fighterVoice.stopAll();
     if (clear) {
       this.addScore(this.lives * 1000 + Math.ceil(this.timer / 60) * 10);
       this.player.pose('VICTORY');
-      this.player.speak('win', 100);
+      if (!cinematicWin) this.player.speak('win', 100);
       sound.playBGM(7);
       sound.playCue('clear');
     } else {
@@ -1121,7 +1291,7 @@ class NeonUprising {
           c.strokeRect(x, e.y - 33, 520, 66);
         } else {
           c.beginPath();
-          c.ellipse(e.x, e.y, 155, 78, 0, 0, Math.PI * 2);
+          c.ellipse(e.x, e.y, e.monster ? 215 : 155, e.monster ? 86 : 78, 0, 0, Math.PI * 2);
           c.fill();
           c.stroke();
         }
@@ -1152,69 +1322,101 @@ class NeonUprising {
       STREET.text(c, 'GO  ➜', Math.min(this.gate - 40, this.camera + 1150), 360, 40, '#ffd08b', 'center', '900');
     c.restore();
     this.drawHUD(c);
-    if (this.intro > 0) this.overlay(c, 'STAGE 01', 'BLACK VEIN', '法の消えた街。鉄門の首領、IRON VOSSを倒せ。');
-    if (this.bossIntro > 0)
-      this.overlay(c, 'WARNING / AREA BOSS', 'IRON VOSS', '赤い予告を見て、上下移動やジャンプで回避。');
+    if (this.intro > 0) this.overlay(c, 'STAGE 0' + (this.stageIndex+1), this.stage.title, this.stage.jp);
+    if (this.bossIntro > 0) {
+      STREET.text(c, 'WARNING / ' + this.stage.bossName, W/2, 245, 30, '#ff9876', 'center', '900');
+      this.drawDialogue(c, this.stage.bossName, VOICE_PROFILES[this.stage.boss].lines.intro, '#ff9876');
+    }
+    if (this.finale) {
+      const f = this.finale;
+      if (f.phase === 'slow') {
+        if (f.frame < 24) { c.fillStyle = 'rgba(255,228,180,' + (.22*(1-f.frame/24)) + ')'; c.fillRect(0,0,W,641); }
+        STREET.text(c, 'FINAL IMPACT', W/2, 245, 32, '#ffe3ad', 'center', '900');
+      } else this.drawDialogue(c, this.player.data.name, VOICE_PROFILES[this.player.data.id].lines.finish, '#9debd4');
+    }
     if (this.result) this.drawResult(c);
     if (this.owner.paused) this.overlay(c, 'PAUSED', 'TAKE A BREATH', 'ESC: 再開    Q: ゲーム選択に戻る');
   }
-  drawHUD(c) {
-    const p = this.player;
-    STREET.panel(c, 24, 20, 435, 91, 'rgba(6,15,24,.92)', '#41606c');
-    STREET.text(c, p.data.name, 42, 46, 20, p.data.color, 'left', '900');
-    STREET.text(c, 'LIFE × ' + this.lives, 437, 44, 15, '#f4d6a2', 'right');
-    STREET.panel(c, 42, 57, 397, 19, '#33212a', null);
-    c.fillStyle = p.data.color;
-    c.fillRect(44, 59, (393 * p.hp) / p.maxHp, 15);
-    STREET.text(c, 'SCORE  ' + String(this.score).padStart(7, '0'), 42, 97, 15, '#dce8ef');
-    STREET.text(c, p.weapon ? 'PIPE  ' + p.weapon + '/8' : '1UP  20,000', 437, 97, 12, '#9fb3bc', 'right');
-    STREET.text(c, 'NEON UPRISING', W / 2, 35, 15, '#9bb6c3', 'center', '800');
-    STREET.text(
-      c,
-      String(Math.max(0, Math.ceil(this.timer / 60))).padStart(3, '0'),
-      W / 2,
-      78,
-      34,
-      this.timer < 1800 ? '#ff7761' : '#f6d5a3',
-      'center',
-      '900'
-    );
-    STREET.panel(c, 900, 20, 356, 91, 'rgba(6,15,24,.92)', '#41606c');
-    STREET.text(c, this.areaData().name, 919, 45, 17, '#f5c07f');
-    STREET.text(
-      c,
-      this.areaData().jp + '  /  ' + (this.locked ? '敵を一掃せよ' : '先へ進め →'),
-      919,
-      69,
-      14,
-      '#c6d2da'
-    );
-    STREET.text(
-      c,
-      'WAVE ' +
-        Math.min(this.wave + 1, this.areaData().waves.length) +
-        ' / ' +
-        this.areaData().waves.length +
-        '   ENEMIES ' +
-        this.alive().length,
-      919,
-      96,
-      12,
-      '#9eb8c8'
-    );
-    const boss = this.alive().find((e) => e.kind === 'boss');
-    if (boss) {
-      STREET.panel(c, 365, 129, 550, 25, '#331d2a', '#ae6255');
-      c.fillStyle = '#ec7452';
-      c.fillRect(368, 132, (544 * boss.hp) / boss.maxHp, 19);
-      STREET.text(c, 'IRON VOSS' + (boss.enraged ? ' / ENRAGED' : ''), W / 2, 123, 15, '#ffc393', 'center', '900');
+  trackHudTarget(a) {
+    if (a.team !== 1) return;
+    this.hudTarget = a;
+    this.hudTargetUntil = this.tick + 240;
+  }
+  trackHudHit(a) {
+    a.hudHp = Math.max(a.hudHp ?? a.hp, a.hp);
+    a.hudHold = 24;
+    this.trackHudTarget(a);
+  }
+  hudEnemy() {
+    if (this.grapple) return this.grapple.victim;
+    if (this.hudTarget && this.tick <= this.hudTargetUntil) return this.hudTarget;
+    return this.alive().find(e => e.kind === 'boss') || null;
+  }
+  drawHealth(c, a, x, y, width, height, color) {
+    const fraction = value => STREET.clamp(Number.isFinite(value / a.maxHp) ? value / a.maxHp : 0, 0, 1);
+    const hp = fraction(a.hp), trail = Math.max(hp, fraction(a.hudHp ?? a.hp));
+    c.save();
+    // Inset steel surround, recessed dark track, warm damage memory, gloss and fine subdivisions.
+    const rim = c.createLinearGradient(0, y-3, 0, y+height+3);
+    rim.addColorStop(0, '#c4d3d9'); rim.addColorStop(.4, '#526b7b'); rim.addColorStop(1, '#213645');
+    STREET.panel(c, x-3, y-3, width+6, height+6, rim, '#0a111c');
+    STREET.panel(c, x, y, width, height, '#111823', '#030811');
+    const inner = width-4, h = height-4, yy = y+2;
+    c.fillStyle = '#efb876';c.fillRect(x+2, yy, inner*trail, h);
+    if (hp > 0) {
+      const fill = c.createLinearGradient(0, yy, 0, yy+h);
+      fill.addColorStop(0, hp < .25 ? '#ffb590' : '#f4ffe6');
+      fill.addColorStop(.22, hp < .25 ? '#ff765d' : color);
+      fill.addColorStop(1, hp < .25 ? '#af283f' : '#24766f');
+      c.fillStyle = fill;c.fillRect(x+2, yy, inner*hp, h);
+      c.fillStyle = 'rgba(255,255,255,.5)';c.fillRect(x+2, yy, inner*hp, 1);
     }
-    if (this.combo > 1) STREET.text(c, this.combo + ' HITS', 42, 153, 29, '#ffd497', 'left', '900');
+    c.fillStyle = 'rgba(7,17,29,.45)';
+    for(let i=1;i<20;i++)c.fillRect(Math.round(x+2+inner*i/20),yy,1,h);
+    c.restore();
+  }
+  hudPanel(c,x,y,w,h,accent) {
+    c.save();
+    const fill=c.createLinearGradient(0,y,0,y+h);fill.addColorStop(0,'rgba(22,38,54,.97)');fill.addColorStop(1,'rgba(5,13,24,.94)');
+    c.beginPath();c.moveTo(x+10,y);c.lineTo(x+w,y);c.lineTo(x+w,y+h-10);c.lineTo(x+w-10,y+h);c.lineTo(x,y+h);c.lineTo(x,y+10);c.closePath();
+    c.fillStyle=fill;c.fill();c.strokeStyle='#4c6274';c.lineWidth=1;c.stroke();
+    c.fillStyle=accent;c.fillRect(x+14,y+1,40,2);
+    c.fillStyle='rgba(203,226,243,.13)';c.fillRect(x+14,y+5,w-28,1);
+    c.restore();
+  }
+  drawHUD(c) {
+    const p = this.player, enemy = this.hudEnemy();
+    c.save();
+    this.hudPanel(c,24,20,440,184,'#7cedd4');
+    STREET.text(c,'1P',42,48,13,'#83aab8','left','900');
+    STREET.text(c,p.data.name,76,49,23,'#f1f7fa','left','900');
+    STREET.text(c,'LIFE  × '+this.lives,446,47,14,'#f3d19a','right','800');
+    this.drawHealth(c,p,44,62,400,22,'#83e8b9');
+    STREET.text(c,'SCORE  '+String(this.score).padStart(7,'0'),42,109,13,'#cddfea');
+    STREET.text(c,p.weapon?'PIPE  '+p.weapon+'/8':'1UP  20,000',446,109,12,'#8fa6b8','right');
+    c.fillStyle='#304454';c.fillRect(42,119,404,1);
+    STREET.text(c,enemy ? enemy.label : 'NO TARGET',44,145,17,enemy?'#ffe2b4':'#607888','left','900');
+    const status=enemy ? enemy.hp<=0?'K.O.':enemy.burnTicks>0?'BURN':enemy.kind==='boss'?(enemy.enraged?'ENRAGED':'BOSS'):'ENEMY' : '—';
+    STREET.text(c,status,444,144,11,enemy?.burnTicks>0?'#ff9a57':'#b0a28c','right','800');
+    this.drawHealth(c,enemy || {hp:0,maxHp:1,hudHp:0},44,156,400,17,enemy?.kind==='boss'?'#ffb578':'#f0d788');
+    STREET.text(c,enemy ? Math.max(0,Math.ceil(enemy.hp))+' / '+enemy.maxHp : '攻撃・掴みで相手を表示',444,192,11,'#8fa6b8','right');
+    this.hudPanel(c,W/2-61,20,122,94,'#f4d29a');
+    STREET.text(c,'TIME',W/2,44,11,'#a9bdca','center','800');
+    STREET.text(c,String(Math.max(0,Math.ceil(this.timer/60))).padStart(3,'0'),W/2,85,36,this.timer<1800?'#ff8069':'#fff0cd','center','900');
+    STREET.text(c,'NEON UPRISING',W/2,132,11,'#adc0ce','center','800');
+    this.hudPanel(c,900,20,356,108,'#e4ad78');
+    STREET.text(c,this.areaData().name,920,49,18,'#ffe0af','left','800');
+    STREET.text(c,this.areaData().jp+'  /  '+(this.locked?'敵を一掃せよ':'先へ進め →'),920,76,14,'#c6d2da');
+    c.fillStyle='#304454';c.fillRect(920,87,316,1);
+    STREET.text(c,'WAVE '+Math.min(this.wave+1,this.areaData().waves.length)+' / '+this.areaData().waves.length,920,111,12,'#91adbf');
+    STREET.text(c,'ENEMIES  '+this.alive().length,1236,111,12,'#d8c6a7','right');
+    if(this.combo>1)STREET.text(c,this.combo+' HITS',W/2,174,29,'#ffe2a8','center','900');
+    c.restore();
     c.fillStyle = 'rgba(5,12,20,.87)';
     c.fillRect(0, 641, W, 79);
     STREET.text(
       c,
-      '移動 WASD / 矢印    前×2：ダッシュ → J / Z：ダッシュ攻撃    ジャンプ K / X / SPACE    緊急技 L / C',
+      '移動 WASD / 矢印    前×2：ダッシュ → J / Z：炎ダッシュ攻撃    ↓→↑：3段上昇技    ジャンプ K / X / SPACE    緊急技 L / C',
       W / 2,
       654,
       13,
@@ -1223,7 +1425,7 @@ class NeonUprising {
     );
     STREET.text(
       c,
-      'パンチ→ボディ→アッパー（命中で続く）    ↓を入れたまま3発目=投げ    接近で掴む→J追撃 / 方向＋J・Iで投げ    H: 詳しい操作',
+      'パンチ→ボディ→アッパー（命中で続く）    ↓を入れたまま3発目=投げ    ↓↑:3段上昇 / 掴みJ×2→Jで強打・Iで投げ    H: 詳しい操作',
       W / 2,
       672,
       12,
@@ -1245,7 +1447,7 @@ class NeonUprising {
     const clear = this.result === 'clear';
     STREET.text(
       c,
-      clear ? 'BLACK VEIN / LIBERATED' : 'BLACK VEIN / FALLEN',
+      this.stage.title + (clear ? ' / LIBERATED' : ' / FALLEN'),
       W / 2,
       150,
       18,
@@ -1255,7 +1457,7 @@ class NeonUprising {
     );
     STREET.text(
       c,
-      clear ? 'STAGE 1 CLEAR' : 'GAME OVER',
+      clear ? 'STAGE ' + (this.stageIndex+1) + ' CLEAR' : 'GAME OVER',
       W / 2,
       244,
       64,
@@ -1265,7 +1467,7 @@ class NeonUprising {
     );
     STREET.text(
       c,
-      clear ? '犯罪都市の鉄門は、あなたの手で開かれた。' : 'もう一度、この街に挑む。',
+      clear ? (this.stageIndex === 0 ? '鉄門の先に、闇に沈む廃工場が待ち受ける。' : '炉心の怪物は倒れた。街に夜明けが訪れる。') : 'もう一度、この戦いに挑む。',
       W / 2,
       300,
       20,
@@ -1281,8 +1483,8 @@ class NeonUprising {
       '#f4d1a1',
       'center'
     );
-    STREET.text(c, 'Enter: 同じキャラクターで再挑戦     ESC: ゲーム選択', W / 2, 499, 18, '#a8beca', 'center');
-    if (clear) STREET.text(c, 'ステージ1 完結', W / 2, 551, 14, '#8497a6', 'center');
+    STREET.text(c, (clear && this.stageIndex === 0 ? 'Enter: ステージ2へ進む' : clear ? 'Enter: ステージ1から再挑戦' : 'Enter: このステージを再挑戦') + '     ESC: ゲーム選択', W / 2, 499, 18, '#a8beca', 'center');
+    if (clear) STREET.text(c, this.stageIndex === 0 ? '残機・スコアを引き継ぎ、体力を回復して次へ' : 'ALL STAGES CLEAR', W / 2, 551, 14, '#8497a6', 'center');
   }
   drawProp(c, p) {
     if (BeltArt.drawProp(c, p)) return;
@@ -1606,12 +1808,12 @@ Game.prototype.streetCard = function (i) {
     pitch = Math.min(200, Math.floor((W - 80) / n));
   return { x: 42 + i * pitch, y: 200, w: pitch - 12, h: 260 };
 };
-Game.prototype.startStreet = function (index) {
+Game.prototype.startStreet = function (index, stage = 0, carry = null) {
   fighterVoice.stopAll();
   this.paused = false;
   this.scene = 'STREET';
   this.p1Char = index;
-  this.street = new NeonUprising(this, index);
+  this.street = new NeonUprising(this, index, stage, carry);
   input.clear();
 };
 Game.prototype.togglePause = function () {
@@ -1622,6 +1824,13 @@ Game.prototype.togglePause = function () {
     if (this.paused) {
       fighterVoice.stopAll();
       input.keys = {};
+    } else if (this.street.bossIntro > 0) {
+      this.street.bossIntro = this.street.voiceFrames(this.street.stage.boss, 'intro', 4);
+      fighterVoice.play(this.street.stage.boss, 'intro', 1, 150);
+    } else if (this.street.finale) {
+      const f = this.street.finale; f.frame = 0;
+      if (f.phase === 'slow') fighterVoice.play(this.street.stage.boss, 'defeat', 1, 150);
+      else this.street.player.speak('finish', 150);
     }
     sound.playUI('cursor');
   } else classicPause.call(this);
@@ -1735,7 +1944,7 @@ Game.prototype.draw = function () {
       STREET.text(ctx, i ? '犯罪都市を、拳で切り拓け。' : '一対一、限界を超える決闘。', x + 24, 503, 17, '#bdd0da');
       STREET.text(
         ctx,
-        i ? '1 PLAYER  /  STAGE 01: BLACK VEIN' : 'ARCADE  /  VS CPU  /  VS 2P  /  TRAINING',
+        i ? '1 PLAYER  /  2 STAGES: CITY → FACTORY' : 'ARCADE  /  VS CPU  /  VS 2P  /  TRAINING',
         x + 24,
         540,
         12,
@@ -1769,7 +1978,7 @@ Game.prototype.draw = function () {
     STREET.text(ctx, 'NEON UPRISING', 44, 65, 18, '#efb980', 'left', '900');
     STREET.text(ctx, 'VERSION ' + STREET.version, W - 44, 65, 13, '#7c93a3', 'right', '800');
     STREET.text(ctx, 'CHOOSE YOUR REBEL', 44, 120, 44, '#efeee8', 'left', '900');
-    STREET.text(ctx, 'STAGE 01 / BLACK VEIN — 荒くれ者の巣くう犯罪都市へ', 44, 163, 17, '#9bb7c7');
+    STREET.text(ctx, 'BLACK VEIN → INFERNAL WORKS — 犯罪都市から闇の廃工場へ', 44, 163, 17, '#9bb7c7');
     for (let i = 0; i < CHARACTERS.length; i++) {
       const d = CHARACTERS[i],
         r = this.streetCard(i),

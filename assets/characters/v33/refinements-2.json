@@ -1,0 +1,20 @@
+{
+  "provider": "built-in image_gen",
+  "fixes": [
+    {
+      "key": "titan-throw",
+      "prompt": "Use case: precise-object-edit. Correct this production sprite atlas, preserve the new character identity, face, clothing, all24 pose order and 6x4 layout. EXACT1536x1024 transparent PNG. Remove ALL ambient gray/tan background and haze to alpha=0. Background must be perfectly transparent, including gaps between poses. Keep same 24 poses and exact positions. No gray/white/color matte. No gridlines, text or shadows. Other parts unchanged.",
+      "source": "C:\\Users\\User\\.codex\\generated_images\\01a1ba29-d6f4-7692-a4f0-387d9fa6e0e3\\exec-45f4b324-b7b0-4e81-970b-353d8efc4679.png"
+    },
+    {
+      "key": "dash-freya",
+      "prompt": "Use case: precise-object-edit. Correct this production sprite atlas, preserve the new character identity, face, clothing, all24 pose order and 6x4 layout. EXACT1536x1024 transparent PNG. Critical correction: the blue slashing effects across third row merge across adjacent cells. Make EACH of the six third-row blue slash effects smaller, strictly confined within its own 256px cell with at least 12px perfectly transparent gap from every cell boundary. Preserve each character's body and poses and positions. Remove ALL ambient haze to alpha=0. No gray/white/color matte. No gridlines, text or shadows. Other parts unchanged.",
+      "source": "C:\\Users\\User\\.codex\\generated_images\\01a1ba29-d6f4-7692-a4f0-387d9fa6e0e3\\exec-028e45a1-e668-4a40-8e80-ac4fb5a715de.png"
+    },
+    {
+      "key": "celine-motion",
+      "prompt": "Use case: precise-object-edit. Correct this production sprite atlas, preserve the new character identity, face, clothing, all24 pose order and 6x4 layout. EXACT1536x1024 transparent PNG. Critical correction: green energy trails from adjacent cells overlap/merge. Make EACH green effect strictly confined within its own 256px cell with at least 12px perfectly transparent gap from every cell boundary. In third row cell3 (jumping pose), keep the blade inside that same cell. Preserve all24 character poses and positions, particularly all FOUR first-row idle poses must have BOTH feet planted. Remove ALL ambient haze to alpha=0. No gray/white/color matte. No gridlines, text or shadows. Other parts unchanged.",
+      "source": "C:\\Users\\User\\.codex\\generated_images\\01a1ba29-d6f4-7692-a4f0-387d9fa6e0e3\\exec-9eb59884-3dd3-423c-a79d-809818814354.png"
+    }
+  ]
+}

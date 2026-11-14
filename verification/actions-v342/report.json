@@ -1,0 +1,78 @@
+{
+  "checks": [
+    "7 action atlases decoded",
+    "no atlas errors",
+    "3 dedicated impact cues 0",
+    "3 hits and knockdown 0",
+    "fire downs armored boss 0",
+    "dash hits only once 0",
+    "fire expires 0",
+    "3 dedicated impact cues 1",
+    "3 hits and knockdown 1",
+    "fire downs armored boss 1",
+    "dash hits only once 1",
+    "fire expires 1",
+    "3 dedicated impact cues 2",
+    "3 hits and knockdown 2",
+    "fire downs armored boss 2",
+    "dash hits only once 2",
+    "fire expires 2",
+    "3 dedicated impact cues 3",
+    "3 hits and knockdown 3",
+    "fire downs armored boss 3",
+    "dash hits only once 3",
+    "fire expires 3",
+    "3 dedicated impact cues 4",
+    "3 hits and knockdown 4",
+    "fire downs armored boss 4",
+    "dash hits only once 4",
+    "fire expires 4",
+    "3 dedicated impact cues 5",
+    "3 hits and knockdown 5",
+    "fire downs armored boss 5",
+    "dash hits only once 5",
+    "fire expires 5",
+    "whiff has no impact cue",
+    "wide grab intercepts windup",
+    "forward launch -1",
+    "multiple enemies swept -1",
+    "low long throw arc -1",
+    "forward launch 1",
+    "multiple enemies swept 1",
+    "low long throw arc 1",
+    "rising and burn rendering is pure",
+    "audible bounded rising0",
+    "audible bounded rising1",
+    "audible bounded rising2",
+    "audible bounded fireLaunch",
+    "audible bounded fireHit",
+    "SE voices released"
+  ],
+  "metrics": [
+    {
+      "key": "rising0",
+      "peak": 0.9100000262260437,
+      "rms": 0.11232668717647269
+    },
+    {
+      "key": "rising1",
+      "peak": 0.9100000262260437,
+      "rms": 0.12696069812547014
+    },
+    {
+      "key": "rising2",
+      "peak": 0.9100000262260437,
+      "rms": 0.11833051068924033
+    },
+    {
+      "key": "fireLaunch",
+      "peak": 0.9277474284172058,
+      "rms": 0.16481649198651435
+    },
+    {
+      "key": "fireHit",
+      "peak": 0.9100000262260437,
+      "rms": 0.12467211590074165
+    }
+  ]
+}

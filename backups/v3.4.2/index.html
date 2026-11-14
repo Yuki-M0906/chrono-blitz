@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHRONO BLITZ: ARCADE COLLECTION — Demo</title>
+<meta name="description" content="CHRONO BLITZ: ARCADE COLLECTION — a browser-only 2D fighting game (OVERDRIVE) and side-scrolling beat 'em up (NEON UPRISING) in one small HTML file plus asset packs. / ブラウザだけで動く 2D 対戦格闘＋ベルトスクロールアクションのデモ。">
+<style>
+  :root { --cyan: #00f0ff; --pink: #ff0055; --gold: #ffcc00; --bg: #05070f; --panel: #0d1326; --text: #f0f4ff; --muted: #9fb3c8; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: radial-gradient(circle at top, #161d3b 0%, var(--bg) 70%); color: var(--text); font-family: 'Segoe UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif; min-height: 100vh; display: flex; justify-content: center; padding: 48px 16px; line-height: 1.7; }
+  main { width: 100%; max-width: 860px; }
+  h1 { font-size: clamp(28px, 6vw, 52px); font-style: italic; font-weight: 900; letter-spacing: 1px; text-shadow: 0 0 24px rgba(0, 240, 255, 0.6); }
+  h1 span { display: block; color: #ff2a66; font-size: 0.5em; text-shadow: 0 0 18px rgba(255, 0, 85, 0.6); }
+  .lead { color: var(--muted); margin: 14px 0 28px; }
+  .version { display: inline-block; margin-top: 10px; padding: 4px 12px; border: 1px solid rgba(0, 240, 255, 0.4); border-radius: 999px; font-size: 12px; color: var(--cyan); letter-spacing: 0.5px; }
+  .play { display: inline-block; background: linear-gradient(135deg, var(--cyan), #0088aa); color: #000; font-weight: 900; font-size: 20px; padding: 16px 36px; border-radius: 14px; text-decoration: none; box-shadow: 0 0 24px rgba(0, 240, 255, 0.45); transition: transform .15s, box-shadow .15s; }
+  .play:hover { transform: translateY(-2px); box-shadow: 0 0 36px rgba(0, 240, 255, 0.7); }
+  .note { margin-top: 12px; font-size: 13px; color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 36px 0; }
+  .card { background: rgba(13, 19, 38, 0.9); border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 12px; padding: 16px 18px; }
+  .card h2 { font-size: 16px; color: var(--gold); margin-bottom: 8px; border-bottom: 1px solid rgba(255, 204, 0, 0.3); padding-bottom: 4px; }
+  .card p, .card li { font-size: 14px; }
+  .card ul { padding-left: 18px; }
+  kbd { background: #23325e; border: 1px solid #4d69b8; border-radius: 4px; padding: 0 6px; font-size: 12px; font-weight: bold; }
+  footer { margin-top: 36px; font-size: 12px; color: var(--muted); border-top: 1px solid rgba(255,255,255,0.1); padding-top: 14px; }
+  footer a, .note a { color: var(--cyan); }
+</style>
+</head>
+<body>
+<main>
+  <h1>CHRONO BLITZ<span>ARCADE COLLECTION — DEMO</span></h1>
+  <p class="version">VERSION 3.4.2 — 3段上昇技の専用アニメーション＆打撃音。炎ダッシュで敵を全身炎上、前方投げで敵を巻き込め！最初のクリック / キーでスタート（音楽開始）</p>
+  <p class="lead">
+    ブラウザだけで動く 2 本立てのアーケードゲームです。1 対 1 の 2D 対戦格闘「OVERDRIVE」と、1 人用ベルトスクロールアクション「NEON UPRISING」をゲーム選択画面から遊べます。
+    画像・音声はゲーム本体と同じ場所の data フォルダにまとめてあり、サーバーや追加インストールは不要です。<br>
+    A browser-only arcade collection: the 1-on-1 fighter <strong>OVERDRIVE</strong> and the side-scrolling beat 'em up <strong>NEON UPRISING</strong>, both running from one HTML file and a folder of asset packs, with nothing to install.
+  </p>
+
+  <a class="play" href="ai_studio_code.html">▶ PLAY DEMO / デモをプレイ</a>
+  <p class="note">
+    初回は約 157MB のデータを読み込むため数秒〜数十秒かかります（進捗バーが出ます。2 回目以降はブラウザキャッシュで速くなります）。
+    キーボードが必要です。音が出ます。推奨: PC の Chrome / Edge / Firefox。<br>
+    The first load fetches about 157 MB of asset packs and shows a progress bar. Keyboard required, audio on. Desktop Chrome / Edge / Firefox recommended.
+  </p>
+
+  <div class="grid">
+    <div class="card">
+      <h2>OVERDRIVE — 対戦格闘 / Versus Fighting</h2>
+      <ul>
+        <li>6 人のファイター、4 ステージ、ARCADE / VS CPU / VS 2P / TRAINING</li>
+        <li>移動 <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>　弱 <kbd>J</kbd>　強 <kbd>K</kbd>　必殺 <kbd>L</kbd>　超必殺 <kbd>U</kbd>　投げ <kbd>I</kbd>　バースト <kbd>O</kbd></li>
+        <li>ガトリングキャンセル、コマンド入力ボーナス、ジャストガード、ドライブバースト</li>
+        <li>2P: 矢印キー ＋ <kbd>N</kbd><kbd>M</kbd><kbd>,</kbd><kbd>.</kbd><kbd>/</kbd><kbd>;</kbd></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>NEON UPRISING — ベルトスクロール / Beat 'em up</h2>
+      <ul>
+        <li>犯罪都市 BLACK VEIN を進み、5 区画 33 体の敵とボス IRON VOSS を倒すステージ 1</li>
+        <li>移動 <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>　攻撃 / 拾う <kbd>J</kbd>　ジャンプ <kbd>K</kbd>　緊急技 <kbd>L</kbd>　投げ <kbd>I</kbd></li>
+        <li><kbd>J</kbd> 連打でパンチ → ボディブロー → アッパー（当たった時だけ次へ）。<kbd>S</kbd> を入れたまま 3 発目で投げに変化</li>
+        <li>歩いて接近すると掴み。<kbd>J</kbd> で追撃、方向＋<kbd>J</kbd> で投げ。投げた敵は他の敵にも当たる</li>
+        <li>木箱・ドラム缶から食料 / 現金 / 鉄パイプ</li>
+        <li>前方向を2回（→→ / ←← / D D / A A）押し、2回目を保持してダッシュ。走行中 <kbd>J</kbd> / <kbd>Z</kbd> で強打＆確定ダウン</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>共通 / Common</h2>
+      <ul>
+        <li><kbd>H</kbd> 技表・操作一覧　<kbd>ESC</kbd> ポーズ　ポーズ中 <kbd>Q</kbd> で戻る</li>
+        <li>画面下のツールバーで BGM / SE / VOICE の音量とミュート</li>
+        <li>ゲームパッド・タッチ操作は未対応</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>技術 / Tech</h2>
+      <ul>
+        <li>HTML5 Canvas 2D、固定 60Hz 更新、1280×720 論理解像度</li>
+        <li>Web Audio API でローカル合成する 8 曲の BGM と効果音</li>
+        <li>共通 432 姿勢＋ボス 72 姿勢＋ダッシュ 144 姿勢、対戦背景 4 枚＋街背景 5 枚、物体・アイテム 8 コマ</li>
+        <li>キャラクターボイスは VOICEVOX による合成音声（下記クレジット）</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    <p>音声クレジット / Voice credits: VOICEVOX:玄野武宏、VOICEVOX:白上虎太郎、VOICEVOX:四国めたん、VOICEVOX:麒ヶ島宗麟、VOICEVOX:中国うさぎ、VOICEVOX:九州そら —
+      <a href="https://voicevox.hiroshiba.jp/term/" target="_blank" rel="noopener noreferrer">VOICEVOX 利用規約</a> ／
+      <a href="https://www.virvoxproject.com/voicevoxの利用規約" target="_blank" rel="noopener noreferrer">玄野武宏・白上虎太郎・麒ヶ島宗麟</a> ／
+      <a href="https://zunko.jp/con_ongen_kiyaku.html" target="_blank" rel="noopener noreferrer">四国めたん・中国うさぎ・九州そら</a></p>
+    <p>仕様・修正履歴はゲーム本体 HTML の冒頭コメントと <a href="https://github.com/Yuki-M0906/chrono-blitz">リポジトリの README</a> を参照してください。</p>
+  </footer>
+</main>
+</body>
+</html>

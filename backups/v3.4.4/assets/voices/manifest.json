@@ -1,0 +1,286 @@
+{
+  "version": "1.7.0",
+  "engine": "VOICEVOX Core 0.17.1 / ONNX Runtime 1.17.3 / VVM 0.17.1 / CPU (v3.2 Natural Acting Prosody, AquesTalk Accent Control & NCC-PSOLA)",
+  "language": "ja-JP",
+  "profiles": {
+    "kagura": {
+      "voice": "玄野武宏",
+      "models": [
+        4,
+        10
+      ],
+      "styles": {
+        "normal": 40,
+        "force": 40,
+        "hurt": 40,
+        "win": 11,
+        "ko": 41,
+        "intro": 11
+      },
+      "speed": 1.02,
+      "pitch": -0.015,
+      "superSegments": [
+        "奥義……",
+        "紅蓮・天翔斬っ！"
+      ],
+      "credit": "VOICEVOX:玄野武宏",
+      "lines": {
+        "light0": "はっ！",
+        "light1": "せいっ！",
+        "heavy0": "やあっ！",
+        "heavy1": "斬る！",
+        "jump": "ふっ！",
+        "dash": "行くぞ！",
+        "hurt0": "ぐっ！",
+        "hurt1": "うっ！",
+        "throw": "捉えた！",
+        "burst": "退けっ！",
+        "sp1": "エンゲツ！",
+        "sp2": "ヒエン！",
+        "sp3": "シュンゴクセン！",
+        "super": "奥義。グレンテンショーザン！",
+        "select": "我が太刀、見切れるか？",
+        "win": "勝負あり。",
+        "ko": "無念。",
+        "grabbed": "なにっ！",
+        "throw_release": "せいっ！",
+        "thrown": "うわあっ！",
+        "throw_impact": "ぐはっ！"
+      }
+    },
+    "volt": {
+      "voice": "白上虎太郎",
+      "models": [
+        9
+      ],
+      "styles": {
+        "normal": 32,
+        "force": 34,
+        "hurt": 34,
+        "win": 32,
+        "ko": 35,
+        "intro": 34
+      },
+      "speed": 1.05,
+      "pitch": -0.01,
+      "eventSpeeds": {
+        "grabbed": 1.18,
+        "light0": 1.18,
+        "light1": 1.18,
+        "jump": 1.2
+      },
+      "superSegments": [
+        "オーバードライブっ！",
+        "ラグナロクっ！"
+      ],
+      "credit": "VOICEVOX:白上虎太郎",
+      "lines": {
+        "light0": "はっ！",
+        "light1": "そらっ！",
+        "heavy0": "くらえっ！",
+        "heavy1": "決めるぜ！",
+        "jump": "よっと！",
+        "dash": "遅いぜ！",
+        "hurt0": "くっ！",
+        "hurt1": "ぐあっ！",
+        "throw": "よしっ！",
+        "burst": "離れろっ！",
+        "sp1": "プラズマショット！",
+        "sp2": "ライトニングドライブ！",
+        "sp3": "サンダーサマー！",
+        "super": "オーバードライブ。ラグナロク！",
+        "select": "最高速で行こうぜ！",
+        "win": "俺の勝ちだ！",
+        "ko": "マジかよ。",
+        "grabbed": "しまった！",
+        "throw_release": "そらよっ！",
+        "thrown": "うわっ！",
+        "throw_impact": "がはっ！"
+      }
+    },
+    "freya": {
+      "voice": "四国めたん",
+      "models": [
+        0
+      ],
+      "styles": {
+        "normal": 2,
+        "force": 6,
+        "hurt": 6,
+        "win": 2,
+        "ko": 2,
+        "intro": 2
+      },
+      "speed": 1.03,
+      "pitch": -0.01,
+      "superSegments": [
+        "アブソリュート・ゼロ……",
+        "カリバーっ！"
+      ],
+      "credit": "VOICEVOX:四国めたん",
+      "lines": {
+        "light0": "はっ！",
+        "light1": "せいっ！",
+        "heavy0": "凍りなさい！",
+        "heavy1": "貫く！",
+        "jump": "ふっ！",
+        "dash": "参ります！",
+        "hurt0": "くっ！",
+        "hurt1": "あっ！",
+        "throw": "そこっ！",
+        "burst": "近寄らないで！",
+        "sp1": "グレイシャーピラー！",
+        "sp2": "ヴァルキリーランス！",
+        "sp3": "フロストノヴァ！",
+        "super": "アブソリュートゼロ。カリバー！",
+        "select": "静かな決着を。",
+        "win": "お眠りなさい。",
+        "ko": "そんな。",
+        "grabbed": "あっ！",
+        "throw_release": "はあっ！",
+        "thrown": "ああっ！",
+        "throw_impact": "くっ！"
+      }
+    },
+    "titan": {
+      "voice": "麒ヶ島宗麟",
+      "models": [
+        12
+      ],
+      "styles": {
+        "normal": 53,
+        "force": 53,
+        "hurt": 53,
+        "win": 53,
+        "ko": 53,
+        "intro": 53
+      },
+      "speed": 1.02,
+      "pitch": -0.045,
+      "superSegments": [
+        "メテオ……",
+        "カタストロフィっ！"
+      ],
+      "credit": "VOICEVOX:麒ヶ島宗麟",
+      "lines": {
+        "light0": "ふんっ！",
+        "light1": "どりゃっ！",
+        "heavy0": "うおおっ！",
+        "heavy1": "砕けろ！",
+        "jump": "ぬっ！",
+        "dash": "突き進む！",
+        "hurt0": "ぐぬっ！",
+        "hurt1": "がはっ！",
+        "throw": "捉えた！",
+        "burst": "吹き飛べっ！",
+        "sp1": "シンキャク。大地砕き！",
+        "sp2": "ギガントタックル！",
+        "sp3": "ガイアバスター！",
+        "super": "メテオ。カタストロフィ！",
+        "select": "さあ、かかって来い！",
+        "win": "まだまだじゃ。",
+        "ko": "見事じゃ。",
+        "grabbed": "ぬおっ！",
+        "throw_release": "どりゃあっ！",
+        "thrown": "ぐおおっ！",
+        "throw_impact": "がはっ！"
+      }
+    },
+    "ayame": {
+      "voice": "中国うさぎ",
+      "models": [
+        3
+      ],
+      "styles": {
+        "normal": 62,
+        "force": 62,
+        "hurt": 62,
+        "win": 62,
+        "ko": 63,
+        "intro": 61
+      },
+      "speed": 1.02,
+      "pitch": 0.0,
+      "superSegments": [
+        "秘奥義……",
+        "百花・繚乱っ！"
+      ],
+      "credit": "VOICEVOX:中国うさぎ",
+      "lines": {
+        "light0": "はっ！",
+        "light1": "えいっ！",
+        "heavy0": "そこね！",
+        "heavy1": "舞いなさい！",
+        "jump": "よっ！",
+        "dash": "こちらよ！",
+        "hurt0": "くっ！",
+        "hurt1": "あっ！",
+        "throw": "そこね！",
+        "burst": "お下がりっ！",
+        "sp1": "シゲツセン！",
+        "sp2": "ヒエンの舞！",
+        "sp3": "カスミバシリ！",
+        "super": "秘奥義。ヒャッカリョーラン！",
+        "select": "ついてこられるかしら？",
+        "win": "舞はここまで。",
+        "ko": "不覚ね。",
+        "grabbed": "えっ！",
+        "throw_release": "せいっ！",
+        "thrown": "きゃあっ！",
+        "throw_impact": "うっ！"
+      }
+    },
+    "celine": {
+      "voice": "九州そら",
+      "models": [
+        2
+      ],
+      "styles": {
+        "normal": 16,
+        "force": 18,
+        "hurt": 18,
+        "win": 16,
+        "ko": 18,
+        "intro": 16
+      },
+      "speed": 1.04,
+      "pitch": -0.01,
+      "eventSpeeds": {
+        "light0": 1.06,
+        "light1": 1.08,
+        "heavy0": 1.06,
+        "heavy1": 1.04,
+        "dash": 1.06,
+        "burst": 1.06
+      },
+      "superSegments": [
+        "エトワール……",
+        "デュ・ソワールっ！"
+      ],
+      "credit": "VOICEVOX:九州そら",
+      "lines": {
+        "light0": "はっ！",
+        "light1": "えいっ！",
+        "heavy0": "そこです！",
+        "heavy1": "貫きます！",
+        "jump": "ふっ！",
+        "dash": "失礼！",
+        "hurt0": "くっ！",
+        "hurt1": "ああっ！",
+        "throw": "そこっ！",
+        "burst": "お離れなさい！",
+        "sp1": "ローズエクレール！",
+        "sp2": "フルールランジ！",
+        "sp3": "エメラルドリポスト！",
+        "super": "エトワール。デュ・ソワール！",
+        "select": "美しい決闘を。",
+        "win": "見事な勝負でした。",
+        "ko": "参りました。",
+        "grabbed": "あっ！",
+        "throw_release": "はあっ！",
+        "thrown": "ああっ！",
+        "throw_impact": "くっ！"
+      }
+    }
+  }
+}

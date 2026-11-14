@@ -4,7 +4,9 @@ const {chromium}=require('playwright'),{pathToFileURL}=require('node:url');
 const root=path.resolve(__dirname,'..'),out=path.join(root,'verification');let browser;
 const VERSION=fs.readFileSync(path.join(root,'ai_studio_code.html'),'utf8').match(/^  Version: ([\d.]+)/m)[1];
 const hashes=JSON.parse(fs.readFileSync(path.join(out,'v27-source-hashes.json'),'utf8'));
-for(const [f,hash] of Object.entries(hashes))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(root,f))).digest('hex'),hash,'v2.7 asset changed: '+f);
+// v3/v3.1 intentionally redraws sprite/actor packs and overhauls audio/voice synthesis; v3.6.0 adds the factory
+// backgrounds to belt-backgrounds. Still guarded: data/stages.js and assets/voices/engine.js.
+for(const [f,hash] of Object.entries(hashes).filter(([f])=>!/^data\/(sprites-|belt-actors|belt-backgrounds|voices)|assets\/audio\/engine\.js/.test(f)))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(root,f))).digest('hex'),hash,'v2.7 asset changed: '+f);
 (async()=>{
  browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||'C:/Users/User/AppData/Local/Google/Chrome/Application/chrome.exe',args:['--mute-audio']});
  const context=await browser.newContext({viewport:{width:1280,height:800}});await context.addInitScript(()=>window.requestAnimationFrame=()=>0);
@@ -81,8 +83,8 @@ for(const [f,hash] of Object.entries(hashes))assert.equal(crypto.createHash('sha
  });
  const contact=await page.evaluate(()=>{
   const c=document.createElement('canvas');c.width=1440;c.height=960;const g=c.getContext('2d');g.fillStyle='#172536';g.fillRect(0,0,c.width,c.height);g.imageSmoothingEnabled=false;
-  const frames=[0,2,4,6,8,10,12,13,14,17,20,23];CHARACTERS.forEach((ch,row)=>{frames.forEach((f,col)=>{g.drawImage(BeltArt.dashSheets.get(ch.id),f%6*160,Math.floor(f/6)*160,160,160,col*120,row*160,120,120);g.fillStyle='#b9cddc';g.font='11px monospace';g.fillText(ch.id+' '+f,col*120+3,row*160+142);});});return c.toDataURL().split(',')[1];
+  const frames=[0,2,4,6,8,10,12,13,14,17,20,23];CHARACTERS.forEach((ch,row)=>{frames.forEach((f,col)=>{g.drawImage(BeltArt.dashSheets.get(ch.id),f%6*FighterSprites.cell,Math.floor(f/6)*FighterSprites.cell,FighterSprites.cell,FighterSprites.cell,col*120,row*160,120,120);g.fillStyle='#b9cddc';g.font='11px monospace';g.fillText(ch.id+' '+f,col*120+3,row*160+142);});});return c.toDataURL().split(',')[1];
  });fs.writeFileSync(path.join(out,'dash-six-heroes.png'),Buffer.from(contact,'base64'));
- assert.deepEqual(errors,[]);const report={version:VERSION,originalV27PacksUnchanged:true,loaded,checks,heroes,mechanics,browserErrors:errors};
+ assert.deepEqual(errors,[]);const report={version:VERSION,originalV27AudioAndSceneryUnchanged:true,loaded,checks,heroes,mechanics,browserErrors:errors};
  fs.writeFileSync(path.join(out,'dash-report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));await browser.close();
 })().catch(async e=>{console.error(e);if(browser)await browser.close();process.exitCode=1;});

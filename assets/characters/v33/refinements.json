@@ -1,0 +1,15 @@
+{
+  "provider": "built-in image_gen",
+  "fixes": [
+    {
+      "key": "freya",
+      "prompt": "Use case: background-extraction. Edit this exact sprite atlas. Remove ALL white/gray background and ambient colored haze, replace with genuinely TRANSPARENT alpha=0 empty space. Preserve every character, hair, white armor/blouse, weapons and intended sharp magical effects with antialiased opaque contours. DO NOT change design, size, pose or layout: EXACT 1536x1024, 6x4 24 cells. No white background, no gray matte, no opaque background. Preserve the colorful character artwork. ",
+      "source": "C:\\Users\\User\\.codex\\generated_images\\01a1ba29-d6f4-7692-a4f0-387d9fa6e0e3\\exec-56137099-2151-49a4-9f01-46fbfdd8d760.png"
+    },
+    {
+      "key": "celine-motion",
+      "prompt": "Use case: background-extraction. Edit this exact sprite atlas. Remove ALL white/gray background and ambient colored haze, replace with genuinely TRANSPARENT alpha=0 empty space. Preserve every character, hair, white armor/blouse, weapons and intended sharp magical effects with antialiased opaque contours. DO NOT change design, size, pose or layout: EXACT 1536x1024, 6x4 24 cells. No white background, no gray matte, no opaque background. Preserve the colorful character artwork. Additionally in first row FOURTH cell only: change lifted foot to planted idle like the first three cells, keeping body upright.",
+      "source": "C:\\Users\\User\\.codex\\generated_images\\01a1ba29-d6f4-7692-a4f0-387d9fa6e0e3\\exec-b13beb64-1f2b-490c-aca5-3130f0ca5f2f.png"
+    }
+  ]
+}

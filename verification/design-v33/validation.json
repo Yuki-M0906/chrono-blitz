@@ -1,0 +1,58 @@
+{
+  "version": "3.3.0",
+  "date": "2026-11-13",
+  "tests": [
+    {
+      "script": "tools/verify-anime.cjs",
+      "exitCode": 0
+    },
+    {
+      "script": "tools/verify-sprites.cjs",
+      "exitCode": 0
+    },
+    {
+      "script": "tools/verify-throws.cjs",
+      "exitCode": 0
+    },
+    {
+      "script": "tools/verify-belt.cjs",
+      "exitCode": 0
+    },
+    {
+      "script": "tools/verify-dash.cjs",
+      "exitCode": 0
+    },
+    {
+      "script": "tools/verify-belt-art.cjs",
+      "exitCode": 0
+    },
+    {
+      "script": "tools/verify-hit.cjs",
+      "exitCode": 0
+    },
+    {
+      "script": "tools/verify-chain.cjs",
+      "exitCode": 0
+    },
+    {
+      "script": "tools/verify-start.cjs",
+      "exitCode": 0
+    },
+    {
+      "script": "tools/verify-voice-update.cjs",
+      "exitCode": 0
+    },
+    {
+      "script": "tools/verify-audio.cjs",
+      "exitCode": 0
+    }
+  ],
+  "visualReview": {
+    "allSevenContactSheets": true,
+    "bothGameModes": true,
+    "finalSelection": "selection.png",
+    "rawAndCachedPoses": 648
+  },
+  "preservedBaseline": "assets/characters/v33/baseline-hashes.json",
+  "notes": "Audio test run alone. All game logic preserved relative to exact v3.2.0 snapshot, excluding only STREET.version. New art manually reviewed after automatic alpha/clipping checks."
+}

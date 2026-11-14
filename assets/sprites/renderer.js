@@ -1,6 +1,12 @@
-// Source of the embedded v1.7 sprite renderer. Run: node tools/build-sprites.mjs
-// 6 columns x 4 rows; 256px source cells, 160px cached cells including 16px gutters.
+// v3.0 cel-animation renderer (v3.3 redesigned atlases). Run: node tools/build-sprites.mjs
+// Full-resolution 256px art in 384px cells / 64px gutters; visual scale only (+15%).
 const FighterSprites = {
+  cell: 384,
+  gutter: 64,
+  pivotX: 192,
+  pivotY: 308,
+  visualScale: 1.15,
+  scaleFor(id) { return (id === 'titan' ? 1.48 : 1.36) * .5 * this.visualScale; },
   sheets: new Map(),
   errors: [],
   ready: null,
@@ -11,37 +17,7 @@ const FighterSprites = {
       const image = new Image();
       image.onload = () => {
         try {
-          if (image.width !== 1536 || image.height !== 1024) throw new Error('Expected 1536x1024 atlas');
-          const atlas = document.createElement('canvas');
-          atlas.width = 960; atlas.height = 640;
-          const c = atlas.getContext('2d', { willReadFrequently: true }); // cleanCell reads every cell back
-          c.imageSmoothingEnabled = false;
-          for (let frame = 0; frame < 24; frame++) {
-            // Hand-audited slice corrections: generated sheets are not perfectly grid-aligned.
-            // Gutters preserve extended sword tips and the left edge of horizontal knockdowns.
-            const col = frame % 6, row = Math.floor(frame / 6);
-            let left = 0, top = 0, right = 256, bottom = 256;
-            if (!motion && frame === 20) { left = -32; right = 264; }
-            if (!motion && frame === 9) bottom = 244;
-            if (!motion && id === 'freya' && frame === 15) top = -16;
-            if (!motion && id === 'freya' && frame === 10) right = 288;
-            c.save();
-            c.translate(col * 160 + 16, row * 160 + 16);
-            c.scale(0.5, 0.5);
-            c.beginPath();
-            c.rect(left, top, right - left, bottom - top); c.clip();
-            c.drawImage(image, -col * 256, -row * 256);
-            // Remove only identified fragments of an adjacent pose, retaining the sprite's alpha.
-            if (!motion && frame === 19) c.clearRect(224, 180, 32, 76);
-            if (!motion && id === 'freya' && frame === 11) c.clearRect(0, 86, 34, 40);
-            if (!motion && id === 'freya' && frame === 10) {
-              c.clearRect(256, 0, 32, 86); c.clearRect(256, 126, 32, 130);
-            }
-            c.restore();
-            // A generated pose can spill into a neighboring cell. Isolate this pose's
-            // connected silhouette; retain separate substantial spell effects in cast frames.
-            this.cleanCell(c, col * 160, row * 160, motion ? frame === 20 || frame === 22 : frame === 14 || frame === 17);
-          }
+          const atlas = this.prepareAtlas(image, id);
           const ghost = document.createElement('canvas');
           ghost.width = atlas.width; ghost.height = atlas.height;
           const g = ghost.getContext('2d');
@@ -59,28 +35,72 @@ const FighterSprites = {
     return this.ready;
   },
 
-  cleanCell(ctx, x, y, keepEffects) {
-    const image = ctx.getImageData(x, y, 160, 160), pixels = image.data;
-    const labels = new Int32Array(160 * 160), sizes = [0];
-    const queue = new Int32Array(labels.length);
+  prepareAtlas(image, key) {
+    if (image.width !== 1536 || image.height !== 1024) throw Error('Expected 1536x1024 anime atlas');
+    const atlas = document.createElement('canvas'), cell = this.cell;
+    atlas.width = cell * 6; atlas.height = cell * 4;
+    const c = atlas.getContext('2d', { willReadFrequently: true });
+    const motion = key.endsWith('-motion'), throwing = key.endsWith('-throw'), dash = key.startsWith('dash-');
+    for (let frame = 0; frame < 24; frame++) {
+      const col = frame % 6, row = Math.floor(frame / 6);
+      // Full 64px bleed preserves long blades, capes and horizontal defeats. Components
+      // of neighboring poses are removed below; never crop at the nominal 256px cell edge.
+      const sourceFrame = frame;
+      if (key === 'fx-fire' || key === 'maw') {
+        // VFX cells contain complete figures. Bleeding the previous row imports a second burning body,
+        // especially above the low, lying-down poses. Keep exactly one 256px source cell.
+        c.drawImage(image, col * 256, row * 256, 256, 256,
+          col * cell + this.gutter, row * cell + this.gutter, 256, 256);
+      } else {
+        c.drawImage(image, sourceFrame % 6 * 256 - this.gutter, Math.floor(sourceFrame / 6) * 256 - this.gutter, cell, cell,
+          col * cell, row * cell, cell, cell);
+      }
+      const effects = key.startsWith('rise-') || key.startsWith('fx-') ? true : dash ? frame >= 12 && frame <= 17 : motion ? [18,20,21,22].includes(frame) : !throwing && [12,14,15,16,17].includes(frame);
+      // Titan uppercut15 otherwise captures detached rock chips from the neighboring rush16.
+      this.cleanCell(c, col * cell, row * cell, effects && !(key === 'titan' && frame === 15));
+    }
+    return atlas;
+  },
+
+  cleanCell(ctx, x, y, keepEffects, effectRight = this.cell - this.gutter) {
+    const size = this.cell, image = ctx.getImageData(x, y, size, size), pixels = image.data;
+    const labels = new Int32Array(size * size), sizes = [0], centers = [null], queue = new Int32Array(labels.length);
+    // Label opaque silhouettes, then preserve their original antialiased one-pixel fringe.
+    // Generated alpha sometimes contains faint background haze; it must not connect every pose.
     for (let seed = 0; seed < labels.length; seed++) {
-      if (labels[seed] || pixels[seed * 4 + 3] < 32) continue;
+      if (labels[seed] || pixels[seed * 4 + 3] < 24) continue;
       const label = sizes.length;
-      let read = 0, write = 1; queue[0] = seed; labels[seed] = label;
+      let read = 0, write = 1, sumX = 0, sumY = 0, edge = false; queue[0] = seed; labels[seed] = label;
       while (read < write) {
-        const p = queue[read++], px = p % 160, py = Math.floor(p / 160);
+        const p = queue[read++], px = p % size, py = Math.floor(p / size);
+        sumX += px; sumY += py;
+        if (px === 0 || py === 0 || px === size - 1 || py === size - 1) edge = true;
         for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
-          if (px + dx < 0 || px + dx >= 160 || py + dy < 0 || py + dy >= 160) continue;
-          const n = p + dy * 160 + dx;
-          if (!labels[n] && pixels[n * 4 + 3] >= 32) { labels[n] = label; queue[write++] = n; }
+          if (px + dx < 0 || px + dx >= size || py + dy < 0 || py + dy >= size) continue;
+          const n = p + dy * size + dx;
+          if (!labels[n] && pixels[n * 4 + 3] >= 24) { labels[n] = label; queue[write++] = n; }
         }
       }
       sizes.push(write);
+      centers.push({ x: sumX / write, y: sumY / write, edge });
     }
-    const largest = sizes.indexOf(Math.max(...sizes));
+    let largest = 0;
+    for (let i = 1; i < sizes.length; i++) if (sizes[i] > sizes[largest]) largest = i;
+    const keep = label => {
+      if (!label) return false;
+      if (label === largest) return true;
+      const q = centers[label], g = this.gutter;
+      return keepEffects && sizes[label] >= 32 && !q.edge && q.x >= g && q.x < effectRight && q.y >= g && q.y < size - g;
+    };
     for (let p = 0; p < labels.length; p++) {
-      const label = labels[p];
-      if (!label || (label !== largest && !(keepEffects && sizes[label] >= 50))) pixels[p * 4 + 3] = 0;
+      if (keep(labels[p])) continue;
+      let fringe = false;
+      if (!labels[p] && pixels[p * 4 + 3]) {
+        const px = p % size, py = Math.floor(p / size);
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++)
+          if (px + dx >= 0 && px + dx < size && py + dy >= 0 && py + dy < size && keep(labels[p + dy * size + dx])) fringe = true;
+      }
+      if (!fringe) pixels[p * 4 + 3] = 0;
     }
     ctx.putImageData(image, x, y);
   },
@@ -91,7 +111,8 @@ const FighterSprites = {
     const phase = (windup, end, active, follow = 35) => f < Math.ceil(windup / 2) ? 34 : f < windup ? 8 :
       f <= end ? (f < windup + 4 ? active : follow) : f < end + 5 ? 36 : 11;
     switch (state) {
-      case 'IDLE': return cycle([0, 24, 1, 25, 26, 27], 6);
+      // Independently painted idle cells vary in anatomy; cycling them makes the whole body pulse.
+      case 'IDLE': return 0;
       case 'WALK_F': return cycle([2, 28, 3, 29, 4, 30, 5, 31], 3);
       case 'WALK_B': return cycle([31, 5, 30, 4, 29, 3, 28, 2], 3);
       case 'DASH_F': return cycle([39, 16, 40, 16], 3);
@@ -138,14 +159,15 @@ const FighterSprites = {
     if (!silhouette && fighter.streetPalette) sheet = fighter.streetPalette.get(frame >= 48 ? '-throw' : frame >= 24 ? '-motion' : '') || sheet;
     frame %= 24;
     const tick = fighter.animTick;
-    const cell = 160;
-    const scale = fighter.data.id === 'titan' ? 1.48 : 1.36;
-    // Half-resolution source anchor. Shared across frames: no bounding-box recentering/jitter.
-    const pivotX = 80, pivotY = 138;
+    const cell = this.cell;
+    const scale = this.scaleFor(id);
+    // Full-resolution source anchor. Shared across frames: no bounding-box recentering/jitter.
+    const { pivotX, pivotY } = this;
     ctx.save();
     ctx.translate(Math.round(x), Math.round(y));
     ctx.scale(facing, 1);
-    ctx.imageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     if (!silhouette && fighter.invuln > 0 && Math.floor(tick / 3) % 2) ctx.globalAlpha *= 0.72;
     ctx.drawImage(silhouette ? sheet.ghost : sheet.atlas,
       (frame % 6) * cell, Math.floor(frame / 6) * cell, cell, cell,

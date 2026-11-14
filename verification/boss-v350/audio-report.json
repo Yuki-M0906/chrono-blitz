@@ -1,0 +1,170 @@
+{
+  "metrics": [
+    {
+      "lowRms": 0.07430620428053553,
+      "peak": 0.513260006904602
+    },
+    {
+      "lowRms": 0.08991611624959711,
+      "peak": 0.7600052356719971
+    },
+    {
+      "lowRms": 0.11535215779673688,
+      "peak": 0.4984564781188965
+    },
+    {
+      "lowRms": 0.1868518344269168,
+      "peak": 0.7427232265472412
+    }
+  ],
+  "weightGain": {
+    "min": 1.1640349375303192,
+    "cases": [
+      {
+        "key": "punch0",
+        "rate": 0.96,
+        "ratio": 1.195663027670737
+      },
+      {
+        "key": "punch0",
+        "rate": 1.005,
+        "ratio": 1.1848983259572385
+      },
+      {
+        "key": "punch0",
+        "rate": 1.05,
+        "ratio": 1.2006912502577627
+      },
+      {
+        "key": "punch1",
+        "rate": 0.96,
+        "ratio": 1.183871989149896
+      },
+      {
+        "key": "punch1",
+        "rate": 1.005,
+        "ratio": 1.2318498307660337
+      },
+      {
+        "key": "punch1",
+        "rate": 1.05,
+        "ratio": 1.2561199866794301
+      },
+      {
+        "key": "punch2",
+        "rate": 0.96,
+        "ratio": 1.2290085891237914
+      },
+      {
+        "key": "punch2",
+        "rate": 1.005,
+        "ratio": 1.206399357248307
+      },
+      {
+        "key": "punch2",
+        "rate": 1.05,
+        "ratio": 1.2034736620836435
+      },
+      {
+        "key": "heavy0",
+        "rate": 0.96,
+        "ratio": 1.2046468035338125
+      },
+      {
+        "key": "heavy0",
+        "rate": 1.005,
+        "ratio": 1.6433861618762329
+      },
+      {
+        "key": "heavy0",
+        "rate": 1.05,
+        "ratio": 1.2875417035516243
+      },
+      {
+        "key": "heavy1",
+        "rate": 0.96,
+        "ratio": 1.1640349375303192
+      },
+      {
+        "key": "heavy1",
+        "rate": 1.005,
+        "ratio": 1.5140646881836888
+      },
+      {
+        "key": "heavy1",
+        "rate": 1.05,
+        "ratio": 1.3691269133045552
+      },
+      {
+        "key": "heavy2",
+        "rate": 0.96,
+        "ratio": 1.3479976676528884
+      },
+      {
+        "key": "heavy2",
+        "rate": 1.005,
+        "ratio": 1.4047844884089324
+      },
+      {
+        "key": "heavy2",
+        "rate": 1.05,
+        "ratio": 1.4152657999768599
+      }
+    ]
+  },
+  "live": {
+    "clips": [
+      {
+        "key": "voss-intro",
+        "accepted": true,
+        "active": "voss-intro",
+        "signal": 0.17729701101779938
+      },
+      {
+        "key": "voss-defeat",
+        "accepted": true,
+        "active": "voss-defeat",
+        "signal": 0.18471311032772064
+      },
+      {
+        "key": "kagura-finish",
+        "accepted": true,
+        "active": "kagura-finish",
+        "signal": 0.048518106341362
+      },
+      {
+        "key": "volt-finish",
+        "accepted": true,
+        "active": "volt-finish",
+        "signal": 0.3206731081008911
+      },
+      {
+        "key": "freya-finish",
+        "accepted": true,
+        "active": "freya-finish",
+        "signal": 0.3433166444301605
+      },
+      {
+        "key": "titan-finish",
+        "accepted": true,
+        "active": "titan-finish",
+        "signal": 0.04548016935586929
+      },
+      {
+        "key": "ayame-finish",
+        "accepted": true,
+        "active": "ayame-finish",
+        "signal": 0.005526799242943525
+      },
+      {
+        "key": "celine-finish",
+        "accepted": true,
+        "active": "celine-finish",
+        "signal": 0.3741820454597473
+      }
+    ],
+    "zero": false,
+    "muted": false,
+    "silentSe": 0
+  }
+}

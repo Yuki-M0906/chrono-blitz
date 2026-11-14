@@ -23,10 +23,10 @@
       "result": "clear",
       "area": 4,
       "kills": 33,
-      "lives": 3,
-      "hp": 303,
-      "ticks": 7294,
-      "score": 33194
+      "lives": 4,
+      "hp": 279,
+      "ticks": 6041,
+      "score": 33297
     },
     {
       "character": "volt",
@@ -34,39 +34,39 @@
       "area": 4,
       "kills": 33,
       "lives": 4,
-      "hp": 63,
-      "ticks": 6469,
-      "score": 33052
+      "hp": 81,
+      "ticks": 6407,
+      "score": 33593
     },
     {
       "character": "freya",
       "result": "clear",
       "area": 4,
       "kills": 33,
-      "lives": 2,
-      "hp": 268,
-      "ticks": 9916,
-      "score": 31670
+      "lives": 4,
+      "hp": 516,
+      "ticks": 6358,
+      "score": 33422
     },
     {
       "character": "titan",
       "result": "clear",
       "area": 4,
       "kills": 33,
-      "lives": 3,
-      "hp": 732,
-      "ticks": 7557,
-      "score": 33220
+      "lives": 4,
+      "hp": 191,
+      "ticks": 6409,
+      "score": 34860
     },
     {
       "character": "ayame",
       "result": "clear",
       "area": 4,
       "kills": 33,
-      "lives": 3,
-      "hp": 248,
-      "ticks": 7355,
-      "score": 32022
+      "lives": 4,
+      "hp": 198,
+      "ticks": 6170,
+      "score": 33488
     },
     {
       "character": "celine",
@@ -74,9 +74,9 @@
       "area": 4,
       "kills": 33,
       "lives": 4,
-      "hp": 141,
-      "ticks": 6717,
-      "score": 33000
+      "hp": 526,
+      "ticks": 6091,
+      "score": 33535
     }
   ],
   "browserErrors": []

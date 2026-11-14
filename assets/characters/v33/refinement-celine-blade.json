@@ -1,0 +1,4 @@
+{
+  "prompt": "Use case: precise-object-edit. Edit ONLY the THIRD ROW THIRD COLUMN figure (zero-based frame14) in this 1536x1024 6x4 sprite atlas. That jumping woman's silver rapier points diagonally down-left with its tip extending into the previous cell. SHORTEN THIS ONE SILVER BLADE BY FIFTY PERCENT, keeping the hand, gold guard and blade angle exactly in place. The shortened tip must end at x550 or greater, strictly inside column3 (x512..767). It must NOT extend left of x512. All other 23 figures, all faces, costumes, poses, weapons and effects unchanged. Transparent background must remain transparent; no white or gray matte. Exact1536x1024.",
+  "source": "C:\\Users\\User\\.codex\\generated_images\\01a1ba29-d6f4-7692-a4f0-387d9fa6e0e3\\exec-5ef3f024-164a-4b9b-9ade-3c31cde8b776.png"
+}

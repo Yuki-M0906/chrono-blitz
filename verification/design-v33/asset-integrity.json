@@ -1,0 +1,32 @@
+{
+  "version": "3.3.0",
+  "sha256": {
+    "assets/sprites/design-v33/kagura.png": "d294e3aea922afc770277b965d6989d87704d122e355b7b36fc7622d69fa2326",
+    "assets/sprites/design-v33/kagura-motion.png": "9da125df06ac141688e60b305f95d524ab0ad0c8e9c7099a52a9571445ce5102",
+    "assets/sprites/design-v33/kagura-throw.png": "484b8d3ef160dccd7d0d9c0ea32e3dfeb533b5f8b2c5b5dadfa483a9a158b992",
+    "assets/belt/art/design-v33/dash-kagura.png": "f1fc16aaa1ff9b4e2d766812b1e4ed1260d9d54d7099fa51219654054c12453b",
+    "assets/sprites/design-v33/volt.png": "e6280c361c5f601c4055c641a1f427e60a016ceeeea2d2cff15174115b33ec5a",
+    "assets/sprites/design-v33/volt-motion.png": "74a2114ef668c64627b71800a3fee092473e1be14f873022d0d16f0405bf95c9",
+    "assets/sprites/design-v33/volt-throw.png": "c2cbcaa842160daf25c90d95db8af579893d3f8c92d446a68eab43fbcf3189a5",
+    "assets/belt/art/design-v33/dash-volt.png": "76458fde62048dbdf8060a3f80637d294f9cd0eff4a6e7de1e35cf7b00859b89",
+    "assets/sprites/design-v33/freya.png": "d113233a9b61c5743ae31f1d4f7cee668b9ff51e28a26245e9e8649fec5528e1",
+    "assets/sprites/design-v33/freya-motion.png": "7c75c40de77d17bd0a9e53ccd9047218efb3075b1e79e8d469533a1bbece3e1a",
+    "assets/sprites/design-v33/freya-throw.png": "b90909aa41c0e6bca45f624f36acaf10c017e92f56ccdf6204cea9ab7fbcf355",
+    "assets/belt/art/design-v33/dash-freya.png": "d41e881d2871a300c77e421f077fd47df20faa64f545b2dac7f081b51b318f46",
+    "assets/sprites/design-v33/titan.png": "7ae80b85c881e868c87154aac52be16ef9d799a3876f2f3d7070b43f3fc58a1b",
+    "assets/sprites/design-v33/titan-motion.png": "ff09611ecbedb0dc2ce546b07cdd0c78b4f5d3432f2249382efdd15c16384e77",
+    "assets/sprites/design-v33/titan-throw.png": "38ffa6601e1617a530dbcead78f40a414c8178f0ff43d2c02131085d54e8aea7",
+    "assets/belt/art/design-v33/dash-titan.png": "c9074bb905e4b8bb26d845201684c06d2b6ad3e9afc6fb521f86819d9e5e9588",
+    "assets/sprites/design-v33/ayame.png": "00862ed71db3e7329a92e500485f521e203c8da224fa02df77a48e82753d9ef2",
+    "assets/sprites/design-v33/ayame-motion.png": "712bcb6f7869a36ea0a85014b7b8ad64c8715f00b9e0d9be2ca34565e4f978b3",
+    "assets/sprites/design-v33/ayame-throw.png": "0f74eb3b7dbf3ff09e1a1f9a87fbfd856b26c526e6ecffcd90eed8c04e374276",
+    "assets/belt/art/design-v33/dash-ayame.png": "91256864d769359837cb5ba1c7b79b6358ec88f33f069f26f5a89ccf42f31ff4",
+    "assets/sprites/design-v33/celine.png": "fe19c0c5832d3751ae14b907bead6fe36e39b808b170e3eb17f37192adc7694e",
+    "assets/sprites/design-v33/celine-motion.png": "edbb0c4158d8bb9e0e0d47643d2cbe741a933c6353d897179307fa0fbf4f4ace",
+    "assets/sprites/design-v33/celine-throw.png": "07536e97e648049436b5a8bcb23e74d9995f2819525362e4103e5886f0cff161",
+    "assets/belt/art/design-v33/dash-celine.png": "dbcbc36bf42db35d839e24d2a6a760c2171b86ca9a81f94a7a3d437584c749aa",
+    "assets/belt/art/design-v33/voss-base.png": "2f1fae85e37cecb0d29787e437ab342242c45de4666ba00de3f038c1bfe1e038",
+    "assets/belt/art/design-v33/voss-motion.png": "b81da12cb27c0899b935e41ebd3ca9b38e14173acd12f196797ebd093fe07404",
+    "assets/belt/art/design-v33/voss-throw.png": "aa2a6c5730891057da369c0e19be74ea52d5abfa1ca8558b4c5f6a4d8543ce01"
+  }
+}

@@ -1,0 +1,226 @@
+[
+  {
+    "id": "maw-intro",
+    "text": "炉の底で、灰になれ！",
+    "voice": "麒ヶ島宗麟",
+    "style": 53,
+    "seconds": 1.984,
+    "peak": 27524,
+    "rms": 5057.64,
+    "sha256": "4cb690795490a9e5187eeb339b84aa642729a7d430e02edb4b9894d8d1f6b068",
+    "query": {
+      "accent_phrases": [
+        {
+          "moras": [
+            {
+              "text": "ロ",
+              "vowel": "o",
+              "vowel_length": 0.07923485338687897,
+              "pitch": 3.825556402206421,
+              "consonant": "r",
+              "consonant_length": 0.04299549013376236
+            },
+            {
+              "text": "ノ",
+              "vowel": "o",
+              "vowel_length": 0.07171761006116867,
+              "pitch": 5.623333616256714,
+              "consonant": "n",
+              "consonant_length": 0.04057116061449051
+            }
+          ],
+          "accent": 2,
+          "pause_mora": null,
+          "is_interrogative": false
+        },
+        {
+          "moras": [
+            {
+              "text": "ソ",
+              "vowel": "o",
+              "vowel_length": 0.04668910801410675,
+              "pitch": 5.231767845153809,
+              "consonant": "s",
+              "consonant_length": 0.06786000728607178
+            },
+            {
+              "text": "コ",
+              "vowel": "o",
+              "vowel_length": 0.049508750438690186,
+              "pitch": 5.206487159729004,
+              "consonant": "k",
+              "consonant_length": 0.05611642822623253
+            },
+            {
+              "text": "デ",
+              "vowel": "e",
+              "vowel_length": 0.17720141347646712,
+              "pitch": 5.002026710510254,
+              "consonant": "d",
+              "consonant_length": 0.04391889274120331
+            }
+          ],
+          "accent": 3,
+          "pause_mora": {
+            "text": "、",
+            "consonant": null,
+            "consonant_length": null,
+            "vowel": "pau",
+            "vowel_length": 0.095,
+            "pitch": 0.0
+          },
+          "is_interrogative": false
+        },
+        {
+          "moras": [
+            {
+              "text": "ハ",
+              "vowel": "a",
+              "vowel_length": 0.0815877616405487,
+              "pitch": 4.566552562713623,
+              "consonant": "h",
+              "consonant_length": 0.08102855831384659
+            },
+            {
+              "text": "イ",
+              "vowel": "i",
+              "vowel_length": 0.07192765176296234,
+              "pitch": 5.345760898590089,
+              "consonant": null,
+              "consonant_length": null
+            },
+            {
+              "text": "ニ",
+              "vowel": "i",
+              "vowel_length": 0.05572041998505592,
+              "pitch": 5.4707500267028815,
+              "consonant": "n",
+              "consonant_length": 0.04964328557252884
+            }
+          ],
+          "accent": 3,
+          "pause_mora": null,
+          "is_interrogative": false
+        },
+        {
+          "moras": [
+            {
+              "text": "ナ",
+              "vowel": "a",
+              "vowel_length": 0.09224910110235214,
+              "pitch": 5.300910758972168,
+              "consonant": "n",
+              "consonant_length": 0.04282103106379509
+            },
+            {
+              "text": "レ",
+              "vowel": "e",
+              "vowel_length": 0.1828778088092804,
+              "pitch": 4.580496482849121,
+              "consonant": "r",
+              "consonant_length": 0.025781571865081787
+            }
+          ],
+          "accent": 1,
+          "pause_mora": null,
+          "is_interrogative": false
+        }
+      ],
+      "speed_scale": 0.82,
+      "pitch_scale": -0.14,
+      "intonation_scale": 1.0,
+      "volume_scale": 1.0,
+      "pre_phoneme_length": 0.03,
+      "post_phoneme_length": 0.12,
+      "output_sampling_rate": 24000,
+      "output_stereo": false,
+      "kana": "ロノ'/ソコデ'、ハイニ'/ナ'レ"
+    }
+  },
+  {
+    "id": "maw-defeat",
+    "text": "ぐおおおおおっ！",
+    "voice": "麒ヶ島宗麟",
+    "style": 53,
+    "seconds": 1.92,
+    "peak": 24903,
+    "rms": 5390.07,
+    "sha256": "29cd37ec949d9485d34f5ef824c96363be8005e84334a6b41645724afcee6d5f",
+    "query": {
+      "accent_phrases": [
+        {
+          "moras": [
+            {
+              "text": "グ",
+              "vowel": "u",
+              "vowel_length": 0.14,
+              "pitch": 4.363081722259522,
+              "consonant": "g",
+              "consonant_length": 0.05737599730491638
+            },
+            {
+              "text": "オ",
+              "vowel": "o",
+              "vowel_length": 0.22,
+              "pitch": 5.526975505828858,
+              "consonant": null,
+              "consonant_length": null
+            },
+            {
+              "text": "オ",
+              "vowel": "o",
+              "vowel_length": 0.22,
+              "pitch": 5.381366611480713,
+              "consonant": null,
+              "consonant_length": null
+            },
+            {
+              "text": "オ",
+              "vowel": "o",
+              "vowel_length": 0.22,
+              "pitch": 5.141631492614746,
+              "consonant": null,
+              "consonant_length": null
+            },
+            {
+              "text": "オ",
+              "vowel": "o",
+              "vowel_length": 0.22,
+              "pitch": 4.923778049468995,
+              "consonant": null,
+              "consonant_length": null
+            },
+            {
+              "text": "オ",
+              "vowel": "o",
+              "vowel_length": 0.22,
+              "pitch": 4.673900318145752,
+              "consonant": null,
+              "consonant_length": null
+            },
+            {
+              "text": "ッ",
+              "vowel": "cl",
+              "vowel_length": 0.095,
+              "pitch": 0.0,
+              "consonant": null,
+              "consonant_length": null
+            }
+          ],
+          "accent": 6,
+          "pause_mora": null,
+          "is_interrogative": false
+        }
+      ],
+      "speed_scale": 0.82,
+      "pitch_scale": -0.14,
+      "intonation_scale": 1.0,
+      "volume_scale": 1.0,
+      "pre_phoneme_length": 0.03,
+      "post_phoneme_length": 0.12,
+      "output_sampling_rate": 24000,
+      "output_stereo": false,
+      "kana": "グオオオオオ'ッ"
+    }
+  }
+]

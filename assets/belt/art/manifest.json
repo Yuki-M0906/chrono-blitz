@@ -1,5 +1,5 @@
 {
-  "version": "2.8.0",
+  "version": "3.6.0",
   "provider": "built-in image_gen",
   "assets": {
     "district-0": {
@@ -28,49 +28,109 @@
       "rows": 2
     },
     "voss-base": {
-      "file": "voss-base.png",
+      "file": "design-v33/voss-base.png",
       "columns": 6,
       "rows": 4
     },
     "voss-motion": {
-      "file": "voss-motion.png",
+      "file": "design-v33/voss-motion.png",
       "columns": 6,
       "rows": 4
     },
     "voss-throw": {
-      "file": "voss-throw.png",
+      "file": "design-v33/voss-throw.png",
       "columns": 6,
       "rows": 4
     },
     "dash-kagura": {
-      "file": "dash-kagura.png",
+      "file": "design-v33/dash-kagura.png",
       "columns": 6,
       "rows": 4
     },
     "dash-volt": {
-      "file": "dash-volt.png",
+      "file": "design-v33/dash-volt.png",
       "columns": 6,
       "rows": 4
     },
     "dash-freya": {
-      "file": "dash-freya.png",
+      "file": "design-v33/dash-freya.png",
       "columns": 6,
       "rows": 4
     },
     "dash-titan": {
-      "file": "dash-titan.png",
+      "file": "design-v33/dash-titan.png",
       "columns": 6,
       "rows": 4
     },
     "dash-ayame": {
-      "file": "dash-ayame.png",
+      "file": "design-v33/dash-ayame.png",
       "columns": 6,
       "rows": 4
     },
     "dash-celine": {
-      "file": "dash-celine.png",
+      "file": "design-v33/dash-celine.png",
       "columns": 6,
       "rows": 4
+    },
+    "rise-kagura": {
+      "file": "actions-v344/kagura.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "rise-volt": {
+      "file": "actions-v360/volt.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "rise-freya": {
+      "file": "actions-v360/freya.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "rise-titan": {
+      "file": "actions-v343/titan.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "rise-ayame": {
+      "file": "actions-v360/ayame.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "rise-celine": {
+      "file": "actions-v360/celine.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "fx-fire": {
+      "file": "actions-v342/fire.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "maw": {
+      "file": "actions-v360/maw.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "factory-0": {
+      "file": "factory-v360/0.png",
+      "horizon": 0.713
+    },
+    "factory-1": {
+      "file": "factory-v360/1.png",
+      "horizon": 0.708
+    },
+    "factory-2": {
+      "file": "factory-v360/2.png",
+      "horizon": 0.716
+    },
+    "factory-3": {
+      "file": "factory-v360/3.png",
+      "horizon": 0.734
+    },
+    "factory-4": {
+      "file": "factory-v360/4.png",
+      "horizon": 0.706
     }
   }
 }

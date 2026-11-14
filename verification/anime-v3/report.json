@@ -1,0 +1,158 @@
+{
+  "version": "3.0.0",
+  "rawPoses": 648,
+  "cachedPoses": 648,
+  "loaded": {
+    "shared": 18,
+    "boss": 3,
+    "dash": 6,
+    "errors": [],
+    "cell": 384,
+    "scale": 1.15
+  },
+  "preservedGameplay": true,
+  "preservedAudioAndScenery": true,
+  "purity": {
+    "unchanged": true,
+    "randomCalls": 0,
+    "meanMs": 0.16333333336644704
+  },
+  "alpha": [
+    {
+      "id": "kagura",
+      "transparent": 0.6888046264648438,
+      "softPixels": 489468
+    },
+    {
+      "id": "kagura-motion",
+      "transparent": 0.6376355489095052,
+      "softPixels": 569950
+    },
+    {
+      "id": "kagura-throw",
+      "transparent": 0.643561045328776,
+      "softPixels": 560630
+    },
+    {
+      "id": "volt",
+      "transparent": 0.6900711059570312,
+      "softPixels": 487476
+    },
+    {
+      "id": "volt-motion",
+      "transparent": 0.6535790761311849,
+      "softPixels": 544873
+    },
+    {
+      "id": "volt-throw",
+      "transparent": 0.6814257303873698,
+      "softPixels": 501074
+    },
+    {
+      "id": "freya",
+      "transparent": 0.6488526662190756,
+      "softPixels": 552307
+    },
+    {
+      "id": "freya-motion",
+      "transparent": 0.5835533142089844,
+      "softPixels": 655014
+    },
+    {
+      "id": "freya-throw",
+      "transparent": 0.6511332194010416,
+      "softPixels": 548720
+    },
+    {
+      "id": "titan",
+      "transparent": 0.5937391916910807,
+      "softPixels": 638993
+    },
+    {
+      "id": "titan-motion",
+      "transparent": 0.5710614522298177,
+      "softPixels": 674662
+    },
+    {
+      "id": "titan-throw",
+      "transparent": 0.6303138732910156,
+      "softPixels": 581466
+    },
+    {
+      "id": "ayame",
+      "transparent": 0.6908721923828125,
+      "softPixels": 486216
+    },
+    {
+      "id": "ayame-motion",
+      "transparent": 0.6351248423258463,
+      "softPixels": 573899
+    },
+    {
+      "id": "ayame-throw",
+      "transparent": 0.6769917805989584,
+      "softPixels": 508048
+    },
+    {
+      "id": "celine",
+      "transparent": 0.7082271575927734,
+      "softPixels": 458919
+    },
+    {
+      "id": "celine-motion",
+      "transparent": 0.6701634724934896,
+      "softPixels": 518788
+    },
+    {
+      "id": "celine-throw",
+      "transparent": 0.6911811828613281,
+      "softPixels": 485730
+    },
+    {
+      "id": "voss-base",
+      "transparent": 0.5667349497477213,
+      "softPixels": 681467
+    },
+    {
+      "id": "voss-motion",
+      "transparent": 0.5451800028483073,
+      "softPixels": 715370
+    },
+    {
+      "id": "voss-throw",
+      "transparent": 0.5890337626139323,
+      "softPixels": 646394
+    },
+    {
+      "id": "dash-kagura",
+      "transparent": 0.6437911987304688,
+      "softPixels": 560268
+    },
+    {
+      "id": "dash-volt",
+      "transparent": 0.657501220703125,
+      "softPixels": 538704
+    },
+    {
+      "id": "dash-freya",
+      "transparent": 0.6016400655110677,
+      "softPixels": 626566
+    },
+    {
+      "id": "dash-titan",
+      "transparent": 0.6010570526123047,
+      "softPixels": 627483
+    },
+    {
+      "id": "dash-ayame",
+      "transparent": 0.676184336344401,
+      "softPixels": 509318
+    },
+    {
+      "id": "dash-celine",
+      "transparent": 0.7280737559000651,
+      "softPixels": 427703
+    }
+  ],
+  "browserErrors": []
+}

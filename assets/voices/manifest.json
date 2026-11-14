@@ -1,6 +1,6 @@
 {
-  "version": "1.7.0",
-  "engine": "VOICEVOX Core 0.17.1 / ONNX Runtime 1.17.3 / VVM 0.17.1 / CPU (v2.7 Expressive Acting & Mora Prosody)",
+  "version": "3.6.0",
+  "engine": "VOICEVOX Core 0.17.1 / ONNX Runtime 1.17.3 / VVM 0.17.1 / CPU (v3.2 Natural Acting Prosody, AquesTalk Accent Control & NCC-PSOLA)",
   "language": "ja-JP",
   "profiles": {
     "kagura": {
@@ -10,18 +10,18 @@
         10
       ],
       "styles": {
-        "normal": 39,
+        "normal": 40,
         "force": 40,
         "hurt": 40,
         "win": 11,
         "ko": 41,
-        "intro": 40
+        "intro": 11
       },
-      "speed": 1.01,
-      "pitch": -0.01,
+      "speed": 1.02,
+      "pitch": -0.015,
       "superSegments": [
-        "奥義！",
-        "紅蓮、天翔斬！"
+        "奥義……",
+        "紅蓮・天翔斬っ！"
       ],
       "credit": "VOICEVOX:玄野武宏",
       "lines": {
@@ -45,7 +45,8 @@
         "grabbed": "なにっ！",
         "throw_release": "せいっ！",
         "thrown": "うわあっ！",
-        "throw_impact": "ぐはっ！"
+        "throw_impact": "ぐはっ！",
+        "finish": "悪の炎は、俺が断つ。"
       }
     },
     "volt": {
@@ -56,19 +57,22 @@
       "styles": {
         "normal": 32,
         "force": 34,
-        "hurt": 33,
+        "hurt": 34,
         "win": 32,
-        "ko": 33,
+        "ko": 35,
         "intro": 34
       },
-      "speed": 1.03,
+      "speed": 1.05,
       "pitch": -0.01,
       "eventSpeeds": {
-        "grabbed": 1.24
+        "grabbed": 1.18,
+        "light0": 1.18,
+        "light1": 1.18,
+        "jump": 1.2
       },
       "superSegments": [
-        "オーバードライブ！",
-        "ラグナロク！"
+        "オーバードライブっ！",
+        "ラグナロクっ！"
       ],
       "credit": "VOICEVOX:白上虎太郎",
       "lines": {
@@ -92,7 +96,8 @@
         "grabbed": "しまった！",
         "throw_release": "そらよっ！",
         "thrown": "うわっ！",
-        "throw_impact": "がはっ！"
+        "throw_impact": "がはっ！",
+        "finish": "これで終わりだ！街は返してもらうぜ！"
       }
     },
     "freya": {
@@ -104,15 +109,15 @@
         "normal": 2,
         "force": 6,
         "hurt": 6,
-        "win": 4,
+        "win": 2,
         "ko": 2,
-        "intro": 6
+        "intro": 2
       },
-      "speed": 1.01,
-      "pitch": -0.015,
+      "speed": 1.03,
+      "pitch": -0.01,
       "superSegments": [
-        "アブソリュート、ゼロ！",
-        "カリバー！"
+        "アブソリュート・ゼロ……",
+        "カリバーっ！"
       ],
       "credit": "VOICEVOX:四国めたん",
       "lines": {
@@ -136,7 +141,8 @@
         "grabbed": "あっ！",
         "throw_release": "はあっ！",
         "thrown": "ああっ！",
-        "throw_impact": "くっ！"
+        "throw_impact": "くっ！",
+        "finish": "あなたの支配は、ここで終わりよ。"
       }
     },
     "titan": {
@@ -152,11 +158,11 @@
         "ko": 53,
         "intro": 53
       },
-      "speed": 1.01,
-      "pitch": -0.025,
+      "speed": 1.02,
+      "pitch": -0.045,
       "superSegments": [
-        "メテオ！",
-        "カタストロフィ！"
+        "メテオ……",
+        "カタストロフィっ！"
       ],
       "credit": "VOICEVOX:麒ヶ島宗麟",
       "lines": {
@@ -180,7 +186,8 @@
         "grabbed": "ぬおっ！",
         "throw_release": "どりゃあっ！",
         "thrown": "ぐおおっ！",
-        "throw_impact": "がはっ！"
+        "throw_impact": "がはっ！",
+        "finish": "力は、守るために使うものだ。"
       }
     },
     "ayame": {
@@ -189,18 +196,18 @@
         3
       ],
       "styles": {
-        "normal": 61,
+        "normal": 62,
         "force": 62,
         "hurt": 62,
-        "win": 61,
-        "ko": 64,
+        "win": 62,
+        "ko": 63,
         "intro": 61
       },
-      "speed": 1.04,
-      "pitch": 0.01,
+      "speed": 1.02,
+      "pitch": 0.0,
       "superSegments": [
-        "秘奥義！",
-        "ひゃっか、りょうらん！"
+        "秘奥義……",
+        "百花・繚乱っ！"
       ],
       "credit": "VOICEVOX:中国うさぎ",
       "lines": {
@@ -224,7 +231,8 @@
         "grabbed": "えっ！",
         "throw_release": "せいっ！",
         "thrown": "きゃあっ！",
-        "throw_impact": "うっ！"
+        "throw_impact": "うっ！",
+        "finish": "悪の花は、ここで散りなさい。"
       }
     },
     "celine": {
@@ -233,25 +241,26 @@
         2
       ],
       "styles": {
-        "normal": 17,
-        "force": 16,
+        "normal": 16,
+        "force": 18,
         "hurt": 18,
-        "win": 17,
-        "ko": 16,
-        "intro": 17
+        "win": 16,
+        "ko": 18,
+        "intro": 16
       },
       "speed": 1.04,
       "pitch": -0.01,
       "eventSpeeds": {
-        "light1": 1.22,
-        "hurt1": 1.14,
-        "sp1": 1.1,
-        "sp2": 1.08,
-        "sp3": 1.08
+        "light0": 1.06,
+        "light1": 1.08,
+        "heavy0": 1.06,
+        "heavy1": 1.04,
+        "dash": 1.06,
+        "burst": 1.06
       },
       "superSegments": [
-        "エトワール！",
-        "デュ、ソワール！"
+        "エトワール……",
+        "デュ・ソワールっ！"
       ],
       "credit": "VOICEVOX:九州そら",
       "lines": {
@@ -275,7 +284,58 @@
         "grabbed": "あっ！",
         "throw_release": "はあっ！",
         "thrown": "ああっ！",
-        "throw_impact": "くっ！"
+        "throw_impact": "くっ！",
+        "finish": "幕引きよ。勝利は、私のもの。"
+      }
+    },
+    "voss": {
+      "voice": "麒ヶ島宗麟",
+      "models": [
+        12
+      ],
+      "styles": {
+        "normal": 53,
+        "force": 53,
+        "hurt": 53,
+        "win": 53,
+        "ko": 53,
+        "intro": 53
+      },
+      "speed": 1.02,
+      "pitch": -0.045,
+      "superSegments": [
+        "メテオ……",
+        "カタストロフィっ！"
+      ],
+      "credit": "VOICEVOX:麒ヶ島宗麟",
+      "lines": {
+        "intro": "この街は俺のものだ。逆らう奴は、叩き潰す！",
+        "defeat": "ぐああああああっ！"
+      }
+    },
+    "maw": {
+      "voice": "麒ヶ島宗麟",
+      "models": [
+        12
+      ],
+      "styles": {
+        "normal": 53,
+        "force": 53,
+        "hurt": 53,
+        "win": 53,
+        "ko": 53,
+        "intro": 53
+      },
+      "speed": 1.02,
+      "pitch": -0.045,
+      "superSegments": [
+        "メテオ……",
+        "カタストロフィっ！"
+      ],
+      "credit": "VOICEVOX:麒ヶ島宗麟",
+      "lines": {
+        "intro": "炉の底で、灰になれ！",
+        "defeat": "ぐおおおおおっ！"
       }
     }
   }

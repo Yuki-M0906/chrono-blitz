@@ -1,0 +1,111 @@
+{
+  "version": "3.4.4",
+  "provider": "built-in image_gen",
+  "assets": {
+    "district-0": {
+      "file": "neon-row.png",
+      "horizon": 0.71
+    },
+    "district-1": {
+      "file": "dead-arcade.png",
+      "horizon": 0.718
+    },
+    "district-2": {
+      "file": "underpass.png",
+      "horizon": 0.74
+    },
+    "district-3": {
+      "file": "black-market.png",
+      "horizon": 0.707
+    },
+    "district-4": {
+      "file": "iron-gate.png",
+      "horizon": 0.71
+    },
+    "props": {
+      "file": "props.png",
+      "columns": 4,
+      "rows": 2
+    },
+    "voss-base": {
+      "file": "design-v33/voss-base.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "voss-motion": {
+      "file": "design-v33/voss-motion.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "voss-throw": {
+      "file": "design-v33/voss-throw.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "dash-kagura": {
+      "file": "design-v33/dash-kagura.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "dash-volt": {
+      "file": "design-v33/dash-volt.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "dash-freya": {
+      "file": "design-v33/dash-freya.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "dash-titan": {
+      "file": "design-v33/dash-titan.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "dash-ayame": {
+      "file": "design-v33/dash-ayame.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "dash-celine": {
+      "file": "design-v33/dash-celine.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "rise-kagura": {
+      "file": "actions-v344/kagura.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "rise-volt": {
+      "file": "actions-v342/volt.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "rise-freya": {
+      "file": "actions-v342/freya.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "rise-titan": {
+      "file": "actions-v343/titan.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "rise-ayame": {
+      "file": "actions-v342/ayame.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "rise-celine": {
+      "file": "actions-v342/celine.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "fx-fire": {
+      "file": "actions-v342/fire.png",
+      "columns": 6,
+      "rows": 4
+    }
+  }
+}

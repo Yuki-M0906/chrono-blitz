@@ -1,4 +1,40 @@
-# NEON UPRISING — Stage 1 / v2.8.1
+# NEON UPRISING — Stage 1 & 2 / v3.6.1
+
+## v3.6.1 整合修正
+
+`ensureBGM()`（HTML 直書き）が街モードの曲を 5 番に決め打ちしていたのを `STREET_STAGES[].music` 参照へ修正。技表と HUD 下段に 3 段上昇技・掴み追撃・ステージ進行を追記。検証スクリプト 6 本を現行素材に合わせて更新（詳細は HTML 冒頭 [FIX-128]〜[DOC-130]）。ステージ 2 の説明は末尾「v3.6.0 — INFERNAL WORKS」。
+
+## v3.5.0 敵9種・重厚打撃・ボス演出
+
+`STREET.enemies` に色違い6種を追加。各敵の `role` は既存3種の戦闘・ドロップ仕様を継承します。第2区画以降の編成を更新。`beginFinale` / `updateFinale` は致命打後の1/4速落下、絶叫、6人別の決め台詞、クリアを管理します。音声の再生速度は変えず、実音声長に合わせて字幕と待ち時間を設定。ポーズで時計を停止し、再開時に該当台詞を再生します。新音声の生成指示と計測値は `../voices/cinematic-v350/report.json`。検証は `tools/verify-boss-v350.cjs` / `tools/verify-weight-v350.cjs`。
+
+## v3.4.4 待機姿勢・炎上ダウン・KAGURA
+
+共有レンダラーとボスのIDLEを基準コマへ固定し、体格が違う絵の循環による鼓動を撤去。`prepareAtlas`の`fx-fire`だけ元の256pxセルを厳密に切り出し、ダウン後半に上段の人物が混入する問題を解消。KAGURA上昇技は `art/actions-v344/kagura.png` に再制作。検証は `tools/verify-idle-fire-v344.cjs`、旧版の混入再現と修正版の比較結果は `verification/idle-fire-v344/`。
+
+## v3.4.3 体型・炎上方向・固定HUD
+
+TITAN上昇技は `art/actions-v343/titan.png`（通常絵を基準に再制作）。`burnDirection`で炎上絵を攻撃方向に反転します。敵の頭上ゲージは廃止し、プレイヤーの下に最後に命中/掴みを行った敵名・HPを表示。`trackHudTarget` / `trackHudHit` / `hudEnemy` が対象とダメージ残像を管理し、`drawHealth` / `hudPanel` / `drawHUD` が描画します。検証は `tools/verify-hud-v343.cjs`、画面とレポートは `verification/hud-v343/`。
+
+## v3.4.2 上昇技・炎ダッシュ・前方投げ
+
+専用画像は `art/actions-v342/`、生成ツールは built-in image_gen。上昇技6枚144姿勢と炎24コマを追加。専用SEは `../audio/engine.js` の `synthArcadeAction` で生成。掴み範囲・前方投げの仕様と復元方法はHTML冒頭を参照。`node tools/verify-actions-v342.cjs` で全6人の技・左右投げ・専用音を検証し、`verification/actions-v342/` に結果とプレビューを出力します。
+
+## v3.3.0 全キャラクターデザイン刷新
+
+新しいデザイン基準から全6人・色替え雑魚・VOSSの通常/補間/投げ/ダッシュ全姿勢を描き直しました。採用画像は `../sprites/design-v33/` と `art/design-v33/`。基準絵・生成プロンプト・3.2.0の比較基準は `../characters/v33/`。表示倍率・判定・戦闘処理・背景・音響は3.2.0を維持しています。
+
+## v3.2.0 キャラクター音声棒読みさらなる徹底解消（音韻アクセント・無歪みプロソディ・演技スタイル最適化）
+
+- キャラクター音声126本をVOICEVOXにて完全新規再生成。棒読みを徹底解消し、格闘ゲームに相応しい鋭い気合・演技プロソディ・F0ダイナミクス・24kHzスタジオマスタリングを適用。
+- 打撃効果音（軽打撃・強打撃・ダッシュ攻撃・斬撃・破壊・掴み・着地）を多段FMウィップクラック＋骨砕きグロウル＋地響きサブベース＋多重ヒットスパーク倍音へ徹底刷新。
+- セルアニメ調グラフィック、当たり判定、ダッシュ仕様、戦闘ロジック、背景は100%維持。
+
+## v3.0.0 セルアニメ調キャラクター
+
+全員の通常/投げ/ダッシュとVOSS全姿勢を描き直し、雑魚敵の色変えにも反映。新画像は共通 `../sprites/anime-v3/` と街専用 `art/anime-v3/`。`FighterSprites.prepareAtlas` が256px元画像を縮小せず384pxセル/64px余白へ転写し、`scaleFor` で旧表示の1.15倍に描画します。敵HPバーと攻撃予告の高さのみ調整し、戦闘処理は2.8.1のままです。背景・物体・音声・音響は変更していません。
+
+生成資料は `../characters/v3/prompts.json`。旧画像/コードを保存し、復元方法と更新詳細をHTML冒頭に記載。`node tools/verify-anime.cjs` で全648姿勢と2.8.1ゲームロジックの一致を検証できます。以下は各旧版の履歴です。
 
 `ai_studio_code.html`の起動メニューから選ぶ、1人用ベルトスクロールアクション。
 既存の対戦ゲームは「OVERDRIVE」として同じメニューから起動する。
@@ -66,7 +102,7 @@
 
 通常進行は計33体。全滅でGO表示、右に進むと次の区画。カメラと戻れる左端は後戻りしない。
 初期残機3、20,000点で一度だけ1UP。区画ごと150秒。死亡後は同じ戦闘へ復帰、最終残機でゲームオーバー。
-ボスと残敵を倒すとステージ1クリア。未実装のステージ2には遷移しない。
+ボスと残敵を倒すとステージ1クリア。クリア画面で Enter を押すとステージ2（INFERNAL WORKS、v3.6.0）へ進む。
 
 - RAZOR: 素早く回り込む。HP122。
 - SHIV: 間合いが長い。HP106。
@@ -123,7 +159,7 @@ node tools/verify-voice-update.cjs
 - `attack()`: ファイナルファイト方式。段階は `chainHit`（直前の段が命中）かつ `comboTTL` 内でのみ進む。1 段目 ATK_L、2 段目 ATK_C_L（ボディブロー）、3 段目 ATK_H（アッパー、`upper: true`）。空振りはパンチに戻る。
 - `swing()`: 敵・破壊物への命中で `a.chainHit = true`。アッパーは `hurt(..., 'upper')` で vz 11 / knockX 5 と高く短く飛ぶ。ボスのアーマーは 'upper' も打撃扱い。
 - チェーン投げ: 3 段目に入る瞬間に S / ↓ が押されていて正面 `reach` 以内に `grabbable()` の敵がいれば `beginGrab()` → `throwHeld(facing)` を即実行。投げた敵の体が他の敵に当たる処理は既存の `throwFlight` と共通。鉄パイプ所持中は投げに変化しない。
-- `STREET.version`（現在 '2.8.1'）を HUB / STREET_SELECT の右上と HUD 右下に表示。バージョンを上げるときはここと HTML ヘッダー・index.html・README.md を揃える。
+- `STREET.version`（現在 '3.0.0'）を HUB / STREET_SELECT の右上と HUD 右下に表示。バージョンを上げるときはここと HTML ヘッダー・index.html・README.md を揃える。
 
 ## v2.3.1 の変更
 
@@ -138,7 +174,7 @@ node tools/verify-voice-update.cjs
 ## v2.5.0 の変更（グラフィックのみ）
 
 - `art/` の PNG 9 枚は built-in image_gen で制作。背景は 5 区画それぞれ専用、物体は 4×2 の 8 コマ、ボスは 6×4 の 3 シート・72 姿勢。制作指示は `prompts-v2.5.json` と `prompts-v2.5-extra.json`。
-- `BeltArt.prepareBoard()` は manifest の horizon で縁石を床 y=440 に合わせる。1432px 幅の背景を区画左端−96 に置き、192px の重なりで次区画をフェード合成。雨・蒸気・反射は tick から描画し、乱数や更新処理は使わない。
+- `BeltArt.prepareBoard()` は manifest の horizon で縁石を床 y=440 に合わせる。1464px 幅の背景を区画左端−96 に置き、192px の重なりで次区画をフェード合成。雨・蒸気・反射は tick から描画し、乱数や更新処理は使わない。
 - 箱・缶は HP 24 未満で損傷コマ。拾得品の浮遊とラベルは維持し、パイプ所持時にも専用画像を表示。破壊・回復・得点・耐久・当たり判定は変更なし。
 - IRON VOSS は赤黒い装甲コートと油圧ガントレットの独自デザイン。`kind === 'boss'` の描画だけ差し替え。内部の Titan 参照は声と既存ゲーム仕様の維持に使用。HP・AI・攻撃範囲・増援・予告は旧版のまま。
 - `BeltArt.bossFrame()` は共通姿勢番号を使い、待機時の歩きコマを除外し、床叩きの接地を既存の SLAM 20F（ダメージと音）へ同期。アトラスは共通の 160px キャッシュ・16px 余白・微小断片除去を再利用。倒れコマの左端だけ切り出し範囲を補正。
@@ -160,3 +196,9 @@ node tools/verify-voice-update.cjs
 - `STREET.version` を `'2.7.0'` に更新。ゲームロジック・当たり判定・物理・AI・スプライト・背景・BGM 譜面は v2.6.0 から一切変更なし。
 - キャラクター音声（全 6 人・126 クリップ）の棒読み解消（`assets/voices/voicevox-config.json`、`tools/generate-voicevox.py`、`data/voices.js`）：長母音・二重母音・撥音を統合した音節単位のアクセント制御、複合必殺技の後半クライマックスリフト、時変エルミート補間による音節内 F0 演技コンター（立ち上がりしゃくり・気合の語尾フォール・被弾トレモロ）、誤読（`はあっ！`→`ハアッ！` 等）と疑問文イントネーション誤適用の修正。
 - 効果音（SE）の爽快感強化（`assets/audio/engine.js`）：`synthImpact`（`punch / heavy / slash / metal / wood`）、`synthWhoosh`、`synthCatch`、`synthLanding`、`synthEnergy`、`synthReverse` に高速 FM トランジェント・ヒットスパーク倍音・2 段ショックウェーブ・金属分散チャープを導入し、`playHit / playGrapple / playSuper / playBreak` のステレオ・レイヤリングを強化。
+
+## v3.6.0 — INFERNAL WORKS
+
+ステージ1クリア後Enterで廃工場のステージ2へ。5区画と専用巨大ボスFURNACE MAWを追加。残機・スコア・キャラを継承し体力を回復。敗北時は当該ステージを再挑戦。
+
+設定: engine.jsのSTREET_STAGES / FACTORY_AREAS。画像: art/factory-v360 と art/actions-v360。ボス音声: VOICEVOX:麒ヶ島宗麟。再構築: `node tools/build-sprites.mjs`。詳細引継ぎはHTML冒頭コメント。

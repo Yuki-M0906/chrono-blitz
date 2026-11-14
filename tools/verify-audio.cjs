@@ -38,7 +38,7 @@ const root=path.resolve(__dirname,'..'),out=path.join(root,'verification/audio')
   const buffer=await offline.startRendering(),data=buffer.getChannelData(0),windows=keys.map((key,i)=>{const start=Math.floor((.1+i*1.5)*24000),end=start+24000;let sum=0,peak=0;for(let j=start;j<end;j++){sum+=data[j]**2;peak=Math.max(peak,Math.abs(data[j]));}return {key,rms:Math.sqrt(sum/24000),peak};});
   return {bank:e.bank.size,windows,started:e.stats.started,ended:e.stats.ended};
  });
- assert.equal(effects.bank,35);assert.equal(effects.started,effects.ended);for(const w of effects.windows)assert.ok(w.rms>.004&&w.peak<.99,w.key);
+ assert.equal(effects.bank,42);assert.equal(effects.started,effects.ended);for(const w of effects.windows)assert.ok(w.rms>.004&&w.peak<.99,w.key);
  await page.locator('#gameCanvas').click({position:{x:50,y:50}});
  const live=await page.evaluate(async()=>{
   await fighterVoice.ready;fighterVoice.stopAll();sound.stopBGM();const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -47,14 +47,17 @@ const root=path.resolve(__dirname,'..'),out=path.join(root,'verification/audio')
   sound.bgmVol=0;sound.seVol=.85;sound.updateVol();await sleep(260);sound.playGrapple('impact');await sleep(70);const landingWithBgmZero=signal(se);
   sound.bgmVol=.65;sound.seVol=0;sound.updateVol();sound.playBGM(5);await sleep(400);const musicWithSeZero=signal(music);
   const baselineGain=sound.bgmGain.gain.value;fighterVoice.play('freya','select',0,60);await sleep(150);const duckGain=sound.bgmGain.gain.value;fighterVoice.stopAll();await sleep(700);const recoveredGain=sound.bgmGain.gain.value;
-  sound.seVol=.85;sound.updateVol();for(let i=0;i<80;i++){sound.playHit(i%2?'heavy':'slash');await sleep(23);}
+  // 80 hits at 23 ms. v3.6.1 [FIX-134]: no hit may be refused; the effect group stays at or below its 32 voices.
+  sound.seVol=.85;sound.updateVol();let effectPeak=0;for(let i=0;i<80;i++){sound.playHit(i%2?'heavy':'slash');effectPeak=Math.max(effectPeak,[...sound.active].filter(v=>v.group==='effect'&&!v.stolen).length);await sleep(23);}
+  const stressSignal=signal(se);
   sound.playBGM(6);await sleep(120);sound.playBGM(7);await sleep(400);const buses=sound.musicBuses.size,track=sound.currentTrack;
   sound.nextStepTime=sound.ctx.currentTime-100;const step=sound.step;sound.schedule();const catchup=(sound.step-step+512)%512;
   sound.muted=true;sound.updateVol();await sleep(300);const muteMusic=signal(music),muteEffects=signal(se);sound.playSuper();await sleep(120);const afterMutedSuper=signal(se);
   sound.muted=false;sound.updateVol();sound.stopBGM();await sleep(1500);
-  return {landingWithBgmZero,musicWithSeZero,baselineGain,duckGain,recoveredGain,buses,track,catchup,muteMusic,muteEffects,afterMutedSuper,activeAfterStop:sound.active.size,busesAfterStop:sound.musicBuses.size,stats:sound.stats};
+  return {landingWithBgmZero,musicWithSeZero,baselineGain,duckGain,recoveredGain,buses,track,catchup,muteMusic,muteEffects,afterMutedSuper,activeAfterStop:sound.active.size,busesAfterStop:sound.musicBuses.size,effectPeak,stressSignal,stats:sound.stats};
  });
  assert.ok(live.landingWithBgmZero>.001);assert.ok(live.musicWithSeZero>.001);assert.ok(live.duckGain<live.baselineGain*.65);assert.ok(live.recoveredGain>live.baselineGain*.94);assert.ok(live.buses<=2);assert.equal(live.track,7);assert.ok(live.catchup<=2);assert.ok(live.muteMusic<.001&&live.muteEffects<.001&&live.afterMutedSuper<.001);assert.equal(live.activeAfterStop,0);assert.equal(live.busesAfterStop,0);
+ assert.equal(live.stats.dropped,0,'no sound refused under load');assert.ok(live.effectPeak<=32,'effect voices capped: '+live.effectPeak);assert.ok(live.stats.stolen>0,'load test must reach the cap');assert.ok(live.stressSignal>.01,'hits audible at the end of the load test');assert.equal(live.stats.started,live.stats.ended,'every voice released');
  const routing=await page.evaluate(()=>{const calls=[];sound.playBGM=id=>calls.push(id);sound.playCue=()=>{};game.startStreet(0);const street=calls.at(-1);game.street.area=4;game.street.wave=0;game.street.spawnWave();const boss=calls.at(-1);game.street.finish(true);const clear=calls.at(-1);game.toResult();const versusWin=calls.at(-1);return {street,boss,clear,versusWin};});
  assert.deepEqual(routing,{street:5,boss:6,clear:7,versusWin:7});assert.deepEqual(errors,[]);
  fs.writeFileSync(path.join(out,'report.json'),JSON.stringify({tracks,effects,live,routing,browserErrors:errors,listeningReview:'Rendered signal, arrangement and control checks; subjective listening not claimed.'},null,2));console.log(JSON.stringify({effects,live,routing,errors},null,2));await browser.close();

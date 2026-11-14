@@ -1,0 +1,100 @@
+{
+  "version": "3.6.1",
+  "loaded": {
+    "images": 28,
+    "districts": 5,
+    "factory": 5,
+    "monsterCells": 24,
+    "props": 8,
+    "bossPoses": 72,
+    "errors": [],
+    "transparent": [
+      {
+        "id": "props",
+        "ratio": 0.6717910766601562
+      },
+      {
+        "id": "voss-base",
+        "ratio": 0.6306209564208984
+      },
+      {
+        "id": "voss-motion",
+        "ratio": 0.5731404622395834
+      },
+      {
+        "id": "voss-throw",
+        "ratio": 0.613946278889974
+      },
+      {
+        "id": "rise-kagura",
+        "ratio": 0.6538988749186198
+      },
+      {
+        "id": "rise-volt",
+        "ratio": 0.7252852121988932
+      },
+      {
+        "id": "rise-freya",
+        "ratio": 0.6904023488362631
+      },
+      {
+        "id": "rise-titan",
+        "ratio": 0.5763104756673177
+      },
+      {
+        "id": "rise-ayame",
+        "ratio": 0.7197386423746744
+      },
+      {
+        "id": "rise-celine",
+        "ratio": 0.7378832499186198
+      },
+      {
+        "id": "fx-fire",
+        "ratio": 0.7613913218180338
+      },
+      {
+        "id": "maw",
+        "ratio": 0.5494505564371744
+      },
+      {
+        "id": "dash-kagura",
+        "ratio": 0.6457227071126302
+      },
+      {
+        "id": "dash-volt",
+        "ratio": 0.7029139200846354
+      },
+      {
+        "id": "dash-freya",
+        "ratio": 0.6286659240722656
+      },
+      {
+        "id": "dash-titan",
+        "ratio": 0.6328055063883463
+      },
+      {
+        "id": "dash-ayame",
+        "ratio": 0.6793785095214844
+      },
+      {
+        "id": "dash-celine",
+        "ratio": 0.743066151936849
+      }
+    ]
+  },
+  "monster": {
+    "monster": true,
+    "label": "FURNACE MAW",
+    "stage": 1
+  },
+  "checks": {
+    "embeddedCodeInSync": true,
+    "pureDraw": true,
+    "randomCalls": 0,
+    "fallback": true,
+    "bossStates": true,
+    "meanRenderMs": 0.24083333338300386
+  },
+  "browserErrors": []
+}

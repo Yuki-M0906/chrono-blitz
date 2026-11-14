@@ -1,0 +1,23 @@
+{
+  "checks": [
+    "empty HUD before contact",
+    "capture launch 1",
+    "capture launch -1",
+    "burn sprites mirror with launch direction even if facing changes",
+    "burning enemy name and identity",
+    "HUD enemy name and burn label",
+    "HUD real HP denominator",
+    "HUD draw is pure",
+    "damage band holds",
+    "damage band eases without overshoot",
+    "KO remains in HUD",
+    "KO target expires",
+    "boss fallback",
+    "grab selects correct enemy",
+    "grab attack retains target",
+    "bar widths clamped",
+    "no overhead health panels"
+  ],
+  "mirrorError": 22,
+  "sameError": 1874052
+}

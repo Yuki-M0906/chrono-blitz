@@ -1,10 +1,14 @@
-// v2.5 visual layer only. No combat state, RNG, input, AI, audio or hitboxes are changed here.
+// v3.0 anime characters / v2.5 scenery. Visual layer only. No combat state, RNG, input, AI, audio or hitboxes are changed here.
 const BeltArt = {
   images: new Map(),
   boards: new Map(),
+  factoryBoards: new Map(),
+  monsterSheet: null,
+  monsterCells: [],
   bossCells: new Map(),
   bossSheets: new Map(),
   dashSheets: new Map(),
+  actionSheets: new Map(),
   props: [],
   errors: [],
   ready: null,
@@ -19,9 +23,16 @@ const BeltArt = {
         try {
           this.images.set(id, img);
           if (id.startsWith('district-')) this.prepareBoard(Number(id.slice(-1)), img, entry.horizon);
+          else if (id.startsWith('factory-')) this.prepareBoard(Number(id.slice(-1)), img, entry.horizon, this.factoryBoards);
+          else if (id === 'maw') {
+            this.monsterSheet = FighterSprites.prepareAtlas(img, 'maw');
+            const c=this.monsterSheet.getContext('2d',{willReadFrequently:true}),cell=FighterSprites.cell;
+            this.monsterCells=Array.from({length:24},(_,i)=>this.bounds(c,i%6*cell,Math.floor(i/6)*cell,cell,cell));
+          }
           else if (id === 'props') this.prepareProps(img);
           else if (id.startsWith('voss-')) this.prepareBoss(id, img);
           else if (id.startsWith('dash-')) this.prepareDash(id.slice(5), img);
+          else if (id.startsWith('rise-') || id === 'fx-fire') this.actionSheets.set(id, FighterSprites.prepareAtlas(img, id));
         } catch (error) { this.errors.push(id + ': ' + error.message); }
         resolve();
       };
@@ -32,19 +43,7 @@ const BeltArt = {
   },
 
   prepareDash(id, image) {
-    if (image.width !== 1536 || image.height !== 1024) throw Error('Dash atlas must be 1536 × 1024');
-    const atlas = document.createElement('canvas'); atlas.width = 960; atlas.height = 640;
-    const c = atlas.getContext('2d', { willReadFrequently: true }); c.imageSmoothingEnabled = false;
-    for (let f = 0; f < 24; f++) {
-      // Hand-audited: these two large slash tips extend 24px into the next source cell.
-      const slash = ['kagura', 'freya'].includes(id), width = slash && f === 13 ? 280 : 256;
-      c.drawImage(image, f % 6 * 256, Math.floor(f / 6) * 256, width, 256,
-        f % 6 * 160 + 16, Math.floor(f / 6) * 160 + 16, width / 2, 128);
-      if (slash && f === 14) c.clearRect(f % 6 * 160 + 16, Math.floor(f / 6) * 160 + 16, 12, 128);
-      FighterSprites.cleanCell(c, f % 6 * 160, Math.floor(f / 6) * 160, f >= 12 && f <= 17);
-      this.bounds(c, f % 6 * 160, Math.floor(f / 6) * 160, 160, 160);
-    }
-    this.dashSheets.set(id, atlas);
+    this.dashSheets.set(id, FighterSprites.prepareAtlas(image, 'dash-' + id));
   },
 
   dashFrame(actor) {
@@ -59,11 +58,11 @@ const BeltArt = {
   drawDash(actor, c) {
     const f = this.dashFrame(actor), image = this.dashSheets.get(actor.data.id);
     if (f === null || !image) return false;
-    const scale = actor.data.id === 'titan' ? 1.48 : 1.36;
-    c.save(); c.scale(actor.facing, 1); c.imageSmoothingEnabled = false;
+    const scale = FighterSprites.scaleFor(actor.data.id), cell = FighterSprites.cell;
+    c.save(); c.scale(actor.facing, 1); c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
     if (actor.invuln > 0 && Math.floor(actor.animTick / 3) % 2) c.globalAlpha *= .72;
-    const draw = offset => c.drawImage(image, f % 6 * 160, Math.floor(f / 6) * 160, 160, 160,
-      -Math.round(80 * scale) + offset, -Math.round(138 * scale), Math.round(160 * scale), Math.round(160 * scale));
+    const draw = offset => c.drawImage(image, f % 6 * cell, Math.floor(f / 6) * cell, cell, cell,
+      -Math.round(FighterSprites.pivotX * scale) + offset, -Math.round(FighterSprites.pivotY * scale), Math.round(cell * scale), Math.round(cell * scale));
     const alpha = c.globalAlpha;
     if (actor.state === 'STREET_DASH' || actor.f <= STREET.dash.until) {
       c.globalAlpha = alpha * .12; draw(-32);
@@ -73,7 +72,37 @@ const BeltArt = {
     draw(0); c.restore(); return true;
   },
 
-  prepareBoard(index, image, horizon = .685) {
+  // v3.4.2: Render-only action atlases, synchronized to fixed simulation frames.
+  drawAction(key, frame, actor, c, offsetX = 0, offsetY = 0, alpha = 1, direction = actor.facing) {
+    const image = this.actionSheets.get(key);
+    if (!image) return false;
+    const scale = FighterSprites.scaleFor(actor.data.id), cell = FighterSprites.cell;
+    c.save(); c.scale(direction, 1); c.globalAlpha *= alpha;
+    c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
+    c.drawImage(image, frame % 6 * cell, Math.floor(frame / 6) * cell, cell, cell,
+      -FighterSprites.pivotX * scale + offsetX, -FighterSprites.pivotY * scale + offsetY, cell * scale, cell * scale);
+    c.restore(); return true;
+  },
+  drawRising(actor, c) {
+    if (actor.state !== 'SP_2') return false;
+    const t = actor.f;
+    const frame = t < 18 ? Math.floor(t / 2) : t < 30 ? 9 + Math.floor((t - 18) * 9 / 12) : 18 + Math.min(5, Math.floor((t - 30) * 6 / 14));
+    return this.drawAction('rise-' + actor.data.id, frame, actor, c);
+  },
+  drawBurn(actor, c) {
+    if (!(actor.burnTicks > 0) || !['HIT_AIR','KNOCKDOWN','DEAD'].includes(actor.state)) return false;
+    if (actor.monster) return this.drawMonster(actor, c);
+    const frame = actor.state === 'HIT_AIR' ? Math.min(11, Math.floor(actor.f / 2)) : 12 + Math.min(5, Math.floor(actor.f / 5));
+    // Fire atlas tumbles to the RIGHT: orient by the captured launch vector, not the victim facing the attacker.
+    return this.drawAction('fx-fire', frame, actor, c, 0, 0, 1, actor.burnDirection || Math.sign(actor.knockX) || -actor.facing);
+  },
+  drawFlameDash(actor, c) {
+    if (actor.state !== 'DASH_ATTACK' || actor.f > STREET.dash.until + 5) return;
+    const alpha = actor.f < STREET.dash.active ? .45 : actor.f > STREET.dash.until ? .55 : .9;
+    this.drawAction('fx-fire', 18 + Math.floor(actor.f / 2) % 6, actor, c, 24, -12, alpha);
+  },
+
+  prepareBoard(index, image, horizon = .685, boards = this.boards) {
     const board = document.createElement('canvas');
     board.width = this.boardWidth; board.height = this.floorBottom;
     const c = board.getContext('2d'), split = Math.round(image.height * horizon);
@@ -87,7 +116,7 @@ const BeltArt = {
       blend.addColorStop(0, 'rgba(0,0,0,0)'); blend.addColorStop(1, 'rgba(0,0,0,1)');
       c.fillStyle = blend; c.fillRect(0, 0, board.width, board.height);
     }
-    this.boards.set(index, board);
+    boards.set(index, board);
   },
 
   bounds(c, x, y, width, height) {
@@ -113,34 +142,23 @@ const BeltArt = {
   },
 
   prepareBoss(id, image) {
-    if (image.width !== 1536 || image.height !== 1024) throw Error('Boss atlas must be 1536 × 1024');
-    // Same 160px cached cells / 16px gutters as the shared fighter renderer.
-    // The defeated base pose extends 24px into the preceding source cell.
-    const board = document.createElement('canvas'); board.width = 960; board.height = 640;
-    const c = board.getContext('2d', { willReadFrequently: true }); c.imageSmoothingEnabled = false;
-    const cells = [];
-    for (let i = 0; i < 24; i++) {
-      const col = i % 6, row = Math.floor(i / 6), left = id !== 'voss-motion' && i === 20 ? -32 : 0;
-      c.save(); c.translate(col * 160 + 16, row * 160 + 16); c.scale(.5, .5);
-      c.beginPath(); c.rect(left, 0, 256 - left, 256); c.clip(); c.drawImage(image, -col * 256, -row * 256);
-      if (id !== 'voss-motion' && i === 19) c.clearRect(224, 180, 32, 76);
-      c.restore();
-      FighterSprites.cleanCell(c, col * 160, row * 160, id === 'voss-base' ? [14, 17].includes(i) : [20, 22].includes(i));
-      cells.push(this.bounds(c, col * 160, row * 160, 160, 160));
-    }
+    const board = FighterSprites.prepareAtlas(image, id), cell = FighterSprites.cell;
+    const c = board.getContext('2d', { willReadFrequently: true }), cells = [];
+    for (let i = 0; i < 24; i++) cells.push(this.bounds(c, i % 6 * cell, Math.floor(i / 6) * cell, cell, cell));
     this.bossSheets.set(id, board);
     this.bossCells.set(id, cells);
   },
 
   drawStreet(street, c) {
-    if (this.boards.size !== 5) return false;
+    const boards = street.stageIndex === 1 ? this.factoryBoards : this.boards;
+    if (boards.size !== 5) return false;
     c.save(); c.imageSmoothingEnabled = false;
     c.fillStyle = '#101924'; c.fillRect(0, 0, W, H);
     c.translate(-Math.round(street.camera), 0);
     for (let i = 0; i < 5; i++) {
       const x = i * 1240 - 96;
       if (x > street.camera + W || x + this.boardWidth < street.camera) continue;
-      c.drawImage(this.boards.get(i), x, 0);
+      c.drawImage(boards.get(i), x, 0);
     }
     // Subtle moving reflections/steam/rain sit over painted detail without obscuring the lane warnings.
     const t = street.tick;
@@ -161,10 +179,10 @@ const BeltArt = {
       }
     }
     c.restore();
-    c.save(); c.strokeStyle = 'rgba(176,207,223,.17)'; c.lineWidth = 1;
+    c.save(); c.strokeStyle = street.stageIndex === 1 ? 'rgba(255,147,65,.32)' : 'rgba(176,207,223,.17)'; c.lineWidth = 1;
     for (let i = 0; i < 62; i++) {
-      const x = (i * 173 + t * 2) % W, y = (i * 91 + t * 8) % 641;
-      c.beginPath(); c.moveTo(x, y); c.lineTo(x - 5, y + 14); c.stroke();
+      const x = (i * 173 + t * (street.stageIndex === 1 ? .3 : 2)) % W, y = (i * 91 + t * (street.stageIndex === 1 ? .7 : 8)) % 641;
+      c.beginPath(); c.moveTo(x, y); c.lineTo(x - (street.stageIndex === 1 ? 1 : 5), y + (street.stageIndex === 1 ? 2 : 14)); c.stroke();
     }
     c.restore(); return true;
   },
@@ -206,23 +224,45 @@ const BeltArt = {
   bossFrame(actor, state, f) {
     const thrown = ThrowMotion.sprite(actor, state, f);
     if (thrown !== null) return thrown;
-    // The generated motion sheet's 26/27 are walking poses; keep both feet planted while idle.
-    if (state === 'IDLE') return [0, 24, 1, 25, 1, 24][Math.floor(actor.animTick / 6) % 6];
+    // Keep the boss's silhouette stable too; idle atlases differ in size and stance.
+    if (state === 'IDLE') return 0;
     if (actor.state === 'WINDUP') return actor.plan === 'slam' ? 44 : 39;
     // Match the existing damage / sound event at SLAM frame 20 exactly.
     if (actor.state === 'SLAM') return f < 20 ? 44 : f < 33 ? 14 : f < 43 ? 47 : 11;
     return FighterSprites.frame('titan', state, f, actor.animTick, actor.blockstun > 0, actor.vy);
   },
 
+  monsterFrame(a) {
+    if (a.dead || a.state === 'KNOCKDOWN') return 21;
+    if (['HIT_AIR','GRABBED','THROWING'].includes(a.state)) return 20;
+    if (a.state === 'WAKEUP') return 22;
+    if (a.state === 'HIT_STAND') return 12 + Math.min(1,Math.floor(a.f/5));
+    if (a.state === 'WINDUP') return a.plan === 'slam' ? 14 + Math.min(1,Math.floor(a.f/20)) : 18;
+    if (a.state === 'SLAM') return a.f < 20 ? 15 : a.f < 33 ? 16 : 17;
+    if (a.state === 'CHARGE') return 19;
+    if (a.state === 'ATK_H') return 6 + Math.min(5,Math.floor(a.f/5));
+    if (a.state === 'WALK_F') return 2 + Math.floor(a.animTick/7)%4;
+    return 0;
+  },
+  drawMonster(actor, c) {
+    if (!this.monsterSheet) return false;
+    const frame=this.monsterFrame(actor), cell=FighterSprites.cell, scale=FighterSprites.scaleFor('titan'), foot=actor.z>0?FighterSprites.pivotY:this.monsterCells[frame].bottom+1;
+    c.save(); c.scale(actor.burnTicks>0 ? (actor.burnDirection || actor.facing) : actor.facing,1);
+    if (actor.burnTicks>0) { c.filter='sepia(.7) saturate(3)'; c.shadowColor='#ff6a14'; c.shadowBlur=16; }
+    c.imageSmoothingEnabled=true;
+    c.drawImage(this.monsterSheet,frame%6*cell,Math.floor(frame/6)*cell,cell,cell,-FighterSprites.pivotX*scale,-foot*scale,cell*scale,cell*scale);
+    c.restore(); return true;
+  },
   drawBoss(actor, c, state, f) {
+    if (actor.monster) return this.drawMonster(actor,c);
     if (this.bossCells.size !== 3) return false;
     const pose = this.bossFrame(actor, state, f);
     const id = pose >= 48 ? 'voss-throw' : pose >= 24 ? 'voss-motion' : 'voss-base';
     const frame = pose % 24, image = this.bossSheets.get(id), box = this.bossCells.get(id)[frame];
-    const scale = 1.48, foot = actor.z > 0 ? 138 : box.bottom + 1;
-    c.save(); c.scale(actor.facing, 1); c.imageSmoothingEnabled = false;
+    const scale = FighterSprites.scaleFor('titan'), cell = FighterSprites.cell, foot = actor.z > 0 ? FighterSprites.pivotY : box.bottom + 1;
+    c.save(); c.scale(actor.facing, 1); c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
     if (actor.invuln > 0 && Math.floor(actor.animTick / 3) % 2) c.globalAlpha *= .72;
-    c.drawImage(image, frame % 6 * 160, Math.floor(frame / 6) * 160, 160, 160, -80 * scale, -foot * scale, 160 * scale, 160 * scale);
+    c.drawImage(image, frame % 6 * cell, Math.floor(frame / 6) * cell, cell, cell, -FighterSprites.pivotX * scale, -foot * scale, cell * scale, cell * scale);
     c.restore(); return true;
   }
 };

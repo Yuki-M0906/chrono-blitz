@@ -21,12 +21,12 @@ const art = filter => Object.fromEntries(Object.entries(artManifest.assets).filt
 // ---- Asset packs. Order matters: the game reads keys in insertion order. Each pack stays far below 50 MB.
 const packs = [
   ...characters.map(id => ({name: 'sprites-' + id, kind: 'sprites', data: Object.fromEntries([id, id + '-motion', id + '-throw'].map(key =>
-    [key, 'data:image/png;base64,' + b64('assets', 'sprites', key + '.png')]))})),
+    [key, 'data:image/png;base64,' + b64('assets', 'sprites', 'design-v33', key + '.png')]))})),
   {name: 'stages', kind: 'stages', data: stageIds.map((id, i) => ({id, horizon: stageHorizons[i], src: 'data:image/png;base64,' + b64('assets/stages', id + '.png')}))},
   {name: 'voices', kind: 'voices', data: Object.fromEntries(Object.entries(voiceProfiles).flatMap(([id, profile]) => Object.keys(profile.lines).map(event =>
     [id + '-' + event, 'data:audio/wav;base64,' + b64('assets/voices', id + '-' + event + '.wav')])))},
-  {name: 'belt-backgrounds', kind: 'beltArt', data: art(id => id.startsWith('district-'))},
-  {name: 'belt-actors', kind: 'beltArt', data: art(id => !id.startsWith('district-') && !id.startsWith('dash-'))},
+  {name: 'belt-backgrounds', kind: 'beltArt', data: art(id => id.startsWith('district-') || id.startsWith('factory-'))},
+  {name: 'belt-actors', kind: 'beltArt', data: art(id => !id.startsWith('district-') && !id.startsWith('factory-') && !id.startsWith('dash-'))},
   {name: 'belt-dash', kind: 'beltArt', data: art(id => id.startsWith('dash-'))}
 ];
 fs.mkdirSync(dataDir, {recursive: true});

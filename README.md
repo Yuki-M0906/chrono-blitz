@@ -4,10 +4,28 @@ Browser-only arcade collection (one small HTML file plus a `data/` folder of ass
 
 **▶ Play the demo / デモをプレイ:** https://yuki-m0906.github.io/chrono-blitz/
 
-Current version: **v2.8.1** (shown at the top right of the game select screen). / 現在のバージョン: **v2.8.1**（ゲーム選択画面の右上に表示）
+Current version: **v3.6.1** / 現在のバージョン: **v3.6.1**
 
-> The game is `ai_studio_code.html` (0.4 MB of code) plus eleven asset packs in `data/` (135 MB in total, 22 MB at most each). Keep them together. The first load takes a while; later loads are cached per pack. Keyboard required.
-> ゲーム本体は `ai_studio_code.html`（約 0.4MB）と `data/` フォルダのアセットパック 11 本（計 約 135MB）のセットです。必ず同じ場所に置いてください。初回読み込みには時間がかかります。キーボードが必要です。
+> v3.6.1: 案内ページ・README・技表・冒頭の構成サマリを v3.6 の内容（ステージ2、136音声、3段上昇技）に同期。古い期待値で止まっていた検証6本を修正し、全20本が通過。連打時に打撃音が抜ける問題と、通常打撃の低音が打ち消される問題を修正。ステージ2の曲選択を修正。
+
+> v3.6.0: 残り4人の上昇技の等身を修正。打撃音の鋭さと重低音を強化。ステージ2「INFERNAL WORKS」（廃工場5区画）と巨大怪物FURNACE MAWを追加。ステージ1クリア後Enterで進行。
+
+> v3.5.0: 色違い雑魚敵を9種類へ増加。打撃音の低域と残響を強化。ボス登場の悪役台詞、撃破スローモーションと絶叫、全6人の専用決め台詞を追加。
+
+> v3.4.4: 待機時の不自然な体格変化を撤去。炎上ダウン画像に隣コマが混入する不具合を修正し、KAGURAの上昇技24コマを通常体型へ合わせて再制作。
+
+> v3.4.3: TITAN上昇技の頭身を通常絵に合わせて再制作。炎上方向を修正し、敵名・体力をプレイヤーゲージ下へ固定表示。HUDの枠・目盛り・ダメージ残像を刷新。
+
+> v3.4.2: 3段上昇技の専用画像144姿勢・打撃音3種、炎ダッシュと全身炎上画像・炎音2種、掴み判定拡大、前方投げと巻き込みを追加。詳細はHTML冒頭コメント。
+
+> v3.3.0: 全6人・雑魚敵・IRON VOSSのデザインを全面刷新。顔・髪型・衣装を洗練された現代アニメ調へ更新し、両ゲームの通常/投げ/ダッシュ全27枚648姿勢へ展開。3.2.0の音声・音楽・効果音・ゲーム性を維持。生成基準と引き継ぎは `assets/characters/v33/HANDOFF.md`。
+
+> v3.2.0: キャラクター音声全126本の棒読みをさらに徹底改善（AquesTalkかなアクセント精密制御、`intonation_scale=1.0`＋プラトー打破プロソディ造形、4モーラ以上の無歪みHiFi-GAN化と短気合いNCC-PSOLA適用、キャラ別VOICEVOX演技スタイル最適化）。SE・BGM・セルアニメ画像・ゲーム性はv3.1.0から維持。
+
+> v3.0.0: 全6人・雑魚敵・ボスをセルアニメ調へ刷新。通常・必殺技・投げ・ダッシュの27枚648姿勢を描き直し、キャラクター表示を約15％拡大しました。両ゲームの戦闘仕様と2.8.1の起動時BGM修正を維持しています。詳細な引き継ぎはHTML冒頭コメント、生成資料は `assets/characters/v3/prompts.json`、検証は `node tools/verify-anime.cjs`。
+
+> The game is `ai_studio_code.html` (0.4 MB of code) plus eleven asset packs in `data/` (about 185 MB in total, 42 MB at most each). Keep them together. The first load takes a while; later loads are cached per pack. Keyboard required.
+> ゲーム本体は `ai_studio_code.html`（約 0.4MB）と `data/` フォルダのアセットパック 11 本（計 約 185MB、最大 約 42MB）のセットです。必ず同じ場所に置いてください。初回読み込みには時間がかかります。キーボードが必要です。
 >
 > v2.8.1: 起動直後のゲーム選択画面で音楽が鳴らない問題を修正。ブラウザは操作があるまで音を出せないため、最初のクリック / キー押下を「スタート」として受け、そこで音楽を始めます。 / The first click or key press now starts the game select screen and its music.
 >
@@ -24,8 +42,8 @@ v2.5.0: NEON UPRISING の全 5 区画を描き下ろし背景へ刷新。木箱�
 | | OVERDRIVE | NEON UPRISING |
 |---|---|---|
 | Genre | 1-on-1 versus fighting | Side-scrolling beat 'em up (1 player) |
-| Content | 6 fighters, 4 stages, ARCADE / VS CPU / VS 2P / TRAINING | Stage 1 "BLACK VEIN": 5 areas, 33 enemies, boss IRON VOSS |
-| Systems | Gatling cancels, command-input bonus, just guard, drive burst, synchronized throws | Final Fight style chain (punch → body blow → uppercut, each stage only after a hit), hold ↓ on the third hit to throw instead, thrown bodies hit other enemies, grabs / knee strikes, emergency spin attack, breakables and pickups, lives and 1UP |
+| Content | 6 fighters, 4 stages, ARCADE / VS CPU / VS 2P / TRAINING | 2 stages, 5 areas each: "BLACK VEIN" (boss IRON VOSS) → "INFERNAL WORKS" (giant monster FURNACE MAW). 9 enemy types. Score and lives carry over |
+| Systems | Gatling cancels, command-input bonus, just guard, drive burst, synchronized throws | Final Fight style chain (punch → body blow → uppercut, each stage only after a hit), hold ↓ on the third hit to throw instead, thrown bodies hit other enemies, grabs with follow-up strikes, three-hit rising attack (↓ → ↑), flame dash attack, emergency spin attack, breakables and pickups, lives and 1UP, boss intro lines and slow-motion finish |
 
 ## Controls / 操作
 
@@ -34,7 +52,7 @@ v2.5.0: NEON UPRISING の全 5 区画を描き下ろし背景へ刷新。木箱�
 | Move | `W` `A` `S` `D` (or arrows) | `W` `A` `S` `D` (up/down = depth) |
 | Dash / Dash attack | Forward twice / Back twice | `→→` / `←←` / `D D` / `A A`, hold the second press to run; `J` / `Z` while running to attack |
 | Light / Heavy | `J` / `K` | `J` chain attack (punch → body → upper) and pick up; hold `S` on the 3rd hit to throw |
-| Special / Super | `L` / `U` | `L` emergency attack |
+| Special / Super | `L` / `U` | `L` emergency attack; `S` → `W` (↓ → ↑) three-hit rising attack |
 | Throw / Burst | `I` / `O` | `I` throw, `K` jump |
 | 2P | Arrows + `N` `M` `,` `.` `/` `;` | — |
 | Common | `H` command list, `ESC` pause, `Q` (while paused) back | |
@@ -42,9 +60,9 @@ v2.5.0: NEON UPRISING の全 5 区画を描き下ろし背景へ刷新。木箱�
 ## Tech / 技術
 
 - HTML5 Canvas 2D, fixed 60 Hz simulation, 1280×720 logical resolution, deterministic rendering (drawing never consumes the combat RNG).
-- Web Audio API: 8 original diatonic tracks and all sound effects are synthesized locally from 35 base PCM buffers + 47 multi-sampled instrument buffers; no external audio files.
-- 432 shared pixel-art poses (18 atlases), 72 boss poses (3 atlases), 144 dash poses (6 atlases), 4 versus backgrounds, 5 street backgrounds and an 8-cell prop/item atlas stored as data URIs (37 PNGs total).
-- Character voices: 126 studio-mastered VOICEVOX synthesized clips (see credits).
+- Web Audio API: 8 original diatonic tracks and all sound effects are synthesized locally from 42 base PCM buffers + 47 multi-sampled instrument buffers; no external audio files.
+- 432 shared contemporary anime poses (18 atlases), 72 IRON VOSS poses (3), 144 dash poses (6), 144 rising-attack poses (6), 24 FURNACE MAW poses, a 24-cell fire atlas, 4 versus backgrounds, 10 street/factory backgrounds and an 8-cell prop/item atlas stored as data URIs (50 PNGs total).
+- Character voices: 136 VOICEVOX synthesized clips: 22 per fighter (including a finishing line) and intro / defeat lines for the two bosses (see credits).
 - No server, no network requests, no installation. Open `ai_studio_code.html` directly (with `data/` beside it).
 
 ## Repository layout / 構成
@@ -60,13 +78,16 @@ assets/                 editable sources that get embedded by the build
   audio/                SoundEngine source (engine.js) + README
   belt/                 NEON UPRISING source (engine.js), visual layer (art.js), art/ PNGs + manifest/prompts, README
 tools/                  build-sprites.mjs (re-embeds assets), verify-*.cjs (Playwright tests), voice generation scripts
-verification/           latest test reports and screenshots
+verification/           latest test reports (JSON). Screenshots and audio previews are generated locally by the tests and not committed
+backups/                pre-change copies of edited sources for recent versions (two tests read them)
 ```
+
+Not committed (kept only on the author's machine, see `.gitignore`): test screenshots, superseded artwork that the build no longer reads (pixel-art atlases, `anime-v3`), and per-version full HTML backups. Three tests compare against such local files and skip or fail on a fresh clone: `verify-sprites` (v1.6.0 baseline), `verify-voice-update` (older voice sets) and part of `verify-anime`.
 
 Build: `node tools/build-sprites.mjs` re-embeds everything between the `SPRITE_ASSETS` / `AUDIO_ENGINE` / `BELT_ENGINE` markers. Never edit inside the markers by hand.
 Tests: `node tools/verify-*.cjs` (needs Playwright and Chrome; see `assets/belt/README.md`).
 
-The detailed design document and the per-version changelog (v1.1 → v2.8) live in the HTML comment at the top of `ai_studio_code.html`.
+The detailed design document and the per-version changelog (v1.1 → v3.6) live in the HTML comment at the top of `ai_studio_code.html`.
 
 ## Credits / クレジット
 
@@ -78,8 +99,12 @@ Character voices are synthesized with VOICEVOX. If you reuse the audio, keep the
 | 神楽 / KAGURA | VOICEVOX:玄野武宏 |
 | ヴォルト / VOLT | VOICEVOX:白上虎太郎 |
 | フレイヤ / FREYA | VOICEVOX:四国めたん |
-| タイタン / TITAN | VOICEVOX:麒ヶ島宗麟 |
+| タイタン / TITAN、IRON VOSS、FURNACE MAW | VOICEVOX:麒ヶ島宗麟 |
 | 綾女 / AYAME | VOICEVOX:中国うさぎ |
 | セリーヌ / CELINE | VOICEVOX:九州そら |
 
 Terms: [VOICEVOX](https://voicevox.hiroshiba.jp/term/) / [玄野武宏・白上虎太郎・麒ヶ島宗麟](https://www.virvoxproject.com/voicevoxの利用規約) / [四国めたん・中国うさぎ・九州そら](https://zunko.jp/con_ongen_kiyaku.html). See also `assets/voices/CREDITS.md`.
+
+### v3.4.0 Street commands
+
+↓→↑ / S→W within 30 frames after the last down-held frame (overlap allowed; 12-frame recovery buffer): three-hit rising attack, also from a grab. Grab: J/Z twice, then J/Z to launch or I to throw.

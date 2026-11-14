@@ -7,7 +7,7 @@ CHRONO BLITZ: OVERDRIVE v1.7.0 のキャラクター音声は、VOICEVOXによ�
 | 神楽 | VOICEVOX:玄野武宏 |
 | ヴォルト | VOICEVOX:白上虎太郎 |
 | フレイヤ | VOICEVOX:四国めたん |
-| タイタン | VOICEVOX:麒ヶ島宗麟 |
+| タイタン / IRON VOSS / FURNACE MAW | VOICEVOX:麒ヶ島宗麟 |
 | 綾女 | VOICEVOX:中国うさぎ |
 | セリーヌ | VOICEVOX:九州そら |
 

@@ -1,0 +1,32 @@
+{
+  "metrics": [
+    {
+      "heavy": false,
+      "legacy": true,
+      "subRms": 0.08883948989602294,
+      "snapRms": 0.10045198379853014,
+      "peak": 0.8669941425323486
+    },
+    {
+      "heavy": false,
+      "legacy": false,
+      "subRms": 0.11951494452753154,
+      "snapRms": 0.23250650777434326,
+      "peak": 0.8869277238845825
+    },
+    {
+      "heavy": true,
+      "legacy": true,
+      "subRms": 0.195232136188318,
+      "snapRms": 0.094130039229312,
+      "peak": 0.8549011945724487
+    },
+    {
+      "heavy": true,
+      "legacy": false,
+      "subRms": 0.24139784929084224,
+      "snapRms": 0.2138680712778537,
+      "peak": 0.9068414568901062
+    }
+  ]
+}

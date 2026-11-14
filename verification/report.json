@@ -6,9 +6,9 @@
   "stageErrors": [],
   "voice": {
     "decoded": {
-      "count": 126,
+      "count": 136,
       "errors": [],
-      "nonSilent": 126
+      "nonSilent": 136
     },
     "mixing": {
       "channels": 2,
@@ -103,27 +103,27 @@
     ],
     "coverage": {
       "kagura": {
-        "idle": 6,
+        "idle": 1,
         "walk": 8
       },
       "volt": {
-        "idle": 6,
+        "idle": 1,
         "walk": 8
       },
       "freya": {
-        "idle": 6,
+        "idle": 1,
         "walk": 8
       },
       "titan": {
-        "idle": 6,
+        "idle": 1,
         "walk": 8
       },
       "ayame": {
-        "idle": 6,
+        "idle": 1,
         "walk": 8
       },
       "celine": {
-        "idle": 6,
+        "idle": 1,
         "walk": 8
       }
     },
