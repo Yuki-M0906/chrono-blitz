@@ -30,7 +30,7 @@ let browser;
   const loaded = await page.evaluate(async () => {
     await Promise.all([FighterSprites.ready, StageArt.ready, BeltArt.ready]);
     return {images:BeltArt.images.size, districts:BeltArt.boards.size, factory:BeltArt.factoryBoards.size, monsterCells:BeltArt.monsterCells.length, props:BeltArt.props.length, bossPoses:[...BeltArt.bossCells.values()].flat().length, errors:BeltArt.errors,
-      transparent:[...BeltArt.images].filter(([id])=>!/^(district|factory)-/.test(id)).map(([id,img])=>{
+      transparent:[...BeltArt.images].filter(([id])=>!/^(district|factory|resort)-/.test(id)).map(([id,img])=>{
         const b=document.createElement('canvas'); b.width=img.width; b.height=img.height; const c=b.getContext('2d'); c.drawImage(img,0,0);const a=c.getImageData(0,0,b.width,b.height).data;let clear=0;for(let i=3;i<a.length;i+=4)if(a[i]<25)clear++;return {id,ratio:clear/(b.width*b.height)};
       })};
   });

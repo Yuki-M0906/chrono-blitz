@@ -1,7 +1,7 @@
 {
-  "version": "3.6.1",
+  "version": "3.7.2",
   "distribution": {
-    "htmlBytes": 524181,
+    "htmlBytes": 571317,
     "packs": [
       {
         "name": "sprites-kagura",
@@ -41,7 +41,7 @@
       {
         "name": "voices",
         "kind": "voices",
-        "size": 7387251
+        "size": 8191208
       },
       {
         "name": "belt-backgrounds",
@@ -51,7 +51,17 @@
       {
         "name": "belt-actors",
         "kind": "beltArt",
-        "size": 40575269
+        "size": 36609273
+      },
+      {
+        "name": "resort-backgrounds",
+        "kind": "beltArt",
+        "size": 21605822
+      },
+      {
+        "name": "resort-actors",
+        "kind": "beltArt",
+        "size": 24302769
       },
       {
         "name": "belt-dash",
@@ -62,13 +72,13 @@
   },
   "boot": {
     "overlayGone": true,
-    "loaded": 192645532,
-    "total": 192645532,
+    "loaded": 235392012,
+    "total": 235392012,
     "failed": [],
     "sprites": null,
-    "belt": 28,
+    "belt": 40,
     "beltErrors": [],
-    "inline": 267267
+    "inline": 292026
   },
   "checks": {
     "Punch connects near the edge of the wider lane": true,

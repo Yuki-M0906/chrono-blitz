@@ -1,7 +1,7 @@
 {
-  "version": "3.6.0",
-  "clipsEmbedded": 136,
-  "cinematicLines": 10,
+  "version": "3.7.0",
+  "clipsEmbedded": 142,
+  "cinematicLines": 16,
   "newThrowReactions": 24,
   "reworkedVoices": 102,
   "remasteredFromV17": 126,

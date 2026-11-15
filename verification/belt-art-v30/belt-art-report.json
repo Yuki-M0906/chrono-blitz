@@ -1,7 +1,7 @@
 {
-  "version": "3.6.1",
+  "version": "3.7.2",
   "loaded": {
-    "images": 28,
+    "images": 40,
     "districts": 5,
     "factory": 5,
     "monsterCells": 24,
@@ -26,36 +26,64 @@
         "ratio": 0.613946278889974
       },
       {
-        "id": "rise-kagura",
-        "ratio": 0.6538988749186198
-      },
-      {
-        "id": "rise-volt",
-        "ratio": 0.7252852121988932
-      },
-      {
-        "id": "rise-freya",
-        "ratio": 0.6904023488362631
-      },
-      {
-        "id": "rise-titan",
-        "ratio": 0.5763104756673177
-      },
-      {
-        "id": "rise-ayame",
-        "ratio": 0.7197386423746744
-      },
-      {
-        "id": "rise-celine",
-        "ratio": 0.7378832499186198
-      },
-      {
         "id": "fx-fire",
         "ratio": 0.7613913218180338
       },
       {
         "id": "maw",
         "ratio": 0.5494505564371744
+      },
+      {
+        "id": "maw-motion",
+        "ratio": 0.5559946695963541
+      },
+      {
+        "id": "maw-breath",
+        "ratio": 0.5367317199707031
+      },
+      {
+        "id": "maw-hurt",
+        "ratio": 0.557135264078776
+      },
+      {
+        "id": "rise-fx",
+        "ratio": 0.8739897410074869
+      },
+      {
+        "id": "maw-flame",
+        "ratio": 0.707525889078776
+      },
+      {
+        "id": "beach-coral",
+        "ratio": 0.8118082682291666
+      },
+      {
+        "id": "beach-azure",
+        "ratio": 0.8142731984456381
+      },
+      {
+        "id": "beach-pearl",
+        "ratio": 0.8017234802246094
+      },
+      {
+        "id": "beach-luka",
+        "ratio": 0.805334726969401
+      },
+      {
+        "id": "beach-misha",
+        "ratio": 0.8034769694010416
+      },
+      {
+        "id": "beach-luka-motion",
+        "ratio": 0.7776775360107422
+      },
+      {
+        "id": "beach-misha-motion",
+        "ratio": 0.7372907002766927
+      },
+      {
+        "id": "beach-decor",
+        "ratio": 0.6480979919433594
       },
       {
         "id": "dash-kagura",
@@ -94,7 +122,7 @@
     "randomCalls": 0,
     "fallback": true,
     "bossStates": true,
-    "meanRenderMs": 0.24083333338300386
+    "meanRenderMs": 0.4649999996026357
   },
   "browserErrors": []
 }

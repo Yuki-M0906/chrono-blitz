@@ -6,9 +6,9 @@
   "stageErrors": [],
   "voice": {
     "decoded": {
-      "count": 136,
+      "count": 142,
       "errors": [],
-      "nonSilent": 136
+      "nonSilent": 142
     },
     "mixing": {
       "channels": 2,

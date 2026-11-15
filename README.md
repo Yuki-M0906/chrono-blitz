@@ -4,7 +4,15 @@ Browser-only arcade collection (one small HTML file plus a `data/` folder of ass
 
 **▶ Play the demo / デモをプレイ:** https://yuki-m0906.github.io/chrono-blitz/
 
-Current version: **v3.6.1** / 現在のバージョン: **v3.6.1**
+Current version: **v3.7.2** / 現在のバージョン: **v3.7.2**
+
+> v3.7.2: 総合チェックに基づく整合修正。色違いの敵が初登場する瞬間の引っかかり（約0.1秒）を解消。読み込み総量の数値、技表（上昇技の受付・ステージ3・開始ステージ選択）、冒頭の構成サマリを同期。ステージ選択の検査を追加し、検証は全23本。ゲームの戦闘・進行は v3.7.1 と同じ。
+
+> v3.7.1: ゲーム選択画面右下の小さなボタンから、ベルトアクションの開始ステージを選択可能。ステージ3のキャラクターデザインを微調整済み（機構は同じ）。再開メモは `assets/belt/art/resort-v370/HANDOFF-design.md`。
+
+> v3.7.0: ステージ3「AZURE MIRAGE」を追加。真昼の海辺リゾート5区画、動く水面・ヤシ・旗・カモメ、専用水着女性敵6種50体、武器連携を使う双子ボス「ルカとミーシャ」。ステージ2クリア後Enterで進行。
+
+> v3.6.2: 全6人の上昇技を通常原画の等身へ統一。下→上受付14F。MAWに72追加姿勢・大火炎放射・被弾モーションを追加。
 
 > v3.6.1: 案内ページ・README・技表・冒頭の構成サマリを v3.6 の内容（ステージ2、136音声、3段上昇技）に同期。古い期待値で止まっていた検証6本を修正し、全20本が通過。連打時に打撃音が抜ける問題と、通常打撃の低音が打ち消される問題を修正。ステージ2の曲選択を修正。
 
@@ -24,8 +32,8 @@ Current version: **v3.6.1** / 現在のバージョン: **v3.6.1**
 
 > v3.0.0: 全6人・雑魚敵・ボスをセルアニメ調へ刷新。通常・必殺技・投げ・ダッシュの27枚648姿勢を描き直し、キャラクター表示を約15％拡大しました。両ゲームの戦闘仕様と2.8.1の起動時BGM修正を維持しています。詳細な引き継ぎはHTML冒頭コメント、生成資料は `assets/characters/v3/prompts.json`、検証は `node tools/verify-anime.cjs`。
 
-> The game is `ai_studio_code.html` (0.4 MB of code) plus eleven asset packs in `data/` (about 185 MB in total, 42 MB at most each). Keep them together. The first load takes a while; later loads are cached per pack. Keyboard required.
-> ゲーム本体は `ai_studio_code.html`（約 0.4MB）と `data/` フォルダのアセットパック 11 本（計 約 185MB、最大 約 42MB）のセットです。必ず同じ場所に置いてください。初回読み込みには時間がかかります。キーボードが必要です。
+> The game is `ai_studio_code.html` (0.5 MB of code) plus thirteen asset packs in `data/` (about 225 MB in total, 42 MB at most each). Keep them together. The first load takes a while; later loads are cached per pack. Keyboard required.
+> ゲーム本体は `ai_studio_code.html`（約 0.5MB）と `data/` フォルダのアセットパック 13 本（計 約 225MB、最大 約 42MB）のセットです。必ず同じ場所に置いてください。初回読み込みには時間がかかります。キーボードが必要です。
 >
 > v2.8.1: 起動直後のゲーム選択画面で音楽が鳴らない問題を修正。ブラウザは操作があるまで音を出せないため、最初のクリック / キー押下を「スタート」として受け、そこで音楽を始めます。 / The first click or key press now starts the game select screen and its music.
 >
@@ -42,7 +50,7 @@ v2.5.0: NEON UPRISING の全 5 区画を描き下ろし背景へ刷新。木箱�
 | | OVERDRIVE | NEON UPRISING |
 |---|---|---|
 | Genre | 1-on-1 versus fighting | Side-scrolling beat 'em up (1 player) |
-| Content | 6 fighters, 4 stages, ARCADE / VS CPU / VS 2P / TRAINING | 2 stages, 5 areas each: "BLACK VEIN" (boss IRON VOSS) → "INFERNAL WORKS" (giant monster FURNACE MAW). 9 enemy types. Score and lives carry over |
+| Content | 6 fighters, 4 stages, ARCADE / VS CPU / VS 2P / TRAINING | 3 stages, 5 areas each: "BLACK VEIN" (boss IRON VOSS) → "INFERNAL WORKS" (giant monster FURNACE MAW) → "AZURE MIRAGE" (twins LUKA & MISHA). 9 city enemy types plus 6 resort types. Score and lives carry over |
 | Systems | Gatling cancels, command-input bonus, just guard, drive burst, synchronized throws | Final Fight style chain (punch → body blow → uppercut, each stage only after a hit), hold ↓ on the third hit to throw instead, thrown bodies hit other enemies, grabs with follow-up strikes, three-hit rising attack (↓ → ↑), flame dash attack, emergency spin attack, breakables and pickups, lives and 1UP, boss intro lines and slow-motion finish |
 
 ## Controls / 操作
@@ -56,13 +64,14 @@ v2.5.0: NEON UPRISING の全 5 区画を描き下ろし背景へ刷新。木箱�
 | Throw / Burst | `I` / `O` | `I` throw, `K` jump |
 | 2P | Arrows + `N` `M` `,` `.` `/` `;` | — |
 | Common | `H` command list, `ESC` pause, `Q` (while paused) back | |
+| Start stage | — | Button at the bottom right of the game select screen ("ベルト開始：STAGE n"), then pick a hero |
 
 ## Tech / 技術
 
 - HTML5 Canvas 2D, fixed 60 Hz simulation, 1280×720 logical resolution, deterministic rendering (drawing never consumes the combat RNG).
 - Web Audio API: 8 original diatonic tracks and all sound effects are synthesized locally from 42 base PCM buffers + 47 multi-sampled instrument buffers; no external audio files.
-- 432 shared contemporary anime poses (18 atlases), 72 IRON VOSS poses (3), 144 dash poses (6), 144 rising-attack poses (6), 24 FURNACE MAW poses, a 24-cell fire atlas, 4 versus backgrounds, 10 street/factory backgrounds and an 8-cell prop/item atlas stored as data URIs (50 PNGs total).
-- Character voices: 136 VOICEVOX synthesized clips: 22 per fighter (including a finishing line) and intro / defeat lines for the two bosses (see credits).
+- 432 shared contemporary anime poses (18 atlases), 72 IRON VOSS poses (3), 144 dash poses (6), a 24-cell rising-attack effect atlas, 96 FURNACE MAW poses (4) with a 12-cell flame, a 24-cell fire atlas, 4 versus backgrounds, 15 street / factory / resort backgrounds, 3 resort enemy atlases, 4 twin-boss atlases (96 poses), a resort decor atlas and an 8-cell prop/item atlas stored as data URIs (62 PNGs total).
+- Character voices: 142 VOICEVOX synthesized clips: 22 per fighter (including a finishing line) and intro / defeat lines for VOSS and MAW, plus intro / combo / defeat lines for each twin (see credits).
 - No server, no network requests, no installation. Open `ai_studio_code.html` directly (with `data/` beside it).
 
 ## Repository layout / 構成
@@ -107,4 +116,4 @@ Terms: [VOICEVOX](https://voicevox.hiroshiba.jp/term/) / [玄野武宏・白上�
 
 ### v3.4.0 Street commands
 
-↓→↑ / S→W within 30 frames after the last down-held frame (overlap allowed; 12-frame recovery buffer): three-hit rising attack, also from a grab. Grab: J/Z twice, then J/Z to launch or I to throw.
+↓→↑ / S→W within 14 frames of pressing down (holding down longer cancels it; a short overlap is allowed; 6-frame recovery buffer): three-hit rising attack, also from a grab. Grab: J/Z twice, then J/Z to launch or I to throw.

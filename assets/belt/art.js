@@ -3,8 +3,13 @@ const BeltArt = {
   images: new Map(),
   boards: new Map(),
   factoryBoards: new Map(),
+  resortBoards:new Map(), resortWater:new Map(), beachSheets:new Map(), beachPalettes:new Map(), beachDecor:[],
   monsterSheet: null,
   monsterCells: [],
+  monsterAtlases: new Map(),
+  monsterContacts: new Map(),
+  risingFx: null,
+  breathFx: null,
   bossCells: new Map(),
   bossSheets: new Map(),
   dashSheets: new Map(),
@@ -23,11 +28,27 @@ const BeltArt = {
         try {
           this.images.set(id, img);
           if (id.startsWith('district-')) this.prepareBoard(Number(id.slice(-1)), img, entry.horizon);
+          else if (id.startsWith('resort-')) { const n=Number(id.slice(-1));this.prepareBoard(n,img,entry.horizon,this.resortBoards);this.prepareResortWater(n); }
+          else if(id==='beach-decor')this.prepareBeachDecor(img);
+          else if(id.startsWith('beach-'))this.beachSheets.set(id.slice(6),this.prepareBeachAtlas(img));
           else if (id.startsWith('factory-')) this.prepareBoard(Number(id.slice(-1)), img, entry.horizon, this.factoryBoards);
           else if (id === 'maw') {
             this.monsterSheet = FighterSprites.prepareAtlas(img, 'maw');
             const c=this.monsterSheet.getContext('2d',{willReadFrequently:true}),cell=FighterSprites.cell;
             this.monsterCells=Array.from({length:24},(_,i)=>this.bounds(c,i%6*cell,Math.floor(i/6)*cell,cell,cell));
+          }
+          else if (['maw-motion','maw-breath','maw-hurt'].includes(id)) {
+            const atlas=this.prepareStrictAtlas(img),c=atlas.getContext('2d',{willReadFrequently:true}),cell=FighterSprites.cell;
+            this.monsterAtlases.set(id,atlas);
+            this.monsterContacts.set(id,Array.from({length:24},(_,i)=>this.bounds(c,i%6*cell,Math.floor(i/6)*cell,cell,cell).bottom+1));
+          }
+          else if (id === 'rise-fx') this.risingFx = this.prepareStrictAtlas(img, true);
+          else if (id === 'maw-flame') {
+            this.breathFx=document.createElement('canvas'); this.breathFx.width=img.width; this.breathFx.height=img.height;
+            const c=this.breathFx.getContext('2d',{willReadFrequently:true}); c.drawImage(img,0,0);
+            const data=c.getImageData(0,0,img.width,img.height);
+            for(let i=3;i<data.data.length;i+=4) if(data.data[i]<24)data.data[i]=0;
+            c.putImageData(data,0,0);
           }
           else if (id === 'props') this.prepareProps(img);
           else if (id.startsWith('voss-')) this.prepareBoss(id, img);
@@ -83,15 +104,48 @@ const BeltArt = {
       -FighterSprites.pivotX * scale + offsetX, -FighterSprites.pivotY * scale + offsetY, cell * scale, cell * scale);
     c.restore(); return true;
   },
+  prepareStrictAtlas(image, effects = false) {
+    // New atlases never borrow pixels from adjacent drawings. Shared renderer stays unchanged.
+    const c=document.createElement('canvas'); c.width=FighterSprites.cell*6; c.height=FighterSprites.cell*4;
+    const g=c.getContext('2d',{willReadFrequently:true}), cell=FighterSprites.cell;
+    for(let f=0;f<24;f++) {
+      g.drawImage(image,f%6*256,Math.floor(f/6)*256,256,256,f%6*cell+64,Math.floor(f/6)*cell+64,256,256);
+      FighterSprites.cleanCell(g,f%6*cell,Math.floor(f/6)*cell,effects);
+    }
+    return c;
+  },
+  risingBodyFrame(t) {
+    // The body comes from the normal character atlas, at exactly its normal scale and pivot.
+    // Separate VFX means a tall trail can never shrink/elongate the person to fit an action cell.
+    const keys=[[0,0],[2,41],[4,6],[5,34],[6,15],[9,37],[10,8],[12,15],
+      [15,37],[16,8],[18,15],[27,7],[31,38],[35,41],[39,11],[42,0]];
+    let frame=0; for(const [at,pose] of keys) { if(t<at)break;frame=pose; } return frame;
+  },
+  drawRisingBody(actor, c) {
+    const frame=this.risingBodyFrame(actor.f), sheet=FighterSprites.sheets.get(actor.data.id+(frame>=24?'-motion':''));
+    if(!sheet) return false;
+    const cell=FighterSprites.cell,scale=FighterSprites.scaleFor(actor.data.id),f=frame%24;
+    c.save(); c.scale(actor.facing,1); c.imageSmoothingEnabled=true;
+    c.drawImage(sheet.atlas,f%6*cell,Math.floor(f/6)*cell,cell,cell,
+      -Math.round(FighterSprites.pivotX*scale),-Math.round(FighterSprites.pivotY*scale),Math.round(cell*scale),Math.round(cell*scale));
+    c.restore(); return true;
+  },
   drawRising(actor, c) {
     if (actor.state !== 'SP_2') return false;
-    const t = actor.f;
-    const frame = t < 18 ? Math.floor(t / 2) : t < 30 ? 9 + Math.floor((t - 18) * 9 / 12) : 18 + Math.min(5, Math.floor((t - 30) * 6 / 14));
-    return this.drawAction('rise-' + actor.data.id, frame, actor, c);
+    const ok=this.drawRisingBody(actor,c), t=actor.f;
+    if(ok && this.risingFx && t>=4 && t<39) {
+      const phase=t<6?0:t<9?1:t<12?0:t<15?1:t<18?0:t<28?2:3;
+      const frame=CHARACTERS.findIndex(x=>x.id===actor.data.id)+phase*6,cell=FighterSprites.cell,scale=FighterSprites.scaleFor(actor.data.id);
+      c.save(); c.scale(actor.facing,1); c.globalAlpha*=t>=28?Math.max(0,(39-t)/11):.9;
+      c.drawImage(this.risingFx,frame%6*cell,Math.floor(frame/6)*cell,cell,cell,-FighterSprites.pivotX*scale,-FighterSprites.pivotY*scale,cell*scale,cell*scale);
+      c.restore();
+    }
+    return ok;
   },
   drawBurn(actor, c) {
     if (!(actor.burnTicks > 0) || !['HIT_AIR','KNOCKDOWN','DEAD'].includes(actor.state)) return false;
     if (actor.monster) return this.drawMonster(actor, c);
+    if (actor.resort) return this.drawResortActor(actor,c);
     const frame = actor.state === 'HIT_AIR' ? Math.min(11, Math.floor(actor.f / 2)) : 12 + Math.min(5, Math.floor(actor.f / 5));
     // Fire atlas tumbles to the RIGHT: orient by the captured launch vector, not the victim facing the attacker.
     return this.drawAction('fx-fire', frame, actor, c, 0, 0, 1, actor.burnDirection || Math.sign(actor.knockX) || -actor.facing);
@@ -149,7 +203,90 @@ const BeltArt = {
     this.bossCells.set(id, cells);
   },
 
+  prepareResortWater(index) {
+    const source=this.resortBoards.get(index),water=document.createElement('canvas');water.width=source.width;water.height=source.height;
+    const c=water.getContext('2d',{willReadFrequently:true});c.drawImage(source,0,0);const d=c.getImageData(0,0,water.width,water.height);
+    for(let y=0;y<water.height;y++)for(let x=0;x<water.width;x++){
+      const i=(y*water.width+x)*4,r=d.data[i],g=d.data[i+1],b=d.data[i+2];
+      const ocean=y>215&&y<420&&x>(index===3?700:390)&&g>105&&b>120&&r<g*.83;
+      if(!ocean)d.data[i+3]=0;
+    }c.putImageData(d,0,0);this.resortWater.set(index,water);
+  },
+  prepareBeachAtlas(image) {
+    // Lunges cross the nominal cell's left edge. Include horizontal bleed only,
+    // then retain the character's connected silhouette, never the adjacent row.
+    const canvas=document.createElement('canvas'),cell=FighterSprites.cell;
+    canvas.width=cell*6;canvas.height=cell*4;
+    const c=canvas.getContext('2d',{willReadFrequently:true});
+    for(let f=0;f<24;f++){
+      const col=f%6,row=Math.floor(f/6);
+      c.drawImage(image,col*256-96,row*256,384,256,col*cell,row*cell+64,384,256);
+      FighterSprites.cleanCell(c,col*cell,row*cell,false);
+    }
+    return canvas;
+  },
+  prepareBeachDecor(image) {
+    const canvas=document.createElement('canvas');canvas.width=image.width;canvas.height=image.height;const c=canvas.getContext('2d',{willReadFrequently:true});c.drawImage(image,0,0);
+    for(let i=0;i<8;i++)this.beachDecor[i]=this.bounds(c,i%4*384,Math.floor(i/4)*512,384,512);
+  },
+  drawBeachDecor(c,frame,x,y,w,h) {
+    const box=this.beachDecor[frame],image=this.images.get('beach-decor');if(!box||!image)return;
+    c.drawImage(image,box.x,box.y,box.w,box.h,x,y,w,h);
+  },
+  drawResortStreet(s,c) {
+    if(this.resortBoards.size!==5)return false;
+    const t=s.tick;c.save();c.fillStyle='#a8e8ff';c.fillRect(0,0,W,H);c.translate(-Math.round(s.camera),0);
+    for(let i=0;i<5;i++){
+      const x=i*1240-96;if(x>s.camera+W||x+1432<s.camera)continue;
+      c.drawImage(this.resortBoards.get(i),x,0);
+      const water=this.resortWater.get(i);
+      // Move only the water pixels: boats, rails and architecture remain anchored.
+      for(let y=216;y<420;y+=4){const shift=Math.sin(t*.045+y*.09+i)*2.8;c.drawImage(water,0,y,1432,4,x+shift,y,1432,4);}
+      c.save();c.globalCompositeOperation='screen';c.globalAlpha=.22+.12*Math.sin(t*.04+i);
+      for(let n=0;n<14;n++){const wx=x+550+n*51,wy=280+(n*31)%115;const blink=Math.max(0,Math.sin(t*.06+n));c.fillStyle='rgba(230,255,255,'+blink+')';c.fillRect(wx+Math.sin(t*.02+n)*7,wy,8+blink*12,1);}
+      c.restore();
+      c.save();c.translate(x+30,-18);c.rotate(Math.sin(t*.025+i)*.045);this.drawBeachDecor(c,0,0,0,200,220);c.restore();
+      c.save();c.translate(x+1260,-22);c.rotate(-Math.sin(t*.027+i)*.05);this.drawBeachDecor(c,1,-170,0,200,220);c.restore();
+      if(i===4){for(let j=0;j<2;j++){c.save();c.translate(x+350+j*320,90);c.transform(1,0,Math.sin(t*.04+j)*.045,1,0,0);this.drawBeachDecor(c,4+j,0,0,65,160);c.restore();}}
+    }
+    c.restore();c.save();
+    for(let j=0;j<3;j++){const x=(t*(.8+j*.18)+j*440)%(W+140)-70,y=150+j*35+Math.sin(t*.02+j)*12;this.drawBeachDecor(c,Math.floor(t/12+j)%2?2:3,x,y,46,30);}
+    c.restore();return true;
+  },
+  resortPose(a) {
+    if(a.twin&&['TWIN_WINDUP','TWIN_ATTACK'].includes(a.state)) {
+      const row=a.twinMode==='spear'? (a.twinPattern===2?3:1) :a.twinMode==='parasol'?(a.twinPattern===2?3:1):a.twinMode==='tonfa'?2: (a.twinPattern===2?2:0);
+      const f=a.state==='TWIN_WINDUP'?Math.min(1,Math.floor(a.f/24)):2+Math.min(3,Math.floor(a.f/12));
+      return [a.resort+'-motion',row*6+f];
+    }
+    let f=0;
+    if(a.dead||a.state==='KNOCKDOWN')f=20;
+    else if(a.state==='WAKEUP')f=a.f<9?21:1;
+    else if(a.state==='GRABBED')f=a.throwFrame>=62?19:18;
+    else if(a.state==='HIT_AIR')f=a.throwFlight?19:17;
+    else if(a.state==='HIT_STAND')f=16;
+    else if(a.state==='WINDUP')f=8;
+    else if(a.state==='ATK_H')f=a.f<5?8:a.f<12?9:a.f<20?10:11;
+    else if(a.state==='WALK_F')f=2+Math.floor(a.animTick/4)%6;
+    return [a.resort,f];
+  },
+  beachPalette(id,hue) {
+    const key=id+':'+hue;if(this.beachPalettes.has(key))return this.beachPalettes.get(key);
+    const src=this.beachSheets.get(id);if(!src)return null;
+    if(!hue)return src;
+    const canvas=document.createElement('canvas');canvas.width=src.width;canvas.height=src.height;const c=canvas.getContext('2d',{willReadFrequently:true});c.drawImage(src,0,0);const original=c.getImageData(0,0,src.width,src.height);
+    c.clearRect(0,0,src.width,src.height);c.filter='hue-rotate('+hue+'deg)';c.drawImage(src,0,0);c.filter='none';const d=c.getImageData(0,0,src.width,src.height),a=original.data;
+    for(let i=0;i<a.length;i+=4){const costume=id==='coral'?a[i]>a[i+1]*1.8:id==='azure'?a[i+2]>a[i]*1.2:a[i+2]>a[i+1]*1.3;if(!costume)for(let k=0;k<3;k++)d.data[i+k]=a[i+k];}
+    c.putImageData(d,0,0);this.beachPalettes.set(key,canvas);return canvas;
+  },
+  drawResortActor(a,c) {
+    const [id,f]=this.resortPose(a),image=this.beachPalette(id,a.resortHue||0);if(!image)return false;
+    const cell=FighterSprites.cell,k=FighterSprites.scaleFor(a.data.id);c.save();c.scale(a.facing,1);c.imageSmoothingEnabled=true;
+    if(a.burnTicks>0){c.filter='sepia(.8) saturate(3)';c.shadowColor='#ff671c';c.shadowBlur=16;}
+    c.drawImage(image,f%6*cell,Math.floor(f/6)*cell,cell,cell,-(FighterSprites.pivotX+32)*k,-FighterSprites.pivotY*k,cell*k,cell*k);c.restore();return true;
+  },
   drawStreet(street, c) {
+    if(street.stageIndex===2)return this.drawResortStreet(street,c);
     const boards = street.stageIndex === 1 ? this.factoryBoards : this.boards;
     if (boards.size !== 5) return false;
     c.save(); c.imageSmoothingEnabled = false;
@@ -197,6 +334,11 @@ const BeltArt = {
   },
 
   drawProp(c, p) {
+    if(p.resort&&this.beachDecor.length){
+      c.save();c.fillStyle='rgba(13,56,67,.2)';c.beginPath();c.ellipse(p.x,p.y,40,10,0,0,Math.PI*2);c.fill();
+      this.drawBeachDecor(c,p.type==='crate'?6:7,p.x-40,p.y-65,80,65);
+      if(p.hp<24){c.strokeStyle='#35606a';c.lineWidth=2;c.beginPath();c.moveTo(p.x-15,p.y-60);c.lineTo(p.x+5,p.y-37);c.lineTo(p.x-8,p.y-10);c.stroke();}c.restore();return true;
+    }
     if (this.props.length !== 8) return false;
     c.save(); c.fillStyle = 'rgba(0,0,0,.45)'; c.beginPath(); c.ellipse(p.x, p.y, 34, 9, 0, 0, Math.PI * 2); c.fill();
     const frame = (p.type === 'barrel' ? 2 : 0) + (p.hp < 24 ? 1 : 0);
@@ -232,26 +374,53 @@ const BeltArt = {
     return FighterSprites.frame('titan', state, f, actor.animTick, actor.blockstun > 0, actor.vy);
   },
 
-  monsterFrame(a) {
-    if (a.dead || a.state === 'KNOCKDOWN') return 21;
-    if (['HIT_AIR','GRABBED','THROWING'].includes(a.state)) return 20;
-    if (a.state === 'WAKEUP') return 22;
-    if (a.state === 'HIT_STAND') return 12 + Math.min(1,Math.floor(a.f/5));
-    if (a.state === 'WINDUP') return a.plan === 'slam' ? 14 + Math.min(1,Math.floor(a.f/20)) : 18;
-    if (a.state === 'SLAM') return a.f < 20 ? 15 : a.f < 33 ? 16 : 17;
-    if (a.state === 'CHARGE') return 19;
-    if (a.state === 'ATK_H') return 6 + Math.min(5,Math.floor(a.f/5));
-    if (a.state === 'WALK_F') return 2 + Math.floor(a.animTick/7)%4;
-    return 0;
+  monsterPose(a) {
+    const f=a.f, seq=(start,count,step)=>start+Math.min(count-1,Math.floor(f/step));
+    if(a.dead) return ['maw-hurt',f<5?18:19];
+    if(a.state==='KNOCKDOWN') return ['maw-hurt',f<5?18:19];
+    if(a.state==='WAKEUP') return ['maw-hurt',20+Math.min(3,Math.floor(f/3))];
+    if(a.state==='GRABBED') return ['maw-hurt',a.monsterHit==='rising'?6:a.throwFrame>=62?Math.min(17,a.throwFrame-48):a.throwFrame===61?13:12];
+    if(a.state==='THROWING') return ['maw-hurt',seq(14,4,5)];
+    if(a.state==='HIT_AIR') return ['maw-hurt',a.throwFlight?14+Math.min(3,Math.floor(f/4)):6+Math.min(5,Math.floor(f/4))];
+    if(a.state==='HIT_STAND') return ['maw-hurt',a.monsterHitHeavy?3+Math.min(2,Math.floor(f/4)):Math.min(2,Math.floor(f/4))];
+    if(a.state==='WINDUP') {
+      if(a.plan==='breath') return ['maw-breath',Math.min(5,Math.floor(f/10))];
+      if(a.plan==='slam') return ['maw-motion',6+Math.min(3,Math.floor(f*4/Math.max(1,a.windup)))];
+      return ['maw-motion',18+Math.min(2,Math.floor(f*3/Math.max(1,a.windup)))];
+    }
+    if(a.state==='BREATH') return ['maw-breath',f<18?6+Math.floor(f/3):f<66?12+Math.floor((f-18)/4)%6:18+Math.min(5,Math.floor((f-66)/3))];
+    if(a.state==='SLAM') return ['maw-motion',f<20?8+Math.min(1,Math.floor(f/10)):f<30?10:11];
+    if(a.state==='CHARGE') return ['maw-motion',12+Math.floor(f/3)%6];
+    if(a.state==='ATK_H') return ['maw-motion',18+Math.min(5,Math.floor(f/5))];
+    if(a.state==='WALK_F') return ['maw-motion',Math.floor(a.animTick/5)%6];
+    return ['maw',0];
+  },
+  monsterFrame(a) { return this.monsterPose(a)[1]; },
+  monsterFoot(actor) {
+    const [id,frame]=this.monsterPose(actor);
+    return actor.z>0?FighterSprites.pivotY:id==='maw'?this.monsterCells[frame].bottom+1:this.monsterContacts.get(id)[frame];
   },
   drawMonster(actor, c) {
-    if (!this.monsterSheet) return false;
-    const frame=this.monsterFrame(actor), cell=FighterSprites.cell, scale=FighterSprites.scaleFor('titan'), foot=actor.z>0?FighterSprites.pivotY:this.monsterCells[frame].bottom+1;
+    const [id,frame]=this.monsterPose(actor), image=id==='maw'?this.monsterSheet:this.monsterAtlases.get(id);
+    if(!image) return false;
+    const cell=FighterSprites.cell,scale=FighterSprites.scaleFor('titan');
+    // Align the actual contact point to the floor, without changing body scale.
+    const foot=this.monsterFoot(actor);
     c.save(); c.scale(actor.burnTicks>0 ? (actor.burnDirection || actor.facing) : actor.facing,1);
-    if (actor.burnTicks>0) { c.filter='sepia(.7) saturate(3)'; c.shadowColor='#ff6a14'; c.shadowBlur=16; }
+    if(actor.burnTicks>0){c.filter='sepia(.7) saturate(3)';c.shadowColor='#ff6a14';c.shadowBlur=16;}
     c.imageSmoothingEnabled=true;
-    c.drawImage(this.monsterSheet,frame%6*cell,Math.floor(frame/6)*cell,cell,cell,-FighterSprites.pivotX*scale,-foot*scale,cell*scale,cell*scale);
+    c.drawImage(image,frame%6*cell,Math.floor(frame/6)*cell,cell,cell,-FighterSprites.pivotX*scale,-foot*scale,cell*scale,cell*scale);
     c.restore(); return true;
+  },
+  drawMonsterBreath(actor,c) {
+    if(!this.breathFx || actor.state!=='BREATH' || actor.f<6 || actor.f>=78) return;
+    const f=actor.f,frame=f<18?Math.floor((f-6)/4):f<66?3+Math.floor((f-18)/3)%6:9+Math.min(2,Math.floor((f-66)/4));
+    // Actor-local coordinates: draw after the monster body, locked to the open jaw.
+    const scale=FighterSprites.scaleFor('titan');
+    c.save(); c.scale(actor.facing,1);c.translate(92*scale,(-114+FighterSprites.pivotY-this.monsterFoot(actor))*scale);c.rotate(.28);
+    c.imageSmoothingEnabled=true;
+    c.drawImage(this.breathFx,frame%3*512,Math.floor(frame/3)*256,512,256,-8,-82,350,175);
+    c.restore();
   },
   drawBoss(actor, c, state, f) {
     if (actor.monster) return this.drawMonster(actor,c);

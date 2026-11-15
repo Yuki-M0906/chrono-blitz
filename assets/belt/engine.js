@@ -2,8 +2,8 @@
 // Coordinates: x = street distance, y = floor depth, z = height above that floor.
 // Fixed 60 Hz simulation. Draw methods must not change simulation or consume random values.
 const STREET = {
-  version: '3.6.1',
-  risingInput: { window: 30, buffer: 12 },
+  version: '3.7.2',
+  risingInput: { window: 14, buffer: 6 },
   dash: { tapWindow: 14, speed: 2.2, damage: 112, active: 8, until: 19, end: 38 },
   // v2.6.0 hit detection tuning. One table so the feel can be adjusted without hunting through the methods.
   // Rule of thumb: the player's attacks are generous (wide lane, several active frames), enemy attacks are honest
@@ -116,9 +116,33 @@ const FACTORY_AREAS = [
  ['04 / MUTATION WARD','変異実験区画',[['ghost','raven','viper','surge'],['goliath','sable','brute','viper']]],
  ['05 / FURNACE HEART','炉心の怪物',[['boss','goliath','ghost']]]
 ].map(([name,jp,waves],i)=>({left:i*1240,right:(i+1)*1240,name,jp,waves}));
+const RESORT_ENEMIES = {
+ coral:{char:4,name:'CORAL',resort:'coral',role:'punk',hp:118,speed:2.65,damage:27,hue:0,score:350},
+ sunset:{char:4,name:'SUNSET',resort:'coral',role:'punk',hp:128,speed:2.8,damage:28,hue:45,score:400},
+ azure:{char:2,name:'AZURE',resort:'azure',role:'knife',hp:142,speed:2.5,damage:33,hue:0,score:450},
+ lagoon:{char:2,name:'LAGOON',resort:'azure',role:'knife',hp:152,speed:2.65,damage:34,hue:110,score:500},
+ pearl:{char:5,name:'PEARL',resort:'pearl',role:'brute',hp:184,speed:1.85,damage:40,hue:0,score:600},
+ orchid:{char:5,name:'ORCHID',resort:'pearl',role:'brute',hp:198,speed:1.95,damage:41,hue:80,score:650},
+ luka:{char:2,name:'LUKA',resort:'luka',role:'knife',hp:1450,speed:3.0,damage:42,hue:0,score:7000,twin:true},
+ misha:{char:5,name:'MISHA',resort:'misha',role:'knife',hp:1350,speed:2.8,damage:38,hue:0,score:7000,twin:true}
+};
+// v3.7.2 [PERF-150] Build the recoloured atlases (SUNSET / LAGOON / ORCHID) while loading. They used to be made by the
+// first draw that needed them, which froze the game for about 0.1 s per variant in the middle of stage 3.
+BeltArt.ready = BeltArt.ready.then(() => {
+  for (const spec of Object.values(RESORT_ENEMIES)) if (spec.hue)
+    try { BeltArt.beachPalette(spec.resort, spec.hue); } catch (error) { BeltArt.errors.push('palette ' + spec.name + ': ' + error.message); }
+});
+const RESORT_AREAS = [
+ ['01 / SUNLIT PROMENADE','陽光の遊歩道',[['coral','azure','coral','pearl'],['sunset','coral','azure','lagoon'],['pearl','sunset','azure','coral']]],
+ ['02 / SAPPHIRE MARINA','サファイア・マリーナ',[['azure','lagoon','coral','sunset'],['pearl','azure','orchid','coral'],['lagoon','sunset','azure','pearl']]],
+ ['03 / INFINITY TERRACE','インフィニティ・テラス',[['pearl','orchid','azure','coral'],['lagoon','sunset','pearl','azure'],['orchid','lagoon','sunset','pearl']]],
+ ['04 / CORAL GALLERIA','珊瑚色の商店街',[['sunset','lagoon','orchid','coral'],['pearl','azure','sunset','lagoon'],['orchid','pearl','azure','sunset']]],
+ ['05 / TWIN CROWN','双冠のプライベートデッキ',[['luka','misha','coral','azure']]]
+].map(([name,jp,waves],i)=>({left:i*1240,right:(i+1)*1240,name,jp,waves}));
 const STREET_STAGES = [
  {title:'BLACK VEIN',jp:'法の消えた街。鉄門の首領、IRON VOSSを倒せ。',areas:STREET.areas,boss:'voss',bossName:'IRON VOSS',music:5},
- {title:'INFERNAL WORKS',jp:'闇に沈む廃工場。炉心に潜む巨大な怪物を倒せ。',areas:FACTORY_AREAS,boss:'maw',bossName:'FURNACE MAW',music:3}
+ {title:'INFERNAL WORKS',jp:'闇に沈む廃工場。炉心に潜む巨大な怪物を倒せ。',areas:FACTORY_AREAS,boss:'maw',bossName:'FURNACE MAW',music:3},
+ {title:'AZURE MIRAGE',jp:'真昼の海辺を支配する双子、ルカとミーシャを倒せ。',areas:RESORT_AREAS,boss:'luka',bossName:'LUKA & MISHA',music:4}
 ];
 
 const StreetPalettes = {
@@ -175,7 +199,7 @@ class StreetActor extends Fighter {
     this.team = team;
     this.uid = id;
     this.kind = kind;
-    this.role = STREET.enemies[kind]?.role || kind;
+    this.role = (STREET.enemies[kind] || RESORT_ENEMIES[kind])?.role || kind;
     this.dead = false;
     this.cooldown = 45 + (id % 4) * 16;
     this.attack = null;
@@ -199,7 +223,7 @@ class StreetActor extends Fighter {
       this.power = 0.82 + data.stats[0] * 0.065;
       this.reach = data.weapon === 'greatsword' ? 116 : data.weapon === 'rapier' ? 108 : 96;
     } else {
-      const spec = STREET.enemies[kind];
+      const spec = STREET.enemies[kind] || RESORT_ENEMIES[kind];
       Object.assign(this, {
         maxHp: spec.hp,
         hp: spec.hp,
@@ -209,7 +233,8 @@ class StreetActor extends Fighter {
         label: spec.name,
         value: spec.score
       });
-      this.streetPalette = StreetPalettes.get(kind);
+      if(spec.resort) { this.resort=spec.resort; this.resortHue=spec.hue; this.twin=spec.twin?kind:null; if(this.twin){this.kind='boss';this.scale=1.08;} }
+      else this.streetPalette = StreetPalettes.get(kind);
     }
     this.hudHp = this.hp;
     this.hudHold = 0;
@@ -248,11 +273,13 @@ class StreetActor extends Fighter {
     if (!BeltArt.drawBurn(this, c) &&
         !(this.team === 0 && BeltArt.drawRising(this, c)) &&
         !(this.team === 0 && BeltArt.drawDash(this, c)) &&
+        !(this.resort && BeltArt.drawResortActor(this,c)) &&
         !(this.kind === 'boss' && BeltArt.drawBoss(this, c, state, poseFrame)))
       this.drawBody(c, 0, 0, this.facing, this.state === 'STREET_DASH' ? 'DASH_F' :
         this.state === 'DASH_ATTACK' ? 'ATK_H' : state, poseFrame, false);
     c.filter = 'none';
     if (this.team === 0) BeltArt.drawFlameDash(this, c);
+    if (this.monster) BeltArt.drawMonsterBreath(this, c);
     if (this.weapon > 0) {
       c.save();
       c.translate(this.facing * 34, -67);
@@ -272,7 +299,7 @@ class StreetActor extends Fighter {
 
 class NeonUprising {
   constructor(owner, index, stage = 0, carry = null) {
-    this.stageIndex = stage === 1 ? 1 : 0;
+    this.stageIndex = Number.isInteger(stage) && STREET_STAGES[stage] ? stage : 0;
     this.stage = STREET_STAGES[this.stageIndex];
     this.owner = owner;
     this.character = index;
@@ -283,6 +310,7 @@ class NeonUprising {
     this.wave = 0;
     this.player = new StreetActor(CHARACTERS[index], 230, 552, 0, 0);
     this.enemies = [];
+    this.twins=[]; this.twinVolley=[]; this.twinNext=0; this.twinRound=0;
     this.hudTarget = null;
     this.hudTargetUntil = 0;
     this.items = [];
@@ -317,6 +345,7 @@ class NeonUprising {
       );
     }
     if (carry) { this.score=carry.score; this.kills=carry.kills; this.lives=carry.lives; this.extended=carry.extended; }
+    if(this.stageIndex===2) for(const prop of this.props) prop.resort=true;
     this.spawnWave();
     sound.playBGM(this.stage.music);
     this.player.speak('select', 60);
@@ -342,7 +371,9 @@ class NeonUprising {
       const e = this.spawnEnemy(kind, x, 470 + ((i * 67) % 150));
       e.cooldown = 80 + i * 14;
     });
-    if (types.includes('boss')) {
+    if (types.includes('luka')) {
+      this.startTwinIntro(); sound.playBGM(6); sound.playCue('boss');
+    } else if (types.includes('boss')) {
       this.bossIntro = this.voiceFrames(this.stage.boss, 'intro', 4);
       fighterVoice.stopAll();
       fighterVoice.play(this.stage.boss, 'intro', 1, 150);
@@ -352,11 +383,12 @@ class NeonUprising {
     }
   }
   spawnEnemy(kind, x, y) {
-    const e = new StreetActor(CHARACTERS[STREET.enemies[kind].char], x, y, 1, this.nextId++, kind);
+    const e = new StreetActor(CHARACTERS[(STREET.enemies[kind] || RESORT_ENEMIES[kind]).char], x, y, 1, this.nextId++, kind);
     if (kind === 'boss' && this.stageIndex === 1) {
       e.monster=true; e.label=this.stage.bossName; e.scale=1.85;
       e.hp=e.maxHp=e.hudHp=2300; e.damage=70; e.speed=1.7; e.value=10000;
     }
+    if(e.twin)this.twins.push(e);
     this.enemies.push(e);
     return e;
   }
@@ -387,7 +419,7 @@ class NeonUprising {
     if (this.result) {
       this.resultTick++;
       if (this.resultTick > 45 && STREET.press('Enter', 'KeyJ', 'KeyZ', 'Space'))
-        this.owner.startStreet(this.character, this.result === 'clear' ? (this.stageIndex === 0 ? 1 : 0) : this.stageIndex, this.result === 'clear' && this.stageIndex === 0 ? this : null);
+        this.owner.startStreet(this.character, this.result === 'clear' ? (this.stageIndex+1)%STREET_STAGES.length : this.stageIndex, this.result === 'clear' && this.stageIndex+1<STREET_STAGES.length ? this : null);
       return;
     }
     if (this.finale) { this.updateFinale(); return; }
@@ -399,6 +431,7 @@ class NeonUprising {
     }
     if (this.bossIntro > 0) {
       this.bossIntro--;
+      if(this.stageIndex===2 && this.bossIntro===this.voiceFrames('misha','intro',3)) { this.twinIntroSpeaker='misha'; fighterVoice.play('misha','intro',1,150); }
       return;
     }
     if (this.hitstop > 0) {
@@ -434,6 +467,7 @@ class NeonUprising {
     this.enemies = this.enemies.filter((e) => !(e.dead && e.f > 70));
     if (!this.player.dead) this.playerInput();
     for (const e of this.enemies) if (!e.dead) this.enemyAI(e);
+    if(this.stageIndex===2) { this.updateTwinProjectiles(); this.coordinateTwins(); }
     this.resolveBodies();
     if (this.player.dead && this.player.f >= 100) this.respawn();
     if (!this.alive().length && this.locked) {
@@ -594,9 +628,10 @@ class NeonUprising {
     if (this.rising) return;
     if (!canBuffer) { this.riseTap = this.riseBuffered = null; }
     else {
-      // Count the window from the last down-held frame. Down may overlap the subsequent up press.
-      // Fresh simultaneous down/up is not a command; a preceding down frame is required.
-      if (down && !up) this.riseTap = this.tick;
+      // A deliberate short down->up gesture: never refresh the timer while walking down.
+      // A brief key overlap remains accepted; fresh simultaneous opposites are not a command.
+      if (down && !wasDown && !up) this.riseTap = this.tick;
+      if (this.riseTap != null && this.tick - this.riseTap > STREET.risingInput.window) this.riseTap = null;
       if (upEdge && (wasDown || !down) && this.riseTap != null && this.tick - this.riseTap <= STREET.risingInput.window) {
         this.riseBuffered = this.tick + STREET.risingInput.buffer;
         this.riseTap = null;
@@ -907,7 +942,8 @@ class NeonUprising {
     this.trackHudHit(a);
     a.hp = Math.max(0, a.hp - Math.round(damage));
     a.flashTimer = 100;
-    if (source === 'dash' && a.team === 1) { a.burnTicks = 72; a.burnDirection = dir; }
+    if (a.monster) { a.monsterHit=source; a.monsterHitHeavy=knock || damage>=40; }
+    if ((source === 'dash' && a.team === 1) || source === 'mawFire') { a.burnTicks = 72; a.burnDirection = dir; }
     this.effects(a.x, a.y - a.z - 85, a.team === 0 ? '#ffca9a' : '#fff0bc');
     if (a.team === 0) {
       this.resetDashTap();
@@ -946,6 +982,7 @@ class NeonUprising {
     p.throwFrame = 50;
     e.pose('GRABBED');
     e.throwFrame = 60;
+    if(e.monster) e.monsterHit='grab';
     this.grapple = {
       attacker: p,
       victim: e,
@@ -968,6 +1005,7 @@ class NeonUprising {
     this.trackHudHit(g.victim);
     g.victim.hp = Math.max(0, g.victim.hp - Math.round(n));
     g.victim.flashTimer = 80;
+    if(g.victim.monster) g.victim.monsterHit='held';
     this.effects(g.victim.x, g.victim.y - 85, '#ffe9af', 8);
     this.addScore(20);
   }
@@ -1076,14 +1114,108 @@ class NeonUprising {
     sound.playPickup(it.type);
     return true;
   }
+  startTwinIntro() {
+    this.twinIntroSpeaker='luka';
+    this.bossIntro=this.voiceFrames('luka','intro',3)+this.voiceFrames('misha','intro',3);
+    fighterVoice.stopAll(); fighterVoice.play('luka','intro',1,150);
+  }
+  coordinateTwins() {
+    const living=this.twins.filter(e=>!e.dead&&e.hp>0);
+    if(this.player.dead || this.finale || this.tick<this.twinNext || living.length!==2 ||
+      living.some(e=>!STREET.ready(e)||e.cooldown>0))return;
+    const pattern=this.twinRound++%3;
+    this.twinCall=['CROSS TIDE','PARASOL PINCER','CROWN BREAK'][pattern];this.twinCallUntil=this.tick+110;
+    for(const e of living) {
+      const mode=e.twin==='luka'?(pattern===1?'tonfa':'spear'):(pattern===0?'rings':'parasol');
+      this.beginTwinAttack(e,mode,pattern===1?60:48,pattern);
+    }
+    fighterVoice.play(pattern%2?'misha':'luka','combo',1,90);
+    this.twinNext=this.tick+230;
+  }
+  beginTwinAttack(e,mode,windup,pattern=-1) {
+    e.twinMode=mode;e.twinPattern=pattern;e.windup=windup;e.twinHits=new Set();
+    e.twinLane=this.player.y;e.facing=this.player.x>=e.x?1:-1;e.pose('TWIN_WINDUP');
+  }
+  twinAI(e) {
+    const p=this.player;
+    if(e.hp<=0 || e.dead)return;
+    if(e.state==='TWIN_WINDUP') {
+      // Pincer approach is visible and interruptible. The last 30 frames commit the lane.
+      if(e.twinPattern===1 && e.f<24) {
+        const target=STREET.clamp(p.x+(e.twin==='luka'?-200:200),this.backWall+45,this.gate-45);
+        e.x+=STREET.clamp(target-e.x,-8,8);e.facing=p.x>=e.x?1:-1;
+      }
+      if(e.f>=e.windup){e.pose('TWIN_ATTACK');sound.playSwing(true);}
+      return;
+    }
+    if(e.state==='TWIN_ATTACK') {
+      const f=e.f,mode=e.twinMode;
+      if((mode==='tonfa'||mode==='spear')&&f<24) {
+        e.x=STREET.clamp(e.x+e.facing*(mode==='tonfa'?9:6),this.backWall+25,this.gate-25);
+      }
+      if(mode==='parasol'&&f>=12&&f<36)e.x=STREET.clamp(e.x+e.facing*3,this.backWall+25,this.gate-25);
+      if(mode==='rings' && [8,22,36].includes(f)) {
+        this.twinVolley.push({owner:e,x:e.x+e.facing*35,y:e.twinLane,dir:e.facing,age:0,hit:false});
+        sound.playSwing(false);
+      }
+      const active=mode==='tonfa'?[12,26]:mode==='spear'?[16,32]:mode==='parasol'?[16,30]:[];
+      for(const hit of active) if(f>=hit&&f<hit+5&&!e.twinHits.has(hit)) {
+        const reach=mode==='spear'?205:mode==='parasol'?145:110,dist=(p.x-e.x)*e.facing;
+        if(dist>-30&&dist<reach&&Math.abs(p.y-e.twinLane)<36&&p.z<85&&this.hurt(p,e.damage+(mode==='spear'?8:0),e.facing,true,'twin')) {
+          e.twinHits.add(hit);sound.playHit('heavy');this.shake=6;
+        }
+      }
+      if(f>=58){e.pose('IDLE');e.cooldown=e.enraged?65:100;}
+      return;
+    }
+    if(!STREET.ready(e))return;
+    const partner=this.twins.find(o=>o!==e&&o.hp>0&&!o.dead);
+    e.enraged=!partner;
+    const targetX=p.x+(e.twin==='luka'?-1:1)*(partner?210:135),targetY=p.y+(e.twin==='luka'?-12:12);
+    e.facing=p.x>=e.x?1:-1;
+    if(!partner&&e.cooldown<=0&&Math.abs(p.x-e.x)<600) {
+      e.soloTurn=(e.soloTurn||0)+1;
+      this.beginTwinAttack(e,e.twin==='luka'?(e.soloTurn%2?'spear':'tonfa'):(e.soloTurn%2?'rings':'parasol'),42);
+      return;
+    }
+    const dx=targetX-e.x,dy=targetY-e.y;
+    e.x=STREET.clamp(e.x+STREET.clamp(dx,-e.speed,e.speed),this.backWall+25,this.gate-25);
+    e.y=STREET.clamp(e.y+STREET.clamp(dy,-e.speed*.65,e.speed*.65),STREET.top,STREET.bottom);
+    e.state=Math.abs(dx)>8||Math.abs(dy)>5?'WALK_F':'IDLE';
+  }
+  updateTwinProjectiles() {
+    const p=this.player;
+    for(const q of this.twinVolley) {
+      q.age++;q.x+=q.dir*(q.age<35?10:-10);
+      if(q.age<70&&!q.hit&&!p.dead&&Math.abs(p.x-q.x)<32&&Math.abs(p.y-q.y)<26&&p.z<100) {
+        q.hit=this.hurt(p,32,q.dir,true,'twinRing');if(q.hit)sound.playHit('heavy');
+      }
+    }
+    this.twinVolley=this.twinVolley.filter(q=>q.age<70&&q.owner.hp>0&&!q.owner.dead);
+  }
+  drawTwinCombat(c) {
+    for(const e of this.twins)if(e.hp>0&&e.state==='TWIN_WINDUP') {
+      const reach=e.twinMode==='rings'?620:e.twinMode==='spear'?350:e.twinMode==='tonfa'?350:220;
+      c.fillStyle='rgba(255,72,113,.13)';c.strokeStyle=e.twin==='luka'?'#ef5367':'#408fff';c.lineWidth=2;
+      const x=e.facing>0?e.x-25:e.x-reach;
+      c.fillRect(x,e.twinLane-38,reach+25,76);c.strokeRect(x,e.twinLane-38,reach+25,76);
+    }
+    for(const q of this.twinVolley) {
+      c.save();c.translate(q.x,q.y-85);c.rotate(q.age*.4);c.strokeStyle='#f0ffff';c.shadowColor='#1699ea';c.shadowBlur=9;c.lineWidth=5;
+      c.beginPath();c.ellipse(0,0,21,10,0,0,Math.PI*1.8);c.stroke();c.restore();
+    }
+  }
   enemyAI(e) {
     const p = this.player;
     if (p.dead || this.bossIntro > 0 || this.intro > 0) return;
+    if(e.twin) { this.twinAI(e); return; }
     if (e.state === 'WINDUP') {
       if (e.f >= e.windup) {
         if (e.plan === 'charge') {
           e.pose('CHARGE');
           e.chargeHit = false;
+        } else if (e.monster && e.plan === 'breath') {
+          e.pose('BREATH'); e.breathHit=false;
         } else if (e.plan === 'slam') {
           e.pose('SLAM');
           e.slamHit = false;
@@ -1115,6 +1247,20 @@ class NeonUprising {
       }
       return;
     }
+    if (e.monster && e.state === 'BREATH') {
+      if (e.f === 6) { sound.playFlame('launch'); this.shake=7; }
+      if ([24,42,60].includes(e.f)) sound.playFlame('launch');
+      if(e.f>=12 && e.f<66) {
+        if(e.f%6===0) this.effects(e.x+e.facing*210,e.y-160,'#ff9b32',6);
+        const forward=(p.x-e.x)*e.facing;
+        if(!e.breathHit && forward>110 && forward<760 && Math.abs(p.y-e.y)<58 && p.z<150) {
+          e.breathHit=this.hurt(p,80,e.facing,true,'mawFire');
+          if(e.breathHit){sound.playFlame('hit');this.shake=10;}
+        }
+      }
+      if(e.f>=84){e.pose('IDLE');e.cooldown=120;}
+      return;
+    }
     if (e.state === 'SLAM') {
       if (e.f === 20) {
         this.effects(e.x, e.y, '#ffb862', 32);
@@ -1139,11 +1285,12 @@ class NeonUprising {
     const dx = p.x - e.x,
       dy = p.y - e.y;
     e.facing = dx >= 0 ? 1 : -1;
-    const busy = this.enemies.filter((o) => o !== e && ['WINDUP', 'ATK_H', 'CHARGE', 'SLAM'].includes(o.state)).length;
+    const busy = this.enemies.filter((o) => o !== e && ['WINDUP', 'ATK_H', 'CHARGE', 'SLAM', 'BREATH'].includes(o.state)).length;
     if (e.cooldown <= 0 && busy < 2 && p.invuln < 15 && p.state !== 'THROWING') {
       if (e.kind === 'boss' && Math.abs(dx) < 550 && Math.abs(dy) < 65) {
-        e.plan = Math.abs(dx) > 170 ? 'charge' : 'slam';
-        e.windup = e.enraged ? 38 : 56;
+        if(e.monster) e.monsterTurns = (e.monsterTurns || 0) + 1;
+        e.plan = e.monster && e.monsterTurns % 3 === 1 && Math.abs(dx)>180 ? 'breath' : Math.abs(dx) > 170 ? 'charge' : 'slam';
+        e.windup = e.plan==='breath' ? 60 : e.enraged ? 38 : 56;
         e.pose('WINDUP');
         return;
       }
@@ -1221,11 +1368,17 @@ class NeonUprising {
   }
   beginFinale(boss) {
     if (this.finale || this.result) return;
-    this.finale = { phase: 'slow', frame: 0, boss, minimum: this.voiceFrames(this.stage.boss, 'defeat', 2) };
+    if(boss.twin && this.twins.some(e=>e!==boss&&e.hp>0)) {
+      if(!boss.defeatSpoken){fighterVoice.play(boss.twin,'defeat',1,140);boss.defeatSpoken=true;this.announce(boss.label+' DOWN','#ffadc6');}
+      return;
+    }
+    if(boss.twin)this.twinVolley=[];
+    const voiceId=boss.twin || this.stage.boss;
+    this.finale = { phase: 'slow', frame: 0, boss, voiceId, minimum: this.voiceFrames(voiceId, 'defeat', 2) };
     this.hitstop = 0; this.player.queue = 0; this.player.attack = null;
     this.popups = [];
     this.resetDashTap(); input.keys = {}; input.just = {};
-    fighterVoice.stopAll(); fighterVoice.play(this.stage.boss, 'defeat', 1, 150);
+    fighterVoice.stopAll(); fighterVoice.play(voiceId, 'defeat', 1, 150);
     sound.playHit('heavy'); this.shake = 12;
   }
   updateFinale() {
@@ -1234,6 +1387,7 @@ class NeonUprising {
     if (f.phase === 'slow') {
       if (f.frame % 4 === 0) {
         this.updateActor(f.boss);
+        if(f.boss.twin)for(const e of this.twins)if(e!==f.boss&&e.hp<=0)this.updateActor(e);
         this.shake *= .82;
         for (const p of this.particles) { p.x += p.vx; p.y += p.vy; p.life--; }
         this.particles = this.particles.filter(p => p.life > 0);
@@ -1285,7 +1439,11 @@ class NeonUprising {
         c.fillStyle = 'rgba(255,80,55,' + (0.12 + 0.1 * Math.sin(e.f * 0.3)) + ')';
         c.strokeStyle = '#ed684c';
         c.lineWidth = 2;
-        if (e.plan === 'charge') {
+        if(e.monster && e.plan==='breath') {
+          const x=e.facing>0?e.x+110:e.x-760;
+          c.fillRect(x,e.y-60,650,120);c.strokeRect(x,e.y-60,650,120);
+          STREET.text(c,'FIRE BREATH',e.x+e.facing*330,e.y+5,18,'#ffd0a0','center');
+        } else if (e.plan === 'charge') {
           const x = e.facing > 0 ? e.x : e.x - 520;
           c.fillRect(x, e.y - 33, 520, 66);
           c.strokeRect(x, e.y - 33, 520, 66);
@@ -1296,6 +1454,7 @@ class NeonUprising {
           c.stroke();
         }
       }
+    if(this.stageIndex===2)this.drawTwinCombat(c);
     const sorted = [
       ...this.props.filter((p) => p.hp > 0).map((p) => ({ y: p.y, kind: 'prop', data: p })),
       ...this.items.map((p) => ({ y: p.y, kind: 'item', data: p })),
@@ -1325,7 +1484,8 @@ class NeonUprising {
     if (this.intro > 0) this.overlay(c, 'STAGE 0' + (this.stageIndex+1), this.stage.title, this.stage.jp);
     if (this.bossIntro > 0) {
       STREET.text(c, 'WARNING / ' + this.stage.bossName, W/2, 245, 30, '#ff9876', 'center', '900');
-      this.drawDialogue(c, this.stage.bossName, VOICE_PROFILES[this.stage.boss].lines.intro, '#ff9876');
+      const voiceId=this.stageIndex===2?(this.twinIntroSpeaker || 'luka'):this.stage.boss;
+      this.drawDialogue(c, this.stageIndex===2?voiceId.toUpperCase():this.stage.bossName, VOICE_PROFILES[voiceId].lines.intro, '#ff9876');
     }
     if (this.finale) {
       const f = this.finale;
@@ -1385,9 +1545,9 @@ class NeonUprising {
     c.restore();
   }
   drawHUD(c) {
-    const p = this.player, enemy = this.hudEnemy();
+    const p = this.player, enemy = this.hudEnemy(), twinHUD=this.stageIndex===2&&this.twins.length;
     c.save();
-    this.hudPanel(c,24,20,440,184,'#7cedd4');
+    this.hudPanel(c,24,20,440,twinHUD?202:184,'#7cedd4');
     STREET.text(c,'1P',42,48,13,'#83aab8','left','900');
     STREET.text(c,p.data.name,76,49,23,'#f1f7fa','left','900');
     STREET.text(c,'LIFE  × '+this.lives,446,47,14,'#f3d19a','right','800');
@@ -1395,11 +1555,19 @@ class NeonUprising {
     STREET.text(c,'SCORE  '+String(this.score).padStart(7,'0'),42,109,13,'#cddfea');
     STREET.text(c,p.weapon?'PIPE  '+p.weapon+'/8':'1UP  20,000',446,109,12,'#8fa6b8','right');
     c.fillStyle='#304454';c.fillRect(42,119,404,1);
+    if(twinHUD) {
+      this.twins.forEach((e,i)=>{const y=140+i*40;
+        STREET.text(c,e.label,44,y,14,e.twin==='luka'?'#ffa0ad':'#9dd4ff','left','900');
+        STREET.text(c,e.hp<=0?'K.O.':e.enraged?'ENRAGED':Math.ceil(e.hp)+' / '+e.maxHp,444,y,11,'#b4ccdc','right');
+        this.drawHealth(c,e,44,y+7,400,14,e.twin==='luka'?'#ff8ca5':'#7fbfff');
+      });
+    } else {
     STREET.text(c,enemy ? enemy.label : 'NO TARGET',44,145,17,enemy?'#ffe2b4':'#607888','left','900');
     const status=enemy ? enemy.hp<=0?'K.O.':enemy.burnTicks>0?'BURN':enemy.kind==='boss'?(enemy.enraged?'ENRAGED':'BOSS'):'ENEMY' : '—';
     STREET.text(c,status,444,144,11,enemy?.burnTicks>0?'#ff9a57':'#b0a28c','right','800');
     this.drawHealth(c,enemy || {hp:0,maxHp:1,hudHp:0},44,156,400,17,enemy?.kind==='boss'?'#ffb578':'#f0d788');
     STREET.text(c,enemy ? Math.max(0,Math.ceil(enemy.hp))+' / '+enemy.maxHp : '攻撃・掴みで相手を表示',444,192,11,'#8fa6b8','right');
+    }
     this.hudPanel(c,W/2-61,20,122,94,'#f4d29a');
     STREET.text(c,'TIME',W/2,44,11,'#a9bdca','center','800');
     STREET.text(c,String(Math.max(0,Math.ceil(this.timer/60))).padStart(3,'0'),W/2,85,36,this.timer<1800?'#ff8069':'#fff0cd','center','900');
@@ -1411,6 +1579,7 @@ class NeonUprising {
     STREET.text(c,'WAVE '+Math.min(this.wave+1,this.areaData().waves.length)+' / '+this.areaData().waves.length,920,111,12,'#91adbf');
     STREET.text(c,'ENEMIES  '+this.alive().length,1236,111,12,'#d8c6a7','right');
     if(this.combo>1)STREET.text(c,this.combo+' HITS',W/2,174,29,'#ffe2a8','center','900');
+    if(twinHUD&&this.twinCallUntil>this.tick)STREET.text(c,this.twinCall,W/2,214,23,'#fff2a7','center','900');
     c.restore();
     c.fillStyle = 'rgba(5,12,20,.87)';
     c.fillRect(0, 641, W, 79);
@@ -1467,7 +1636,7 @@ class NeonUprising {
     );
     STREET.text(
       c,
-      clear ? (this.stageIndex === 0 ? '鉄門の先に、闇に沈む廃工場が待ち受ける。' : '炉心の怪物は倒れた。街に夜明けが訪れる。') : 'もう一度、この戦いに挑む。',
+      clear ? (this.stageIndex === 0 ? '鉄門の先に、闇に沈む廃工場が待ち受ける。' : this.stageIndex===1 ? '工場を抜けた先は、陽光きらめく海辺の楽園。' : '双冠の支配は終わり、海辺に自由が戻った。') : 'もう一度、この戦いに挑む。',
       W / 2,
       300,
       20,
@@ -1483,8 +1652,8 @@ class NeonUprising {
       '#f4d1a1',
       'center'
     );
-    STREET.text(c, (clear && this.stageIndex === 0 ? 'Enter: ステージ2へ進む' : clear ? 'Enter: ステージ1から再挑戦' : 'Enter: このステージを再挑戦') + '     ESC: ゲーム選択', W / 2, 499, 18, '#a8beca', 'center');
-    if (clear) STREET.text(c, this.stageIndex === 0 ? '残機・スコアを引き継ぎ、体力を回復して次へ' : 'ALL STAGES CLEAR', W / 2, 551, 14, '#8497a6', 'center');
+    STREET.text(c, (clear && this.stageIndex+1<STREET_STAGES.length ? 'Enter: ステージ'+(this.stageIndex+2)+'へ進む' : clear ? 'Enter: ステージ1から再挑戦' : 'Enter: このステージを再挑戦') + '     ESC: ゲーム選択', W / 2, 499, 18, '#a8beca', 'center');
+    if (clear) STREET.text(c, this.stageIndex+1<STREET_STAGES.length ? '残機・スコアを引き継ぎ、体力を回復して次へ' : 'ALL STAGES CLEAR', W / 2, 551, 14, '#8497a6', 'center');
   }
   drawProp(c, p) {
     if (BeltArt.drawProp(c, p)) return;
@@ -1794,6 +1963,7 @@ Game.prototype.openHub = function () {
   if (this.street) this.street.breakGrab();
   fighterVoice.stopAll();
   this.scene = 'HUB';
+  this.streetStageMenu = false;
   this.paused = false;
   this.hubChoice = this.hubChoice || 0;
   this.street = null;
@@ -1807,6 +1977,35 @@ Game.prototype.streetCard = function (i) {
   const n = CHARACTERS.length,
     pitch = Math.min(200, Math.floor((W - 80) / n));
   return { x: 42 + i * pitch, y: 200, w: pitch - 12, h: 260 };
+};
+// Small HUB-only shortcut; starts a fresh run at the selected stage after choosing a hero.
+Game.prototype.streetStageButton = function () { return {x:1000,y:658,w:218,h:30}; };
+Game.prototype.streetStageOption = function (i) { return {x:1000,y:544+i*36,w:218,h:36}; };
+Game.prototype.updateStreetStageMenu = function () {
+  if(input.clicked&&STREET.inside(this.streetStageButton())) {
+    this.streetStageMenu=!this.streetStageMenu;this.streetStageCursor=this.streetStartStage||0;
+    sound.playUI('cursor');return true;
+  }
+  if(!this.streetStageMenu)return false;
+  if(STREET.press('ArrowUp','KeyW'))this.streetStageCursor=(this.streetStageCursor+STREET_STAGES.length-1)%STREET_STAGES.length;
+  if(STREET.press('ArrowDown','KeyS'))this.streetStageCursor=(this.streetStageCursor+1)%STREET_STAGES.length;
+  let choose=STREET.press('Enter','Space','KeyJ','KeyZ');
+  if(input.clicked) {
+    for(let i=0;i<STREET_STAGES.length;i++)if(STREET.inside(this.streetStageOption(i))){this.streetStageCursor=i;choose=true;}
+    this.streetStageMenu=false;
+  }
+  if(choose){this.streetStartStage=this.streetStageCursor;this.streetStageMenu=false;this.hubChoice=1;sound.playUI('confirm');}
+  return true;
+};
+Game.prototype.drawStreetStageMenu = function () {
+  const r=this.streetStageButton(),hover=STREET.inside(r),selected=this.streetStartStage||0;
+  STREET.panel(ctx,r.x,r.y,r.w,r.h,hover?'#182634':'#101b28',hover?'#667c8c':'#344454');
+  STREET.text(ctx,'ベルト開始：STAGE '+(selected+1)+'  ▾',r.x+r.w/2,r.y+20,12,'#96aab9','center');
+  if(this.streetStageMenu)for(let i=0;i<STREET_STAGES.length;i++){
+    const q=this.streetStageOption(i),active=i===this.streetStageCursor||STREET.inside(q);
+    STREET.panel(ctx,q.x,q.y,q.w,q.h,active?'#233747':'#101b28','#405363');
+    STREET.text(ctx,(i===selected?'✓ ':'')+(i+1)+'  '+STREET_STAGES[i].title,q.x+12,q.y+23,12,active?'#e0eaf0':'#9db2c2');
+  }
 };
 Game.prototype.startStreet = function (index, stage = 0, carry = null) {
   fighterVoice.stopAll();
@@ -1824,12 +2023,14 @@ Game.prototype.togglePause = function () {
     if (this.paused) {
       fighterVoice.stopAll();
       input.keys = {};
+    } else if (this.street.bossIntro > 0 && this.street.stageIndex===2) {
+      this.street.startTwinIntro();
     } else if (this.street.bossIntro > 0) {
       this.street.bossIntro = this.street.voiceFrames(this.street.stage.boss, 'intro', 4);
       fighterVoice.play(this.street.stage.boss, 'intro', 1, 150);
     } else if (this.street.finale) {
       const f = this.street.finale; f.frame = 0;
-      if (f.phase === 'slow') fighterVoice.play(this.street.stage.boss, 'defeat', 1, 150);
+      if (f.phase === 'slow') fighterVoice.play(f.voiceId || this.street.stage.boss, 'defeat', 1, 150);
       else this.street.player.speak('finish', 150);
     }
     sound.playUI('cursor');
@@ -1859,6 +2060,7 @@ Game.prototype.update = function () {
       input.clear();
       return;
     }
+    if(this.updateStreetStageMenu()){input.clear();return;}
     if (STREET.press('ArrowLeft','ArrowRight', 'KeyA', 'KeyD', 'ArrowUp', 'ArrowDown', 'KeyW', 'KeyS')) {
       this.hubChoice = 1 - (this.hubChoice || 0);
       sound.playUI('cursor');
@@ -1884,7 +2086,7 @@ Game.prototype.update = function () {
           this.p1Char = i;
           enter = true;
         }
-    if (enter) this.startStreet(this.p1Char);
+    if (enter) this.startStreet(this.p1Char,this.streetStartStage||0);
   }
   input.clear();
 };
@@ -1944,7 +2146,7 @@ Game.prototype.draw = function () {
       STREET.text(ctx, i ? '犯罪都市を、拳で切り拓け。' : '一対一、限界を超える決闘。', x + 24, 503, 17, '#bdd0da');
       STREET.text(
         ctx,
-        i ? '1 PLAYER  /  2 STAGES: CITY → FACTORY' : 'ARCADE  /  VS CPU  /  VS 2P  /  TRAINING',
+        i ? '1 PLAYER  /  3 STAGES: CITY → FACTORY → RESORT' : 'ARCADE  /  VS CPU  /  VS 2P  /  TRAINING',
         x + 24,
         540,
         12,
@@ -1963,6 +2165,7 @@ Game.prototype.draw = function () {
       '#b8cad8',
       'center'
     );
+    this.drawStreetStageMenu();
     if (this.awaitStart) {
       // Draw only: pulse comes from stageTick, no state or RNG is touched.
       const pulse = 0.72 + 0.28 * Math.sin(this.stageTick * 0.09);
@@ -1978,7 +2181,7 @@ Game.prototype.draw = function () {
     STREET.text(ctx, 'NEON UPRISING', 44, 65, 18, '#efb980', 'left', '900');
     STREET.text(ctx, 'VERSION ' + STREET.version, W - 44, 65, 13, '#7c93a3', 'right', '800');
     STREET.text(ctx, 'CHOOSE YOUR REBEL', 44, 120, 44, '#efeee8', 'left', '900');
-    STREET.text(ctx, 'BLACK VEIN → INFERNAL WORKS — 犯罪都市から闇の廃工場へ', 44, 163, 17, '#9bb7c7');
+    STREET.text(ctx, 'START STAGE '+((this.streetStartStage||0)+1)+' / '+STREET_STAGES[this.streetStartStage||0].title, 44, 163, 17, '#9bb7c7');
     for (let i = 0; i < CHARACTERS.length; i++) {
       const d = CHARACTERS[i],
         r = this.streetCard(i),

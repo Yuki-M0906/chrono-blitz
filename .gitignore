@@ -31,3 +31,15 @@ assets/belt/art/actions-v342/*.png
 !assets/belt/art/actions-v342/fire.png
 # 追加台詞の試聴用 WAV（採用版は assets/voices/*.wav）
 assets/voices/cinematic-v*/**/*.wav
+
+# ---- v3.7.2: [REPO-153]。同じ方針で、ビルドが読まない原画を外す（手元には残す） ----
+# v3.6.2 で上昇技の人体が通常原画になり不要になった 4 人分（titan / kagura の旧版は検証 2 本が読むので残す）
+assets/belt/art/actions-v360/ayame.png
+assets/belt/art/actions-v360/celine.png
+assets/belt/art/actions-v360/freya.png
+assets/belt/art/actions-v360/volt.png
+# ステージ 3 の透過処理前の原画と、2026-11-15 の差し替え前の控え
+assets/belt/art/resort-v370/pearl.png
+assets/belt/art/resort-v370/luka-motion.png
+assets/belt/art/resort-v370/misha-motion.png
+backups/v3.7.1-swim-src/

@@ -8,14 +8,15 @@ const sources=require('./packs.cjs').readPacks().assets.voices; // v2.6.0: voice
 const profiles=JSON.parse(html.match(/const VOICE_PROFILES = (\{[^\n]+\});/)[1]);
 assert.deepEqual(profiles,manifest.profiles);
 // v3.5.0 / v3.6.0 added cinematic lines: one 'finish' per fighter, intro / defeat per boss (voss, maw).
-const fighters=Object.entries(profiles).filter(([,p])=>Object.keys(p.lines).length>2),bosses=Object.entries(profiles).filter(([,p])=>Object.keys(p.lines).length===2);
+const fighters=Object.entries(profiles).filter(([,p])=>Object.keys(p.lines).length===22),bosses=Object.entries(profiles).filter(([,p])=>Object.keys(p.lines).length===2);
 const total=Object.values(profiles).reduce((n,p)=>n+Object.keys(p.lines).length,0);
 assert.equal(fighters.length,6);assert.deepEqual(bosses.map(([id])=>id),['voss','maw']);
 assert.equal(Object.keys(sources).length,total);
 const names=new Set();let added=0,reworked=0,remastered=0,cinematic=0;
 for(const [id,p] of Object.entries(profiles)) {
-  const boss=Object.keys(p.lines).length===2;
-  if(boss)assert.deepEqual(Object.keys(p.lines),['intro','defeat']);else{names.add(p.voice);assert.equal(Object.keys(p.lines).length,22);assert.ok('finish' in p.lines);}
+  const twin=['luka','misha'].includes(id),boss=Object.keys(p.lines).length===2;
+  if(twin)assert.deepEqual(Object.keys(p.lines),['intro','combo','defeat']);
+  if(twin){}else if(boss)assert.deepEqual(Object.keys(p.lines),['intro','defeat']);else{names.add(p.voice);assert.equal(Object.keys(p.lines).length,22);assert.ok('finish' in p.lines);}
   assert.ok(html.includes(p.credit),'Voice credit must be in the page');
   for(const event of Object.keys(p.lines)) {
     const name=id+'-'+event+'.wav';
@@ -24,7 +25,7 @@ for(const [id,p] of Object.entries(profiles)) {
     const baseline17=path.join(voice,'backup-v1.7',name);
     const embedded=Buffer.from(sources[id+'-'+event].split(',')[1],'base64');
     assert.deepEqual(embedded,active,'Embedded clip differs from active source');
-    if(boss||event==='finish'){cinematic++;continue;} // no v1.6 / v1.7 baseline exists for these
+    if(twin||boss||event==='finish'){cinematic++;continue;} // no v1.6 / v1.7 baseline exists for these
     if(fs.existsSync(baseline17)) {
       assert.notDeepEqual(active,fs.readFileSync(baseline17),'Clip was not remastered from v1.7');
       remastered++;

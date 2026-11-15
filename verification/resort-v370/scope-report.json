@@ -1,0 +1,20 @@
+{
+  "priorVoiceProfilesUnchanged": true,
+  "existingPackHashes": {
+    "sprites-kagura.js": true,
+    "sprites-volt.js": true,
+    "sprites-freya.js": true,
+    "sprites-titan.js": true,
+    "sprites-ayame.js": true,
+    "sprites-celine.js": true,
+    "stages.js": true,
+    "belt-backgrounds.js": true,
+    "belt-actors.js": true,
+    "belt-dash.js": true
+  },
+  "newPacks": [
+    "*.js \u3092\u8aad\u3080 script \u30bf\u30b0 13 \u672c\uff08",
+    "resort-backgrounds.js",
+    "resort-actors.js"
+  ]
+}

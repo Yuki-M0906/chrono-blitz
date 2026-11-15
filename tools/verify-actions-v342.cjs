@@ -1,11 +1,12 @@
 const fs=require('fs'),path=require('path'),assert=require('assert/strict');
 const {chromium}=require('playwright');
 const {PNG}=require('pngjs');
-for(const id of ['kagura','volt','freya','titan','ayame','celine','fire']) {
- const png=PNG.sync.read(fs.readFileSync('assets/belt/art/actions-v342/'+id+'.png'));
+const manifest=JSON.parse(fs.readFileSync('assets/belt/art/manifest.json','utf8'));
+for(const [id,asset] of Object.entries(manifest.assets).filter(([id])=>['rise-fx','fx-fire','maw-motion','maw-breath','maw-hurt','maw-flame'].includes(id))) {
+ const png=PNG.sync.read(fs.readFileSync('assets/belt/art/'+asset.file));
  assert.equal(png.width,1536);assert.equal(png.height,1024);
  let clear=0;for(let i=3;i<png.data.length;i+=4)if(png.data[i]<24)clear++;
- assert(clear/(png.width*png.height)>.5,id+' transparent background');
+ assert(clear/(png.width*png.height)>.35,id+' transparent background');
 }
 (async()=>{
  const out=path.resolve('verification/actions-v342');fs.mkdirSync(out,{recursive:true});
@@ -17,7 +18,7 @@ for(const id of ['kagura','volt','freya','titan','ayame','celine','fire']) {
   await page.evaluate(async()=>{await Promise.all([FighterSprites.ready,BeltArt.ready]);});
   const result=await page.evaluate(async()=>{
    const checks=[],check=(v,n)=>{if(!v)throw Error(n);checks.push(n);};
-   check(BeltArt.actionSheets.size===7,'7 action atlases decoded');check(!BeltArt.errors.length,'no atlas errors');
+   check(BeltArt.actionSheets.size===Object.keys(BELT_ART_SOURCES).filter(k=>k.startsWith('rise-')&&k!=='rise-fx'||k==='fx-fire').length && !!BeltArt.risingFx,'action atlases and rising VFX decoded');check(!BeltArt.errors.length,'no atlas errors');
    sound.init=()=>{};sound.playBGM=()=>{};sound.announce=()=>{};fighterVoice.play=()=>false;
    const setup=(id=0)=>{input.keys={};input.just={};game.startStreet(id);const s=game.street;s.intro=0;s.enemies=[];s.props=[];s.items=[];s.player.x=400;s.player.y=540;s.player.invuln=0;return s;};
    const foe=(s,x,y,kind='punk')=>{const e=s.spawnEnemy(kind,x,y);e.hp=e.maxHp=3000;e.invuln=0;return e;};

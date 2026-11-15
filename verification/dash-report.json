@@ -1,10 +1,10 @@
 {
-  "version": "3.6.1",
+  "version": "3.7.2",
   "originalV27AudioAndSceneryUnchanged": true,
   "loaded": {
     "sheets": 6,
     "errors": [],
-    "version": "3.6.1"
+    "version": "3.7.2"
   },
   "checks": {
     "Double tap ArrowRight": true,

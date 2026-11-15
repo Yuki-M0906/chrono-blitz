@@ -1,4 +1,20 @@
-# NEON UPRISING — Stage 1 & 2 / v3.6.1
+# NEON UPRISING — Stage 1 / 2 / 3 / v3.7.2
+
+## v3.7.2 整合修正
+
+色違いの海辺の敵（SUNSET / LAGOON / ORCHID）の色替えアトラスを、初回描画時ではなく読み込み中に作る（`engine.js` の `RESORT_ENEMIES` 直後で `BeltArt.ready` に連結）。初登場時に約 0.1 秒止まる問題の解消。`verify-belt-art` は海辺の背景を透過検査から除外、`verify-stage-select-v371` を新設。詳細は HTML 冒頭の [BUILD-149]〜[DOC-152]。
+
+## v3.7.1 開始ステージの選択
+
+ゲーム選択画面右下の「ベルト開始：STAGE n」。`Game.prototype.streetStageButton / streetStageOption / updateStreetStageMenu / drawStreetStageMenu`、状態は `game.streetStartStage / streetStageMenu / streetStageCursor`。選んだステージを残機 3・スコア 0 で開始する。
+
+## v3.7.0 ステージ3 AZURE MIRAGE
+
+`RESORT_AREAS`（5 区画・13 波）と `RESORT_ENEMIES`（海辺の 6 種＋双子ルカ / ミーシャ）。双子は `coordinateTwins`（3 種の連携を循環）と `twinAI`（単独技）、リングは `twinVolley`。専用画像は `art/resort-v370/`（読み込み規約は同フォルダの `HANDOFF-design.md`）。背景アニメは `BeltArt.drawResortStreet`、人物は `drawResortActor`。
+
+## v3.6.2 上昇技の等身・入力・MAW
+
+上昇技の人体は通常原画（`BeltArt.drawRisingBody`）、エフェクトは `art/actions-v362/rise-fx.png` の別レイヤー。`STREET.risingInput` は window 14 / buffer 6。FURNACE MAW に 72 姿勢と火炎放射 `BREATH` を追加。
 
 ## v3.6.1 整合修正
 

@@ -1,0 +1,17 @@
+[
+  {
+    "id": "luka",
+    "path": "C:\\Users\\User\\.codex\\generated_images\\01a1ba29-d6f4-7692-a4f0-387d9fa6e0e3\\exec-69bd04b2-2889-4931-8553-ed7add9087d1.png",
+    "prompt": "Edit reference gameplay sprite atlas to create identical adult twin sister LUKA. Keep EXACT same adult face, body anatomy, high-neck racing swimsuit design and coverage, all24poses, cell positions and transparent background. Change ONLY blue costume panels to coral-red, silver equipment to gold, replace handheld circular rings with short gold tonfa batons. Blonde ponytail same. No other redesign. 1536x1024 sixcolumns fourrows, preserve alpha transparency, no text."
+  },
+  {
+    "id": "luka-motion",
+    "path": "C:\\Users\\User\\.codex\\generated_images\\01a1ba29-d6f4-7692-a4f0-387d9fa6e0e3\\exec-2abbbe76-d319-452e-b8e2-ab9fd80a2dff.png",
+    "prompt": "Additional24 actionframes for SAME adult game character in reference LUKA. Preserve exact face, blonde ponytail, highneck opaque onepiece racing swimsuit, coverage, proportions, shoes, colour scheme. No redesign. Row1 six consecutive gold TONFA combination strikes. Row2 six consecutive redgold LONG SPEAR lunges from windup to full extension and recovery. Row3 six consecutive gold TONFA spinningrush poses. Row4 six consecutive long SPEAR sweepingstrike poses. EXACT1536x1024 sixcolumns fourrows256cells. FaceRIGHT,fullbody,body225px standingheight feet244 centered128,same scale allframes. Weapons fullyvisiblewithin individualcell 10pxmargin. Modernanimecel animation sharp linework asreference. Truealpha0transparent background,no haze no matte no text."
+  },
+  {
+    "id": "misha-motion",
+    "path": "C:\\Users\\User\\.codex\\generated_images\\01a1ba29-d6f4-7692-a4f0-387d9fa6e0e3\\exec-b6d84f20-797d-4ca7-848b-400aca53338b.png",
+    "prompt": "Additional24 actionframes for SAME adult game character in reference MISHA. Preserve exact face, blonde ponytail, highneck opaque onepiece racing swimsuit, coverage, proportions, shoes, colour scheme. No redesign. Row1 six consecutive silver CRESCENT RING throwing motions from draw back through release and followthrough. Row2 six consecutive BLUE PARASOL open-and-spin attack poses. Row3 six consecutive silver RING rapid throwing combination poses. Row4 six consecutive BLUE PARASOL thrust and sweep poses. EXACT1536x1024 sixcolumns fourrows256cells. FaceRIGHT,fullbody,body225px standingheight feet244 centered128,same scale allframes. Weapons fullyvisiblewithin individualcell 10pxmargin. Modernanimecel animation sharp linework asreference. Truealpha0transparent background,no haze no matte no text."
+  }
+]

@@ -1,6 +1,6 @@
 {
   "checks": [
-    "136 voices decode",
+    "all voices decode",
     "voice decode has no errors",
     "9 regular enemy types",
     "all 6 heroes reused",
@@ -155,9 +155,9 @@
   "voiceDurations": {
     "kagura-finish": 1.6502721088435375,
     "volt-finish": 2.6026530612244896,
+    "titan-finish": 2.357324263038549,
     "freya-finish": 2.1678684807256237,
     "ayame-finish": 2.250657596371882,
-    "titan-finish": 2.357324263038549,
     "voss-defeat": 1.8773242630385487,
     "celine-finish": 3.0719954648526078,
     "voss-intro": 3.56265306122449

@@ -26,7 +26,9 @@ const packs = [
   {name: 'voices', kind: 'voices', data: Object.fromEntries(Object.entries(voiceProfiles).flatMap(([id, profile]) => Object.keys(profile.lines).map(event =>
     [id + '-' + event, 'data:audio/wav;base64,' + b64('assets/voices', id + '-' + event + '.wav')])))},
   {name: 'belt-backgrounds', kind: 'beltArt', data: art(id => id.startsWith('district-') || id.startsWith('factory-'))},
-  {name: 'belt-actors', kind: 'beltArt', data: art(id => !id.startsWith('district-') && !id.startsWith('factory-') && !id.startsWith('dash-'))},
+  {name: 'belt-actors', kind: 'beltArt', data: art(id => !id.startsWith('district-') && !id.startsWith('factory-') && !id.startsWith('dash-') && !id.startsWith('resort-') && !id.startsWith('beach-'))},
+  {name: 'resort-backgrounds',kind:'beltArt',data:art(id=>id.startsWith('resort-'))},
+  {name: 'resort-actors',kind:'beltArt',data:art(id=>id.startsWith('beach-'))},
   {name: 'belt-dash', kind: 'beltArt', data: art(id => id.startsWith('dash-'))}
 ];
 fs.mkdirSync(dataDir, {recursive: true});

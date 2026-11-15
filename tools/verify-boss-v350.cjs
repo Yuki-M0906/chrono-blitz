@@ -3,7 +3,7 @@ const fs=require('fs'),path=require('path'),assert=require('assert/strict'),{chr
  const out=path.resolve('verification/boss-v350');fs.mkdirSync(out,{recursive:true});const p=await b.newPage({viewport:{width:1440,height:960}}),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.addInitScript(()=>window.requestAnimationFrame=()=>0);await p.goto(require('url').pathToFileURL(path.resolve('ai_studio_code.html')).href);
  const report=await p.evaluate(async()=>{
   await Promise.all([FighterSprites.ready,BeltArt.ready]);const ctx=new OfflineAudioContext(1,24000,24000);await fighterVoice.preload(ctx);
-  const checks=[],check=(v,n)=>{if(!v)throw Error(n);checks.push(n);};check(fighterVoice.buffers.size===136,'136 voices decode');check(!fighterVoice.errors.length,'voice decode has no errors');
+  const checks=[],check=(v,n)=>{if(!v)throw Error(n);checks.push(n);};check(fighterVoice.buffers.size===Object.keys(VOICE_SOURCES).length,'all voices decode');check(!fighterVoice.errors.length,'voice decode has no errors');
   const cues=[];sound.init=()=>{};sound.playBGM=()=>{};sound.announce=()=>{};fighterVoice.play=(id,event)=>{cues.push(id+'-'+event);return true;};
   const setup=(id=0)=>{input.keys={};input.just={};game.startStreet(id);const s=game.street;s.intro=0;s.enemies=[];s.props=[];s.player.x=450;s.player.y=550;s.player.invuln=0;return s;};
   let s=setup();const kinds=Object.keys(STREET.enemies).filter(k=>k!=='boss');check(kinds.length===9,'9 regular enemy types');check(new Set(kinds.map(k=>STREET.enemies[k].char)).size===6,'all 6 heroes reused');

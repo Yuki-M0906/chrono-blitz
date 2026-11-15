@@ -2,7 +2,7 @@
   "checks": [
     "all atlases decoded",
     "5 factory districts",
-    "136 voice clips",
+    "all voice clips",
     "stage1 clear advances selected hero",
     "carry score lives kills extend",
     "health restored at stage boundary",
@@ -116,10 +116,7 @@
     "factory gate 4",
     "factory wave 4 0",
     "factory full traversal",
-    "new rising atlas volt",
-    "new rising atlas freya",
-    "new rising atlas ayame",
-    "new rising atlas celine",
+    "separate rising effects decoded",
     "heavy mix no clipping"
   ],
   "peak": 0.763087809085846,

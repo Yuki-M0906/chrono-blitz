@@ -1,0 +1,10 @@
+{
+  "scopeUnchanged": true,
+  "onlyChangedPack": "belt-actors.js",
+  "version": "3.6.2",
+  "newAssets": 5,
+  "newMonsterPoses": 72,
+  "fireFrames": 12,
+  "inputWindowFrames": 14,
+  "inputBufferFrames": 6
+}

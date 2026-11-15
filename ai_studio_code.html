@@ -2,18 +2,205 @@
 <!--
 ================================================================================
   CHRONO BLITZ: ARCADE COLLECTION - 技術仕様書 兼 開発引き継ぎドキュメント
-  Version: 3.6.1 (Infernal Works / Docs and Test Sync)
+  Version: 3.7.2 (Docs and Test Sync)
 ================================================================================
 
-【0. 現行構成サマリ / v3.6.1 時点 — 引き継ぐ人はまずここを読む】
+【v3.7.2 更新・引き継ぎ / 2026-11-15 / Claude Fable 5.2 (Claude Code)】
+  依頼内容: v3.7.1 のゲーム機能の総合チェック。見つかった 4 件（ビルドの取りこぼし・古い検査・資料の未同期・描画の引っかかり）を修正。
+  復元    : backups/v3.7.1/（変更直前の HTML、街エンジン、街描画、検査 2 本、index.html、README.md、assets/belt/README.md）。
+  変更範囲: 戦闘・進行・当たり判定・AI・音・画像は変更なし。配布 13 パックの中身も v3.7.1（画像微調整後）と同一。
+
+  ■ 総合チェックの結果（v3.7.1 の届いた状態で実施）
+    - 検証 22 本: 20 本通過。失敗は verify-hit（[BUILD-149]）と verify-belt-art（[TEST-151]）。どちらもゲームの不具合ではない。
+    - 全 3 ステージ × 全 6 人のキー入力だけの自動通しプレイ 18 回: すべてコンティニューなしでクリア。例外・行き詰まり（40 秒進行なし）・
+      座標の異常（NaN、奥行き範囲外、区画の外）は 0 件。所要はステージ 1 約 110 秒、2 約 145 秒、3 約 190 秒（ゲーム内時間）。
+    - 双子ボス: 片方を攻め続けても連携攻撃は 60 秒あたり 11〜12 回出る（何もしない場合 16 回）。攻撃を封じる抜け道は無い。
+    - ステージ選択（実マウス・実キー）、実ブラウザでの読み込み・表示・曲番号（ステージ 3 = 4、双子戦 = 6）に問題なし。
+
+  [BUILD-149] 読み込み総量 CB_ASSETS.total が実際より 245,180 バイト少なかった
+    症状   : verify-hit が「loaded と total が一致しない」で失敗（235,392,012 に対し 235,146,832）。読み込み表示は 100% で頭打ちに
+             しているため画面上の実害は無いが、最後のパックが届く前に 100% と表示されていた。
+    原因   : 2026-11-15 のキャラ画像微調整で data/resort-actors.js を作り直し、HTML は script タグの ?v= だけを手で直した。
+             同じ生成ブロック内の total（全パックのバイト数の合計）は直していなかった。
+    修正   : node tools/build-sprites.mjs を実行。変わったのは total の 1 行だけで、13 パックは実行前後でハッシュ一致。
+    再発防止: パックを 1 本だけ作り直した場合も ?v= と total の両方が変わる。手で直さずビルドを流すこと
+             （編集元とマーカー内が一致していれば、ビルドはエンジン部分を書き換えない。今回も差分は 1 行だった）。
+             assets/belt/art/resort-v370/HANDOFF-design.md の「機構を動かさない再開では手で合わせる」という記述より、こちらを優先する。
+
+  [PERF-150] 色違いの敵（SUNSET / LAGOON / ORCHID）が初めて画面に出る瞬間、ゲームが約 0.1 秒止まった
+    症状   : ステージ 3 の第 1 区画 2 波目など、色違いが初登場する描画 1 回に約 106ms（3 種で計 319ms を実測。通常の描画は 0.6ms）。
+    原因   : BeltArt.beachPalette が色替え済みアトラス（2304×1536）を「最初に描く時」に作っていた。
+    修正   : assets/belt/engine.js の RESORT_ENEMIES 定義の直後で BeltArt.ready に続けて、hue を持つ敵の分を読み込み中に作る。
+             BeltArt.ready を待つ処理（起動・検査）は色替えの完了も待つ。作り方（beachPalette）と絵は変えていない。
+             失敗した場合は BeltArt.errors に記録し、従来どおり初回描画時に作り直す。
+    変更箇所: assets/belt/engine.js（RESORT_ENEMIES の直後の 5 行）。art.js は変更なし。
+    検証   : verify-resort-v370 に「読み込み完了時点で色替え 3 種が beachPalettes に入っている」検査を追加。
+
+  [TEST-151] 検査の同期と追加（検証は 23 本）
+    - verify-belt-art: 「背景以外の街画像は透過していること」の対象から海辺の背景 resort-0〜4 を除外（v3.7.0 で追加された背景を
+      キャラ画像として検査し、必ず失敗していた）。
+    - verify-resort-v370: 音声数の直書き 142 を VOICE_SOURCES の件数へ変更（設計上の約束事「本数を直書きしない」）。
+    - 新規 tools/verify-stage-select-v371.cjs: v3.7.1 [UI-148] のステージ選択に検査が無かったため追加。実マウス・実キーで、
+      初回クリックがスタート扱いになること、開閉、マウス / ↑↓WS / Enter での選択、Escape、外側クリックと選択肢のクリックが
+      背後のカードへ貫通しないこと、技表との重なり、全ステージへの新規開始（残機 3・スコア 0）、HUB へ戻っても選択を保持、
+      最終ステージクリア後はステージ 1 へ、描画が状態を変えないこと、OVERDRIVE 側が無影響であることを見る。
+      ボタンと選択肢の座標は game.streetStageButton() / streetStageOption()、ステージ数は STREET_STAGES から取る。
+
+  [DOC-152] 資料の同期
+    - 技表（#streetHelp、HTML 直書き）: 上昇技の説明を現在の受付（↓ を押してから 14F = 約 0.23 秒以内に ↑。押し続けた後は不可）へ。
+      ステージ行にステージ 3 を追加。「開始ステージの選択」行を新設。ボス行に火炎放射と双子の連携を追記。
+    - 本ヘッダーの「0. 現行構成サマリ」を v3.7.2 時点へ（画面遷移にステージ選択、検証一覧 23 本、街画像 40 枚、海辺の敵 6 種と双子）。
+    - README.md / index.html / assets/belt/README.md: 版数、画像枚数、上昇技の受付、ステージ選択、v3.6.2〜v3.7.2 の説明。
+
+  ■ 未対応（必要なら次回）
+    - ステージ選択メニューを開く操作はクリックだけ（開いた後はキーで選べる）。キーボードだけでは開始ステージを変えられない。
+
+  [REPO-153] 公開対象の整理（[REPO-136] の方針を継続。ファイルは手元に残す）
+    .gitignore の末尾に追加: v3.6.2 で不要になった旧上昇技 4 枚（actions-v360 の ayame / celine / freya / volt。管理対象からも外した）、
+    ステージ 3 の透過処理前の原画 3 枚（resort-v370 の pearl.png / luka-motion.png / misha-motion.png）、差し替え前の控え backups/v3.7.1-swim-src/。
+    actions-v343/titan.png と actions-v344/kagura.png はビルドには不要だが、verify-hud-v343 / verify-idle-fire-v344 が読むので残した。
+
+  ■ 検証結果（v3.7.2）
+    node tools/build-sprites.mjs: 2 回目の実行で HTML・13 パックとも無変化。HTML の行数は v3.7.1 比でヘッダーと技表の追加分のみ増加。
+    検証 23 本すべて通過（1 本ずつ実行）。ブラウザ例外なし。
+
+【画像のみ・版数据え置き / 2026-11-15】
+  ステージ3のキャラクターデザインを微調整済み。機構・版数は3.7.1のまま。
+  再開時は assets/belt/art/resort-v370/HANDOFF-design.md を読む。
+  変更は resort-v370 のキャラPNG 7枚、data/resort-actors.js、このファイルの
+  resort-actors.js?v=9d28440ff1 のみ。控えは backups/v3.7.1-swim-src/。
+
+【v3.7.1 更新・引き継ぎ / 2026-11-14】
+  [UI-148] ゲーム選択HUB右下に小さな「ベルト開始：STAGE n」ボタンを追加。
+    座標1000,658、218×30。控えめな暗色・細枠。クリックすると上へ3ステージの選択肢を開く。
+    選択後はベルト側カードを選択状態にする。カード/Enter→キャラクター選択→指定ステージで新規開始。
+    メニュー中は上下/W/SとEnterでも選択可能。外側クリックで閉じ、背後カードへのクリック貫通を防止。
+    選択はページ内で保持、再読み込みはステージ1。キャラ選択画面に開始ステージ名を表示。
+    進行中のステージクリア遷移、スコア引継ぎ、再挑戦、対戦格闘、アセットは変更なし。
+    編集元assets/belt/engine.js。streetStartStage / streetStageMenu / streetStageCursorをGameに追加。
+    描画と当たり判定はstreetStageButton / streetStageOptionを共有。初回スタート待ちも維持。
+    変更前控えbackups/v3.7.0/。ビルドはnode tools/build-sprites.mjs、配布13パックに変更なし。
+    Chrome確認: 全3ステージへの開始、キャラ選択、初期残機/スコア、外側クリック、キーボード、初回ゲート通過。
+    ブラウザ例外0件。画面記録verification/stage-select-v371/。
+
+【v3.7.0 更新・引き継ぎ / 2026-11-14】
+  変更範囲: ベルトアクションのステージ3追加と、その進行・専用素材・双子ボス・音声・案内。
+    既存ステージ1/2、対戦格闘、プレイヤー6人の技・性能、共通描画・音楽・SEエンジンは維持。
+    v3.6.2の通常原画を使う上昇人体、下→上14F受付、MAWの動作・火炎放射も保持。
+    変更前控え: backups/v3.6.2/（HTML、街エンジン、街描画、画像/音声manifest）。
+
+  [STAGE-142] ステージ3「AZURE MIRAGE」: 真昼の地中海風リゾート、全長6200、5区画。
+    SUNLIT PROMENADE / SAPPHIRE MARINA / INFINITY TERRACE / CORAL GALLERIA / TWIN CROWN。
+    RESORT_AREASで敵編成を定義。最初の4区画は各3波×4体、最終区画は双子＋護衛2体。
+    合計13波・通常敵50体＋ボス2体。従来の奥行き移動・閉鎖ゲート・投げ・拾得・残機方式を再利用。
+    ステージ2クリア後Enterで3へ。スコア・撃破数・残機・1UP済みを引き継ぎ、体力を回復。
+    GAME OVERは現ステージ再挑戦。3クリアでALL STAGES CLEAR、Enterで1へ新規開始。
+    BGMは既存海辺曲（music=4）、ボスは既存6を使用。新規曲や共通音響の変更はない。
+
+  [ART-143] 専用画像13枚を組込image_genで制作（assets/belt/art/resort-v370/）。
+    背景5枚、通常敵3枚、双子基本2枚・武器動作2枚、装飾1枚。全画像1536×1024。
+    人体は6列×4行・24姿勢、prepareBeachAtlasで256px行を分離し、横は左96px/右32pxの余白込みで抽出。
+    連結人体のみ保持して隣の人物を除外。横ピボットを32px補正し、脚の欠けと二重人体を防ぐ。
+    CORAL: 赤いスポーツ水着・ボクサー、AZURE: 青系水着・トンファー、PEARL: 紫水着・パラソル。
+    SUNSET / LAGOON / ORCHIDは各専用原画の衣装色替え。肌色は維持。全員成人女性。
+    RESORT_ENEMIESは既存STREET.enemiesとは別定義。既存ステージの敵編成には追加しない。
+    ルカは赤金、ミーシャは青銀のワンピース水着。同一原画から双子の顔・体格を揃えた。
+    各双子は基本24＋武器24＝48姿勢。歩行・攻撃・被弾・投げ・ダウン・起き上がりに対応。
+    PEARLの白背景は再編集し、manifestではpearl-transparent.pngを採用（旧試作は参照しない）。
+    双子モーションも透過再編集版（*-motion-transparent.png）を採用。
+    プロンプト: prompts.json / motion-prompts.json / alpha-fix.json / motion-alpha-fix.json。生成モデルは組込ツール。
+
+  [ANIM-144] 水面の色・位置をマスクして4px帯の反射を揺らす。建物・床・手すりは固定。
+    ヤシの葉の揺れ、双子の旗のなびき、翼2姿勢のカモメ飛翔、光のきらめきを重ねる。
+    すべてstreet.tick基準。ポーズ・ヒットストップで止まり、描画関数は状態を更新しない。
+    ステージ3では従来の雨・煙を表示しない。クーラーボックスと海辺の木箱へ物体の絵を差し替え。
+    物体HP・破壊・中身の挙動は従来通り。背景/キャラ/小物のロードはBeltArt.readyに統合。
+
+  [BOSS-145] 双子ルカ(HP1450)とミーシャ(HP1350)を同時に配置。
+    CROSS TIDE: 槍突進＋往復リング3投。PARASOL PINCER: 挟撃トンファー＋パラソル回転。
+    CROWN BREAK: 槍薙ぎ払い＋パラソル薙ぎ払い。3連携を循環、片方の撃破後は単独技へ移行。
+    coordinateTwins / twinAIで同期。48Fまたは60Fの床予告後に攻撃、58Fで攻撃終了。
+    槍/トンファーは前進、パラソルは小さく前進。各打撃窓1回、リングは1発につき1命中。
+    奥行き回避・被弾中断に対応。リングは70Fで消滅、所有者撃破・最終演出開始でも撤去。
+    自分のゲージの下へ名前付き双子ゲージ2本を表示。通常のターゲット欄との重複は避けた。
+    初回KOではクリアせず、最後の一人で従来のスロー→絶叫→主人公決め台詞→クリアへ。
+    同一フレームの二人撃破、どちらを先に倒す順序、投げ/上昇/炎ダッシュの決着に対応。
+
+  [VOICE-146] 同意済みのVOICEVOX音源を再利用し、追加規約や外部生成サービスは使っていない。
+    ルカ=四国めたん、ミーシャ=九州そら。各intro/combo/defeatの3本、計6本をローカル生成。
+    双子登場はルカ→ミーシャの掛け合い。連携時に掛け声、撃破時に各自の絶叫。
+    tools/generate-twin-voices.py、assets/voices/cinematic-v370/report.jsonに生成設定・PCM情報。
+    既存136音声は保持し総142本。ゲーム内とassets/voices/CREDITS.mdに配役クレジットを追記。
+
+  [BUILD-147] node tools/build-sprites.mjsで再埋込。追加2パックに分離し、計13本・約225MB。
+    resort-backgrounds.js約20.6MB、resort-actors.js約22.9MB。最大パックは従来背景41.8MB。
+    配布PNG62枚・WAV142本、街画像manifestは40項目。HTMLとdataフォルダは必ず一緒に配布。
+    検証: tools/verify-resort-v370.cjs（進行・再挑戦・13波52体・全6人×決着技×双子順序、
+      連携・単独AI・攻撃範囲・リング・透過・背景アニメ・停止・描画純粋性）。画面/結果はverification/resort-v370/。
+    既存verify-hit/stage2-v360/boss-v350は音声総数をmanifest/VOICE_SOURCESへ同期。
+    verify-voice-updateは双子3台詞を別分類。旧136音声の配役は完全一致、既存画像10パックもハッシュ一致。
+    最終検証: resort-v370（217項目）/ stage2-v360 / refinement-v362 / hit / boss-v350 / chain / dash /
+      voice-update の8本通過。Chromeのブラウザ例外なし。5区画と双子48武器姿勢を画面確認済み。
+    verification/resort-v370/scope-report.jsonに既存素材保持を記録。
+
+【v3.6.2 更新・引き継ぎ / 2026-11-14】
+  変更範囲: 依頼された「上昇技の等身」「入力感度」「ステージ2ボスの動作・火炎・被弾」に限定。
+    3.6.1のBGM初期化、SE連打時のvoice stealing、通常打撃46Hz修正を保持。
+    対戦格闘、背景、アイテム、雑魚、通常攻撃、ダッシュ、掴み、ボスHP・既存技の威力は変更なし。
+    音声・音楽・共通SEエンジン・共通キャラ原画・共通描画エンジンは一切変更していない。
+    復元用: backups/v3.6.1/（変更直前のHTML、街エンジン、街描画、画像manifest）。
+
+  [ART-137] 上昇技の人体とエフェクトを分離し、全6人の体格の切替を撤去。
+    原因: 専用24コマ原画は通常原画とは別に生成された人体で、頭・胴体・四肢の比率が揃わなかった。
+    修正: BeltArt.risingBodyFrame / drawRisingBodyで通常base/motion原画を直接使用。
+      scaleFor・pivot・整数丸めも通常と同じ。人体の縦横変形や、エフェクトの大きさに応じた縮小なし。
+      0/2/4/5/6/9/10/12/15/16/18/27/31/35/39/42Fで予備・アッパー・空中・着地姿勢を切替。
+      6/12/18Fの3打撃は共通原画の15番アッパーに同期。威力・移動・無敵・ヒット時刻は不変。
+      新規rise-fx.pngは人体なしの専用24効果（6属性×4段階）。人体の上へ別レイヤーで描画。
+      未使用になった旧rise-<キャラ>6項目のみ配布manifestから除外。旧原画そのものは削除しない。
+
+  [INPUT-138] 下→上のコマンド猶予30F→14F（約233ms）、先行入力12F→6F（100ms）。
+    下の押し始めを起点に計時し、長押し中の毎フレーム更新を廃止。
+    下移動の後に上へ切り返すだけの暴発を抑える。短いキー重なりは許可、初手の上下同時押しは拒否。
+    コマンド順は従来通り「下→上」。通常時・掴み中に共通適用。ポーズ・被弾時の入力破棄は維持。
+
+  [BOSS-139] FURNACE MAW専用画像を72姿勢追加（既存24＋追加72＝96姿勢の素材）。
+    maw-motion: 歩行6/叩きつけ6/突進6/爪攻撃6。
+    maw-breath: 吸気6/噴射開始6/持続6/収束6。
+    maw-hurt: 軽打・強打6/上昇吹き飛び6/掴み・投げ6/着地・起き上がり6。
+    monsterPoseで戦闘状態・被弾種別・throwFrameに対応。通常待機は従来通り1枚固定。
+    新アトラスは256pxセルを厳密抽出し、隣コマを読み込まない。体の倍率は従来のまま。
+    接地中は不透明領域下端を床へ合わせ、空中は従来ピボット。口の炎も同じ接地補正を適用。
+
+  [BOSS-140] 大火炎放射BREATHを追加。MAWのみ、3回ごとの攻撃選択で距離180超の場合に使用。
+    吸気予告60F、BREATH開始後6Fで着火、12～65Fに攻撃判定、66～83F収束、84Fで解除・待機120F。
+    前方110～760、奥行き±58、高さ150未満に80ダメージ。1回の噴射につき命中は1回。
+    被弾者は炎上して吹き飛びダウン。予告時は床に範囲を表示、奥/手前/背後へ回避可能。
+    噴射中の被弾で通常通り中断する。突進・叩きつけの既存スーパーアーマー範囲は拡張しない。
+    火炎専用maw-flame.png: 3列×4行、512×256pxの12コマ。口から前下方へ描画。
+    効果音は既存playFlame('launch'/'hit')を再利用。音源や音量の改変なし。
+    ポーズ・ヒットストップで動作を停止、描画から状態更新・乱数・音声呼出しを行わない。
+
+  [BUILD-141] 生成は組込image_genを使用。採用5画像と全プロンプトはassets/belt/art/actions-v362/。
+    node tools/build-sprites.mjsで再埋込。配布パックは従来11本、変更はbelt-actors.jsのみ。
+    街画像27枚・全PNG49枚・音声136本。最大パック41.8MB。旧上昇人体画像の除外で配布量は減少。
+    検証の旧上昇画像・25F猶予の期待値だけ、verify-actions-v342 / accessibility / stage2-v360を同期。verify-hitの画像数はmanifest参照へ変更。
+    新検証tools/verify-refinement-v362.cjs: 全6人×通常/掴み×受付境界、長押し・同時押し・押しっぱなし、
+    上昇人体と通常原画の描画像素一致、左右の火炎範囲・1回命中・回避・中断・停止・描画純粋性。
+    画面記録・検証結果: verification/refinement-v362/。追加機能は113項目通過。
+    最終検証: refinement-v362 / accessibility / rising / actions-v342 / stage2-v360 / belt-art /
+      hit / chain / boss-v350 / dash の10本すべて通過。ブラウザ例外なし。
+    scope-report.json: ヘッダー・生成ローダー・BELT_ENGINE以外のHTML実行部分が3.6.1と完全一致。
+
+【0. 現行構成サマリ / v3.7.2 時点 — 引き継ぐ人はまずここを読む】
   ■ 配布物（v2.6.0 から 2 点セット。必ず同じフォルダに置く）
-    ai_studio_code.html（約 0.5MB。コードとこの文書だけ）＋ data フォルダ（アセットパック 11 本、計 約 184MB、最大 約 42MB）。
-    data/sprites-<キャラ>.js ×6、stages.js、voices.js、belt-backgrounds.js、belt-actors.js、belt-dash.js。中身は data URI
-    （PNG 50 枚・WAV 136 本）で、1 ファイル 1 行の CB_ASSETS.add("種類",{...},バイト数); 形式。
+    ai_studio_code.html（約 0.5MB。コードとこの文書だけ）＋ data フォルダ（アセットパック 13 本、計 約 225MB、最大 約 42MB）。
+    data/sprites-<キャラ>.js ×6、stages.js、voices.js、belt-backgrounds.js、belt-actors.js、belt-dash.js、resort-backgrounds.js、resort-actors.js。中身は data URI
+    （PNG 62 枚・WAV 142 本）で、1 ファイル 1 行の CB_ASSETS.add("種類",{...},バイト数); 形式。
     PNG 内訳: 共通キャラ 18 アトラス（432 姿勢）、対戦背景 4、街背景 5、工場背景 5、物体 1（8 コマ）、IRON VOSS 3（72 姿勢）、
-              ダッシュ 6（144 姿勢）、3 段上昇技 6（144 姿勢）、炎 1（24 コマ）、FURNACE MAW 1（24 姿勢）。
-              街専用の 28 枚は assets/belt/art/manifest.json が一覧（belt-backgrounds に背景 10、belt-dash にダッシュ 6、残りは belt-actors）。
-    WAV 内訳: 主人公 6 人 × 22（従来 21 ＋決め台詞 finish）＝132、ボス 2 体（voss / maw）× 登場 intro・絶叫 defeat ＝4。
+              ダッシュ 6（144 姿勢）、上昇エフェクト1（24コマ）、炎1（24コマ）、FURNACE MAW 4（96姿勢）、火炎放射1（12コマ）。
+              海辺背景5・通常敵3・双子4・装飾1を追加。街専用の 40 枚は assets/belt/art/manifest.json が一覧（belt-backgrounds に背景 10、belt-dash にダッシュ 6、海辺背景/人物/装飾はresort-の2パック、残りは belt-actors）。
+    WAV 内訳: 主人公 6 人 × 22（従来 21 ＋決め台詞 finish）＝132、ボス 2 体（voss / maw）× 登場 intro・絶叫 defeat ＝4、双子2人×intro/combo/defeat＝6。
     file:// 直開きでも、python -m http.server などの静的配信でも動く。外部通信・追加インストールは不要。
     data フォルダが無い / 読めない場合は起動画面に赤字で案内を出す（CB_ASSETS.fail）。
     復元用: v3.4.0 までは ai_studio_code.vX.Y.Z.backup.html、v3.4.1 以降は backups/vX.Y.Z/（変更直前の HTML と編集元）。
@@ -23,9 +210,11 @@
     「スタート」として消費する（ブラウザは操作があるまで音を出せないため。ここで HUB の BGM が始まる。[FIX-81]）。
     OVERDRIVE（対戦格闘）  : TITLE → SELECT → BATTLE →(ARCADE 全員撃破)→ RESULT。ESC でポーズ、ポーズ中 Q でタイトル。
     NEON UPRISING（ベルト）: STREET_SELECT → STREET（ステージ 1 BLACK VEIN）→ クリア画面で Enter → STREET（ステージ 2 INFERNAL WORKS）
-                             → クリア画面で Enter → ステージ 1 から。GAME OVER で Enter は同じステージをやり直す。
-                             ステージ 1→2 はスコア・撃破数・残機・1UP 取得済みを引き継ぎ、体力は全回復。ESC でポーズ、ポーズ中 Q で HUB。
+                             → Enter → ステージ3 AZURE MIRAGE → クリア後Enterでステージ1から。GAME OVER で Enter は同じステージをやり直す。
+                             ステージ 1→2→3 はスコア・撃破数・残機・1UP 取得済みを引き継ぎ、体力は全回復。ESC でポーズ、ポーズ中 Q で HUB。
                              ステージは STREET_STAGES（区画・ボス・曲）で定義。game.startStreet(キャラ, ステージ番号, 引き継ぎ元)。
+                             開始ステージ: HUB 右下の「ベルト開始：STAGE n」（クリックで開く。game.streetStartStage、再読み込みで 1 に戻る）。
+                             選んだステージを残機 3・スコア 0 で始める。クリア後の進み方とやり直しは通常と同じ。[UI-148]
     共通: H で技表モーダル（進行停止）、ツールバー「ゲーム選択へ」で HUB。ウィンドウのフォーカス喪失で両ゲームともポーズ。
 
   ■ コードの置き場所（HTML 内のマーカーと編集元）
@@ -33,16 +222,16 @@
       CSS / DOM（技表を含む）/ Input / 定数 / CHARACTERS / STAGES / Fighter / Game（対戦ロジック・HUD）/ UI 配線 / メインループ
     DATA_PACKS の BEGIN〜END マーカー（HTML コメント形式、メイン script の直前）← ビルドが再生成。手で編集しない
       読み込み画面（#cbLoading）、CB_ASSETS（sprites / stages / voices / beltArt の受け皿と進捗表示）、
-      data/*.js を読む script タグ 11 本（?v=内容ハッシュ。中身が変わったパックだけ再ダウンロードされる）。
+      data/*.js を読む script タグ 13 本（?v=内容ハッシュ。中身が変わったパックだけ再ダウンロードされる）。
     SPRITE_ASSETS の BEGIN〜END マーカー ← tools/build-sprites.mjs が再生成。手で編集しない
       SPRITE_SOURCES・STAGE_SOURCES・VOICE_SOURCES（CB_ASSETS への参照）・VOICE_PROFILES
       assets/sprites/throws.js    ThrowMotion（投げの同期・姿勢補間。両ゲーム共用）
       assets/sprites/renderer.js  FighterSprites（432 姿勢のアトラス描画。384px セル。画像は assets/sprites/design-v33/）
       assets/stages/renderer.js   StageArt（4 背景＋動く装飾）
-      assets/voices/engine.js     FighterVoiceBank（136 クリップの再生・優先度・ダッキング）
+      assets/voices/engine.js     FighterVoiceBank（142 クリップの再生・優先度・ダッキング）
     AUDIO_ENGINE の BEGIN〜END マーカー ← assets/audio/engine.js（ARCADE_TRACKS / SoundEngine / sound）
     BELT_ENGINE の BEGIN〜END マーカー ← BELT_ART_SOURCES（CB_ASSETS.beltArt への参照）、assets/belt/art.js（BeltArt）、
-      assets/belt/engine.js（STREET / FACTORY_AREAS / STREET_STAGES / StreetPalettes / StreetActor / NeonUprising /
+      assets/belt/engine.js（STREET / FACTORY_AREAS / RESORT_AREAS / RESORT_ENEMIES / STREET_STAGES / StreetPalettes / StreetActor / NeonUprising /
       Game への差し込み / blur 処理）
     START_GATE の目印 2 組（直書き部）: 起動時のスタート待ち [FIX-81]。
     編集元を直したら node tools/build-sprites.mjs で再埋込する。マーカー内を直接編集すると次のビルドで消える。
@@ -54,14 +243,15 @@
                      25ms 間隔・120ms 先読みで予約。打撃は punch / heavy などの基本音に impactBody / impactCrush（v3.6.0 再設計）を
                      重ねる。上昇技 3 種・炎 2 種は synthArcadeAction。同時発音の上限は効果音 32・音楽 72。効果音は上限に達すると
                      最も古い音を数 ms で消して新しい音を鳴らす（steal。[FIX-134]）。prebuild() で操作前に準備。
-    FighterVoiceBank VOICEVOX 由来の 136 クリップ。チャンネル 2 本、優先度、クールダウン、BGM ダッキング。
+    FighterVoiceBank VOICEVOX 由来の 142 クリップ。チャンネル 2 本、優先度、クールダウン、BGM ダッキング。
     Input            キーボード・マウス。getPlayer(idx, is2P) が 1P/2P の抽象入力を返す。
     Fighter          対戦用キャラ。ステート、コマンド履歴、当たり判定、物理（updatePhysics は 1F に 1 回）。
     Game             対戦の進行・AI・HUD。NEON UPRISING 側は prototype 差し替えで HUB/STREET を追加。
     ThrowMotion      投げの成立・拘束・放し・着地（対戦）と sample(u) の姿勢補間（両ゲーム）。
     StreetActor      Fighter 継承。x=横, y=奥行き, z=高さ。monster=true は FURNACE MAW（専用描画・音声なしの被弾）。
-    NeonUprising     ステージ進行・敵 9 種の AI・掴み/投げ・3 段上昇技・炎ダッシュ・物体・残機・ボス・決着演出（finale）・描画。
+    NeonUprising     ステージ進行・敵の AI（街 9 種 STREET.enemies、海辺 6 種＋双子 RESORT_ENEMIES）・掴み/投げ・3 段上昇技・炎ダッシュ・物体・残機・ボス・決着演出（finale）・描画。
     BeltArt          街専用の背景（boards / factoryBoards）・物体・ボス・怪物・上昇技・炎の描画と画像キャッシュ。
+                     上昇技は通常原画の人体＋独立VFX。怪物追加姿勢はmonsterAtlases、火炎はbreathFx。
                      戦闘状態・入力・乱数・音声には触れない。
 
   ■ 設計上の約束事（壊すと検証スクリプトが落ちる）
@@ -74,7 +264,7 @@
       （v3.6.0 で ensureBGM に 5 番の直書きが残っていた。[FIX-128]）。
     - 検証スクリプトに「枚数」「本数」「旧版と同一」を直書きしない。manifest から数える（v3.6.1 [TEST-129] の経緯を参照）。
 
-  ■ 検証（Playwright + Chrome。NODE_PATH でパッケージ、CHROME_BIN で Chrome を指定可。1 本ずつ実行する）
+  ■ 検証 23 本（Playwright + Chrome。NODE_PATH でパッケージ、CHROME_BIN で Chrome を指定可。1 本ずつ実行する。全部で約 10 分）
     対戦・共通
       node tools/verify-sprites.cjs        対戦 2,880F 回帰・432 姿勢・全音声の復号・実キー操作
       node tools/verify-throws.cjs         72 組の投げ・音声・致死投げ
@@ -82,7 +272,7 @@
       node tools/verify-start.cjs          起動時のスタート待ちと HUB の BGM（実マウス・実キー、出力レベルを実測）
     街モード
       node tools/verify-belt.cjs           仕様検査＋全 6 人のキーボード自動プレイでステージ 1 クリア
-      node tools/verify-belt-art.cjs       埋込コードと編集元の一致、街画像 28 枚の復号、両ステージ各 5 区画・4 継ぎ目、描画の純粋性
+      node tools/verify-belt-art.cjs       埋込コードと編集元の一致、街画像 40 枚の復号、ステージ 1・2 各 5 区画・4 継ぎ目、描画の純粋性
       node tools/verify-hit.cjs            当たり判定（STREET.hit）＋分割配布の整合（各パック 50MB 未満・編集元と一致）
       node tools/verify-chain.cjs          連続攻撃と ↓ 押しっぱなしの自動投げ
       node tools/verify-dash.cjs           実キー 2 回入力のダッシュ・全 6 人の炎ダッシュ攻撃・ボスの確定ダウン
@@ -92,10 +282,13 @@
       node tools/verify-hud-v343.cjs       固定 HUD（敵名・体力・ダメージ残像）、炎上の向き
       node tools/verify-idle-fire-v344.cjs 待機姿勢の安定、炎上ダウン画像の余白
       node tools/verify-boss-v350.cjs      敵 9 種、ボス登場台詞、撃破スローと決め台詞（全 6 人 × 3 通り）
-      node tools/verify-stage2-v360.cjs    ステージ 2 の進行・引き継ぎ・再挑戦、FURNACE MAW、136 音声
+      node tools/verify-stage2-v360.cjs    ステージ 2 の進行・引き継ぎ・再挑戦、FURNACE MAW、全音声の復号
+      node tools/verify-refinement-v362.cjs 上昇技の人体が通常原画と一致、↓→↑ の受付境界、MAW の火炎放射（範囲・1 回命中・回避・中断）
+      node tools/verify-resort-v370.cjs    ステージ 3 の進行・再挑戦・13 波、双子の連携 / 単独 AI・リング・決着順、色替えの事前生成、背景アニメ
+      node tools/verify-stage-select-v371.cjs HUB の開始ステージ選択（実マウス・実キー）
     音
       node tools/verify-audio.cjs          8 曲 32 小節の実レンダリング・効果音・ダッキング・連打時に音が捨てられないこと（約 2 分半）
-      node tools/verify-voice-update.cjs   音声 136 本の埋込一致と配役
+      node tools/verify-voice-update.cjs   音声 142 本の埋込一致と配役
       node tools/verify-weight-v350.cjs    打撃の低域（重ね音が全バリエーション・全再生速度で低域を増やすこと）と追加台詞の実再生
       node tools/verify-impact-v360.cjs    打撃音の v3.5 との比較（低域・初音）と試聴 WAV
     結果は verification/ 配下。構文だけなら script 要素の中身を切り出して node --check（ヘッダー内に script タグの文字列を書かないこと）。
@@ -103,8 +296,8 @@
       verify-sprites（ai_studio_code.v1.6.0.backup.html との 2,880F 比較）、verify-voice-update（assets/voices/backup-v1.6 / v1.7）、
       verify-anime（旧 anime-v3 原画との差異検査。無ければ省略して続行）。
 
-  ■ リポジトリに含めるもの / 含めないもの（v3.6.1 [REPO-136]。管理対象は約 339MB）
-    含める  : HTML、data/（実行に必要な約 184MB）、ビルドが読む原画と音声（design-v33、街・工場背景、上昇技、炎、怪物、WAV 136 本）、
+  ■ リポジトリに含めるもの / 含めないもの（v3.6.1 [REPO-136] を踏襲）
+    含める  : HTML、data/（実行に必要な約 225MB）、ビルドが読む原画と音声（design-v33、街・工場背景、上昇技、炎、怪物、WAV 142 本）、
               デザイン基準絵（assets/characters/v33/concepts）、編集元、tools/、検証レポートの JSON、backups/（検証 2 本が参照）。
     含めない: 検証の画面記録と試聴音声（verification 配下の PNG / WAV。検証を実行すれば再生成される）、
               ビルドが使わない旧版の原画（assets/sprites 直下のドット絵 18 枚、anime-v3、街の旧 voss / dash、actions-v342 の旧上昇技 6 枚）、
@@ -2267,12 +2460,13 @@ node --check: OK（メイン script を切り出して検査）。ビルドは 2
           <div class="row"><span>チェーン投げ</span><span>↓（S）を入れたまま3発目 → 吹き飛ばさず自動で投げる。投げた敵の体は他の敵にも当たる</span></div>
           <div class="row"><span>ジャンプ / ジャンプ攻撃</span><span>K / X / Space → 空中で J / Z</span></div>
           <div class="row"><span>掴む / 追撃 / 投げる</span><span>敵へ歩いて接近すると掴む → J / Z で追撃（2回まで、3回目は吹き飛ばす強打）/ 方向＋J または I で前方へ投げる。ジャンプで離す</span></div>
-          <div class="row"><span>3段上昇技</span><span>↓ → ↑（S → W）を約0.5秒以内に入力。3ヒットし、最後の一撃はボスも吹き飛ばす。掴み中・ダッシュ中からも出せる</span></div>
+          <div class="row"><span>3段上昇技</span><span>↓ を押してから約0.2秒以内に ↑（S → W）。↓ を押し続けた後では出ない。3ヒットし、最後の一撃はボスも吹き飛ばす。掴み中・ダッシュ中からも出せる</span></div>
           <div class="row"><span>緊急回転攻撃</span><span>L / C または 攻撃＋ジャンプ。命中時に最大体力の7.5%消費（残り1まで）</span></div>
           <div class="row"><span>木箱・ドラム缶 / 拾う</span><span>攻撃で壊す → 食料で回復、現金で得点、鉄パイプは8命中まで使用</span></div>
           <div class="row"><span>進行 / 残機</span><span>各区画の敵を倒しGO方向へ。残機3、20,000点で1UP（1回）。各区画150秒</span></div>
-          <div class="row"><span>ステージ</span><span>ステージ1 BLACK VEIN（ボス IRON VOSS）→ クリア画面で Enter → ステージ2 INFERNAL WORKS（ボス FURNACE MAW）。スコア・残機は引き継ぎ、体力は全回復</span></div>
-          <div class="row"><span>ボス / 中断</span><span>赤い攻撃予告を奥行き移動・ジャンプで避ける。ESC:ポーズ、Q:ゲーム選択</span></div>
+          <div class="row"><span>ステージ</span><span>ステージ1 BLACK VEIN（ボス IRON VOSS）→ ステージ2 INFERNAL WORKS（ボス FURNACE MAW）→ ステージ3 AZURE MIRAGE（双子ルカとミーシャ）。クリア画面で Enter を押すと次へ。スコア・残機は引き継ぎ、体力は全回復</span></div>
+          <div class="row"><span>開始ステージの選択</span><span>ゲーム選択画面の右下「ベルト開始：STAGE n」をクリック → ステージを選ぶ（↑↓ と Enter でも可）→ NEON UPRISING のカードからキャラクターを選ぶと、そのステージを残機3・スコア0で開始</span></div>
+          <div class="row"><span>ボス / 中断</span><span>床の赤い攻撃予告（突進・叩きつけ・火炎放射・双子の連携）を奥行き移動で避ける。ESC:ポーズ、Q:ゲーム選択</span></div>
           <p>以下はOVERDRIVE（格闘ゲーム）の操作・技表です。NEON UPRISINGでは上記の操作を使います。</p>
         </div>
         <div class="card">
@@ -2340,10 +2534,10 @@ node --check: OK（メイン script を切り出して検査）。ビルドは 2
           <h3>音声クレジット</h3>
           <div class="row"><span>神楽</span><span>VOICEVOX:玄野武宏</span></div>
           <div class="row"><span>ヴォルト</span><span>VOICEVOX:白上虎太郎</span></div>
-          <div class="row"><span>フレイヤ</span><span>VOICEVOX:四国めたん</span></div>
+          <div class="row"><span>フレイヤ / ルカ</span><span>VOICEVOX:四国めたん</span></div>
           <div class="row"><span>タイタン / IRON VOSS / FURNACE MAW</span><span>VOICEVOX:麒ヶ島宗麟</span></div>
           <div class="row"><span>綾女</span><span>VOICEVOX:中国うさぎ</span></div>
-          <div class="row"><span>セリーヌ</span><span>VOICEVOX:九州そら</span></div>
+          <div class="row"><span>セリーヌ / ミーシャ</span><span>VOICEVOX:九州そら</span></div>
           <p style="font-size:12px;line-height:1.7;margin-top:12px;color:#bbc9da;">キャラクターボイスはVOICEVOXによる合成音声です。音声を再利用・配布する場合も、該当するクレジットと各音源の規約を引き継いでください。<br>
             <a href="https://voicevox.hiroshiba.jp/term/" target="_blank" rel="noopener noreferrer" style="color:var(--cyan)">VOICEVOX利用規約</a> ／
             <a href="https://www.virvoxproject.com/voicevoxの利用規約" target="_blank" rel="noopener noreferrer" style="color:var(--cyan)">玄野武宏・白上虎太郎・麒ヶ島宗麟</a> ／
@@ -2364,7 +2558,7 @@ node --check: OK（メイン script を切り出して検査）。ビルドは 2
 <script data-cb-loader>
 // Asset registry filled by data/*.js. The main script reads CB_ASSETS.sprites / stages / voices / beltArt.
 const CB_ASSETS = {
-  sprites: {}, stages: [], voices: {}, beltArt: {}, total: 192645532, loaded: 0, failed: [],
+  sprites: {}, stages: [], voices: {}, beltArt: {}, total: 235392012, loaded: 0, failed: [],
   add(kind, data, bytes) {
     if (Array.isArray(this[kind])) this[kind].push(...data); else Object.assign(this[kind], data);
     this.loaded += bytes;
@@ -2388,9 +2582,11 @@ document.addEventListener('DOMContentLoaded', () => { if (!CB_ASSETS.failed.leng
 <script src="data/sprites-ayame.js?v=b29efb740c" onerror="CB_ASSETS.fail('sprites-ayame')"></script>
 <script src="data/sprites-celine.js?v=d63ab94ae3" onerror="CB_ASSETS.fail('sprites-celine')"></script>
 <script src="data/stages.js?v=d036b44337" onerror="CB_ASSETS.fail('stages')"></script>
-<script src="data/voices.js?v=8c75f48beb" onerror="CB_ASSETS.fail('voices')"></script>
+<script src="data/voices.js?v=f460b389ba" onerror="CB_ASSETS.fail('voices')"></script>
 <script src="data/belt-backgrounds.js?v=d8b882a937" onerror="CB_ASSETS.fail('belt-backgrounds')"></script>
-<script src="data/belt-actors.js?v=fea6292532" onerror="CB_ASSETS.fail('belt-actors')"></script>
+<script src="data/belt-actors.js?v=1900e44a79" onerror="CB_ASSETS.fail('belt-actors')"></script>
+<script src="data/resort-backgrounds.js?v=f425ff0b4e" onerror="CB_ASSETS.fail('resort-backgrounds')"></script>
+<script src="data/resort-actors.js?v=9d28440ff1" onerror="CB_ASSETS.fail('resort-actors')"></script>
 <script src="data/belt-dash.js?v=49653fc7a5" onerror="CB_ASSETS.fail('belt-dash')"></script>
 <!-- DATA_PACKS_END -->
 
@@ -2417,7 +2613,7 @@ function drawRoundRect(ctx, x, y, w, h, r) {
 const SPRITE_SOURCES = CB_ASSETS.sprites;
 const STAGE_SOURCES = CB_ASSETS.stages;
 const VOICE_SOURCES = CB_ASSETS.voices;
-const VOICE_PROFILES = {"kagura":{"voice":"玄野武宏","models":[4,10],"styles":{"normal":40,"force":40,"hurt":40,"win":11,"ko":41,"intro":11},"speed":1.02,"pitch":-0.015,"superSegments":["奥義……","紅蓮・天翔斬っ！"],"credit":"VOICEVOX:玄野武宏","lines":{"light0":"はっ！","light1":"せいっ！","heavy0":"やあっ！","heavy1":"斬る！","jump":"ふっ！","dash":"行くぞ！","hurt0":"ぐっ！","hurt1":"うっ！","throw":"捉えた！","burst":"退けっ！","sp1":"エンゲツ！","sp2":"ヒエン！","sp3":"シュンゴクセン！","super":"奥義。グレンテンショーザン！","select":"我が太刀、見切れるか？","win":"勝負あり。","ko":"無念。","grabbed":"なにっ！","throw_release":"せいっ！","thrown":"うわあっ！","throw_impact":"ぐはっ！","finish":"悪の炎は、俺が断つ。"}},"volt":{"voice":"白上虎太郎","models":[9],"styles":{"normal":32,"force":34,"hurt":34,"win":32,"ko":35,"intro":34},"speed":1.05,"pitch":-0.01,"eventSpeeds":{"grabbed":1.18,"light0":1.18,"light1":1.18,"jump":1.2},"superSegments":["オーバードライブっ！","ラグナロクっ！"],"credit":"VOICEVOX:白上虎太郎","lines":{"light0":"はっ！","light1":"そらっ！","heavy0":"くらえっ！","heavy1":"決めるぜ！","jump":"よっと！","dash":"遅いぜ！","hurt0":"くっ！","hurt1":"ぐあっ！","throw":"よしっ！","burst":"離れろっ！","sp1":"プラズマショット！","sp2":"ライトニングドライブ！","sp3":"サンダーサマー！","super":"オーバードライブ。ラグナロク！","select":"最高速で行こうぜ！","win":"俺の勝ちだ！","ko":"マジかよ。","grabbed":"しまった！","throw_release":"そらよっ！","thrown":"うわっ！","throw_impact":"がはっ！","finish":"これで終わりだ！街は返してもらうぜ！"}},"freya":{"voice":"四国めたん","models":[0],"styles":{"normal":2,"force":6,"hurt":6,"win":2,"ko":2,"intro":2},"speed":1.03,"pitch":-0.01,"superSegments":["アブソリュート・ゼロ……","カリバーっ！"],"credit":"VOICEVOX:四国めたん","lines":{"light0":"はっ！","light1":"せいっ！","heavy0":"凍りなさい！","heavy1":"貫く！","jump":"ふっ！","dash":"参ります！","hurt0":"くっ！","hurt1":"あっ！","throw":"そこっ！","burst":"近寄らないで！","sp1":"グレイシャーピラー！","sp2":"ヴァルキリーランス！","sp3":"フロストノヴァ！","super":"アブソリュートゼロ。カリバー！","select":"静かな決着を。","win":"お眠りなさい。","ko":"そんな。","grabbed":"あっ！","throw_release":"はあっ！","thrown":"ああっ！","throw_impact":"くっ！","finish":"あなたの支配は、ここで終わりよ。"}},"titan":{"voice":"麒ヶ島宗麟","models":[12],"styles":{"normal":53,"force":53,"hurt":53,"win":53,"ko":53,"intro":53},"speed":1.02,"pitch":-0.045,"superSegments":["メテオ……","カタストロフィっ！"],"credit":"VOICEVOX:麒ヶ島宗麟","lines":{"light0":"ふんっ！","light1":"どりゃっ！","heavy0":"うおおっ！","heavy1":"砕けろ！","jump":"ぬっ！","dash":"突き進む！","hurt0":"ぐぬっ！","hurt1":"がはっ！","throw":"捉えた！","burst":"吹き飛べっ！","sp1":"シンキャク。大地砕き！","sp2":"ギガントタックル！","sp3":"ガイアバスター！","super":"メテオ。カタストロフィ！","select":"さあ、かかって来い！","win":"まだまだじゃ。","ko":"見事じゃ。","grabbed":"ぬおっ！","throw_release":"どりゃあっ！","thrown":"ぐおおっ！","throw_impact":"がはっ！","finish":"力は、守るために使うものだ。"}},"ayame":{"voice":"中国うさぎ","models":[3],"styles":{"normal":62,"force":62,"hurt":62,"win":62,"ko":63,"intro":61},"speed":1.02,"pitch":0,"superSegments":["秘奥義……","百花・繚乱っ！"],"credit":"VOICEVOX:中国うさぎ","lines":{"light0":"はっ！","light1":"えいっ！","heavy0":"そこね！","heavy1":"舞いなさい！","jump":"よっ！","dash":"こちらよ！","hurt0":"くっ！","hurt1":"あっ！","throw":"そこね！","burst":"お下がりっ！","sp1":"シゲツセン！","sp2":"ヒエンの舞！","sp3":"カスミバシリ！","super":"秘奥義。ヒャッカリョーラン！","select":"ついてこられるかしら？","win":"舞はここまで。","ko":"不覚ね。","grabbed":"えっ！","throw_release":"せいっ！","thrown":"きゃあっ！","throw_impact":"うっ！","finish":"悪の花は、ここで散りなさい。"}},"celine":{"voice":"九州そら","models":[2],"styles":{"normal":16,"force":18,"hurt":18,"win":16,"ko":18,"intro":16},"speed":1.04,"pitch":-0.01,"eventSpeeds":{"light0":1.06,"light1":1.08,"heavy0":1.06,"heavy1":1.04,"dash":1.06,"burst":1.06},"superSegments":["エトワール……","デュ・ソワールっ！"],"credit":"VOICEVOX:九州そら","lines":{"light0":"はっ！","light1":"えいっ！","heavy0":"そこです！","heavy1":"貫きます！","jump":"ふっ！","dash":"失礼！","hurt0":"くっ！","hurt1":"ああっ！","throw":"そこっ！","burst":"お離れなさい！","sp1":"ローズエクレール！","sp2":"フルールランジ！","sp3":"エメラルドリポスト！","super":"エトワール。デュ・ソワール！","select":"美しい決闘を。","win":"見事な勝負でした。","ko":"参りました。","grabbed":"あっ！","throw_release":"はあっ！","thrown":"ああっ！","throw_impact":"くっ！","finish":"幕引きよ。勝利は、私のもの。"}},"voss":{"voice":"麒ヶ島宗麟","models":[12],"styles":{"normal":53,"force":53,"hurt":53,"win":53,"ko":53,"intro":53},"speed":1.02,"pitch":-0.045,"superSegments":["メテオ……","カタストロフィっ！"],"credit":"VOICEVOX:麒ヶ島宗麟","lines":{"intro":"この街は俺のものだ。逆らう奴は、叩き潰す！","defeat":"ぐああああああっ！"}},"maw":{"voice":"麒ヶ島宗麟","models":[12],"styles":{"normal":53,"force":53,"hurt":53,"win":53,"ko":53,"intro":53},"speed":1.02,"pitch":-0.045,"superSegments":["メテオ……","カタストロフィっ！"],"credit":"VOICEVOX:麒ヶ島宗麟","lines":{"intro":"炉の底で、灰になれ！","defeat":"ぐおおおおおっ！"}}};
+const VOICE_PROFILES = {"kagura":{"voice":"玄野武宏","models":[4,10],"styles":{"normal":40,"force":40,"hurt":40,"win":11,"ko":41,"intro":11},"speed":1.02,"pitch":-0.015,"superSegments":["奥義……","紅蓮・天翔斬っ！"],"credit":"VOICEVOX:玄野武宏","lines":{"light0":"はっ！","light1":"せいっ！","heavy0":"やあっ！","heavy1":"斬る！","jump":"ふっ！","dash":"行くぞ！","hurt0":"ぐっ！","hurt1":"うっ！","throw":"捉えた！","burst":"退けっ！","sp1":"エンゲツ！","sp2":"ヒエン！","sp3":"シュンゴクセン！","super":"奥義。グレンテンショーザン！","select":"我が太刀、見切れるか？","win":"勝負あり。","ko":"無念。","grabbed":"なにっ！","throw_release":"せいっ！","thrown":"うわあっ！","throw_impact":"ぐはっ！","finish":"悪の炎は、俺が断つ。"}},"volt":{"voice":"白上虎太郎","models":[9],"styles":{"normal":32,"force":34,"hurt":34,"win":32,"ko":35,"intro":34},"speed":1.05,"pitch":-0.01,"eventSpeeds":{"grabbed":1.18,"light0":1.18,"light1":1.18,"jump":1.2},"superSegments":["オーバードライブっ！","ラグナロクっ！"],"credit":"VOICEVOX:白上虎太郎","lines":{"light0":"はっ！","light1":"そらっ！","heavy0":"くらえっ！","heavy1":"決めるぜ！","jump":"よっと！","dash":"遅いぜ！","hurt0":"くっ！","hurt1":"ぐあっ！","throw":"よしっ！","burst":"離れろっ！","sp1":"プラズマショット！","sp2":"ライトニングドライブ！","sp3":"サンダーサマー！","super":"オーバードライブ。ラグナロク！","select":"最高速で行こうぜ！","win":"俺の勝ちだ！","ko":"マジかよ。","grabbed":"しまった！","throw_release":"そらよっ！","thrown":"うわっ！","throw_impact":"がはっ！","finish":"これで終わりだ！街は返してもらうぜ！"}},"freya":{"voice":"四国めたん","models":[0],"styles":{"normal":2,"force":6,"hurt":6,"win":2,"ko":2,"intro":2},"speed":1.03,"pitch":-0.01,"superSegments":["アブソリュート・ゼロ……","カリバーっ！"],"credit":"VOICEVOX:四国めたん","lines":{"light0":"はっ！","light1":"せいっ！","heavy0":"凍りなさい！","heavy1":"貫く！","jump":"ふっ！","dash":"参ります！","hurt0":"くっ！","hurt1":"あっ！","throw":"そこっ！","burst":"近寄らないで！","sp1":"グレイシャーピラー！","sp2":"ヴァルキリーランス！","sp3":"フロストノヴァ！","super":"アブソリュートゼロ。カリバー！","select":"静かな決着を。","win":"お眠りなさい。","ko":"そんな。","grabbed":"あっ！","throw_release":"はあっ！","thrown":"ああっ！","throw_impact":"くっ！","finish":"あなたの支配は、ここで終わりよ。"}},"titan":{"voice":"麒ヶ島宗麟","models":[12],"styles":{"normal":53,"force":53,"hurt":53,"win":53,"ko":53,"intro":53},"speed":1.02,"pitch":-0.045,"superSegments":["メテオ……","カタストロフィっ！"],"credit":"VOICEVOX:麒ヶ島宗麟","lines":{"light0":"ふんっ！","light1":"どりゃっ！","heavy0":"うおおっ！","heavy1":"砕けろ！","jump":"ぬっ！","dash":"突き進む！","hurt0":"ぐぬっ！","hurt1":"がはっ！","throw":"捉えた！","burst":"吹き飛べっ！","sp1":"シンキャク。大地砕き！","sp2":"ギガントタックル！","sp3":"ガイアバスター！","super":"メテオ。カタストロフィ！","select":"さあ、かかって来い！","win":"まだまだじゃ。","ko":"見事じゃ。","grabbed":"ぬおっ！","throw_release":"どりゃあっ！","thrown":"ぐおおっ！","throw_impact":"がはっ！","finish":"力は、守るために使うものだ。"}},"ayame":{"voice":"中国うさぎ","models":[3],"styles":{"normal":62,"force":62,"hurt":62,"win":62,"ko":63,"intro":61},"speed":1.02,"pitch":0,"superSegments":["秘奥義……","百花・繚乱っ！"],"credit":"VOICEVOX:中国うさぎ","lines":{"light0":"はっ！","light1":"えいっ！","heavy0":"そこね！","heavy1":"舞いなさい！","jump":"よっ！","dash":"こちらよ！","hurt0":"くっ！","hurt1":"あっ！","throw":"そこね！","burst":"お下がりっ！","sp1":"シゲツセン！","sp2":"ヒエンの舞！","sp3":"カスミバシリ！","super":"秘奥義。ヒャッカリョーラン！","select":"ついてこられるかしら？","win":"舞はここまで。","ko":"不覚ね。","grabbed":"えっ！","throw_release":"せいっ！","thrown":"きゃあっ！","throw_impact":"うっ！","finish":"悪の花は、ここで散りなさい。"}},"celine":{"voice":"九州そら","models":[2],"styles":{"normal":16,"force":18,"hurt":18,"win":16,"ko":18,"intro":16},"speed":1.04,"pitch":-0.01,"eventSpeeds":{"light0":1.06,"light1":1.08,"heavy0":1.06,"heavy1":1.04,"dash":1.06,"burst":1.06},"superSegments":["エトワール……","デュ・ソワールっ！"],"credit":"VOICEVOX:九州そら","lines":{"light0":"はっ！","light1":"えいっ！","heavy0":"そこです！","heavy1":"貫きます！","jump":"ふっ！","dash":"失礼！","hurt0":"くっ！","hurt1":"ああっ！","throw":"そこっ！","burst":"お離れなさい！","sp1":"ローズエクレール！","sp2":"フルールランジ！","sp3":"エメラルドリポスト！","super":"エトワール。デュ・ソワール！","select":"美しい決闘を。","win":"見事な勝負でした。","ko":"参りました。","grabbed":"あっ！","throw_release":"はあっ！","thrown":"ああっ！","throw_impact":"くっ！","finish":"幕引きよ。勝利は、私のもの。"}},"voss":{"voice":"麒ヶ島宗麟","models":[12],"styles":{"normal":53,"force":53,"hurt":53,"win":53,"ko":53,"intro":53},"speed":1.02,"pitch":-0.045,"superSegments":["メテオ……","カタストロフィっ！"],"credit":"VOICEVOX:麒ヶ島宗麟","lines":{"intro":"この街は俺のものだ。逆らう奴は、叩き潰す！","defeat":"ぐああああああっ！"}},"maw":{"voice":"麒ヶ島宗麟","models":[12],"styles":{"normal":53,"force":53,"hurt":53,"win":53,"ko":53,"intro":53},"speed":1.02,"pitch":-0.045,"superSegments":["メテオ……","カタストロフィっ！"],"credit":"VOICEVOX:麒ヶ島宗麟","lines":{"intro":"炉の底で、灰になれ！","defeat":"ぐおおおおおっ！"}},"luka":{"voice":"四国めたん","models":[0],"styles":{"normal":2,"force":6,"hurt":6,"win":2,"ko":2,"intro":2},"speed":1.03,"pitch":-0.01,"superSegments":["アブソリュート・ゼロ……","カリバーっ！"],"credit":"VOICEVOX:四国めたん","lines":{"intro":"ここは私たちの楽園。勝手には通さないわ。","combo":"ミーシャ、合わせて！","defeat":"きゃああっ！"}},"misha":{"voice":"九州そら","models":[2],"styles":{"normal":16,"force":18,"hurt":18,"win":16,"ko":18,"intro":16},"speed":1.04,"pitch":-0.01,"eventSpeeds":{"light0":1.06,"light1":1.08,"heavy0":1.06,"heavy1":1.04,"dash":1.06,"burst":1.06},"superSegments":["エトワール……","デュ・ソワールっ！"],"credit":"VOICEVOX:九州そら","lines":{"intro":"二人の連携、あなたに見切れるかしら？","combo":"ええ、挟み撃ちよ！","defeat":"あああっ！"}}};
 // v1.7 throw choreography. Simulation owns timing; drawing never mutates these values.
 const ThrowMotion = {
   locked(f) { return f && (f.state === 'GRABBED' || f.state === 'THROWING'); },
@@ -6421,8 +6617,13 @@ const BeltArt = {
   images: new Map(),
   boards: new Map(),
   factoryBoards: new Map(),
+  resortBoards:new Map(), resortWater:new Map(), beachSheets:new Map(), beachPalettes:new Map(), beachDecor:[],
   monsterSheet: null,
   monsterCells: [],
+  monsterAtlases: new Map(),
+  monsterContacts: new Map(),
+  risingFx: null,
+  breathFx: null,
   bossCells: new Map(),
   bossSheets: new Map(),
   dashSheets: new Map(),
@@ -6441,11 +6642,27 @@ const BeltArt = {
         try {
           this.images.set(id, img);
           if (id.startsWith('district-')) this.prepareBoard(Number(id.slice(-1)), img, entry.horizon);
+          else if (id.startsWith('resort-')) { const n=Number(id.slice(-1));this.prepareBoard(n,img,entry.horizon,this.resortBoards);this.prepareResortWater(n); }
+          else if(id==='beach-decor')this.prepareBeachDecor(img);
+          else if(id.startsWith('beach-'))this.beachSheets.set(id.slice(6),this.prepareBeachAtlas(img));
           else if (id.startsWith('factory-')) this.prepareBoard(Number(id.slice(-1)), img, entry.horizon, this.factoryBoards);
           else if (id === 'maw') {
             this.monsterSheet = FighterSprites.prepareAtlas(img, 'maw');
             const c=this.monsterSheet.getContext('2d',{willReadFrequently:true}),cell=FighterSprites.cell;
             this.monsterCells=Array.from({length:24},(_,i)=>this.bounds(c,i%6*cell,Math.floor(i/6)*cell,cell,cell));
+          }
+          else if (['maw-motion','maw-breath','maw-hurt'].includes(id)) {
+            const atlas=this.prepareStrictAtlas(img),c=atlas.getContext('2d',{willReadFrequently:true}),cell=FighterSprites.cell;
+            this.monsterAtlases.set(id,atlas);
+            this.monsterContacts.set(id,Array.from({length:24},(_,i)=>this.bounds(c,i%6*cell,Math.floor(i/6)*cell,cell,cell).bottom+1));
+          }
+          else if (id === 'rise-fx') this.risingFx = this.prepareStrictAtlas(img, true);
+          else if (id === 'maw-flame') {
+            this.breathFx=document.createElement('canvas'); this.breathFx.width=img.width; this.breathFx.height=img.height;
+            const c=this.breathFx.getContext('2d',{willReadFrequently:true}); c.drawImage(img,0,0);
+            const data=c.getImageData(0,0,img.width,img.height);
+            for(let i=3;i<data.data.length;i+=4) if(data.data[i]<24)data.data[i]=0;
+            c.putImageData(data,0,0);
           }
           else if (id === 'props') this.prepareProps(img);
           else if (id.startsWith('voss-')) this.prepareBoss(id, img);
@@ -6501,15 +6718,48 @@ const BeltArt = {
       -FighterSprites.pivotX * scale + offsetX, -FighterSprites.pivotY * scale + offsetY, cell * scale, cell * scale);
     c.restore(); return true;
   },
+  prepareStrictAtlas(image, effects = false) {
+    // New atlases never borrow pixels from adjacent drawings. Shared renderer stays unchanged.
+    const c=document.createElement('canvas'); c.width=FighterSprites.cell*6; c.height=FighterSprites.cell*4;
+    const g=c.getContext('2d',{willReadFrequently:true}), cell=FighterSprites.cell;
+    for(let f=0;f<24;f++) {
+      g.drawImage(image,f%6*256,Math.floor(f/6)*256,256,256,f%6*cell+64,Math.floor(f/6)*cell+64,256,256);
+      FighterSprites.cleanCell(g,f%6*cell,Math.floor(f/6)*cell,effects);
+    }
+    return c;
+  },
+  risingBodyFrame(t) {
+    // The body comes from the normal character atlas, at exactly its normal scale and pivot.
+    // Separate VFX means a tall trail can never shrink/elongate the person to fit an action cell.
+    const keys=[[0,0],[2,41],[4,6],[5,34],[6,15],[9,37],[10,8],[12,15],
+      [15,37],[16,8],[18,15],[27,7],[31,38],[35,41],[39,11],[42,0]];
+    let frame=0; for(const [at,pose] of keys) { if(t<at)break;frame=pose; } return frame;
+  },
+  drawRisingBody(actor, c) {
+    const frame=this.risingBodyFrame(actor.f), sheet=FighterSprites.sheets.get(actor.data.id+(frame>=24?'-motion':''));
+    if(!sheet) return false;
+    const cell=FighterSprites.cell,scale=FighterSprites.scaleFor(actor.data.id),f=frame%24;
+    c.save(); c.scale(actor.facing,1); c.imageSmoothingEnabled=true;
+    c.drawImage(sheet.atlas,f%6*cell,Math.floor(f/6)*cell,cell,cell,
+      -Math.round(FighterSprites.pivotX*scale),-Math.round(FighterSprites.pivotY*scale),Math.round(cell*scale),Math.round(cell*scale));
+    c.restore(); return true;
+  },
   drawRising(actor, c) {
     if (actor.state !== 'SP_2') return false;
-    const t = actor.f;
-    const frame = t < 18 ? Math.floor(t / 2) : t < 30 ? 9 + Math.floor((t - 18) * 9 / 12) : 18 + Math.min(5, Math.floor((t - 30) * 6 / 14));
-    return this.drawAction('rise-' + actor.data.id, frame, actor, c);
+    const ok=this.drawRisingBody(actor,c), t=actor.f;
+    if(ok && this.risingFx && t>=4 && t<39) {
+      const phase=t<6?0:t<9?1:t<12?0:t<15?1:t<18?0:t<28?2:3;
+      const frame=CHARACTERS.findIndex(x=>x.id===actor.data.id)+phase*6,cell=FighterSprites.cell,scale=FighterSprites.scaleFor(actor.data.id);
+      c.save(); c.scale(actor.facing,1); c.globalAlpha*=t>=28?Math.max(0,(39-t)/11):.9;
+      c.drawImage(this.risingFx,frame%6*cell,Math.floor(frame/6)*cell,cell,cell,-FighterSprites.pivotX*scale,-FighterSprites.pivotY*scale,cell*scale,cell*scale);
+      c.restore();
+    }
+    return ok;
   },
   drawBurn(actor, c) {
     if (!(actor.burnTicks > 0) || !['HIT_AIR','KNOCKDOWN','DEAD'].includes(actor.state)) return false;
     if (actor.monster) return this.drawMonster(actor, c);
+    if (actor.resort) return this.drawResortActor(actor,c);
     const frame = actor.state === 'HIT_AIR' ? Math.min(11, Math.floor(actor.f / 2)) : 12 + Math.min(5, Math.floor(actor.f / 5));
     // Fire atlas tumbles to the RIGHT: orient by the captured launch vector, not the victim facing the attacker.
     return this.drawAction('fx-fire', frame, actor, c, 0, 0, 1, actor.burnDirection || Math.sign(actor.knockX) || -actor.facing);
@@ -6567,7 +6817,90 @@ const BeltArt = {
     this.bossCells.set(id, cells);
   },
 
+  prepareResortWater(index) {
+    const source=this.resortBoards.get(index),water=document.createElement('canvas');water.width=source.width;water.height=source.height;
+    const c=water.getContext('2d',{willReadFrequently:true});c.drawImage(source,0,0);const d=c.getImageData(0,0,water.width,water.height);
+    for(let y=0;y<water.height;y++)for(let x=0;x<water.width;x++){
+      const i=(y*water.width+x)*4,r=d.data[i],g=d.data[i+1],b=d.data[i+2];
+      const ocean=y>215&&y<420&&x>(index===3?700:390)&&g>105&&b>120&&r<g*.83;
+      if(!ocean)d.data[i+3]=0;
+    }c.putImageData(d,0,0);this.resortWater.set(index,water);
+  },
+  prepareBeachAtlas(image) {
+    // Lunges cross the nominal cell's left edge. Include horizontal bleed only,
+    // then retain the character's connected silhouette, never the adjacent row.
+    const canvas=document.createElement('canvas'),cell=FighterSprites.cell;
+    canvas.width=cell*6;canvas.height=cell*4;
+    const c=canvas.getContext('2d',{willReadFrequently:true});
+    for(let f=0;f<24;f++){
+      const col=f%6,row=Math.floor(f/6);
+      c.drawImage(image,col*256-96,row*256,384,256,col*cell,row*cell+64,384,256);
+      FighterSprites.cleanCell(c,col*cell,row*cell,false);
+    }
+    return canvas;
+  },
+  prepareBeachDecor(image) {
+    const canvas=document.createElement('canvas');canvas.width=image.width;canvas.height=image.height;const c=canvas.getContext('2d',{willReadFrequently:true});c.drawImage(image,0,0);
+    for(let i=0;i<8;i++)this.beachDecor[i]=this.bounds(c,i%4*384,Math.floor(i/4)*512,384,512);
+  },
+  drawBeachDecor(c,frame,x,y,w,h) {
+    const box=this.beachDecor[frame],image=this.images.get('beach-decor');if(!box||!image)return;
+    c.drawImage(image,box.x,box.y,box.w,box.h,x,y,w,h);
+  },
+  drawResortStreet(s,c) {
+    if(this.resortBoards.size!==5)return false;
+    const t=s.tick;c.save();c.fillStyle='#a8e8ff';c.fillRect(0,0,W,H);c.translate(-Math.round(s.camera),0);
+    for(let i=0;i<5;i++){
+      const x=i*1240-96;if(x>s.camera+W||x+1432<s.camera)continue;
+      c.drawImage(this.resortBoards.get(i),x,0);
+      const water=this.resortWater.get(i);
+      // Move only the water pixels: boats, rails and architecture remain anchored.
+      for(let y=216;y<420;y+=4){const shift=Math.sin(t*.045+y*.09+i)*2.8;c.drawImage(water,0,y,1432,4,x+shift,y,1432,4);}
+      c.save();c.globalCompositeOperation='screen';c.globalAlpha=.22+.12*Math.sin(t*.04+i);
+      for(let n=0;n<14;n++){const wx=x+550+n*51,wy=280+(n*31)%115;const blink=Math.max(0,Math.sin(t*.06+n));c.fillStyle='rgba(230,255,255,'+blink+')';c.fillRect(wx+Math.sin(t*.02+n)*7,wy,8+blink*12,1);}
+      c.restore();
+      c.save();c.translate(x+30,-18);c.rotate(Math.sin(t*.025+i)*.045);this.drawBeachDecor(c,0,0,0,200,220);c.restore();
+      c.save();c.translate(x+1260,-22);c.rotate(-Math.sin(t*.027+i)*.05);this.drawBeachDecor(c,1,-170,0,200,220);c.restore();
+      if(i===4){for(let j=0;j<2;j++){c.save();c.translate(x+350+j*320,90);c.transform(1,0,Math.sin(t*.04+j)*.045,1,0,0);this.drawBeachDecor(c,4+j,0,0,65,160);c.restore();}}
+    }
+    c.restore();c.save();
+    for(let j=0;j<3;j++){const x=(t*(.8+j*.18)+j*440)%(W+140)-70,y=150+j*35+Math.sin(t*.02+j)*12;this.drawBeachDecor(c,Math.floor(t/12+j)%2?2:3,x,y,46,30);}
+    c.restore();return true;
+  },
+  resortPose(a) {
+    if(a.twin&&['TWIN_WINDUP','TWIN_ATTACK'].includes(a.state)) {
+      const row=a.twinMode==='spear'? (a.twinPattern===2?3:1) :a.twinMode==='parasol'?(a.twinPattern===2?3:1):a.twinMode==='tonfa'?2: (a.twinPattern===2?2:0);
+      const f=a.state==='TWIN_WINDUP'?Math.min(1,Math.floor(a.f/24)):2+Math.min(3,Math.floor(a.f/12));
+      return [a.resort+'-motion',row*6+f];
+    }
+    let f=0;
+    if(a.dead||a.state==='KNOCKDOWN')f=20;
+    else if(a.state==='WAKEUP')f=a.f<9?21:1;
+    else if(a.state==='GRABBED')f=a.throwFrame>=62?19:18;
+    else if(a.state==='HIT_AIR')f=a.throwFlight?19:17;
+    else if(a.state==='HIT_STAND')f=16;
+    else if(a.state==='WINDUP')f=8;
+    else if(a.state==='ATK_H')f=a.f<5?8:a.f<12?9:a.f<20?10:11;
+    else if(a.state==='WALK_F')f=2+Math.floor(a.animTick/4)%6;
+    return [a.resort,f];
+  },
+  beachPalette(id,hue) {
+    const key=id+':'+hue;if(this.beachPalettes.has(key))return this.beachPalettes.get(key);
+    const src=this.beachSheets.get(id);if(!src)return null;
+    if(!hue)return src;
+    const canvas=document.createElement('canvas');canvas.width=src.width;canvas.height=src.height;const c=canvas.getContext('2d',{willReadFrequently:true});c.drawImage(src,0,0);const original=c.getImageData(0,0,src.width,src.height);
+    c.clearRect(0,0,src.width,src.height);c.filter='hue-rotate('+hue+'deg)';c.drawImage(src,0,0);c.filter='none';const d=c.getImageData(0,0,src.width,src.height),a=original.data;
+    for(let i=0;i<a.length;i+=4){const costume=id==='coral'?a[i]>a[i+1]*1.8:id==='azure'?a[i+2]>a[i]*1.2:a[i+2]>a[i+1]*1.3;if(!costume)for(let k=0;k<3;k++)d.data[i+k]=a[i+k];}
+    c.putImageData(d,0,0);this.beachPalettes.set(key,canvas);return canvas;
+  },
+  drawResortActor(a,c) {
+    const [id,f]=this.resortPose(a),image=this.beachPalette(id,a.resortHue||0);if(!image)return false;
+    const cell=FighterSprites.cell,k=FighterSprites.scaleFor(a.data.id);c.save();c.scale(a.facing,1);c.imageSmoothingEnabled=true;
+    if(a.burnTicks>0){c.filter='sepia(.8) saturate(3)';c.shadowColor='#ff671c';c.shadowBlur=16;}
+    c.drawImage(image,f%6*cell,Math.floor(f/6)*cell,cell,cell,-(FighterSprites.pivotX+32)*k,-FighterSprites.pivotY*k,cell*k,cell*k);c.restore();return true;
+  },
   drawStreet(street, c) {
+    if(street.stageIndex===2)return this.drawResortStreet(street,c);
     const boards = street.stageIndex === 1 ? this.factoryBoards : this.boards;
     if (boards.size !== 5) return false;
     c.save(); c.imageSmoothingEnabled = false;
@@ -6615,6 +6948,11 @@ const BeltArt = {
   },
 
   drawProp(c, p) {
+    if(p.resort&&this.beachDecor.length){
+      c.save();c.fillStyle='rgba(13,56,67,.2)';c.beginPath();c.ellipse(p.x,p.y,40,10,0,0,Math.PI*2);c.fill();
+      this.drawBeachDecor(c,p.type==='crate'?6:7,p.x-40,p.y-65,80,65);
+      if(p.hp<24){c.strokeStyle='#35606a';c.lineWidth=2;c.beginPath();c.moveTo(p.x-15,p.y-60);c.lineTo(p.x+5,p.y-37);c.lineTo(p.x-8,p.y-10);c.stroke();}c.restore();return true;
+    }
     if (this.props.length !== 8) return false;
     c.save(); c.fillStyle = 'rgba(0,0,0,.45)'; c.beginPath(); c.ellipse(p.x, p.y, 34, 9, 0, 0, Math.PI * 2); c.fill();
     const frame = (p.type === 'barrel' ? 2 : 0) + (p.hp < 24 ? 1 : 0);
@@ -6650,26 +6988,53 @@ const BeltArt = {
     return FighterSprites.frame('titan', state, f, actor.animTick, actor.blockstun > 0, actor.vy);
   },
 
-  monsterFrame(a) {
-    if (a.dead || a.state === 'KNOCKDOWN') return 21;
-    if (['HIT_AIR','GRABBED','THROWING'].includes(a.state)) return 20;
-    if (a.state === 'WAKEUP') return 22;
-    if (a.state === 'HIT_STAND') return 12 + Math.min(1,Math.floor(a.f/5));
-    if (a.state === 'WINDUP') return a.plan === 'slam' ? 14 + Math.min(1,Math.floor(a.f/20)) : 18;
-    if (a.state === 'SLAM') return a.f < 20 ? 15 : a.f < 33 ? 16 : 17;
-    if (a.state === 'CHARGE') return 19;
-    if (a.state === 'ATK_H') return 6 + Math.min(5,Math.floor(a.f/5));
-    if (a.state === 'WALK_F') return 2 + Math.floor(a.animTick/7)%4;
-    return 0;
+  monsterPose(a) {
+    const f=a.f, seq=(start,count,step)=>start+Math.min(count-1,Math.floor(f/step));
+    if(a.dead) return ['maw-hurt',f<5?18:19];
+    if(a.state==='KNOCKDOWN') return ['maw-hurt',f<5?18:19];
+    if(a.state==='WAKEUP') return ['maw-hurt',20+Math.min(3,Math.floor(f/3))];
+    if(a.state==='GRABBED') return ['maw-hurt',a.monsterHit==='rising'?6:a.throwFrame>=62?Math.min(17,a.throwFrame-48):a.throwFrame===61?13:12];
+    if(a.state==='THROWING') return ['maw-hurt',seq(14,4,5)];
+    if(a.state==='HIT_AIR') return ['maw-hurt',a.throwFlight?14+Math.min(3,Math.floor(f/4)):6+Math.min(5,Math.floor(f/4))];
+    if(a.state==='HIT_STAND') return ['maw-hurt',a.monsterHitHeavy?3+Math.min(2,Math.floor(f/4)):Math.min(2,Math.floor(f/4))];
+    if(a.state==='WINDUP') {
+      if(a.plan==='breath') return ['maw-breath',Math.min(5,Math.floor(f/10))];
+      if(a.plan==='slam') return ['maw-motion',6+Math.min(3,Math.floor(f*4/Math.max(1,a.windup)))];
+      return ['maw-motion',18+Math.min(2,Math.floor(f*3/Math.max(1,a.windup)))];
+    }
+    if(a.state==='BREATH') return ['maw-breath',f<18?6+Math.floor(f/3):f<66?12+Math.floor((f-18)/4)%6:18+Math.min(5,Math.floor((f-66)/3))];
+    if(a.state==='SLAM') return ['maw-motion',f<20?8+Math.min(1,Math.floor(f/10)):f<30?10:11];
+    if(a.state==='CHARGE') return ['maw-motion',12+Math.floor(f/3)%6];
+    if(a.state==='ATK_H') return ['maw-motion',18+Math.min(5,Math.floor(f/5))];
+    if(a.state==='WALK_F') return ['maw-motion',Math.floor(a.animTick/5)%6];
+    return ['maw',0];
+  },
+  monsterFrame(a) { return this.monsterPose(a)[1]; },
+  monsterFoot(actor) {
+    const [id,frame]=this.monsterPose(actor);
+    return actor.z>0?FighterSprites.pivotY:id==='maw'?this.monsterCells[frame].bottom+1:this.monsterContacts.get(id)[frame];
   },
   drawMonster(actor, c) {
-    if (!this.monsterSheet) return false;
-    const frame=this.monsterFrame(actor), cell=FighterSprites.cell, scale=FighterSprites.scaleFor('titan'), foot=actor.z>0?FighterSprites.pivotY:this.monsterCells[frame].bottom+1;
+    const [id,frame]=this.monsterPose(actor), image=id==='maw'?this.monsterSheet:this.monsterAtlases.get(id);
+    if(!image) return false;
+    const cell=FighterSprites.cell,scale=FighterSprites.scaleFor('titan');
+    // Align the actual contact point to the floor, without changing body scale.
+    const foot=this.monsterFoot(actor);
     c.save(); c.scale(actor.burnTicks>0 ? (actor.burnDirection || actor.facing) : actor.facing,1);
-    if (actor.burnTicks>0) { c.filter='sepia(.7) saturate(3)'; c.shadowColor='#ff6a14'; c.shadowBlur=16; }
+    if(actor.burnTicks>0){c.filter='sepia(.7) saturate(3)';c.shadowColor='#ff6a14';c.shadowBlur=16;}
     c.imageSmoothingEnabled=true;
-    c.drawImage(this.monsterSheet,frame%6*cell,Math.floor(frame/6)*cell,cell,cell,-FighterSprites.pivotX*scale,-foot*scale,cell*scale,cell*scale);
+    c.drawImage(image,frame%6*cell,Math.floor(frame/6)*cell,cell,cell,-FighterSprites.pivotX*scale,-foot*scale,cell*scale,cell*scale);
     c.restore(); return true;
+  },
+  drawMonsterBreath(actor,c) {
+    if(!this.breathFx || actor.state!=='BREATH' || actor.f<6 || actor.f>=78) return;
+    const f=actor.f,frame=f<18?Math.floor((f-6)/4):f<66?3+Math.floor((f-18)/3)%6:9+Math.min(2,Math.floor((f-66)/4));
+    // Actor-local coordinates: draw after the monster body, locked to the open jaw.
+    const scale=FighterSprites.scaleFor('titan');
+    c.save(); c.scale(actor.facing,1);c.translate(92*scale,(-114+FighterSprites.pivotY-this.monsterFoot(actor))*scale);c.rotate(.28);
+    c.imageSmoothingEnabled=true;
+    c.drawImage(this.breathFx,frame%3*512,Math.floor(frame/3)*256,512,256,-8,-82,350,175);
+    c.restore();
   },
   drawBoss(actor, c, state, f) {
     if (actor.monster) return this.drawMonster(actor,c);
@@ -6690,8 +7055,8 @@ BeltArt.load(BELT_ART_SOURCES);
 // Coordinates: x = street distance, y = floor depth, z = height above that floor.
 // Fixed 60 Hz simulation. Draw methods must not change simulation or consume random values.
 const STREET = {
-  version: '3.6.1',
-  risingInput: { window: 30, buffer: 12 },
+  version: '3.7.2',
+  risingInput: { window: 14, buffer: 6 },
   dash: { tapWindow: 14, speed: 2.2, damage: 112, active: 8, until: 19, end: 38 },
   // v2.6.0 hit detection tuning. One table so the feel can be adjusted without hunting through the methods.
   // Rule of thumb: the player's attacks are generous (wide lane, several active frames), enemy attacks are honest
@@ -6804,9 +7169,33 @@ const FACTORY_AREAS = [
  ['04 / MUTATION WARD','変異実験区画',[['ghost','raven','viper','surge'],['goliath','sable','brute','viper']]],
  ['05 / FURNACE HEART','炉心の怪物',[['boss','goliath','ghost']]]
 ].map(([name,jp,waves],i)=>({left:i*1240,right:(i+1)*1240,name,jp,waves}));
+const RESORT_ENEMIES = {
+ coral:{char:4,name:'CORAL',resort:'coral',role:'punk',hp:118,speed:2.65,damage:27,hue:0,score:350},
+ sunset:{char:4,name:'SUNSET',resort:'coral',role:'punk',hp:128,speed:2.8,damage:28,hue:45,score:400},
+ azure:{char:2,name:'AZURE',resort:'azure',role:'knife',hp:142,speed:2.5,damage:33,hue:0,score:450},
+ lagoon:{char:2,name:'LAGOON',resort:'azure',role:'knife',hp:152,speed:2.65,damage:34,hue:110,score:500},
+ pearl:{char:5,name:'PEARL',resort:'pearl',role:'brute',hp:184,speed:1.85,damage:40,hue:0,score:600},
+ orchid:{char:5,name:'ORCHID',resort:'pearl',role:'brute',hp:198,speed:1.95,damage:41,hue:80,score:650},
+ luka:{char:2,name:'LUKA',resort:'luka',role:'knife',hp:1450,speed:3.0,damage:42,hue:0,score:7000,twin:true},
+ misha:{char:5,name:'MISHA',resort:'misha',role:'knife',hp:1350,speed:2.8,damage:38,hue:0,score:7000,twin:true}
+};
+// v3.7.2 [PERF-150] Build the recoloured atlases (SUNSET / LAGOON / ORCHID) while loading. They used to be made by the
+// first draw that needed them, which froze the game for about 0.1 s per variant in the middle of stage 3.
+BeltArt.ready = BeltArt.ready.then(() => {
+  for (const spec of Object.values(RESORT_ENEMIES)) if (spec.hue)
+    try { BeltArt.beachPalette(spec.resort, spec.hue); } catch (error) { BeltArt.errors.push('palette ' + spec.name + ': ' + error.message); }
+});
+const RESORT_AREAS = [
+ ['01 / SUNLIT PROMENADE','陽光の遊歩道',[['coral','azure','coral','pearl'],['sunset','coral','azure','lagoon'],['pearl','sunset','azure','coral']]],
+ ['02 / SAPPHIRE MARINA','サファイア・マリーナ',[['azure','lagoon','coral','sunset'],['pearl','azure','orchid','coral'],['lagoon','sunset','azure','pearl']]],
+ ['03 / INFINITY TERRACE','インフィニティ・テラス',[['pearl','orchid','azure','coral'],['lagoon','sunset','pearl','azure'],['orchid','lagoon','sunset','pearl']]],
+ ['04 / CORAL GALLERIA','珊瑚色の商店街',[['sunset','lagoon','orchid','coral'],['pearl','azure','sunset','lagoon'],['orchid','pearl','azure','sunset']]],
+ ['05 / TWIN CROWN','双冠のプライベートデッキ',[['luka','misha','coral','azure']]]
+].map(([name,jp,waves],i)=>({left:i*1240,right:(i+1)*1240,name,jp,waves}));
 const STREET_STAGES = [
  {title:'BLACK VEIN',jp:'法の消えた街。鉄門の首領、IRON VOSSを倒せ。',areas:STREET.areas,boss:'voss',bossName:'IRON VOSS',music:5},
- {title:'INFERNAL WORKS',jp:'闇に沈む廃工場。炉心に潜む巨大な怪物を倒せ。',areas:FACTORY_AREAS,boss:'maw',bossName:'FURNACE MAW',music:3}
+ {title:'INFERNAL WORKS',jp:'闇に沈む廃工場。炉心に潜む巨大な怪物を倒せ。',areas:FACTORY_AREAS,boss:'maw',bossName:'FURNACE MAW',music:3},
+ {title:'AZURE MIRAGE',jp:'真昼の海辺を支配する双子、ルカとミーシャを倒せ。',areas:RESORT_AREAS,boss:'luka',bossName:'LUKA & MISHA',music:4}
 ];
 
 const StreetPalettes = {
@@ -6863,7 +7252,7 @@ class StreetActor extends Fighter {
     this.team = team;
     this.uid = id;
     this.kind = kind;
-    this.role = STREET.enemies[kind]?.role || kind;
+    this.role = (STREET.enemies[kind] || RESORT_ENEMIES[kind])?.role || kind;
     this.dead = false;
     this.cooldown = 45 + (id % 4) * 16;
     this.attack = null;
@@ -6887,7 +7276,7 @@ class StreetActor extends Fighter {
       this.power = 0.82 + data.stats[0] * 0.065;
       this.reach = data.weapon === 'greatsword' ? 116 : data.weapon === 'rapier' ? 108 : 96;
     } else {
-      const spec = STREET.enemies[kind];
+      const spec = STREET.enemies[kind] || RESORT_ENEMIES[kind];
       Object.assign(this, {
         maxHp: spec.hp,
         hp: spec.hp,
@@ -6897,7 +7286,8 @@ class StreetActor extends Fighter {
         label: spec.name,
         value: spec.score
       });
-      this.streetPalette = StreetPalettes.get(kind);
+      if(spec.resort) { this.resort=spec.resort; this.resortHue=spec.hue; this.twin=spec.twin?kind:null; if(this.twin){this.kind='boss';this.scale=1.08;} }
+      else this.streetPalette = StreetPalettes.get(kind);
     }
     this.hudHp = this.hp;
     this.hudHold = 0;
@@ -6936,11 +7326,13 @@ class StreetActor extends Fighter {
     if (!BeltArt.drawBurn(this, c) &&
         !(this.team === 0 && BeltArt.drawRising(this, c)) &&
         !(this.team === 0 && BeltArt.drawDash(this, c)) &&
+        !(this.resort && BeltArt.drawResortActor(this,c)) &&
         !(this.kind === 'boss' && BeltArt.drawBoss(this, c, state, poseFrame)))
       this.drawBody(c, 0, 0, this.facing, this.state === 'STREET_DASH' ? 'DASH_F' :
         this.state === 'DASH_ATTACK' ? 'ATK_H' : state, poseFrame, false);
     c.filter = 'none';
     if (this.team === 0) BeltArt.drawFlameDash(this, c);
+    if (this.monster) BeltArt.drawMonsterBreath(this, c);
     if (this.weapon > 0) {
       c.save();
       c.translate(this.facing * 34, -67);
@@ -6960,7 +7352,7 @@ class StreetActor extends Fighter {
 
 class NeonUprising {
   constructor(owner, index, stage = 0, carry = null) {
-    this.stageIndex = stage === 1 ? 1 : 0;
+    this.stageIndex = Number.isInteger(stage) && STREET_STAGES[stage] ? stage : 0;
     this.stage = STREET_STAGES[this.stageIndex];
     this.owner = owner;
     this.character = index;
@@ -6971,6 +7363,7 @@ class NeonUprising {
     this.wave = 0;
     this.player = new StreetActor(CHARACTERS[index], 230, 552, 0, 0);
     this.enemies = [];
+    this.twins=[]; this.twinVolley=[]; this.twinNext=0; this.twinRound=0;
     this.hudTarget = null;
     this.hudTargetUntil = 0;
     this.items = [];
@@ -7005,6 +7398,7 @@ class NeonUprising {
       );
     }
     if (carry) { this.score=carry.score; this.kills=carry.kills; this.lives=carry.lives; this.extended=carry.extended; }
+    if(this.stageIndex===2) for(const prop of this.props) prop.resort=true;
     this.spawnWave();
     sound.playBGM(this.stage.music);
     this.player.speak('select', 60);
@@ -7030,7 +7424,9 @@ class NeonUprising {
       const e = this.spawnEnemy(kind, x, 470 + ((i * 67) % 150));
       e.cooldown = 80 + i * 14;
     });
-    if (types.includes('boss')) {
+    if (types.includes('luka')) {
+      this.startTwinIntro(); sound.playBGM(6); sound.playCue('boss');
+    } else if (types.includes('boss')) {
       this.bossIntro = this.voiceFrames(this.stage.boss, 'intro', 4);
       fighterVoice.stopAll();
       fighterVoice.play(this.stage.boss, 'intro', 1, 150);
@@ -7040,11 +7436,12 @@ class NeonUprising {
     }
   }
   spawnEnemy(kind, x, y) {
-    const e = new StreetActor(CHARACTERS[STREET.enemies[kind].char], x, y, 1, this.nextId++, kind);
+    const e = new StreetActor(CHARACTERS[(STREET.enemies[kind] || RESORT_ENEMIES[kind]).char], x, y, 1, this.nextId++, kind);
     if (kind === 'boss' && this.stageIndex === 1) {
       e.monster=true; e.label=this.stage.bossName; e.scale=1.85;
       e.hp=e.maxHp=e.hudHp=2300; e.damage=70; e.speed=1.7; e.value=10000;
     }
+    if(e.twin)this.twins.push(e);
     this.enemies.push(e);
     return e;
   }
@@ -7075,7 +7472,7 @@ class NeonUprising {
     if (this.result) {
       this.resultTick++;
       if (this.resultTick > 45 && STREET.press('Enter', 'KeyJ', 'KeyZ', 'Space'))
-        this.owner.startStreet(this.character, this.result === 'clear' ? (this.stageIndex === 0 ? 1 : 0) : this.stageIndex, this.result === 'clear' && this.stageIndex === 0 ? this : null);
+        this.owner.startStreet(this.character, this.result === 'clear' ? (this.stageIndex+1)%STREET_STAGES.length : this.stageIndex, this.result === 'clear' && this.stageIndex+1<STREET_STAGES.length ? this : null);
       return;
     }
     if (this.finale) { this.updateFinale(); return; }
@@ -7087,6 +7484,7 @@ class NeonUprising {
     }
     if (this.bossIntro > 0) {
       this.bossIntro--;
+      if(this.stageIndex===2 && this.bossIntro===this.voiceFrames('misha','intro',3)) { this.twinIntroSpeaker='misha'; fighterVoice.play('misha','intro',1,150); }
       return;
     }
     if (this.hitstop > 0) {
@@ -7122,6 +7520,7 @@ class NeonUprising {
     this.enemies = this.enemies.filter((e) => !(e.dead && e.f > 70));
     if (!this.player.dead) this.playerInput();
     for (const e of this.enemies) if (!e.dead) this.enemyAI(e);
+    if(this.stageIndex===2) { this.updateTwinProjectiles(); this.coordinateTwins(); }
     this.resolveBodies();
     if (this.player.dead && this.player.f >= 100) this.respawn();
     if (!this.alive().length && this.locked) {
@@ -7282,9 +7681,10 @@ class NeonUprising {
     if (this.rising) return;
     if (!canBuffer) { this.riseTap = this.riseBuffered = null; }
     else {
-      // Count the window from the last down-held frame. Down may overlap the subsequent up press.
-      // Fresh simultaneous down/up is not a command; a preceding down frame is required.
-      if (down && !up) this.riseTap = this.tick;
+      // A deliberate short down->up gesture: never refresh the timer while walking down.
+      // A brief key overlap remains accepted; fresh simultaneous opposites are not a command.
+      if (down && !wasDown && !up) this.riseTap = this.tick;
+      if (this.riseTap != null && this.tick - this.riseTap > STREET.risingInput.window) this.riseTap = null;
       if (upEdge && (wasDown || !down) && this.riseTap != null && this.tick - this.riseTap <= STREET.risingInput.window) {
         this.riseBuffered = this.tick + STREET.risingInput.buffer;
         this.riseTap = null;
@@ -7595,7 +7995,8 @@ class NeonUprising {
     this.trackHudHit(a);
     a.hp = Math.max(0, a.hp - Math.round(damage));
     a.flashTimer = 100;
-    if (source === 'dash' && a.team === 1) { a.burnTicks = 72; a.burnDirection = dir; }
+    if (a.monster) { a.monsterHit=source; a.monsterHitHeavy=knock || damage>=40; }
+    if ((source === 'dash' && a.team === 1) || source === 'mawFire') { a.burnTicks = 72; a.burnDirection = dir; }
     this.effects(a.x, a.y - a.z - 85, a.team === 0 ? '#ffca9a' : '#fff0bc');
     if (a.team === 0) {
       this.resetDashTap();
@@ -7634,6 +8035,7 @@ class NeonUprising {
     p.throwFrame = 50;
     e.pose('GRABBED');
     e.throwFrame = 60;
+    if(e.monster) e.monsterHit='grab';
     this.grapple = {
       attacker: p,
       victim: e,
@@ -7656,6 +8058,7 @@ class NeonUprising {
     this.trackHudHit(g.victim);
     g.victim.hp = Math.max(0, g.victim.hp - Math.round(n));
     g.victim.flashTimer = 80;
+    if(g.victim.monster) g.victim.monsterHit='held';
     this.effects(g.victim.x, g.victim.y - 85, '#ffe9af', 8);
     this.addScore(20);
   }
@@ -7764,14 +8167,108 @@ class NeonUprising {
     sound.playPickup(it.type);
     return true;
   }
+  startTwinIntro() {
+    this.twinIntroSpeaker='luka';
+    this.bossIntro=this.voiceFrames('luka','intro',3)+this.voiceFrames('misha','intro',3);
+    fighterVoice.stopAll(); fighterVoice.play('luka','intro',1,150);
+  }
+  coordinateTwins() {
+    const living=this.twins.filter(e=>!e.dead&&e.hp>0);
+    if(this.player.dead || this.finale || this.tick<this.twinNext || living.length!==2 ||
+      living.some(e=>!STREET.ready(e)||e.cooldown>0))return;
+    const pattern=this.twinRound++%3;
+    this.twinCall=['CROSS TIDE','PARASOL PINCER','CROWN BREAK'][pattern];this.twinCallUntil=this.tick+110;
+    for(const e of living) {
+      const mode=e.twin==='luka'?(pattern===1?'tonfa':'spear'):(pattern===0?'rings':'parasol');
+      this.beginTwinAttack(e,mode,pattern===1?60:48,pattern);
+    }
+    fighterVoice.play(pattern%2?'misha':'luka','combo',1,90);
+    this.twinNext=this.tick+230;
+  }
+  beginTwinAttack(e,mode,windup,pattern=-1) {
+    e.twinMode=mode;e.twinPattern=pattern;e.windup=windup;e.twinHits=new Set();
+    e.twinLane=this.player.y;e.facing=this.player.x>=e.x?1:-1;e.pose('TWIN_WINDUP');
+  }
+  twinAI(e) {
+    const p=this.player;
+    if(e.hp<=0 || e.dead)return;
+    if(e.state==='TWIN_WINDUP') {
+      // Pincer approach is visible and interruptible. The last 30 frames commit the lane.
+      if(e.twinPattern===1 && e.f<24) {
+        const target=STREET.clamp(p.x+(e.twin==='luka'?-200:200),this.backWall+45,this.gate-45);
+        e.x+=STREET.clamp(target-e.x,-8,8);e.facing=p.x>=e.x?1:-1;
+      }
+      if(e.f>=e.windup){e.pose('TWIN_ATTACK');sound.playSwing(true);}
+      return;
+    }
+    if(e.state==='TWIN_ATTACK') {
+      const f=e.f,mode=e.twinMode;
+      if((mode==='tonfa'||mode==='spear')&&f<24) {
+        e.x=STREET.clamp(e.x+e.facing*(mode==='tonfa'?9:6),this.backWall+25,this.gate-25);
+      }
+      if(mode==='parasol'&&f>=12&&f<36)e.x=STREET.clamp(e.x+e.facing*3,this.backWall+25,this.gate-25);
+      if(mode==='rings' && [8,22,36].includes(f)) {
+        this.twinVolley.push({owner:e,x:e.x+e.facing*35,y:e.twinLane,dir:e.facing,age:0,hit:false});
+        sound.playSwing(false);
+      }
+      const active=mode==='tonfa'?[12,26]:mode==='spear'?[16,32]:mode==='parasol'?[16,30]:[];
+      for(const hit of active) if(f>=hit&&f<hit+5&&!e.twinHits.has(hit)) {
+        const reach=mode==='spear'?205:mode==='parasol'?145:110,dist=(p.x-e.x)*e.facing;
+        if(dist>-30&&dist<reach&&Math.abs(p.y-e.twinLane)<36&&p.z<85&&this.hurt(p,e.damage+(mode==='spear'?8:0),e.facing,true,'twin')) {
+          e.twinHits.add(hit);sound.playHit('heavy');this.shake=6;
+        }
+      }
+      if(f>=58){e.pose('IDLE');e.cooldown=e.enraged?65:100;}
+      return;
+    }
+    if(!STREET.ready(e))return;
+    const partner=this.twins.find(o=>o!==e&&o.hp>0&&!o.dead);
+    e.enraged=!partner;
+    const targetX=p.x+(e.twin==='luka'?-1:1)*(partner?210:135),targetY=p.y+(e.twin==='luka'?-12:12);
+    e.facing=p.x>=e.x?1:-1;
+    if(!partner&&e.cooldown<=0&&Math.abs(p.x-e.x)<600) {
+      e.soloTurn=(e.soloTurn||0)+1;
+      this.beginTwinAttack(e,e.twin==='luka'?(e.soloTurn%2?'spear':'tonfa'):(e.soloTurn%2?'rings':'parasol'),42);
+      return;
+    }
+    const dx=targetX-e.x,dy=targetY-e.y;
+    e.x=STREET.clamp(e.x+STREET.clamp(dx,-e.speed,e.speed),this.backWall+25,this.gate-25);
+    e.y=STREET.clamp(e.y+STREET.clamp(dy,-e.speed*.65,e.speed*.65),STREET.top,STREET.bottom);
+    e.state=Math.abs(dx)>8||Math.abs(dy)>5?'WALK_F':'IDLE';
+  }
+  updateTwinProjectiles() {
+    const p=this.player;
+    for(const q of this.twinVolley) {
+      q.age++;q.x+=q.dir*(q.age<35?10:-10);
+      if(q.age<70&&!q.hit&&!p.dead&&Math.abs(p.x-q.x)<32&&Math.abs(p.y-q.y)<26&&p.z<100) {
+        q.hit=this.hurt(p,32,q.dir,true,'twinRing');if(q.hit)sound.playHit('heavy');
+      }
+    }
+    this.twinVolley=this.twinVolley.filter(q=>q.age<70&&q.owner.hp>0&&!q.owner.dead);
+  }
+  drawTwinCombat(c) {
+    for(const e of this.twins)if(e.hp>0&&e.state==='TWIN_WINDUP') {
+      const reach=e.twinMode==='rings'?620:e.twinMode==='spear'?350:e.twinMode==='tonfa'?350:220;
+      c.fillStyle='rgba(255,72,113,.13)';c.strokeStyle=e.twin==='luka'?'#ef5367':'#408fff';c.lineWidth=2;
+      const x=e.facing>0?e.x-25:e.x-reach;
+      c.fillRect(x,e.twinLane-38,reach+25,76);c.strokeRect(x,e.twinLane-38,reach+25,76);
+    }
+    for(const q of this.twinVolley) {
+      c.save();c.translate(q.x,q.y-85);c.rotate(q.age*.4);c.strokeStyle='#f0ffff';c.shadowColor='#1699ea';c.shadowBlur=9;c.lineWidth=5;
+      c.beginPath();c.ellipse(0,0,21,10,0,0,Math.PI*1.8);c.stroke();c.restore();
+    }
+  }
   enemyAI(e) {
     const p = this.player;
     if (p.dead || this.bossIntro > 0 || this.intro > 0) return;
+    if(e.twin) { this.twinAI(e); return; }
     if (e.state === 'WINDUP') {
       if (e.f >= e.windup) {
         if (e.plan === 'charge') {
           e.pose('CHARGE');
           e.chargeHit = false;
+        } else if (e.monster && e.plan === 'breath') {
+          e.pose('BREATH'); e.breathHit=false;
         } else if (e.plan === 'slam') {
           e.pose('SLAM');
           e.slamHit = false;
@@ -7803,6 +8300,20 @@ class NeonUprising {
       }
       return;
     }
+    if (e.monster && e.state === 'BREATH') {
+      if (e.f === 6) { sound.playFlame('launch'); this.shake=7; }
+      if ([24,42,60].includes(e.f)) sound.playFlame('launch');
+      if(e.f>=12 && e.f<66) {
+        if(e.f%6===0) this.effects(e.x+e.facing*210,e.y-160,'#ff9b32',6);
+        const forward=(p.x-e.x)*e.facing;
+        if(!e.breathHit && forward>110 && forward<760 && Math.abs(p.y-e.y)<58 && p.z<150) {
+          e.breathHit=this.hurt(p,80,e.facing,true,'mawFire');
+          if(e.breathHit){sound.playFlame('hit');this.shake=10;}
+        }
+      }
+      if(e.f>=84){e.pose('IDLE');e.cooldown=120;}
+      return;
+    }
     if (e.state === 'SLAM') {
       if (e.f === 20) {
         this.effects(e.x, e.y, '#ffb862', 32);
@@ -7827,11 +8338,12 @@ class NeonUprising {
     const dx = p.x - e.x,
       dy = p.y - e.y;
     e.facing = dx >= 0 ? 1 : -1;
-    const busy = this.enemies.filter((o) => o !== e && ['WINDUP', 'ATK_H', 'CHARGE', 'SLAM'].includes(o.state)).length;
+    const busy = this.enemies.filter((o) => o !== e && ['WINDUP', 'ATK_H', 'CHARGE', 'SLAM', 'BREATH'].includes(o.state)).length;
     if (e.cooldown <= 0 && busy < 2 && p.invuln < 15 && p.state !== 'THROWING') {
       if (e.kind === 'boss' && Math.abs(dx) < 550 && Math.abs(dy) < 65) {
-        e.plan = Math.abs(dx) > 170 ? 'charge' : 'slam';
-        e.windup = e.enraged ? 38 : 56;
+        if(e.monster) e.monsterTurns = (e.monsterTurns || 0) + 1;
+        e.plan = e.monster && e.monsterTurns % 3 === 1 && Math.abs(dx)>180 ? 'breath' : Math.abs(dx) > 170 ? 'charge' : 'slam';
+        e.windup = e.plan==='breath' ? 60 : e.enraged ? 38 : 56;
         e.pose('WINDUP');
         return;
       }
@@ -7909,11 +8421,17 @@ class NeonUprising {
   }
   beginFinale(boss) {
     if (this.finale || this.result) return;
-    this.finale = { phase: 'slow', frame: 0, boss, minimum: this.voiceFrames(this.stage.boss, 'defeat', 2) };
+    if(boss.twin && this.twins.some(e=>e!==boss&&e.hp>0)) {
+      if(!boss.defeatSpoken){fighterVoice.play(boss.twin,'defeat',1,140);boss.defeatSpoken=true;this.announce(boss.label+' DOWN','#ffadc6');}
+      return;
+    }
+    if(boss.twin)this.twinVolley=[];
+    const voiceId=boss.twin || this.stage.boss;
+    this.finale = { phase: 'slow', frame: 0, boss, voiceId, minimum: this.voiceFrames(voiceId, 'defeat', 2) };
     this.hitstop = 0; this.player.queue = 0; this.player.attack = null;
     this.popups = [];
     this.resetDashTap(); input.keys = {}; input.just = {};
-    fighterVoice.stopAll(); fighterVoice.play(this.stage.boss, 'defeat', 1, 150);
+    fighterVoice.stopAll(); fighterVoice.play(voiceId, 'defeat', 1, 150);
     sound.playHit('heavy'); this.shake = 12;
   }
   updateFinale() {
@@ -7922,6 +8440,7 @@ class NeonUprising {
     if (f.phase === 'slow') {
       if (f.frame % 4 === 0) {
         this.updateActor(f.boss);
+        if(f.boss.twin)for(const e of this.twins)if(e!==f.boss&&e.hp<=0)this.updateActor(e);
         this.shake *= .82;
         for (const p of this.particles) { p.x += p.vx; p.y += p.vy; p.life--; }
         this.particles = this.particles.filter(p => p.life > 0);
@@ -7973,7 +8492,11 @@ class NeonUprising {
         c.fillStyle = 'rgba(255,80,55,' + (0.12 + 0.1 * Math.sin(e.f * 0.3)) + ')';
         c.strokeStyle = '#ed684c';
         c.lineWidth = 2;
-        if (e.plan === 'charge') {
+        if(e.monster && e.plan==='breath') {
+          const x=e.facing>0?e.x+110:e.x-760;
+          c.fillRect(x,e.y-60,650,120);c.strokeRect(x,e.y-60,650,120);
+          STREET.text(c,'FIRE BREATH',e.x+e.facing*330,e.y+5,18,'#ffd0a0','center');
+        } else if (e.plan === 'charge') {
           const x = e.facing > 0 ? e.x : e.x - 520;
           c.fillRect(x, e.y - 33, 520, 66);
           c.strokeRect(x, e.y - 33, 520, 66);
@@ -7984,6 +8507,7 @@ class NeonUprising {
           c.stroke();
         }
       }
+    if(this.stageIndex===2)this.drawTwinCombat(c);
     const sorted = [
       ...this.props.filter((p) => p.hp > 0).map((p) => ({ y: p.y, kind: 'prop', data: p })),
       ...this.items.map((p) => ({ y: p.y, kind: 'item', data: p })),
@@ -8013,7 +8537,8 @@ class NeonUprising {
     if (this.intro > 0) this.overlay(c, 'STAGE 0' + (this.stageIndex+1), this.stage.title, this.stage.jp);
     if (this.bossIntro > 0) {
       STREET.text(c, 'WARNING / ' + this.stage.bossName, W/2, 245, 30, '#ff9876', 'center', '900');
-      this.drawDialogue(c, this.stage.bossName, VOICE_PROFILES[this.stage.boss].lines.intro, '#ff9876');
+      const voiceId=this.stageIndex===2?(this.twinIntroSpeaker || 'luka'):this.stage.boss;
+      this.drawDialogue(c, this.stageIndex===2?voiceId.toUpperCase():this.stage.bossName, VOICE_PROFILES[voiceId].lines.intro, '#ff9876');
     }
     if (this.finale) {
       const f = this.finale;
@@ -8073,9 +8598,9 @@ class NeonUprising {
     c.restore();
   }
   drawHUD(c) {
-    const p = this.player, enemy = this.hudEnemy();
+    const p = this.player, enemy = this.hudEnemy(), twinHUD=this.stageIndex===2&&this.twins.length;
     c.save();
-    this.hudPanel(c,24,20,440,184,'#7cedd4');
+    this.hudPanel(c,24,20,440,twinHUD?202:184,'#7cedd4');
     STREET.text(c,'1P',42,48,13,'#83aab8','left','900');
     STREET.text(c,p.data.name,76,49,23,'#f1f7fa','left','900');
     STREET.text(c,'LIFE  × '+this.lives,446,47,14,'#f3d19a','right','800');
@@ -8083,11 +8608,19 @@ class NeonUprising {
     STREET.text(c,'SCORE  '+String(this.score).padStart(7,'0'),42,109,13,'#cddfea');
     STREET.text(c,p.weapon?'PIPE  '+p.weapon+'/8':'1UP  20,000',446,109,12,'#8fa6b8','right');
     c.fillStyle='#304454';c.fillRect(42,119,404,1);
+    if(twinHUD) {
+      this.twins.forEach((e,i)=>{const y=140+i*40;
+        STREET.text(c,e.label,44,y,14,e.twin==='luka'?'#ffa0ad':'#9dd4ff','left','900');
+        STREET.text(c,e.hp<=0?'K.O.':e.enraged?'ENRAGED':Math.ceil(e.hp)+' / '+e.maxHp,444,y,11,'#b4ccdc','right');
+        this.drawHealth(c,e,44,y+7,400,14,e.twin==='luka'?'#ff8ca5':'#7fbfff');
+      });
+    } else {
     STREET.text(c,enemy ? enemy.label : 'NO TARGET',44,145,17,enemy?'#ffe2b4':'#607888','left','900');
     const status=enemy ? enemy.hp<=0?'K.O.':enemy.burnTicks>0?'BURN':enemy.kind==='boss'?(enemy.enraged?'ENRAGED':'BOSS'):'ENEMY' : '—';
     STREET.text(c,status,444,144,11,enemy?.burnTicks>0?'#ff9a57':'#b0a28c','right','800');
     this.drawHealth(c,enemy || {hp:0,maxHp:1,hudHp:0},44,156,400,17,enemy?.kind==='boss'?'#ffb578':'#f0d788');
     STREET.text(c,enemy ? Math.max(0,Math.ceil(enemy.hp))+' / '+enemy.maxHp : '攻撃・掴みで相手を表示',444,192,11,'#8fa6b8','right');
+    }
     this.hudPanel(c,W/2-61,20,122,94,'#f4d29a');
     STREET.text(c,'TIME',W/2,44,11,'#a9bdca','center','800');
     STREET.text(c,String(Math.max(0,Math.ceil(this.timer/60))).padStart(3,'0'),W/2,85,36,this.timer<1800?'#ff8069':'#fff0cd','center','900');
@@ -8099,6 +8632,7 @@ class NeonUprising {
     STREET.text(c,'WAVE '+Math.min(this.wave+1,this.areaData().waves.length)+' / '+this.areaData().waves.length,920,111,12,'#91adbf');
     STREET.text(c,'ENEMIES  '+this.alive().length,1236,111,12,'#d8c6a7','right');
     if(this.combo>1)STREET.text(c,this.combo+' HITS',W/2,174,29,'#ffe2a8','center','900');
+    if(twinHUD&&this.twinCallUntil>this.tick)STREET.text(c,this.twinCall,W/2,214,23,'#fff2a7','center','900');
     c.restore();
     c.fillStyle = 'rgba(5,12,20,.87)';
     c.fillRect(0, 641, W, 79);
@@ -8155,7 +8689,7 @@ class NeonUprising {
     );
     STREET.text(
       c,
-      clear ? (this.stageIndex === 0 ? '鉄門の先に、闇に沈む廃工場が待ち受ける。' : '炉心の怪物は倒れた。街に夜明けが訪れる。') : 'もう一度、この戦いに挑む。',
+      clear ? (this.stageIndex === 0 ? '鉄門の先に、闇に沈む廃工場が待ち受ける。' : this.stageIndex===1 ? '工場を抜けた先は、陽光きらめく海辺の楽園。' : '双冠の支配は終わり、海辺に自由が戻った。') : 'もう一度、この戦いに挑む。',
       W / 2,
       300,
       20,
@@ -8171,8 +8705,8 @@ class NeonUprising {
       '#f4d1a1',
       'center'
     );
-    STREET.text(c, (clear && this.stageIndex === 0 ? 'Enter: ステージ2へ進む' : clear ? 'Enter: ステージ1から再挑戦' : 'Enter: このステージを再挑戦') + '     ESC: ゲーム選択', W / 2, 499, 18, '#a8beca', 'center');
-    if (clear) STREET.text(c, this.stageIndex === 0 ? '残機・スコアを引き継ぎ、体力を回復して次へ' : 'ALL STAGES CLEAR', W / 2, 551, 14, '#8497a6', 'center');
+    STREET.text(c, (clear && this.stageIndex+1<STREET_STAGES.length ? 'Enter: ステージ'+(this.stageIndex+2)+'へ進む' : clear ? 'Enter: ステージ1から再挑戦' : 'Enter: このステージを再挑戦') + '     ESC: ゲーム選択', W / 2, 499, 18, '#a8beca', 'center');
+    if (clear) STREET.text(c, this.stageIndex+1<STREET_STAGES.length ? '残機・スコアを引き継ぎ、体力を回復して次へ' : 'ALL STAGES CLEAR', W / 2, 551, 14, '#8497a6', 'center');
   }
   drawProp(c, p) {
     if (BeltArt.drawProp(c, p)) return;
@@ -8482,6 +9016,7 @@ Game.prototype.openHub = function () {
   if (this.street) this.street.breakGrab();
   fighterVoice.stopAll();
   this.scene = 'HUB';
+  this.streetStageMenu = false;
   this.paused = false;
   this.hubChoice = this.hubChoice || 0;
   this.street = null;
@@ -8495,6 +9030,35 @@ Game.prototype.streetCard = function (i) {
   const n = CHARACTERS.length,
     pitch = Math.min(200, Math.floor((W - 80) / n));
   return { x: 42 + i * pitch, y: 200, w: pitch - 12, h: 260 };
+};
+// Small HUB-only shortcut; starts a fresh run at the selected stage after choosing a hero.
+Game.prototype.streetStageButton = function () { return {x:1000,y:658,w:218,h:30}; };
+Game.prototype.streetStageOption = function (i) { return {x:1000,y:544+i*36,w:218,h:36}; };
+Game.prototype.updateStreetStageMenu = function () {
+  if(input.clicked&&STREET.inside(this.streetStageButton())) {
+    this.streetStageMenu=!this.streetStageMenu;this.streetStageCursor=this.streetStartStage||0;
+    sound.playUI('cursor');return true;
+  }
+  if(!this.streetStageMenu)return false;
+  if(STREET.press('ArrowUp','KeyW'))this.streetStageCursor=(this.streetStageCursor+STREET_STAGES.length-1)%STREET_STAGES.length;
+  if(STREET.press('ArrowDown','KeyS'))this.streetStageCursor=(this.streetStageCursor+1)%STREET_STAGES.length;
+  let choose=STREET.press('Enter','Space','KeyJ','KeyZ');
+  if(input.clicked) {
+    for(let i=0;i<STREET_STAGES.length;i++)if(STREET.inside(this.streetStageOption(i))){this.streetStageCursor=i;choose=true;}
+    this.streetStageMenu=false;
+  }
+  if(choose){this.streetStartStage=this.streetStageCursor;this.streetStageMenu=false;this.hubChoice=1;sound.playUI('confirm');}
+  return true;
+};
+Game.prototype.drawStreetStageMenu = function () {
+  const r=this.streetStageButton(),hover=STREET.inside(r),selected=this.streetStartStage||0;
+  STREET.panel(ctx,r.x,r.y,r.w,r.h,hover?'#182634':'#101b28',hover?'#667c8c':'#344454');
+  STREET.text(ctx,'ベルト開始：STAGE '+(selected+1)+'  ▾',r.x+r.w/2,r.y+20,12,'#96aab9','center');
+  if(this.streetStageMenu)for(let i=0;i<STREET_STAGES.length;i++){
+    const q=this.streetStageOption(i),active=i===this.streetStageCursor||STREET.inside(q);
+    STREET.panel(ctx,q.x,q.y,q.w,q.h,active?'#233747':'#101b28','#405363');
+    STREET.text(ctx,(i===selected?'✓ ':'')+(i+1)+'  '+STREET_STAGES[i].title,q.x+12,q.y+23,12,active?'#e0eaf0':'#9db2c2');
+  }
 };
 Game.prototype.startStreet = function (index, stage = 0, carry = null) {
   fighterVoice.stopAll();
@@ -8512,12 +9076,14 @@ Game.prototype.togglePause = function () {
     if (this.paused) {
       fighterVoice.stopAll();
       input.keys = {};
+    } else if (this.street.bossIntro > 0 && this.street.stageIndex===2) {
+      this.street.startTwinIntro();
     } else if (this.street.bossIntro > 0) {
       this.street.bossIntro = this.street.voiceFrames(this.street.stage.boss, 'intro', 4);
       fighterVoice.play(this.street.stage.boss, 'intro', 1, 150);
     } else if (this.street.finale) {
       const f = this.street.finale; f.frame = 0;
-      if (f.phase === 'slow') fighterVoice.play(this.street.stage.boss, 'defeat', 1, 150);
+      if (f.phase === 'slow') fighterVoice.play(f.voiceId || this.street.stage.boss, 'defeat', 1, 150);
       else this.street.player.speak('finish', 150);
     }
     sound.playUI('cursor');
@@ -8547,6 +9113,7 @@ Game.prototype.update = function () {
       input.clear();
       return;
     }
+    if(this.updateStreetStageMenu()){input.clear();return;}
     if (STREET.press('ArrowLeft','ArrowRight', 'KeyA', 'KeyD', 'ArrowUp', 'ArrowDown', 'KeyW', 'KeyS')) {
       this.hubChoice = 1 - (this.hubChoice || 0);
       sound.playUI('cursor');
@@ -8572,7 +9139,7 @@ Game.prototype.update = function () {
           this.p1Char = i;
           enter = true;
         }
-    if (enter) this.startStreet(this.p1Char);
+    if (enter) this.startStreet(this.p1Char,this.streetStartStage||0);
   }
   input.clear();
 };
@@ -8632,7 +9199,7 @@ Game.prototype.draw = function () {
       STREET.text(ctx, i ? '犯罪都市を、拳で切り拓け。' : '一対一、限界を超える決闘。', x + 24, 503, 17, '#bdd0da');
       STREET.text(
         ctx,
-        i ? '1 PLAYER  /  2 STAGES: CITY → FACTORY' : 'ARCADE  /  VS CPU  /  VS 2P  /  TRAINING',
+        i ? '1 PLAYER  /  3 STAGES: CITY → FACTORY → RESORT' : 'ARCADE  /  VS CPU  /  VS 2P  /  TRAINING',
         x + 24,
         540,
         12,
@@ -8651,6 +9218,7 @@ Game.prototype.draw = function () {
       '#b8cad8',
       'center'
     );
+    this.drawStreetStageMenu();
     if (this.awaitStart) {
       // Draw only: pulse comes from stageTick, no state or RNG is touched.
       const pulse = 0.72 + 0.28 * Math.sin(this.stageTick * 0.09);
@@ -8666,7 +9234,7 @@ Game.prototype.draw = function () {
     STREET.text(ctx, 'NEON UPRISING', 44, 65, 18, '#efb980', 'left', '900');
     STREET.text(ctx, 'VERSION ' + STREET.version, W - 44, 65, 13, '#7c93a3', 'right', '800');
     STREET.text(ctx, 'CHOOSE YOUR REBEL', 44, 120, 44, '#efeee8', 'left', '900');
-    STREET.text(ctx, 'BLACK VEIN → INFERNAL WORKS — 犯罪都市から闇の廃工場へ', 44, 163, 17, '#9bb7c7');
+    STREET.text(ctx, 'START STAGE '+((this.streetStartStage||0)+1)+' / '+STREET_STAGES[this.streetStartStage||0].title, 44, 163, 17, '#9bb7c7');
     for (let i = 0; i < CHARACTERS.length; i++) {
       const d = CHARACTERS[i],
         r = this.streetCard(i),

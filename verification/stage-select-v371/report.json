@@ -1,0 +1,44 @@
+{
+  "version": "3.7.2",
+  "stages": [
+    {
+      "title": "BLACK VEIN",
+      "music": 5
+    },
+    {
+      "title": "INFERNAL WORKS",
+      "music": 3
+    },
+    {
+      "title": "AZURE MIRAGE",
+      "music": 4
+    }
+  ],
+  "checks": [
+    "first click on the button only passes the start gate",
+    "button opens the menu on the current stage",
+    "mouse picks the last stage and selects the belt card",
+    "option over the card does not click through",
+    "outside click closes without entering the card",
+    "ArrowUp wraps to the last stage",
+    "S wraps to the first stage",
+    "ArrowDown / W move the cursor",
+    "left / right are ignored while the menu is open",
+    "Escape closes the menu and keeps the choice",
+    "Enter chooses the highlighted stage",
+    "help opens over the menu",
+    "Escape closes the help first",
+    "belt card opens hero select for stage 1",
+    "fresh run on stage 1 BLACK VEIN",
+    "pause, Q returns to the HUB and keeps stage 1",
+    "belt card opens hero select for stage 2",
+    "fresh run on stage 2 INFERNAL WORKS",
+    "pause, Q returns to the HUB and keeps stage 2",
+    "belt card opens hero select for stage 3",
+    "fresh run on stage 3 AZURE MIRAGE",
+    "pause, Q returns to the HUB and keeps stage 3",
+    "clearing the last stage restarts at stage 1 with a fresh score",
+    "drawing the menu changes no state",
+    "OVERDRIVE card still opens its title"
+  ]
+}

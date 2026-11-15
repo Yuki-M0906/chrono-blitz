@@ -136,7 +136,7 @@
         "key": "volt-finish",
         "accepted": true,
         "active": "volt-finish",
-        "signal": 0.3206731081008911
+        "signal": 0.25782427191734314
       },
       {
         "key": "freya-finish",
@@ -160,7 +160,7 @@
         "key": "celine-finish",
         "accepted": true,
         "active": "celine-finish",
-        "signal": 0.3741820454597473
+        "signal": 0.34766656160354614
       }
     ],
     "zero": false,

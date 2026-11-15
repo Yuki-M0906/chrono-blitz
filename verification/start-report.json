@@ -1,5 +1,5 @@
 {
-  "version": "3.6.1",
+  "version": "3.7.2",
   "checks": {
     "Boot waits on the HUB with audio still locked": true,
     "Moving the mouse does not start anything": true,
@@ -11,10 +11,10 @@
     "Cursor keys work after the gate": true,
     "Next Enter picks the game": true,
     "Escape and Shift do not open the gate": true,
-    "A real key after them starts the music (peak=0.41)": true,
+    "A real key after them starts the music (peak=0.38)": true,
     "Volume slider as the first touch starts the music (peak=0.089)": true,
     "Mute button as the first touch unlocks audio in the muted state": true,
-    "Unmuting plays the HUB music (peak=0.139)": true,
+    "Unmuting plays the HUB music (peak=0.145)": true,
     "Drawing the gate changes no state": true,
     "Starting a game directly is not blocked by the gate": true
   },

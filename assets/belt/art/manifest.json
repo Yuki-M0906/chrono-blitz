@@ -1,5 +1,5 @@
 {
-  "version": "3.6.0",
+  "version": "3.7.0",
   "provider": "built-in image_gen",
   "assets": {
     "district-0": {
@@ -72,36 +72,6 @@
       "columns": 6,
       "rows": 4
     },
-    "rise-kagura": {
-      "file": "actions-v344/kagura.png",
-      "columns": 6,
-      "rows": 4
-    },
-    "rise-volt": {
-      "file": "actions-v360/volt.png",
-      "columns": 6,
-      "rows": 4
-    },
-    "rise-freya": {
-      "file": "actions-v360/freya.png",
-      "columns": 6,
-      "rows": 4
-    },
-    "rise-titan": {
-      "file": "actions-v343/titan.png",
-      "columns": 6,
-      "rows": 4
-    },
-    "rise-ayame": {
-      "file": "actions-v360/ayame.png",
-      "columns": 6,
-      "rows": 4
-    },
-    "rise-celine": {
-      "file": "actions-v360/celine.png",
-      "columns": 6,
-      "rows": 4
-    },
     "fx-fire": {
       "file": "actions-v342/fire.png",
       "columns": 6,
@@ -131,6 +101,91 @@
     "factory-4": {
       "file": "factory-v360/4.png",
       "horizon": 0.706
+    },
+    "maw-motion": {
+      "file": "actions-v362/maw-motion.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "maw-breath": {
+      "file": "actions-v362/maw-breath.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "maw-hurt": {
+      "file": "actions-v362/maw-hurt.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "rise-fx": {
+      "file": "actions-v362/rise-fx.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "maw-flame": {
+      "file": "actions-v362/maw-flame.png",
+      "columns": 3,
+      "rows": 4
+    },
+    "resort-0": {
+      "file": "resort-v370/resort-0.png",
+      "horizon": 0.674
+    },
+    "resort-1": {
+      "file": "resort-v370/resort-1.png",
+      "horizon": 0.685
+    },
+    "resort-2": {
+      "file": "resort-v370/resort-2.png",
+      "horizon": 0.69
+    },
+    "resort-3": {
+      "file": "resort-v370/resort-3.png",
+      "horizon": 0.685
+    },
+    "resort-4": {
+      "file": "resort-v370/resort-4.png",
+      "horizon": 0.677
+    },
+    "beach-coral": {
+      "file": "resort-v370/coral.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "beach-azure": {
+      "file": "resort-v370/azure.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "beach-pearl": {
+      "file": "resort-v370/pearl-transparent.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "beach-luka": {
+      "file": "resort-v370/luka.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "beach-misha": {
+      "file": "resort-v370/misha.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "beach-luka-motion": {
+      "file": "resort-v370/luka-motion-transparent.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "beach-misha-motion": {
+      "file": "resort-v370/misha-motion-transparent.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "beach-decor": {
+      "file": "resort-v370/decor.png",
+      "columns": 4,
+      "rows": 2
     }
   }
 }

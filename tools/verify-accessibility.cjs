@@ -5,7 +5,7 @@ const {chromium}=require('playwright'),assert=require('assert/strict'),path=requ
  const check=(v,n)=>{if(!v)throw Error(n);out.push(n);};
  const setup=(id=0)=>{input.keys={};input.just={};game.startStreet(id);const s=game.street;s.intro=0;s.enemies=[];s.props=[];s.items=[];s.player.x=400;s.player.y=540;s.player.invuln=0;return s;};
  const key=(s,keys)=>{input.keys=keys;input.just={};s.playerInput();s.tick++;};
- let s=setup();key(s,{ArrowDown:true});s.tick+=25;key(s,{ArrowUp:true});check(s.rising,'25F input');
+ let s=setup();key(s,{ArrowDown:true});s.tick+=25;key(s,{ArrowUp:true});check(!s.rising,'25F movement reversal rejected');
  s=setup();key(s,{KeyS:true});key(s,{KeyS:true,KeyW:true});check(s.rising,'overlapping key release');
  s=setup();key(s,{KeyS:true,KeyW:true});check(!s.rising,'fresh simultaneous keys rejected');
  s=setup();key(s,{KeyS:true});s.tick+=35;key(s,{KeyW:true});check(!s.rising,'expired command rejected');
