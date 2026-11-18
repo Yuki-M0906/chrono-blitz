@@ -118,7 +118,7 @@
         "key": "voss-intro",
         "accepted": true,
         "active": "voss-intro",
-        "signal": 0.2923353910446167
+        "signal": 0.33298438787460327
       },
       {
         "key": "voss-defeat",
@@ -130,25 +130,25 @@
         "key": "kagura-finish",
         "accepted": true,
         "active": "kagura-finish",
-        "signal": 0.18774020671844482
+        "signal": 0.2695654332637787
       },
       {
         "key": "volt-finish",
         "accepted": true,
         "active": "volt-finish",
-        "signal": 0.5003072023391724
+        "signal": 0.3897179663181305
       },
       {
         "key": "freya-finish",
         "accepted": true,
         "active": "freya-finish",
-        "signal": 0.3520733714103699
+        "signal": 0.34908491373062134
       },
       {
         "key": "titan-finish",
         "accepted": true,
         "active": "titan-finish",
-        "signal": 0.3459989130496979
+        "signal": 0.38107484579086304
       },
       {
         "key": "ayame-finish",

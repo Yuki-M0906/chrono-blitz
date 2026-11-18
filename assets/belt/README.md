@@ -1,4 +1,8 @@
-# NEON UPRISING — Stage 1〜5 ＋ Bonus / v3.20.1
+# NEON UPRISING — Stage 1〜5 ＋ Bonus / v3.20.2
+
+## v3.20.2 歩行
+
+共有の歩行 8 コマのうち、補間シートの 4 コマは大きさと位相が合っていなかった。ベルト側は基本シートの 4 コマ（2〜5）だけを `BeltArt.walkCell` で選び、1 コマ `BeltArt.walkHold`（8）フレーム分出す。`StreetActor.walkCell` を持つ相手にだけ共有描画が使う。詳細は HTML 冒頭の [ANIM-216]。
 
 ## v3.20.1 動きの補正
 

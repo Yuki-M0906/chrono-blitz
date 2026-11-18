@@ -442,7 +442,7 @@ class Skyhook {
     const arrival=actor.animTick-actor.arrivalTick;
     switch(actor.state){
       case 'DROP': return actor.z>380?8:actor.z>100?16:17;
-      case 'WALK_F': return [20,21,1,22,23,2,24,0][Math.floor((actor.gait||0)/3)%8];
+      case 'WALK_F': return [20,21,1,22,23,2,24,0][Math.floor((actor.gait||0)/5)%8];
       case 'HIT_STAND': return f<4?37:f<10?7:38;
       case 'GRABBED': return f<8?38:7;
       case 'HIT_AIR': return actor.hp<=0&&f<11?40:f<5?37:f<12?38:39;

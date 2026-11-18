@@ -2,8 +2,44 @@
 <!--
 ================================================================================
   CHRONO BLITZ: ARCADE COLLECTION - 技術仕様書 兼 開発引き継ぎドキュメント
-  Version: 3.20.1 (Grounded Motion)
+  Version: 3.20.2 (Even Stride)
 ================================================================================
+
+【v3.20.2 更新・引き継ぎ / 2026-11-19 / Claude Fable 5.2 (Claude Code)】
+  依頼内容: 主人公と敵の歩き方がかくかくしていて不自然。点検して修正。
+  復元    : backups/v3.20.1/（変更直前の HTML、街エンジン、街描画、ステージ 5、共有描画）。
+  変更範囲: ベルト側の歩行で「どのコマを・どれだけの長さ出すか」だけ。移動速度、当たり判定、AI、画像、音は変更なし。
+            配布 16 パックは v3.20.1 と同一。対戦格闘 OVERDRIVE の歩行は変えていない（共有の 8 コマ循環のまま）。
+
+  [ANIM-216] 歩行が小刻みに震え、体が伸び縮みしていた
+    症状   : 主人公 6 人と、同じ絵を使う街・地下鉄の敵、IRON VOSS。歩くと脚が細かくばたつき、体の大きさが 1 コマおきに変わる。
+    原因   : 共有の歩行循環は 8 コマ [2, 28, 3, 29, 4, 30, 5, 31]。偶数番目は基本シートの歩行 4 コマ（接地・通過・接地・通過）、
+             奇数番目は補間シートの 4 コマだが、補間シートは別に生成された絵で、
+             (1) 体が基本シートより大きい（ヴォルトは輪郭の高さが 232〜234 と 244〜249 で交互、フレイヤは 233 と 242）、
+             (2) 位相が直前のコマと同じ（接地の次にもう一度接地、通過の次にもう一度通過）で、中割りになっていない、
+             (3) 1 コマ 3 フレームで切り替わるため、接地の絵が 6 フレームごと（1 秒に 10 歩相当）に出る。
+             この 3 つが重なって「かくかく」に見えていた。
+    修正   : ベルト側は基本シートの 4 コマ [2, 3, 4, 5] だけを使い、1 コマを 8 フレーム分（タイタンと IRON VOSS は 9）出す。
+             1 歩 = 16 フレーム、1 秒に約 3.75 歩。位相は従来どおり actor.gait（実際に動いた距離 ÷ 歩行速度）なので、壁で止まれば
+             足も止まり、後退は逆順になる。歩き始めは接地のコマから。
+             - BeltArt.walkCell(gait, 後退, hold) / BeltArt.walkHold = 8: コマの選択。
+             - StreetActor.walkCell(後退): 上を呼ぶ。共有描画 FighterSprites.draw は、描く相手が walkCell を持つときだけそれを使う
+               （対戦の Fighter は持たない）。
+             - BeltArt.bossFrame（IRON VOSS）も同じ 4 コマ・hold 9。
+             - VESPER MATRIARCH の歩行は 8 コマとも専用原画で揃っているので順番はそのまま、1 コマ 3 → 5 フレームに延ばした。
+             - 海辺の敵は v3.15.0 で 4 コマ・6〜8 フレームになっているので変更なし。FURNACE MAW（6 コマ・5 フレーム）も変更なし。
+    検証   : 実際にキーを押して歩かせ、1 フレームずつ主人公を単体で描いて輪郭を測定（48 フレーム）。
+             コマが切り替わる回数 11〜15 回 → 3〜5 回。歩行中の輪郭の高さの振れ: ヴォルト 12px → 1px、フレイヤ 8 → 2、タイタン 5 → 1、
+             綾女 4 → 1、神楽 13 → 10（神楽は基本 4 コマの中で、通過のコマの頭の高さが違う。原画側）、セリーヌ 1 → 1。
+             修正前後を並べた比較アニメーション: verification/walk-compare-1.gif（神楽・ヴォルト・フレイヤ）、walk-compare-2.gif（タイタン・綾女・セリーヌ）。
+             tools/verify-motion-v3151.cjs に「歩行は基本 4 コマだけを使い、同じコマが hold フレーム続く」検査を追加。
+    残り   : 歩行の絵は 4 枚しかないので、切り替わりは滑らかにはならない（1 秒に 7.5 枚）。これ以上は中割りの原画が必要。
+             走行（ダッシュ）は [39, 16, 40, 16] を 3 フレームずつのまま。39 / 40 は補間シートの絵なので、歩行と同じ大きさの差がある。
+             移動距離に対して足の開きの方が大きく、足は少し滑って見える（1 歩で 54〜74px 進むのに対し、絵の歩幅は約 110px）。
+             歩幅に完全に合わせると 1 歩が 30 フレーム前後になって鈍く見えるため、今の速さにしている。BeltArt.walkHold で調整できる。
+    原画の依頼: 上の「残り」は絵でしか直せない。画像生成担当向けの依頼書を assets/sprites/LOCOMOTION-ART-BRIEF.md に置いた
+             （1 人 1 枚の <名前>-locomotion.png に歩行 8 コマ＋走行 8 コマ。床 y=250・腰 x=128・歩幅の数値・納品前の検査を指定）。
+             納品されたら、コード側で SPRITE の読み込みに -locomotion を足し、BeltArt.walkCell と走行のコマ選択をそのシートへ切り替える。
 
 【v3.20.1 更新・引き継ぎ / 2026-11-19 / Claude Fable 5.2 (Claude Code)】
   依頼内容: v3.20.0 の冒頭文書の精読と全体の整合確認。あわせて、ベルトスクロール側のキャラクターの動きの不自然な点を点検して修正。
@@ -746,7 +782,7 @@
       hit / chain / boss-v350 / dash の10本すべて通過。ブラウザ例外なし。
     scope-report.json: ヘッダー・生成ローダー・BELT_ENGINE以外のHTML実行部分が3.6.1と完全一致。
 
-【0. 現行構成サマリ / v3.20.1 時点 — 引き継ぐ人はまずここを読む】
+【0. 現行構成サマリ / v3.20.2 時点 — 引き継ぐ人はまずここを読む】
   ■ 配布物（v2.6.0 から 2 点セット。必ず同じフォルダに置く）
     ai_studio_code.html（約 0.7MB。コードとこの文書だけ）＋ data フォルダ（アセットパック 16 本、計 約 300MiB、最大 約 49MiB）。
     data/sprites-<キャラ>.js ×6、stages.js、voices.js、belt-backgrounds.js、belt-actors.js、belt-dash.js、resort-backgrounds.js、resort-actors.js、metro-backgrounds.js、metro-actors.js、skyhook-art.js。
@@ -812,7 +848,8 @@
     NeonUprising     ステージ進行・区画移動の演出（metroEvent）・敵の AI（街 9 種 STREET.enemies、海辺 6 種＋双子 RESORT_ENEMIES、地下鉄 96 種＋IRON SHOGUN METRO_ENEMIES）・掴み/投げ・3 段上昇技・炎ダッシュ・物体・残機・ボス・決着演出（finale）・描画。
     BeltArt          街専用の背景（boards / factoryBoards）・物体・ボス・怪物・上昇技・炎の描画と画像キャッシュ。
                      上昇技は通常原画の人体＋独立VFX。怪物追加姿勢はmonsterAtlases、火炎はbreathFx。
-                     海辺・地下鉄の背景と人物、コマごとの体の位置の補正（cellAnchors / resortNudge / heroNudge。[ANIM-211]）もここ。
+                     海辺・地下鉄の背景と人物、コマごとの体の位置の補正（cellAnchors / resortNudge / heroNudge。[ANIM-211]）、
+                     ベルト側の歩行コマの選択（walkCell / walkHold。[ANIM-216]）もここ。
                      戦闘状態・入力・乱数・音声には触れない。
     Skyhook          ステージ 5。lift.height が唯一の高度。背景は高度だけで決まり、VESPER は 52 コマを cel() で状態に対応させる。
     BreakerYard      ボーナス面。車の左右の耐久、破損段階、飛散、得点。strike() が主人公の各攻撃から呼ばれる。
@@ -3439,7 +3476,9 @@ const FighterSprites = {
     const id = fighter.data.id;
     const throwFrame = !silhouette ? ThrowMotion.sprite(fighter,state,f) : null;
     const phase = (state==='WALK_F'||state==='WALK_B') ? fighter.gait??f : f;
-    let frame = throwFrame ?? this.frame(id, state, phase, motion.animTick, !silhouette && fighter.blockstun > 0, motion.vy);
+    // v3.20.2 [ANIM-216] The side-scrolling mode supplies its own walk cell (see BeltArt.walkCell). Versus fighters never set it.
+    const ownWalk = fighter.walkCell && (state === 'WALK_F' || state === 'WALK_B') ? fighter.walkCell(state === 'WALK_B') : null;
+    let frame = throwFrame ?? ownWalk ?? this.frame(id, state, phase, motion.animTick, !silhouette && fighter.blockstun > 0, motion.vy);
     let sheet = this.sheets.get(id + (frame >= 48 ? '-throw' : frame >= 24 ? '-motion' : ''));
     if(!sheet && frame>=48){frame=state==='HIT_AIR'?19:state==='KNOCKDOWN'?20:state==='WAKEUP'?47:22;sheet=this.sheets.get(id+(frame>=24?'-motion':''));}
     if (!sheet && frame >= 24) {
@@ -8329,6 +8368,17 @@ const BeltArt = {
     const upright = cellInfo.h > ref.h * .75;
     return Math.max(-90, Math.min(90, ref.hip - (upright ? cellInfo.hip : cellInfo.centre)));
   },
+  // v3.20.2 [ANIM-216] Walk cycle of the fighter atlases in the side-scrolling mode.
+  // The shared cycle alternates the base walk cells (2, 3, 4, 5: contact, passing, contact, passing) with four cells
+  // of the "in-between" sheet (28-31). Those were drawn separately: 4-6 % larger, and each repeats the phase of the
+  // cell before it (contact, contact, passing, passing). Shown for 3 frames each, the body pulsed and the legs
+  // flickered through ten steps a second. Here only the four matching cells are used, each for `hold` units of
+  // actor.gait (one unit = one frame at full walking speed), so a step takes 2 * hold frames.
+  walkHold: 8,
+  walkCell(gait, back, hold = this.walkHold) {
+    const step = Math.floor((gait || 0) / hold) % 4;
+    return 2 + (back ? (4 - step) % 4 : step);
+  },
   // Player heroes and the recoloured street / metro enemies share the fighter atlases. While standing, walking
   // and running the hips stay over the feet and the soles stay on one line; other states keep their authored lunge.
   heroNudge(id, suffix, f, state) {
@@ -8458,7 +8508,8 @@ const BeltArt = {
     if (actor.state === 'WINDUP') return actor.plan === 'slam' ? 44 : 39;
     // Match the existing damage / sound event at SLAM frame 20 exactly.
     if (actor.state === 'SLAM') return f < 20 ? 44 : f < 33 ? 14 : f < 43 ? 47 : 11;
-    return FighterSprites.frame('titan', state==='WALK_F'&&actor.walkBack?'WALK_B':state, state==='WALK_F'?(actor.gait??f):f, actor.animTick, actor.blockstun > 0, actor.vy);
+    if (state === 'WALK_F') return this.walkCell(actor.gait ?? f, actor.walkBack, this.walkHold + 1); // IRON VOSS: same four matching cells, a heavier pace
+    return FighterSprites.frame('titan', state, f, actor.animTick, actor.blockstun > 0, actor.vy);
   },
 
   monsterPose(a) {
@@ -9261,7 +9312,7 @@ class Skyhook {
     const arrival=actor.animTick-actor.arrivalTick;
     switch(actor.state){
       case 'DROP': return actor.z>380?8:actor.z>100?16:17;
-      case 'WALK_F': return [20,21,1,22,23,2,24,0][Math.floor((actor.gait||0)/3)%8];
+      case 'WALK_F': return [20,21,1,22,23,2,24,0][Math.floor((actor.gait||0)/5)%8];
       case 'HIT_STAND': return f<4?37:f<10?7:38;
       case 'GRABBED': return f<8?38:7;
       case 'HIT_AIR': return actor.hp<=0&&f<11?40:f<5?37:f<12?38:39;
@@ -9384,7 +9435,7 @@ class Skyhook {
 // Coordinates: x = street distance, y = floor depth, z = height above that floor.
 // Fixed 60 Hz simulation. Draw methods must not change simulation or consume random values.
 const STREET = {
-  version: '3.20.1',
+  version: '3.20.2',
   risingInput: { window: 14, buffer: 6 },
   dash: { tapWindow: 14, speed: 2.2, damage: 112, active: 8, until: 19, end: 38 },
   // v2.6.0 hit detection tuning. One table so the feel can be adjusted without hunting through the methods.
@@ -9674,6 +9725,7 @@ class StreetActor extends Fighter {
     this.attack = null;
   }
   poseNudge(id, suffix, frame, state) { return BeltArt.heroNudge(id, suffix, frame, state); }
+  walkCell(back) { return BeltArt.walkCell(this.gait, back, BeltArt.walkHold + (this.data.id === 'titan' ? 1 : 0)); }
   walkTo(nextX, nextY, rushing = false) {
     const stride = Math.hypot(nextX-this.x, (nextY-this.y)/.64);
     const moving = stride > .01;

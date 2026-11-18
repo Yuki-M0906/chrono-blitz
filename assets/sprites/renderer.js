@@ -148,7 +148,9 @@ const FighterSprites = {
     const id = fighter.data.id;
     const throwFrame = !silhouette ? ThrowMotion.sprite(fighter,state,f) : null;
     const phase = (state==='WALK_F'||state==='WALK_B') ? fighter.gait??f : f;
-    let frame = throwFrame ?? this.frame(id, state, phase, motion.animTick, !silhouette && fighter.blockstun > 0, motion.vy);
+    // v3.20.2 [ANIM-216] The side-scrolling mode supplies its own walk cell (see BeltArt.walkCell). Versus fighters never set it.
+    const ownWalk = fighter.walkCell && (state === 'WALK_F' || state === 'WALK_B') ? fighter.walkCell(state === 'WALK_B') : null;
+    let frame = throwFrame ?? ownWalk ?? this.frame(id, state, phase, motion.animTick, !silhouette && fighter.blockstun > 0, motion.vy);
     let sheet = this.sheets.get(id + (frame >= 48 ? '-throw' : frame >= 24 ? '-motion' : ''));
     if(!sheet && frame>=48){frame=state==='HIT_AIR'?19:state==='KNOCKDOWN'?20:state==='WAKEUP'?47:22;sheet=this.sheets.get(id+(frame>=24?'-motion':''));}
     if (!sheet && frame >= 24) {

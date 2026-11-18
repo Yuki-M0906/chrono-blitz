@@ -413,6 +413,17 @@ const BeltArt = {
     const upright = cellInfo.h > ref.h * .75;
     return Math.max(-90, Math.min(90, ref.hip - (upright ? cellInfo.hip : cellInfo.centre)));
   },
+  // v3.20.2 [ANIM-216] Walk cycle of the fighter atlases in the side-scrolling mode.
+  // The shared cycle alternates the base walk cells (2, 3, 4, 5: contact, passing, contact, passing) with four cells
+  // of the "in-between" sheet (28-31). Those were drawn separately: 4-6 % larger, and each repeats the phase of the
+  // cell before it (contact, contact, passing, passing). Shown for 3 frames each, the body pulsed and the legs
+  // flickered through ten steps a second. Here only the four matching cells are used, each for `hold` units of
+  // actor.gait (one unit = one frame at full walking speed), so a step takes 2 * hold frames.
+  walkHold: 8,
+  walkCell(gait, back, hold = this.walkHold) {
+    const step = Math.floor((gait || 0) / hold) % 4;
+    return 2 + (back ? (4 - step) % 4 : step);
+  },
   // Player heroes and the recoloured street / metro enemies share the fighter atlases. While standing, walking
   // and running the hips stay over the feet and the soles stay on one line; other states keep their authored lunge.
   heroNudge(id, suffix, f, state) {
@@ -542,7 +553,8 @@ const BeltArt = {
     if (actor.state === 'WINDUP') return actor.plan === 'slam' ? 44 : 39;
     // Match the existing damage / sound event at SLAM frame 20 exactly.
     if (actor.state === 'SLAM') return f < 20 ? 44 : f < 33 ? 14 : f < 43 ? 47 : 11;
-    return FighterSprites.frame('titan', state==='WALK_F'&&actor.walkBack?'WALK_B':state, state==='WALK_F'?(actor.gait??f):f, actor.animTick, actor.blockstun > 0, actor.vy);
+    if (state === 'WALK_F') return this.walkCell(actor.gait ?? f, actor.walkBack, this.walkHold + 1); // IRON VOSS: same four matching cells, a heavier pace
+    return FighterSprites.frame('titan', state, f, actor.animTick, actor.blockstun > 0, actor.vy);
   },
 
   monsterPose(a) {

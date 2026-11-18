@@ -56,3 +56,6 @@ assets/belt/art/metro-v3101/crowd.png
 backups/**/*.png
 backups/**/*.jpg
 backups/**/*.wav
+
+# 修正前後の比較アニメーション（検証を実行しても再生成されないが、容量があるので管理対象外）
+verification/**/*.gif

@@ -55,6 +55,19 @@ const {pathToFileURL}=require('node:url');
       check(game.street.player.state==='IDLE','boarding actor stops at the door');
       const fighter=game.getPreviewFighter(0);fighter.state='SP_2';fighter.animTick=18;fighter.vy=-7;fighter.addGhost();fighter.animTick=35;fighter.vy=9;
       const shadow=fighter.ghosts.at(-1);check(shadow.animTick===18&&shadow.vy===-7,'afterimage keeps original motion');
+      // v3.20.2 [ANIM-216]: the belt walk uses only the four matching base cells, each held for the same number of frames.
+      for(const data of CHARACTERS){
+        const walker=new StreetActor(data,300,550,0,0),hold=BeltArt.walkHold+(data.id==='titan'?1:0),seen=[];
+        walker.facing=1;walker.pose('IDLE');
+        for(let t=0;t<hold*8;t++){walker.walkTo(walker.x+walker.speed,walker.y);seen.push(walker.walkCell(false));}
+        check(seen.every(cell=>cell>=2&&cell<=5),'walk uses base cells only '+data.id);
+        // Run lengths, not exact frames: gait is a sum of distance / speed and may land a hair below a multiple of hold.
+        const runs=[];for(const cell of seen){if(runs.length&&runs.at(-1)[0]===cell)runs.at(-1)[1]++;else runs.push([cell,1]);}
+        check(runs.slice(0,-1).every(([cell,n],i)=>cell===2+i%4&&Math.abs(n-hold)<=1),'walk holds each cell for about '+hold+' frames in order '+data.id);
+        walker.walkTo(walker.x,walker.y);walker.walkTo(walker.x-walker.speed,walker.y);
+        check(walker.walkBack&&[2,3,4,5].includes(walker.walkCell(true)),'backward walk stays on the base cells '+data.id);
+      }
+      check(!('walkCell' in Fighter.prototype),'versus fighters keep the shared walk cycle');
       return checks;
     });
     if(errors.length)throw Error(errors.join('\n'));

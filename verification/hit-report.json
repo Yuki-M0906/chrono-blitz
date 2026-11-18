@@ -1,7 +1,7 @@
 {
-  "version": "3.20.1",
+  "version": "3.20.2",
   "distribution": {
-    "htmlBytes": 746581,
+    "htmlBytes": 753675,
     "packs": [
       {
         "name": "sprites-kagura",
@@ -93,7 +93,7 @@
     "sprites": null,
     "belt": 69,
     "beltErrors": [],
-    "inline": 399224
+    "inline": 400503
   },
   "checks": {
     "Punch connects near the edge of the wider lane": true,

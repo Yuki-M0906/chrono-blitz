@@ -2,7 +2,7 @@
 // Coordinates: x = street distance, y = floor depth, z = height above that floor.
 // Fixed 60 Hz simulation. Draw methods must not change simulation or consume random values.
 const STREET = {
-  version: '3.20.1',
+  version: '3.20.2',
   risingInput: { window: 14, buffer: 6 },
   dash: { tapWindow: 14, speed: 2.2, damage: 112, active: 8, until: 19, end: 38 },
   // v2.6.0 hit detection tuning. One table so the feel can be adjusted without hunting through the methods.
@@ -292,6 +292,7 @@ class StreetActor extends Fighter {
     this.attack = null;
   }
   poseNudge(id, suffix, frame, state) { return BeltArt.heroNudge(id, suffix, frame, state); }
+  walkCell(back) { return BeltArt.walkCell(this.gait, back, BeltArt.walkHold + (this.data.id === 'titan' ? 1 : 0)); }
   walkTo(nextX, nextY, rushing = false) {
     const stride = Math.hypot(nextX-this.x, (nextY-this.y)/.64);
     const moving = stride > .01;

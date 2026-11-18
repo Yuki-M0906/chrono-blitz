@@ -1,5 +1,5 @@
 {
-  "version": "3.20.1",
+  "version": "3.20.2",
   "rawPoses": 648,
   "cachedPoses": 648,
   "loaded": {
@@ -13,7 +13,7 @@
   "purity": {
     "unchanged": true,
     "randomCalls": 0,
-    "meanMs": 0.2711111108462016
+    "meanMs": 0.4433333330684238
   },
   "alpha": [
     {
