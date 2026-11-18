@@ -16,7 +16,7 @@ const stageHorizons = [660/822,635/822,636/821,604/821];
 const voiceProfiles=JSON.parse(fs.readFileSync(path.join(root,'assets/voices/manifest.json'),'utf8')).profiles;
 const artManifest=JSON.parse(fs.readFileSync(path.join(root,'assets/belt/art/manifest.json'),'utf8'));
 const art = filter => Object.fromEntries(Object.entries(artManifest.assets).filter(([id]) => filter(id)).map(([id, entry]) => [id, {...entry,
-  src: 'data:image/png;base64,' + b64('assets/belt/art', entry.file)}]));
+  src: 'data:image/' + (entry.file.endsWith('.jpg') ? 'jpeg' : 'png') + ';base64,' + b64('assets/belt/art', entry.file)}]));
 
 // ---- Asset packs. Order matters: the game reads keys in insertion order. Each pack stays far below 50 MB.
 const packs = [
@@ -25,10 +25,13 @@ const packs = [
   {name: 'stages', kind: 'stages', data: stageIds.map((id, i) => ({id, horizon: stageHorizons[i], src: 'data:image/png;base64,' + b64('assets/stages', id + '.png')}))},
   {name: 'voices', kind: 'voices', data: Object.fromEntries(Object.entries(voiceProfiles).flatMap(([id, profile]) => Object.keys(profile.lines).map(event =>
     [id + '-' + event, 'data:audio/wav;base64,' + b64('assets/voices', id + '-' + event + '.wav')])))},
-  {name: 'belt-backgrounds', kind: 'beltArt', data: art(id => id.startsWith('district-') || id.startsWith('factory-'))},
-  {name: 'belt-actors', kind: 'beltArt', data: art(id => !id.startsWith('district-') && !id.startsWith('factory-') && !id.startsWith('dash-') && !id.startsWith('resort-') && !id.startsWith('beach-'))},
+  {name: 'belt-backgrounds', kind: 'beltArt', data: art(id => id.startsWith('district-') || id.startsWith('factory-') || id.startsWith('skyhook-'))},
+  {name: 'belt-actors', kind: 'beltArt', data: art(id => !id.startsWith('ascent-') && !id.startsWith('skyhook-') && !id.startsWith('district-') && !id.startsWith('factory-') && !id.startsWith('dash-') && !id.startsWith('resort-') && !id.startsWith('beach-') && !id.startsWith('metro-') && id!=='subway-train' && id!=='arena-crowd')},
+  {name: 'skyhook-art', kind:'beltArt',data:art(id=>id.startsWith('ascent-'))},
   {name: 'resort-backgrounds',kind:'beltArt',data:art(id=>id.startsWith('resort-'))},
-  {name: 'resort-actors',kind:'beltArt',data:art(id=>id.startsWith('beach-'))},
+  {name: 'resort-actors',kind:'beltArt',data:art(id=>id.startsWith('beach-')&&id!=='beach-warlord')},
+  {name:'metro-backgrounds',kind:'beltArt',data:art(id=>id.startsWith('metro-'))},
+  {name:'metro-actors',kind:'beltArt',data:art(id=>id==='subway-train'||id==='beach-warlord'||id==='arena-crowd')},
   {name: 'belt-dash', kind: 'beltArt', data: art(id => id.startsWith('dash-'))}
 ];
 fs.mkdirSync(dataDir, {recursive: true});
@@ -112,6 +115,8 @@ if(find(html,audioBegin)>=0)html=cut(html,audioBegin,audioEnd,audioCode);
 else {const start=html.indexOf('class SoundEngine {'),end=html.indexOf('const sound = new SoundEngine();',start)+'const sound = new SoundEngine();'.length;if(start<0||end<start)throw Error('Audio insertion anchor missing');html=html.slice(0,start)+audioCode+html.slice(end);}
 const beltCode = beltBegin+'\nconst BELT_ART_SOURCES = CB_ASSETS.beltArt;\n'+
   fs.readFileSync(path.join(root,'assets/belt/art.js'),'utf8')+'\n'+
+  fs.readFileSync(path.join(root,'assets/belt/breaker-yard.js'),'utf8')+'\n'+
+  fs.readFileSync(path.join(root,'assets/belt/skyhook.js'),'utf8')+'\n'+
   fs.readFileSync(path.join(root,'assets/belt/engine.js'),'utf8')+'\n'+beltEnd;
 if(find(html,beltBegin)>=0) html=cut(html,beltBegin,beltEnd,beltCode);
 else html=html.replace('const game = new Game();',()=>beltCode+'\n\nconst game = new Game();\ngame.scene = \'HUB\';');

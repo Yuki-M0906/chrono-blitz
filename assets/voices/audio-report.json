@@ -1,2200 +1,1285 @@
 {
-  "version": "1.7.0",
-  "engine": "VOICEVOX Core 0.17.1 / ONNX Runtime 1.17.3 / VVM 0.17.1 / CPU (v3.2 Natural Acting Prosody, AquesTalk Accent Control & NCC-PSOLA)",
+  "version": "3.8.0",
+  "engine": "Kokoro-82M (Apache-2.0, local synthesis) + Theatrical 2-Stage Prosody, NCC-PSOLA Pitch Contouring & Studio Mastering",
   "sampleRate": 24000,
-  "listeningReview": "v3.2 overhaul: AquesTalk kana accent precision, intonation_scale=1.0 plateau-breaking prosody, zero-shimmer neural HiFi-GAN multi-syllables, and NCC-PSOLA short kinetic kiais.",
   "clips": [
     {
-      "clip": "kagura-light0",
-      "seconds": 0.243,
-      "bytes": 11712,
-      "peak": 28800,
-      "rms": 3271.9,
-      "sha256": "3d5c98cf9ce0b9a94dc9faf2ce70fcfb9ad5feaab3e8cfd577fd4aa592339e44",
-      "segments": [
-        {
-          "text": "はっ！",
-          "kana": "ハ'ッ",
-          "voice": "玄野武宏",
-          "style": "ツンギレ",
-          "styleId": 40
-        }
-      ]
-    },
-    {
-      "clip": "kagura-light1",
-      "seconds": 0.331,
-      "bytes": 15916,
-      "peak": 28800,
-      "rms": 4315.8,
-      "sha256": "73dba33506aab5d2f98b8624fba46861647af867492b1e22e76c5e594ba702e9",
-      "segments": [
-        {
-          "text": "せいっ！",
-          "kana": "セ'イッ",
-          "voice": "玄野武宏",
-          "style": "ツンギレ",
-          "styleId": 40
-        }
-      ]
-    },
-    {
-      "clip": "kagura-heavy0",
-      "seconds": 0.352,
-      "bytes": 16952,
-      "peak": 28800,
-      "rms": 4050.6,
-      "sha256": "8b68a0211562e35e320cb990cd565c638436ed34b5352c37ff74ade8d4f63393",
-      "segments": [
-        {
-          "text": "やあっ！",
-          "kana": "ヤ'アッ",
-          "voice": "玄野武宏",
-          "style": "ツンギレ",
-          "styleId": 40
-        }
-      ]
-    },
-    {
-      "clip": "kagura-heavy1",
-      "seconds": 0.253,
-      "bytes": 12208,
-      "peak": 28800,
-      "rms": 3914.9,
-      "sha256": "42a750ca56c2f1bd91e768c9faf3235eaf8cefc2a0a428161fe269f9bb507601",
-      "segments": [
-        {
-          "text": "斬る！",
-          "kana": "キ'ルッ",
-          "voice": "玄野武宏",
-          "style": "ツンギレ",
-          "styleId": 40
-        }
-      ]
-    },
-    {
-      "clip": "kagura-jump",
-      "seconds": 0.235,
-      "bytes": 11308,
-      "peak": 28800,
-      "rms": 3908.8,
-      "sha256": "6a391e3c2727a43ee910b2bfe706c284aaa23a162a58ef62ce5918704fc02b11",
-      "segments": [
-        {
-          "text": "ふっ！",
-          "kana": "フ'ッ",
-          "voice": "玄野武宏",
-          "style": "ツンギレ",
-          "styleId": 40
-        }
-      ]
-    },
-    {
-      "clip": "kagura-dash",
-      "seconds": 0.405,
-      "bytes": 19488,
-      "peak": 28800,
-      "rms": 3202.9,
-      "sha256": "abb9dd85c71a485125e9f1596c3d4234b8376312598a86570fe2d1a3f7e151ed",
-      "segments": [
-        {
-          "text": "行くぞ！",
-          "kana": "イ'クゾッ",
-          "voice": "玄野武宏",
-          "style": "ツンギレ",
-          "styleId": 40
-        }
-      ]
-    },
-    {
-      "clip": "kagura-hurt0",
-      "seconds": 0.245,
-      "bytes": 11810,
-      "peak": 28800,
-      "rms": 4367.6,
-      "sha256": "804f1a63297e9f08e9e8e8381096c9aedae11b28f9a54a9551e35ba579ae2db6",
-      "segments": [
-        {
-          "text": "ぐっ！",
-          "kana": "グ'ッ",
-          "voice": "玄野武宏",
-          "style": "ツンギレ",
-          "styleId": 40
-        }
-      ]
-    },
-    {
-      "clip": "kagura-hurt1",
-      "seconds": 0.223,
-      "bytes": 10740,
-      "peak": 28800,
-      "rms": 3696.9,
-      "sha256": "3f0c077580b162ae3e65f423490453aa25263fbf714bed9728e1c6d530fbffc3",
-      "segments": [
-        {
-          "text": "うっ！",
-          "kana": "ウ'ッ",
-          "voice": "玄野武宏",
-          "style": "ツンギレ",
-          "styleId": 40
-        }
-      ]
-    },
-    {
-      "clip": "kagura-throw",
-      "seconds": 0.433,
-      "bytes": 20824,
-      "peak": 28800,
-      "rms": 4077.2,
-      "sha256": "63c7b3fd8835dd7b2a48e04ef05ae3c872d13a76d48d9a464967bcc4331c3123",
-      "segments": [
-        {
-          "text": "捉えた！",
-          "kana": "トラ'エタッ",
-          "voice": "玄野武宏",
-          "style": "ツンギレ",
-          "styleId": 40
-        }
-      ]
-    },
-    {
-      "clip": "kagura-burst",
-      "seconds": 0.341,
-      "bytes": 16408,
-      "peak": 28800,
-      "rms": 4824.8,
-      "sha256": "3850365576fee02188913b30c2aa6a7c1d671d14ca6e8eb57daec2853f1106ed",
-      "segments": [
-        {
-          "text": "退けっ！",
-          "kana": "ド'ケッ",
-          "voice": "玄野武宏",
-          "style": "ツンギレ",
-          "styleId": 40
-        }
-      ]
-    },
-    {
-      "clip": "kagura-sp1",
-      "seconds": 0.546,
-      "bytes": 26258,
-      "peak": 28800,
-      "rms": 3969.8,
-      "sha256": "3292e01ab69f91103f1dc6ce1120ed0ee63aeea52153f8d85ae4569e865b1312",
-      "segments": [
-        {
-          "text": "えんげつ！",
-          "kana": "エ'ンゲツッ",
-          "voice": "玄野武宏",
-          "style": "ツンギレ",
-          "styleId": 40
-        }
-      ]
-    },
-    {
-      "clip": "kagura-sp2",
-      "seconds": 0.564,
-      "bytes": 27098,
-      "peak": 28800,
-      "rms": 3927.3,
-      "sha256": "0b6ef7fea3967a79c3cdd609a91a08f201c47b0f38303ddf79a265342a351a55",
-      "segments": [
-        {
-          "text": "ひえん！",
-          "kana": "ヒ'エンッ",
-          "voice": "玄野武宏",
-          "style": "ツンギレ",
-          "styleId": 40
-        }
-      ]
-    },
-    {
-      "clip": "kagura-sp3",
-      "seconds": 0.928,
-      "bytes": 44584,
-      "peak": 28800,
-      "rms": 3385.0,
-      "sha256": "d908e17f501232f92dc339694e8b621a48d81294f0d821b2bc500cc7b70d64a9",
-      "segments": [
-        {
-          "text": "しゅんごくせん！",
-          "kana": "シュンゴ'ク/セ'ンッ",
-          "voice": "玄野武宏",
-          "style": "ツンギレ",
-          "styleId": 40
-        }
-      ]
-    },
-    {
-      "clip": "kagura-super",
-      "seconds": 1.736,
-      "bytes": 83390,
-      "peak": 28800,
-      "rms": 4618.1,
-      "sha256": "6639a4a260d73534dac60e1880c55b8d25ed330433b10ad1e1dc1070b4ea574d",
-      "segments": [
-        {
-          "text": "奥義……",
-          "kana": "オ'オギ",
-          "voice": "玄野武宏",
-          "style": "ノーマル",
-          "styleId": 11
-        },
-        {
-          "text": "紅蓮・天翔斬っ！",
-          "kana": "グレ'ン/テンショ'オザンッ",
-          "voice": "玄野武宏",
-          "style": "ツンギレ",
-          "styleId": 40
-        }
-      ]
-    },
-    {
-      "clip": "kagura-select",
-      "seconds": 1.463,
-      "bytes": 70270,
-      "peak": 27524,
-      "rms": 2973.7,
-      "sha256": "1f1ee50ea31d4b041cae95b4e3f7b4d9095c9da708bcaa46d647de1f7d1d6cb9",
-      "segments": [
-        {
-          "text": "我が太刀、見切れるか？",
-          "kana": "ワ'ガ/タ'チ、ミキレ'ルカ？",
-          "voice": "玄野武宏",
-          "style": "ツンギレ",
-          "styleId": 40
-        }
-      ]
-    },
-    {
-      "clip": "kagura-win",
-      "seconds": 0.886,
-      "bytes": 42590,
-      "peak": 27524,
-      "rms": 5209.6,
-      "sha256": "7ba2875ae52041cda3a43de4103d499045ebe17617ec5396f0e7ced59f14f832",
-      "segments": [
-        {
-          "text": "勝負、あり。",
-          "kana": "ショ'オブ、ア'リ",
-          "voice": "玄野武宏",
-          "style": "ノーマル",
-          "styleId": 11
-        }
-      ]
-    },
-    {
-      "clip": "kagura-ko",
-      "seconds": 0.617,
-      "bytes": 29650,
-      "peak": 24903,
-      "rms": 5315.2,
-      "sha256": "73b553532d2b5b10c46a07b5fdba3644dde447fa1ba5f5f839585620f9877526",
-      "segments": [
-        {
-          "text": "……無念。",
-          "kana": "ム'ネン",
-          "voice": "玄野武宏",
-          "style": "悲しみ",
-          "styleId": 41
-        }
-      ]
-    },
-    {
-      "clip": "kagura-grabbed",
-      "seconds": 0.338,
-      "bytes": 16288,
-      "peak": 28800,
-      "rms": 4005.1,
-      "sha256": "7bb85657dd6619bd5afbfdb093673b411b380abfcc69bb3c00f3cb56005c51b6",
-      "segments": [
-        {
-          "text": "なにっ！",
-          "kana": "ナ'ニッ",
-          "voice": "玄野武宏",
-          "style": "ツンギレ",
-          "styleId": 40
-        }
-      ]
-    },
-    {
-      "clip": "kagura-throw_release",
-      "seconds": 0.384,
-      "bytes": 18476,
-      "peak": 28800,
-      "rms": 5453.9,
-      "sha256": "9481f23bcd104eb9f27168aca6980132a44603c6d977180cba4047945bfc1dd2",
-      "segments": [
-        {
-          "text": "せいっ！",
-          "kana": "セ'イヤッ",
-          "voice": "玄野武宏",
-          "style": "ツンギレ",
-          "styleId": 40
-        }
-      ]
-    },
-    {
-      "clip": "kagura-thrown",
-      "seconds": 0.353,
-      "bytes": 16974,
-      "peak": 28800,
-      "rms": 3963.4,
-      "sha256": "961de6192152f36db339d2191e13762a02ddc9a9a4c0d91d3ab42f088bb5fce2",
-      "segments": [
-        {
-          "text": "うわあっ！",
-          "kana": "ウワ'アッ",
-          "voice": "玄野武宏",
-          "style": "ツンギレ",
-          "styleId": 40
-        }
-      ]
-    },
-    {
-      "clip": "kagura-throw_impact",
-      "seconds": 0.333,
-      "bytes": 16004,
-      "peak": 28800,
-      "rms": 3748.6,
-      "sha256": "9d342262a49a38c7972ccccbcac3b801bcfe462184f4eb3f3b029734ca5f970a",
-      "segments": [
-        {
-          "text": "ぐはっ！",
-          "kana": "グ'ハッ",
-          "voice": "玄野武宏",
-          "style": "ツンギレ",
-          "styleId": 40
-        }
-      ]
-    },
-    {
-      "clip": "volt-light0",
-      "seconds": 0.341,
-      "bytes": 16428,
-      "peak": 28800,
-      "rms": 5694.3,
-      "sha256": "b38bc01b1ac5fb6a1321bd4c9656cc7994dd847af263a2fc809b69cddcc7a546",
-      "segments": [
-        {
-          "text": "はっ！",
-          "kana": "ハ'ッ",
-          "voice": "白上虎太郎",
-          "style": "おこ",
-          "styleId": 34
-        }
-      ]
-    },
-    {
-      "clip": "volt-light1",
-      "seconds": 0.405,
-      "bytes": 19500,
-      "peak": 28800,
-      "rms": 4908.7,
-      "sha256": "9101ee262f7ed9dd8181fcea4f584f0525b9721c655530b7286bd25821020410",
-      "segments": [
-        {
-          "text": "そらっ！",
-          "kana": "ソ'ラッ",
-          "voice": "白上虎太郎",
-          "style": "おこ",
-          "styleId": 34
-        }
-      ]
-    },
-    {
-      "clip": "volt-heavy0",
-      "seconds": 0.533,
-      "bytes": 25644,
-      "peak": 28800,
-      "rms": 5523.5,
-      "sha256": "fd450556c38b6c527cffb72aee2dd2d942521cf242c004233df5f44774484d3c",
-      "segments": [
-        {
-          "text": "くらえっ！",
-          "kana": "クラ'エッ",
-          "voice": "白上虎太郎",
-          "style": "おこ",
-          "styleId": 34
-        }
-      ]
-    },
-    {
-      "clip": "volt-heavy1",
-      "seconds": 0.672,
-      "bytes": 32300,
-      "peak": 28800,
-      "rms": 4171.4,
-      "sha256": "cbd72afacbe4063d840ea4a8f38097860194b6f7e6b2ca6c2b747af747a26bd0",
-      "segments": [
-        {
-          "text": "決めるぜ！",
-          "kana": "キメ'ルゼッ",
-          "voice": "白上虎太郎",
-          "style": "おこ",
-          "styleId": 34
-        }
-      ]
-    },
-    {
-      "clip": "volt-jump",
-      "seconds": 0.448,
-      "bytes": 21548,
-      "peak": 28800,
-      "rms": 6596.7,
-      "sha256": "56b504c1fd46622dc40bb9b61fe0bf3c488f02b20b41168320258ad6352f6f5b",
-      "segments": [
-        {
-          "text": "よっと！",
-          "kana": "ヨ'ット",
-          "voice": "白上虎太郎",
-          "style": "おこ",
-          "styleId": 34
-        }
-      ]
-    },
-    {
-      "clip": "volt-dash",
-      "seconds": 0.725,
-      "bytes": 34860,
-      "peak": 28800,
-      "rms": 4247.9,
-      "sha256": "f33b9976a60956dca98156ef4f228aa363600eaa35b7d2528fa392f927ced47d",
-      "segments": [
-        {
-          "text": "遅いぜ！",
-          "kana": "オソ'イゼッ",
-          "voice": "白上虎太郎",
-          "style": "おこ",
-          "styleId": 34
-        }
-      ]
-    },
-    {
-      "clip": "volt-hurt0",
-      "seconds": 0.32,
-      "bytes": 15404,
-      "peak": 28800,
-      "rms": 6490.1,
-      "sha256": "bdbeaf36134509db669cc655016b52b89a99fd8033e34e8ec4fad2df5d332f4e",
-      "segments": [
-        {
-          "text": "くっ！",
-          "kana": "ク'ッ",
-          "voice": "白上虎太郎",
-          "style": "おこ",
-          "styleId": 34
-        }
-      ]
-    },
-    {
-      "clip": "volt-hurt1",
-      "seconds": 0.478,
-      "bytes": 23012,
-      "peak": 28800,
-      "rms": 6966.9,
-      "sha256": "4f02e141e76a8b8973cef193951d00de6372a3d06f7156b24a92bba56910ac45",
-      "segments": [
-        {
-          "text": "ぐあっ！",
-          "kana": "グア'ッ",
-          "voice": "白上虎太郎",
-          "style": "おこ",
-          "styleId": 34
-        }
-      ]
-    },
-    {
-      "clip": "volt-throw",
-      "seconds": 0.533,
-      "bytes": 25644,
-      "peak": 28800,
-      "rms": 5930.7,
-      "sha256": "734a13c181f301d3b9af28a0f3a5c475bf62cf25ab536e122e1a5f000d3bb847",
-      "segments": [
-        {
-          "text": "よしっ！",
-          "kana": "ヨ'シッ",
-          "voice": "白上虎太郎",
-          "style": "おこ",
-          "styleId": 34
-        }
-      ]
-    },
-    {
-      "clip": "volt-burst",
-      "seconds": 0.676,
-      "bytes": 32508,
-      "peak": 28800,
-      "rms": 6506.5,
-      "sha256": "b3b34ce4728c9b5e8dd0cb3600329a09695dae43fd4833e7ae81d7e4be15dfb7",
-      "segments": [
-        {
-          "text": "離れろっ！",
-          "kana": "ハナレ'ロッ",
-          "voice": "白上虎太郎",
-          "style": "おこ",
-          "styleId": 34
-        }
-      ]
-    },
-    {
-      "clip": "volt-sp1",
-      "seconds": 1.066,
-      "bytes": 51192,
-      "peak": 28800,
-      "rms": 5158.3,
-      "sha256": "da5c75f33304a48d583d311a958e7863c5ec2707254c4d2efbd8e582701d821b",
-      "segments": [
-        {
-          "text": "プラズマショット！",
-          "kana": "プラズマ'/ショ'ットッ",
-          "voice": "白上虎太郎",
-          "style": "おこ",
-          "styleId": 34
-        }
-      ]
-    },
-    {
-      "clip": "volt-sp2",
-      "seconds": 1.308,
-      "bytes": 62816,
-      "peak": 28800,
-      "rms": 4881.9,
-      "sha256": "127f6f58d1b87a43840b2a0f58e9ab8afbf2c271130684531ff5b0d73ea715ed",
-      "segments": [
-        {
-          "text": "ライトニングドライブ！",
-          "kana": "ライト'ニング/ドラ'イブッ",
-          "voice": "白上虎太郎",
-          "style": "おこ",
-          "styleId": 34
-        }
-      ]
-    },
-    {
-      "clip": "volt-sp3",
-      "seconds": 1.163,
-      "bytes": 55852,
-      "peak": 28800,
-      "rms": 5261.2,
-      "sha256": "56fa5d57f8b106f5123663fb699093e3bc97fe55fceb2aa92127dbc6550934ff",
-      "segments": [
-        {
-          "text": "サンダーサマー！",
-          "kana": "サ'ンダア/サ'マアッ",
-          "voice": "白上虎太郎",
-          "style": "おこ",
-          "styleId": 34
-        }
-      ]
-    },
-    {
-      "clip": "volt-super",
-      "seconds": 2.099,
-      "bytes": 100796,
-      "peak": 28800,
-      "rms": 4861.8,
-      "sha256": "82ec60f0f0e4a8c3a92d62218295d30beef27ad968543eff566d6e982945ba68",
-      "segments": [
-        {
-          "text": "オーバードライブっ！",
-          "kana": "オオバ'ア/ドラ'イブッ",
-          "voice": "白上虎太郎",
-          "style": "おこ",
-          "styleId": 34
-        },
-        {
-          "text": "ラグナロクっ！",
-          "kana": "ラグナロ'クッ",
-          "voice": "白上虎太郎",
-          "style": "おこ",
-          "styleId": 34
-        }
-      ]
-    },
-    {
-      "clip": "volt-select",
-      "seconds": 1.781,
-      "bytes": 85548,
-      "peak": 27524,
-      "rms": 5708.2,
-      "sha256": "10c3420f68633c4abd31f71ea0889c658d4459011a376926567dbdf28a185208",
-      "segments": [
-        {
-          "text": "最高速で行こうぜ！",
-          "kana": "サイコ'オソクデ、イコ'オゼ",
-          "voice": "白上虎太郎",
-          "style": "わーい",
-          "styleId": 32
-        }
-      ]
-    },
-    {
-      "clip": "volt-win",
-      "seconds": 0.928,
-      "bytes": 44588,
-      "peak": 27524,
-      "rms": 4234.7,
-      "sha256": "cf84f47dff1ea5297d5d9c659d2a4583b98ccbc4da45bf6ce8e621f0cad4eff6",
-      "segments": [
-        {
-          "text": "俺の勝ちだ！",
-          "kana": "オレノ'/カ'チダ",
-          "voice": "白上虎太郎",
-          "style": "わーい",
-          "styleId": 32
-        }
-      ]
-    },
-    {
-      "clip": "volt-ko",
-      "seconds": 1.205,
-      "bytes": 57900,
-      "peak": 24903,
-      "rms": 4983.4,
-      "sha256": "fc678ab7c1a5a6ea94bef149a189e9aeccbc734fa7545b0fd92c09afff25947d",
-      "segments": [
-        {
-          "text": "マジかよ……。",
-          "kana": "マ'ジカヨ",
-          "voice": "白上虎太郎",
-          "style": "びえーん",
-          "styleId": 35
-        }
-      ]
-    },
-    {
-      "clip": "volt-grabbed",
-      "seconds": 0.651,
-      "bytes": 31276,
-      "peak": 28800,
-      "rms": 4155.9,
-      "sha256": "4fb5733e23e31ba6920dd228fa87bac1734eb0ee272675e4b4e375119beaf11e",
-      "segments": [
-        {
-          "text": "しまった！",
-          "kana": "シマ'ッタッ",
-          "voice": "白上虎太郎",
-          "style": "おこ",
-          "styleId": 34
-        }
-      ]
-    },
-    {
-      "clip": "volt-throw_release",
-      "seconds": 0.64,
-      "bytes": 30764,
-      "peak": 28800,
-      "rms": 4266.0,
-      "sha256": "57731115ecd14060bd619d904b0abb4c1e34cf294cfc8678d486b8f9bdadd204",
-      "segments": [
-        {
-          "text": "そらよっ！",
-          "kana": "ソ'ラヨッ",
-          "voice": "白上虎太郎",
-          "style": "おこ",
-          "styleId": 34
-        }
-      ]
-    },
-    {
-      "clip": "volt-thrown",
-      "seconds": 0.395,
-      "bytes": 18988,
-      "peak": 28800,
-      "rms": 5278.2,
-      "sha256": "a66c2379c331ebfca9b4f19579b251c879a6a189f9b80426b7128fdf0504336f",
-      "segments": [
-        {
-          "text": "うわっ！",
-          "kana": "ウワ'ッ",
-          "voice": "白上虎太郎",
-          "style": "おこ",
-          "styleId": 34
-        }
-      ]
-    },
-    {
-      "clip": "volt-throw_impact",
-      "seconds": 0.433,
-      "bytes": 20838,
-      "peak": 28800,
-      "rms": 4738.4,
-      "sha256": "2257df492f42e75c87337ed98e96afb4c119b1cd8c74cd1d85813c6f805fe2ef",
-      "segments": [
-        {
-          "text": "がはっ！",
-          "kana": "ガ'ハッ",
-          "voice": "白上虎太郎",
-          "style": "おこ",
-          "styleId": 34
-        }
-      ]
-    },
-    {
-      "clip": "freya-light0",
-      "seconds": 0.363,
-      "bytes": 17470,
-      "peak": 28800,
-      "rms": 4744.5,
-      "sha256": "70a5f0c05de9877e559123b9f42b9bfb77b41d677bfa50e18087614e78d8f44d",
-      "segments": [
-        {
-          "text": "はっ！",
-          "kana": "ハ'アッ",
-          "voice": "四国めたん",
-          "style": "ツンツン",
-          "styleId": 6
-        }
-      ]
-    },
-    {
-      "clip": "freya-light1",
-      "seconds": 0.386,
-      "bytes": 18578,
-      "peak": 28800,
-      "rms": 4670.5,
-      "sha256": "b69aaa8012230f1b114ddc73d99304a5a551a141023083321fc699818da9e64a",
-      "segments": [
-        {
-          "text": "せいっ！",
-          "kana": "セ'イッ",
-          "voice": "四国めたん",
-          "style": "ツンツン",
-          "styleId": 6
-        }
-      ]
-    },
-    {
-      "clip": "freya-heavy0",
-      "seconds": 0.692,
-      "bytes": 33242,
-      "peak": 28800,
-      "rms": 5646.4,
-      "sha256": "b9513a122b5f9ff833f971135d8eb984b3af738b9a02dd01b245867e32edfe77",
-      "segments": [
-        {
-          "text": "凍りなさい！",
-          "kana": "コオリナサ'イッ",
-          "voice": "四国めたん",
-          "style": "ツンツン",
-          "styleId": 6
-        }
-      ]
-    },
-    {
-      "clip": "freya-heavy1",
-      "seconds": 0.512,
-      "bytes": 24636,
-      "peak": 28800,
-      "rms": 3532.7,
-      "sha256": "c608238aae5cac4cde92a139212801359623c00e72d58490663928b5694c9b80",
-      "segments": [
-        {
-          "text": "貫く！",
-          "kana": "ツラヌ'クッ",
-          "voice": "四国めたん",
-          "style": "ツンツン",
-          "styleId": 6
-        }
-      ]
-    },
-    {
-      "clip": "freya-jump",
-      "seconds": 0.224,
-      "bytes": 10796,
-      "peak": 28800,
-      "rms": 5539.5,
-      "sha256": "a8cdac3abc4a0c41f271a802bd34d84ae0a04ba666c3afb675d11328a1f005e8",
-      "segments": [
-        {
-          "text": "ふっ！",
-          "kana": "フ'ッ",
-          "voice": "四国めたん",
-          "style": "ツンツン",
-          "styleId": 6
-        }
-      ]
-    },
-    {
-      "clip": "freya-dash",
-      "seconds": 0.59,
-      "bytes": 28354,
-      "peak": 28800,
-      "rms": 4563.6,
-      "sha256": "4f88bf722162d9580d2e3430e17f6872fc10333cfa65e00fc4034a1dee16dd60",
-      "segments": [
-        {
-          "text": "参ります！",
-          "kana": "マイリマ'スッ",
-          "voice": "四国めたん",
-          "style": "ツンツン",
-          "styleId": 6
-        }
-      ]
-    },
-    {
-      "clip": "freya-hurt0",
-      "seconds": 0.236,
-      "bytes": 11362,
-      "peak": 28800,
-      "rms": 4969.9,
-      "sha256": "4080cffb8696ebab363d7fb01f0bddf1bf2b8ac3679245107225d1fd980d6da4",
-      "segments": [
-        {
-          "text": "くっ！",
-          "kana": "ク'ッ",
-          "voice": "四国めたん",
-          "style": "ツンツン",
-          "styleId": 6
-        }
-      ]
-    },
-    {
-      "clip": "freya-hurt1",
-      "seconds": 0.246,
-      "bytes": 11864,
-      "peak": 28800,
-      "rms": 5354.0,
-      "sha256": "cf245011af1cff8e80cf613b9583c528184d8cb8e6b5636aa13b0cc54fb16e9d",
-      "segments": [
-        {
-          "text": "あっ！",
-          "kana": "ア'ッ",
-          "voice": "四国めたん",
-          "style": "ツンツン",
-          "styleId": 6
-        }
-      ]
-    },
-    {
-      "clip": "freya-throw",
-      "seconds": 0.383,
-      "bytes": 18448,
-      "peak": 28800,
-      "rms": 3944.5,
-      "sha256": "e14890a2885b14c91085abd0eb366597fc2b9239f1cd124f57e49c8419c72167",
-      "segments": [
-        {
-          "text": "そこっ！",
-          "kana": "ソ'コッ",
-          "voice": "四国めたん",
-          "style": "ツンツン",
-          "styleId": 6
-        }
-      ]
-    },
-    {
-      "clip": "freya-burst",
-      "seconds": 0.81,
-      "bytes": 38928,
-      "peak": 28800,
-      "rms": 5088.8,
-      "sha256": "22de229fd7f8cd9a6be755ae1df6cab184a182654cd0d78ff61f2fe963323463",
-      "segments": [
-        {
-          "text": "近寄らないで！",
-          "kana": "チカヨラ'ナイデッ",
-          "voice": "四国めたん",
-          "style": "ツンツン",
-          "styleId": 6
-        }
-      ]
-    },
-    {
-      "clip": "freya-sp1",
-      "seconds": 1.111,
-      "bytes": 53368,
-      "peak": 28800,
-      "rms": 5400.1,
-      "sha256": "d27d5a6ffb5a7206c4c69f0c69398663f4cef41850dca55ec335a256fd815449",
-      "segments": [
-        {
-          "text": "グレイシャーピラー！",
-          "kana": "グレ'イシャア/ピ'ラアッ",
-          "voice": "四国めたん",
-          "style": "ツンツン",
-          "styleId": 6
-        }
-      ]
-    },
-    {
-      "clip": "freya-sp2",
-      "seconds": 0.958,
-      "bytes": 46044,
-      "peak": 28800,
-      "rms": 4862.1,
-      "sha256": "5db594cb642cae2df5150a0ba108e2bace2adcc0fad01ae6f0d451507f0504ec",
-      "segments": [
-        {
-          "text": "ヴァルキリーランス！",
-          "kana": "ヴァルキリ'イ/ラ'ンスッ",
-          "voice": "四国めたん",
-          "style": "ツンツン",
-          "styleId": 6
-        }
-      ]
-    },
-    {
-      "clip": "freya-sp3",
-      "seconds": 0.842,
-      "bytes": 40454,
-      "peak": 28800,
-      "rms": 4765.7,
-      "sha256": "6fff0333478fbe73df7229aba8080164ca2458fd64e2d8876d83545b888e8bf3",
-      "segments": [
-        {
-          "text": "フロストノヴァ！",
-          "kana": "フロ'スト/ノ'ヴァッ",
-          "voice": "四国めたん",
-          "style": "ツンツン",
-          "styleId": 6
-        }
-      ]
-    },
-    {
-      "clip": "freya-super",
-      "seconds": 1.951,
-      "bytes": 93704,
-      "peak": 28800,
-      "rms": 3928.8,
-      "sha256": "4796b63381c3c592f15ce6d9f4274dc3456cf58b9c94ee0d73d6c95a674593e5",
-      "segments": [
-        {
-          "text": "アブソリュート・ゼロ……",
-          "kana": "アブソリュ'ウト/ゼ'ロ",
-          "voice": "四国めたん",
-          "style": "ノーマル",
-          "styleId": 2
-        },
-        {
-          "text": "カリバーっ！",
-          "kana": "カリバ'アッ",
-          "voice": "四国めたん",
-          "style": "ツンツン",
-          "styleId": 6
-        }
-      ]
-    },
-    {
-      "clip": "freya-select",
-      "seconds": 1.447,
-      "bytes": 69488,
-      "peak": 27524,
-      "rms": 3806.8,
-      "sha256": "6eda8c8e19e9288ead3bea926dc98ef880715b9c397a1349bf4218f7ff560bac",
-      "segments": [
-        {
-          "text": "静かな決着を。",
-          "kana": "シ'ズカナ、ケッチャク'オ",
-          "voice": "四国めたん",
-          "style": "ノーマル",
-          "styleId": 2
-        }
-      ]
-    },
-    {
-      "clip": "freya-win",
-      "seconds": 0.949,
-      "bytes": 45612,
-      "peak": 27524,
-      "rms": 6186.2,
-      "sha256": "6934fe1e407587c1e872019ffa1ff20a654021dc80c0d3bb0d5cf1ab71aa0b79",
-      "segments": [
-        {
-          "text": "お眠りなさい。",
-          "kana": "オネ'ムリ/ナサ'イ",
-          "voice": "四国めたん",
-          "style": "ノーマル",
-          "styleId": 2
-        }
-      ]
-    },
-    {
-      "clip": "freya-ko",
-      "seconds": 0.575,
-      "bytes": 27666,
-      "peak": 24903,
-      "rms": 4147.0,
-      "sha256": "b6a246ff01a73dfcec8d575c445df56b6b49bac34794d59b65e8eca4f14901c9",
-      "segments": [
-        {
-          "text": "そんな……。",
-          "kana": "ソン'ナ",
-          "voice": "四国めたん",
-          "style": "ノーマル",
-          "styleId": 2
-        }
-      ]
-    },
-    {
-      "clip": "freya-grabbed",
-      "seconds": 0.246,
-      "bytes": 11864,
-      "peak": 28800,
-      "rms": 5219.3,
-      "sha256": "120a7213489f91bbb4adf3adb76afd3498227f0642327ff29ad65a7eae1287ea",
-      "segments": [
-        {
-          "text": "あっ！",
-          "kana": "ア'ッ",
-          "voice": "四国めたん",
-          "style": "ツンツン",
-          "styleId": 6
-        }
-      ]
-    },
-    {
-      "clip": "freya-throw_release",
-      "seconds": 0.384,
-      "bytes": 18490,
-      "peak": 28800,
-      "rms": 4560.5,
-      "sha256": "af6d6b479b96a5522123474edb7410361036e6ce15c5b3fd2ff3ee08d89b902e",
-      "segments": [
-        {
-          "text": "はあっ！",
-          "kana": "ハ'アッ",
-          "voice": "四国めたん",
-          "style": "ツンツン",
-          "styleId": 6
-        }
-      ]
-    },
-    {
-      "clip": "freya-thrown",
-      "seconds": 0.332,
-      "bytes": 15958,
-      "peak": 28800,
-      "rms": 4477.3,
-      "sha256": "6e62bd163b3fd6f6172fc0f9fd90ab9da2bfb18fe72284922bb1f4c0491705f5",
-      "segments": [
-        {
-          "text": "ああっ！",
-          "kana": "ア'アッ",
-          "voice": "四国めたん",
-          "style": "ツンツン",
-          "styleId": 6
-        }
-      ]
-    },
-    {
-      "clip": "freya-throw_impact",
-      "seconds": 0.236,
-      "bytes": 11362,
-      "peak": 28800,
-      "rms": 4969.9,
-      "sha256": "4080cffb8696ebab363d7fb01f0bddf1bf2b8ac3679245107225d1fd980d6da4",
-      "segments": [
-        {
-          "text": "くっ！",
-          "kana": "ク'ッ",
-          "voice": "四国めたん",
-          "style": "ツンツン",
-          "styleId": 6
-        }
-      ]
-    },
-    {
-      "clip": "titan-light0",
-      "seconds": 0.416,
-      "bytes": 20012,
-      "peak": 22111,
-      "rms": 7700.2,
-      "sha256": "64f48f25f12be6dc2facc8aa3cf286a6c67a2a432231a7efbcf74714c34d875f",
-      "segments": [
-        {
-          "text": "ふんっ！",
-          "kana": "フ'ンッ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-light1",
-      "seconds": 0.384,
-      "bytes": 18476,
-      "peak": 28800,
-      "rms": 6211.7,
-      "sha256": "d9e28ceda1a51a91c3fec56c65190cd05dd6bea3f3a9d61a897247c9c72795c9",
-      "segments": [
-        {
-          "text": "どりゃっ！",
-          "kana": "ド'リャッ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-heavy0",
-      "seconds": 0.448,
-      "bytes": 21548,
-      "peak": 28800,
-      "rms": 6782.2,
-      "sha256": "a91ac357bfefa549a53ea888e4e4a91179e28717c75adbcc68a28b221b6292fb",
-      "segments": [
-        {
-          "text": "うおおっ！",
-          "kana": "ウオ'オッ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-heavy1",
-      "seconds": 0.555,
-      "bytes": 26668,
-      "peak": 28800,
-      "rms": 5560.4,
-      "sha256": "cc4addaca0446db727807c07bdd7371644fa22569e7c24f132e49d737b9d4f9e",
-      "segments": [
-        {
-          "text": "砕けろ！",
-          "kana": "クダケ'ロッ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-jump",
-      "seconds": 0.299,
-      "bytes": 14380,
-      "peak": 28800,
-      "rms": 6140.2,
-      "sha256": "a4f1eaf656af2947efa323ad1549285a686398c92513bdd032eab10715cbc7a7",
-      "segments": [
-        {
-          "text": "ぬっ！",
-          "kana": "ヌ'ッ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-dash",
-      "seconds": 0.725,
-      "bytes": 34860,
-      "peak": 28800,
-      "rms": 5026.6,
-      "sha256": "2c15db9c04968607ff2927c14d2e295a1dfd95bab16fa96888a839e9b5010aa5",
-      "segments": [
-        {
-          "text": "突き進む！",
-          "kana": "ツキスス'ムッ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-hurt0",
-      "seconds": 0.373,
-      "bytes": 17964,
-      "peak": 28800,
-      "rms": 7398.9,
-      "sha256": "069a48cd21f25061cb73360defc05dc718a3976c44c67dc47bf8313e4bab8ba3",
-      "segments": [
-        {
-          "text": "ぐぬっ！",
-          "kana": "グ'ヌッ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-hurt1",
-      "seconds": 0.405,
-      "bytes": 19500,
-      "peak": 28800,
-      "rms": 5582.5,
-      "sha256": "ae1d9d5d7c45174920d872373412ac39a59de3d0414d184a92b31ff2a34b37bc",
-      "segments": [
-        {
-          "text": "がはっ！",
-          "kana": "ガ'ハッ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-throw",
-      "seconds": 0.523,
-      "bytes": 25132,
-      "peak": 28800,
-      "rms": 5255.0,
-      "sha256": "e0f88cf8f600b8629ec2875e3eb8b997cf7bb48fbf6d5167ffd475af80bb25a1",
-      "segments": [
-        {
-          "text": "捉えた！",
-          "kana": "トラ'エタッ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-burst",
-      "seconds": 0.629,
-      "bytes": 30252,
-      "peak": 28800,
-      "rms": 4562.6,
-      "sha256": "680fff0079bf4e065f7afe88bc87ec802c636e9a13383450ed36167e5f620cb5",
-      "segments": [
-        {
-          "text": "吹き飛べっ！",
-          "kana": "フキト'ベッ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-sp1",
-      "seconds": 1.725,
-      "bytes": 82860,
-      "peak": 28800,
-      "rms": 4869.3,
-      "sha256": "f88f0f56053460d9c0eb7bc5d6832ac0e3ebfeeb2e6cea44beb4065a8b4b93cd",
-      "segments": [
-        {
-          "text": "震脚っ！",
-          "kana": "シン'キャクッ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        },
-        {
-          "text": "大地砕きっ！",
-          "kana": "ダ'イチ/クダ'キッ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-sp2",
-      "seconds": 1.077,
-      "bytes": 51756,
-      "peak": 28800,
-      "rms": 4944.3,
-      "sha256": "0ecfeccf0944026b632d28431c1f5973abea55f4a1bbe7d6e7aa1fc13d56d96d",
-      "segments": [
-        {
-          "text": "ギガントタックル！",
-          "kana": "ギガ'ント/タ'ックルッ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-sp3",
-      "seconds": 1.013,
-      "bytes": 48684,
-      "peak": 28800,
-      "rms": 5140.4,
-      "sha256": "beb01e65d43891530d8565e5d21e255dcabd332003e4bad79016e7b0ebe36a5e",
-      "segments": [
-        {
-          "text": "ガイアバスター！",
-          "kana": "ガ'イア/バ'スタアッ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-super",
-      "seconds": 1.608,
-      "bytes": 77244,
-      "peak": 28800,
-      "rms": 4969.7,
-      "sha256": "0889544dbd26745eb80566b8afe555c57ec1dfc8113837301fcea4867891eec5",
-      "segments": [
-        {
-          "text": "メテオ……",
-          "kana": "メ'テオ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        },
-        {
-          "text": "カタストロフィっ！",
-          "kana": "カタストロ'フィッ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-select",
-      "seconds": 1.376,
-      "bytes": 66092,
-      "peak": 27524,
-      "rms": 4956.2,
-      "sha256": "22c2c105172dffc3662479b2239b863b6bebcea15d8a45d63fe7fd5cb1ba9efe",
-      "segments": [
-        {
-          "text": "さあ、かかって来い！",
-          "kana": "サ'ア、カカ'ッテ/コ'イ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-win",
-      "seconds": 0.832,
-      "bytes": 39980,
-      "peak": 27524,
-      "rms": 5012.5,
-      "sha256": "2bd979222e886e04abfc1113f3de4c6f8c3407be646acc95df1f4f93d9b8961f",
-      "segments": [
-        {
-          "text": "まだまだじゃ。",
-          "kana": "マ'ダマダジャ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-ko",
-      "seconds": 0.843,
-      "bytes": 40492,
-      "peak": 24903,
-      "rms": 3542.1,
-      "sha256": "71cf84fe3c2679a3b79a0648e7c80522dd3fd35c493a41501b88749a169dc2c2",
-      "segments": [
-        {
-          "text": "……見事じゃ。",
-          "kana": "ミ'ゴトジャ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-grabbed",
-      "seconds": 0.38,
-      "bytes": 18284,
-      "peak": 28727,
-      "rms": 7700.2,
-      "sha256": "cd4310ae6ff7b93cd2ef3da8f442f7cdff8b4869bc52da645fbb0395d71ad789",
-      "segments": [
-        {
-          "text": "ぬおっ！",
-          "kana": "ヌ'オッ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-throw_release",
-      "seconds": 0.523,
-      "bytes": 25132,
-      "peak": 28800,
-      "rms": 7151.9,
-      "sha256": "3da840fa4d17a0ef7c7f94af154bc830d579230418007aeb03b806615828c645",
-      "segments": [
-        {
-          "text": "どりゃあっ！",
-          "kana": "ド'リャアッ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-thrown",
-      "seconds": 0.448,
-      "bytes": 21548,
-      "peak": 28800,
-      "rms": 6879.6,
-      "sha256": "fb6e17c703e9765d2c87632c8524f3f87803bbf3cfe0a07eec6c4c15663624f5",
-      "segments": [
-        {
-          "text": "ぐおおっ！",
-          "kana": "グオ'オッ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "titan-throw_impact",
-      "seconds": 0.405,
-      "bytes": 19500,
-      "peak": 28800,
-      "rms": 5285.3,
-      "sha256": "94d8f56638ef3e1dc07c5e6ced0b5bfd7b4d05b14fbd6e0a1f1089c4921a095f",
-      "segments": [
-        {
-          "text": "がはっ！",
-          "kana": "ガ'ハッ",
-          "voice": "麒ヶ島宗麟",
-          "style": "ノーマル",
-          "styleId": 53
-        }
-      ]
-    },
-    {
-      "clip": "ayame-light0",
-      "seconds": 0.331,
-      "bytes": 15916,
-      "peak": 28800,
-      "rms": 3240.4,
-      "sha256": "854b8b5840f441369bd086f31e99873051fb39df022555b87857c6cd4477879e",
-      "segments": [
-        {
-          "text": "はっ！",
-          "kana": "ハ'ッ",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "ayame-light1",
-      "seconds": 0.416,
-      "bytes": 20012,
-      "peak": 28800,
-      "rms": 6361.1,
-      "sha256": "3fe567ada4815e84fad74699aada61e2c1ef203bc7e8234354a2480e9f2df834",
-      "segments": [
-        {
-          "text": "えいっ！",
-          "kana": "エ'イッ",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "ayame-heavy0",
-      "seconds": 0.64,
-      "bytes": 30764,
-      "peak": 28800,
-      "rms": 4758.4,
-      "sha256": "2bccc93d5428d46ec2b9900fda30e1f60a712e66b865cf90e9f605c31a04b640",
-      "segments": [
-        {
-          "text": "そこね！",
-          "kana": "ソコ'ネッ",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "ayame-heavy1",
-      "seconds": 0.704,
-      "bytes": 33836,
-      "peak": 28800,
-      "rms": 6027.4,
-      "sha256": "ea2001dcf810c0d35ee75653c59010e5c85f88e9975e79adda22fdff20892e55",
-      "segments": [
-        {
-          "text": "舞いなさい！",
-          "kana": "マイナサ'イッ",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "ayame-jump",
-      "seconds": 0.309,
-      "bytes": 14892,
-      "peak": 28800,
-      "rms": 5913.6,
-      "sha256": "03e7173bf42f7bc64a86da9a6579c8d92ed60ecce5ea6d50739fd511bb102659",
-      "segments": [
-        {
-          "text": "よっ！",
-          "kana": "ヨ'ッ",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "ayame-dash",
-      "seconds": 0.725,
-      "bytes": 34860,
-      "peak": 28800,
-      "rms": 5651.0,
-      "sha256": "9b37075aeef8c3772375c56bbb43faa1d270fb80ff92d4627032734e64440fee",
-      "segments": [
-        {
-          "text": "こちらよ！",
-          "kana": "コチラ'ヨッ",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "ayame-hurt0",
-      "seconds": 0.309,
-      "bytes": 14892,
-      "peak": 28800,
-      "rms": 4415.1,
-      "sha256": "2b2fa6ee63f9e8408074837096ef63c4d279b9d4230197650364565c5fc4774f",
-      "segments": [
-        {
-          "text": "くっ！",
-          "kana": "ク'ッ",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "ayame-hurt1",
-      "seconds": 0.309,
-      "bytes": 14892,
-      "peak": 28800,
-      "rms": 4870.9,
-      "sha256": "06397373884f1515d8ea24f080c74766bd2cd3318e3e71ae88cfe92daa81356b",
-      "segments": [
-        {
-          "text": "あっ！",
-          "kana": "ア'ッ",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "ayame-throw",
-      "seconds": 0.64,
-      "bytes": 30764,
-      "peak": 28800,
-      "rms": 7098.9,
-      "sha256": "28d83fa516a8d1cb7eaa4086d49cc862a83404220aa355359ff5a10c4dd53b8c",
-      "segments": [
-        {
-          "text": "そこね！",
-          "kana": "ソ'コネッ",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "ayame-burst",
-      "seconds": 0.693,
-      "bytes": 33324,
-      "peak": 28800,
-      "rms": 5393.3,
-      "sha256": "547fb5c1932fe23ae9df6ff88a95abcefb7171ff0f141a846bb2557e7bfd3519",
-      "segments": [
-        {
-          "text": "お下がりっ！",
-          "kana": "オサ'ガリッ",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "ayame-sp1",
-      "seconds": 1.003,
-      "bytes": 48172,
-      "peak": 28800,
-      "rms": 4712.6,
-      "sha256": "c9e68fbd13073cd94d69f8faa812770fa05b6e2915971d10167607b432c62fcd",
-      "segments": [
-        {
-          "text": "しげつせん！",
-          "kana": "シゲツ'/セ'ンッ",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "ayame-sp2",
-      "seconds": 0.949,
-      "bytes": 45612,
-      "peak": 28800,
-      "rms": 6005.0,
-      "sha256": "303c4aaa40e4005bc820f3d33a80b1657ecc86c8d5161769d7d5ca9d002291e2",
-      "segments": [
-        {
-          "text": "ひえんのまい！",
-          "kana": "ヒ'エンノ/マ'イッ",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "ayame-sp3",
-      "seconds": 1.099,
-      "bytes": 52780,
-      "peak": 28800,
-      "rms": 5118.0,
-      "sha256": "a9d30850fbb82a437d6d0883d2779001499c5106c80e3b20d3c7ffb39c63e918",
-      "segments": [
-        {
-          "text": "かすみばしり！",
-          "kana": "カスミ'/バ'シリッ",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "ayame-super",
-      "seconds": 1.982,
-      "bytes": 95164,
-      "peak": 28800,
-      "rms": 5791.3,
-      "sha256": "98d99f499e446d3a7bc1e535b8c90a68f63b45a1aeb33f4742343cabdbac1293",
-      "segments": [
-        {
-          "text": "秘奥義……",
-          "kana": "ヒオ'オギ",
-          "voice": "中国うさぎ",
-          "style": "ノーマル",
-          "styleId": 61
-        },
-        {
-          "text": "百花・繚乱っ！",
-          "kana": "ヒャ'ッカ/リョ'オランッ",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "ayame-select",
-      "seconds": 1.856,
-      "bytes": 89132,
-      "peak": 27524,
-      "rms": 4930.3,
-      "sha256": "9a6e435d5999e337208299ae7ae1ecc3d1ddb4ee52400a698d7950c5594a624c",
-      "segments": [
-        {
-          "text": "ついてこられるかしら？",
-          "kana": "ツ'イテ、コラレ'ルカシラ？",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "ayame-win",
-      "seconds": 1.291,
-      "bytes": 61996,
-      "peak": 27524,
-      "rms": 4916.2,
-      "sha256": "055f0c28a22a2390199e7cd05e93a02ce364a8dc9c6cf5032214b3349780c186",
-      "segments": [
-        {
-          "text": "舞は、ここまで。",
-          "kana": "マ'イワ、ココマ'デ",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "ayame-ko",
-      "seconds": 0.885,
-      "bytes": 42540,
-      "peak": 24903,
-      "rms": 4683.6,
-      "sha256": "0eb8f9b9bc689fd9c87c59e25f8e59ab5bcfdd95fca37900ca01feb3e36d55e0",
-      "segments": [
-        {
-          "text": "……不覚ね。",
-          "kana": "フカ'クネ",
-          "voice": "中国うさぎ",
-          "style": "こわがり",
-          "styleId": 63
-        }
-      ]
-    },
-    {
-      "clip": "ayame-grabbed",
-      "seconds": 0.288,
-      "bytes": 13868,
-      "peak": 28800,
-      "rms": 4216.1,
-      "sha256": "8b600d1d41d3e2db663b29885927be545a0616fe476619d46620f137cf7ecec9",
-      "segments": [
-        {
-          "text": "えっ！",
-          "kana": "エ'ッ",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "ayame-throw_release",
-      "seconds": 0.533,
-      "bytes": 25644,
-      "peak": 28800,
-      "rms": 5239.2,
-      "sha256": "c3f4876673a78c7d6cc31433c3a2ad748287a947201dba492646ea79e2005f46",
-      "segments": [
-        {
-          "text": "せいっ！",
-          "kana": "セ'イッ",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "ayame-thrown",
-      "seconds": 0.523,
-      "bytes": 25132,
-      "peak": 28800,
-      "rms": 6606.4,
-      "sha256": "ee54edc2dd5190c91f385b17e8ee74f414651f37299bd82809ea304b03c7a882",
-      "segments": [
-        {
-          "text": "きゃあっ！",
-          "kana": "キャ'アッ",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "ayame-throw_impact",
-      "seconds": 0.245,
-      "bytes": 11820,
-      "peak": 28800,
-      "rms": 5416.6,
-      "sha256": "e84fbc906bbca4eabbfa864c2d93f9a7b1416eda63c5955557400590cbe5c35c",
-      "segments": [
-        {
-          "text": "うっ！",
-          "kana": "ウ'ッ",
-          "voice": "中国うさぎ",
-          "style": "おどろき",
-          "styleId": 62
-        }
-      ]
-    },
-    {
-      "clip": "celine-light0",
-      "seconds": 0.363,
-      "bytes": 17452,
-      "peak": 28800,
-      "rms": 3904.9,
-      "sha256": "c6f5cae735145fb1d8985993ad62960313d1c92402c4caa91ff7ec9dd0455088",
-      "segments": [
-        {
-          "text": "はっ！",
-          "kana": "ハ'ッ",
-          "voice": "九州そら",
-          "style": "ツンツン",
-          "styleId": 18
-        }
-      ]
-    },
-    {
-      "clip": "celine-light1",
-      "seconds": 0.454,
-      "bytes": 21828,
-      "peak": 28800,
-      "rms": 2618.6,
-      "sha256": "35daa7f4fa2ed66a4e9c5cbf42f67bed176feee9f6c0f630aaa372e7beade1e0",
-      "segments": [
-        {
-          "text": "えいっ！",
-          "kana": "エ'イッ",
-          "voice": "九州そら",
-          "style": "ツンツン",
-          "styleId": 18
-        }
-      ]
-    },
-    {
-      "clip": "celine-heavy0",
-      "seconds": 0.96,
-      "bytes": 46124,
-      "peak": 28800,
-      "rms": 4744.1,
-      "sha256": "c1574fba45e9c6f2dc836feee6707b5b492e5b05023026961c8a48c7463864de",
-      "segments": [
-        {
-          "text": "そこです！",
-          "kana": "ソコデ'スッ",
-          "voice": "九州そら",
-          "style": "ツンツン",
-          "styleId": 18
-        }
-      ]
-    },
-    {
-      "clip": "celine-heavy1",
-      "seconds": 1.195,
-      "bytes": 57388,
-      "peak": 28800,
-      "rms": 3934.4,
-      "sha256": "32b3ae50eebf92ecf77765fb373f243ac3d598c32e52b40f6d8035e2e65948e3",
-      "segments": [
-        {
-          "text": "貫きます！",
-          "kana": "ツラヌキマ'スッ",
-          "voice": "九州そら",
-          "style": "ツンツン",
-          "styleId": 18
-        }
-      ]
-    },
-    {
-      "clip": "celine-jump",
-      "seconds": 0.309,
-      "bytes": 14892,
-      "peak": 26736,
-      "rms": 7700.2,
-      "sha256": "421642facd868f152ab24578c5c18c233d0e3ce0ed3e68d6d3b3aca760c95cfd",
-      "segments": [
-        {
-          "text": "ふっ！",
-          "kana": "フ'ッ",
-          "voice": "九州そら",
-          "style": "ツンツン",
-          "styleId": 18
-        }
-      ]
-    },
-    {
-      "clip": "celine-dash",
-      "seconds": 0.967,
-      "bytes": 46466,
-      "peak": 28800,
-      "rms": 3038.4,
-      "sha256": "fc6fffaf886eb3f24f7acdc55636cab3ff7494fa37e8b7f5d904f8f5991d8e4d",
-      "segments": [
-        {
-          "text": "失礼！",
-          "kana": "シ'ツレイッ",
-          "voice": "九州そら",
-          "style": "ツンツン",
-          "styleId": 18
-        }
-      ]
-    },
-    {
-      "clip": "celine-hurt0",
-      "seconds": 0.235,
-      "bytes": 11308,
-      "peak": 28800,
-      "rms": 5151.5,
-      "sha256": "da2fe2a4e51a9667b9f0e1cb40f2e82c95cfa421719cbac1bedb6f99e4d4a3f4",
-      "segments": [
-        {
-          "text": "くっ！",
-          "kana": "ク'ッ",
-          "voice": "九州そら",
-          "style": "ツンツン",
-          "styleId": 18
-        }
-      ]
-    },
-    {
-      "clip": "celine-hurt1",
+      "id": "kagura-light0",
+      "voice": "am_fenrir",
+      "text": "Hyah!",
+      "seconds": 0.43,
+      "peak": 29163,
+      "rms": 6084.17,
+      "sha256": "585aaa17b059c457e22b1a5a64d5da57842011cd3b090640197296c8c9590bed"
+    },
+    {
+      "id": "kagura-light1",
+      "voice": "am_fenrir",
+      "text": "Hah!",
+      "seconds": 0.404,
+      "peak": 29163,
+      "rms": 5577.7,
+      "sha256": "883f31d7a60aa89ca7fe89d91cfe25fce57b397afaa1ca27bfe97c21c3c2376b"
+    },
+    {
+      "id": "kagura-heavy0",
+      "voice": "am_fenrir",
+      "text": "Cut deep!",
+      "seconds": 0.562,
+      "peak": 29163,
+      "rms": 5049.23,
+      "sha256": "01d9400ddaca1e42ef70c652238b961690fe0e233388291f11c6c877ac2ee89a"
+    },
+    {
+      "id": "kagura-heavy1",
+      "voice": "am_fenrir",
+      "text": "Strike true!",
+      "seconds": 0.739,
+      "peak": 29163,
+      "rms": 5005.26,
+      "sha256": "1a0aba5eae90f455b51466fa7ca4897137d3e343b165c746e283059863ffa82b"
+    },
+    {
+      "id": "kagura-jump",
+      "voice": "am_fenrir",
+      "text": "Hup!",
+      "seconds": 0.369,
+      "peak": 29163,
+      "rms": 4785.03,
+      "sha256": "5c5165381fb352572eafe8ec2f212e77abb26a06bce7e82c8f8fc16cd82fbd39"
+    },
+    {
+      "id": "kagura-dash",
+      "voice": "am_fenrir",
+      "text": "Here I come!",
+      "seconds": 0.679,
+      "peak": 29163,
+      "rms": 6418.62,
+      "sha256": "8cfd411b10f33ac6a688f4e8eab22397cc5c15553149708e3db6380ebf8feb0c"
+    },
+    {
+      "id": "kagura-hurt0",
+      "voice": "am_fenrir",
+      "text": "Ack!",
+      "seconds": 0.381,
+      "peak": 29163,
+      "rms": 5701.8,
+      "sha256": "cf96a995b28d7a291b6a56900e498af61b6d1af85cd9b62c9c930442e1138acf"
+    },
+    {
+      "id": "kagura-hurt1",
+      "voice": "am_fenrir",
+      "text": "Ugh!",
+      "seconds": 0.403,
+      "peak": 29163,
+      "rms": 5117.15,
+      "sha256": "e8a4904b9d7e787db5109320a90869804b491d3fe39c6177d0048872e21b28a5"
+    },
+    {
+      "id": "kagura-throw",
+      "voice": "am_fenrir",
+      "text": "Got you!",
+      "seconds": 0.603,
+      "peak": 29163,
+      "rms": 6071.45,
+      "sha256": "ed781233cbe4f8ca1c829df9ac7a0fe4dc3c0b12925864d83dddcd3fb93f7593"
+    },
+    {
+      "id": "kagura-burst",
+      "voice": "am_fenrir",
+      "text": "Get back!",
+      "seconds": 0.556,
+      "peak": 29163,
+      "rms": 6683.57,
+      "sha256": "ccae4147932ce5420864acb723b3f3abd5ad77cff061f39ce859ab11f50f192a"
+    },
+    {
+      "id": "kagura-sp1",
+      "voice": "am_fenrir",
+      "text": "Crescent Edge!",
+      "seconds": 0.742,
+      "peak": 29163,
+      "rms": 5480.16,
+      "sha256": "0e0b3dacb7e82eacfe406ee8c9f98f2af7bfecdf092fcd50b4d438182155dd73"
+    },
+    {
+      "id": "kagura-sp2",
+      "voice": "am_fenrir",
+      "text": "Flying Swallow!",
+      "seconds": 0.805,
+      "peak": 29163,
+      "rms": 5236.41,
+      "sha256": "5eeff90f20684c9be66a9f4eb744f5b0ff4b112b545cf223285ea74cc967275e"
+    },
+    {
+      "id": "kagura-sp3",
+      "voice": "am_fenrir",
+      "text": "Phantom... Sever!",
+      "seconds": 1.208,
+      "peak": 29163,
+      "rms": 6696.9,
+      "sha256": "2ab2e282352bd34d8f2b5fb2d949fe58206f78bca9f14c7644b6f86b0322e534"
+    },
+    {
+      "id": "kagura-super",
+      "voice": "am_fenrir",
+      "text": "Witness my true flame... Inferno! Heaven Slash!",
+      "seconds": 2.646,
+      "peak": 29163,
+      "rms": 5109.18,
+      "sha256": "ea305edf392bc8452f1d42a0f04ee6de1e10913be760debfbebfd77aefa1afdb"
+    },
+    {
+      "id": "kagura-select",
+      "voice": "am_fenrir",
+      "text": "Draw your steel! Let's see what you're made of!",
+      "seconds": 2.081,
+      "peak": 27852,
+      "rms": 4257.26,
+      "sha256": "113beee26edd0f1acb3bc3d427c78edef2de5fd67561bbe8bf314eaa4eb47278"
+    },
+    {
+      "id": "kagura-win",
+      "voice": "am_fenrir",
+      "text": "Hmph! A duel well fought!",
+      "seconds": 1.963,
+      "peak": 27852,
+      "rms": 4836.6,
+      "sha256": "7e0bc2f87157622343df3cb771060fbc8ed9f2b879d29bfc2cf3c2264b5938ff"
+    },
+    {
+      "id": "kagura-ko",
+      "voice": "am_fenrir",
+      "text": "No... my flame... fades...",
+      "seconds": 1.615,
+      "peak": 25558,
+      "rms": 3677.95,
+      "sha256": "fad8e7b85e7716230a822c2e060d75b8e7a30b14701f62ac94ff50f8e5952c28"
+    },
+    {
+      "id": "kagura-grabbed",
+      "voice": "am_fenrir",
+      "text": "What?!",
+      "seconds": 0.439,
+      "peak": 29163,
+      "rms": 5368.67,
+      "sha256": "cc772f2c3fe4e2109bbe7199871e69000766169536118cedc29dd590efc0e992"
+    },
+    {
+      "id": "kagura-throw_release",
+      "voice": "am_fenrir",
+      "text": "Out of my sight!",
+      "seconds": 0.737,
+      "peak": 29163,
+      "rms": 5267.21,
+      "sha256": "0bb55f72a1d92b378ef8c933bdef5b0d1d46f6bc8e9ba4e37613aa0e8424daec"
+    },
+    {
+      "id": "kagura-thrown",
+      "voice": "am_fenrir",
+      "text": "Damn you!",
+      "seconds": 0.597,
+      "peak": 29163,
+      "rms": 6976.72,
+      "sha256": "0f92e355a626e8059224e67120839da0b4d9b79607e1a63db3a99f633b13d7a2"
+    },
+    {
+      "id": "kagura-throw_impact",
+      "voice": "am_fenrir",
+      "text": "Gah!",
       "seconds": 0.419,
-      "bytes": 20162,
-      "peak": 28800,
-      "rms": 4394.2,
-      "sha256": "b4e34811a756e73196faa6474c4e1535f3edc4f678a8bff0af8c4237af06361a",
-      "segments": [
-        {
-          "text": "ああっ！",
-          "kana": "アア'ッ",
-          "voice": "九州そら",
-          "style": "ツンツン",
-          "styleId": 18
-        }
-      ]
+      "peak": 29163,
+      "rms": 6762.44,
+      "sha256": "3b51f4baba26ae0a43e569c1a3931475852d5158bdbe79831fcf6cd4c7ad9e13"
     },
     {
-      "clip": "celine-throw",
-      "seconds": 0.619,
-      "bytes": 29740,
-      "peak": 28800,
-      "rms": 3839.1,
-      "sha256": "06004f4644ab44fa8a4b6c207c4ad8145560528e57f4b3ac590f692319447703",
-      "segments": [
-        {
-          "text": "そこっ！",
-          "kana": "ソ'コッ",
-          "voice": "九州そら",
-          "style": "ツンツン",
-          "styleId": 18
-        }
-      ]
+      "id": "kagura-finish",
+      "voice": "am_fenrir",
+      "text": "Your wicked flame ends here... By my blade!",
+      "seconds": 2.368,
+      "peak": 29163,
+      "rms": 5138.32,
+      "sha256": "b864f9a5eafcbdf020eab1e0dc3eace8c92196272440ebd02e05368d3af8bc85"
     },
     {
-      "clip": "celine-burst",
-      "seconds": 1.312,
-      "bytes": 63020,
-      "peak": 28800,
-      "rms": 4707.8,
-      "sha256": "a6a9a8f1816c2c98da70b4b71656e75c6a3db048e3551ddb6d6b3fe92173760c",
-      "segments": [
-        {
-          "text": "お離れなさい！",
-          "kana": "オハ'ナレ/ナサ'イッ",
-          "voice": "九州そら",
-          "style": "ツンツン",
-          "styleId": 18
-        }
-      ]
+      "id": "volt-light0",
+      "voice": "am_puck",
+      "text": "Hah!",
+      "seconds": 0.415,
+      "peak": 29163,
+      "rms": 6707.38,
+      "sha256": "c13ae65f53492b99f36613594332eb02b03f8d302e1b2ecc1620041c3df5e10d"
     },
     {
-      "clip": "celine-sp1",
-      "seconds": 1.333,
-      "bytes": 64044,
-      "peak": 28800,
-      "rms": 6053.7,
-      "sha256": "d36e1a371ce00a3ed1d55878dd1a747fd72bae45ea81df3484322acddf364fcf",
-      "segments": [
-        {
-          "text": "ローズエクレール！",
-          "kana": "ロ'オズ/エクレ'エルッ",
-          "voice": "九州そら",
-          "style": "ツンツン",
-          "styleId": 18
-        }
-      ]
+      "id": "volt-light1",
+      "voice": "am_puck",
+      "text": "Bam!",
+      "seconds": 0.447,
+      "peak": 29163,
+      "rms": 7552.24,
+      "sha256": "5466e6439bfd6e099b8a66317fb3a54f1eef41f1c1da9788b0e56daa7e4c7a81"
     },
     {
-      "clip": "celine-sp2",
-      "seconds": 1.301,
-      "bytes": 62508,
-      "peak": 28800,
-      "rms": 6346.1,
-      "sha256": "7ea863943c960ff54bbf507220a497131d3c55027cd3d7718f26b8e2c7992725",
-      "segments": [
-        {
-          "text": "フルールランジ！",
-          "kana": "フル'ウル/ラ'ンジッ",
-          "voice": "九州そら",
-          "style": "ツンツン",
-          "styleId": 18
-        }
-      ]
+      "id": "volt-heavy0",
+      "voice": "am_puck",
+      "text": "Eat this!",
+      "seconds": 0.601,
+      "peak": 29163,
+      "rms": 6375.86,
+      "sha256": "43db6a08401cf69802949dbbd6082f0aae559070f1868189e41f7d7c7ab960f6"
     },
     {
-      "clip": "celine-sp3",
-      "seconds": 1.632,
-      "bytes": 78380,
-      "peak": 28800,
-      "rms": 4640.5,
-      "sha256": "c0f5a9dceda9b1d7e4b6f76c757c940fe66fb3ab51d82309a618447b4fdb238c",
-      "segments": [
-        {
-          "text": "エメラルドリポスト！",
-          "kana": "エメラ'ルド/リポ'スト",
-          "voice": "九州そら",
-          "style": "ツンツン",
-          "styleId": 18
-        }
-      ]
+      "id": "volt-heavy1",
+      "voice": "am_puck",
+      "text": "Watch this, pal!",
+      "seconds": 0.862,
+      "peak": 29163,
+      "rms": 6037.19,
+      "sha256": "64b58b42d4da020d188739cc712e711ccbba88bdd603feca8a50122bac72402e"
     },
     {
-      "clip": "celine-super",
-      "seconds": 1.94,
-      "bytes": 93140,
-      "peak": 28800,
-      "rms": 4962.2,
-      "sha256": "67e190fbe41584f2bcd66d7e43baef7bad846ee9e6ee583cdf48fa4668d0c212",
-      "segments": [
-        {
-          "text": "エトワール……",
-          "kana": "エトワ'アル",
-          "voice": "九州そら",
-          "style": "ノーマル",
-          "styleId": 16
-        },
-        {
-          "text": "デュ・ソワールっ！",
-          "kana": "デュ'/ソワ'アルッ",
-          "voice": "九州そら",
-          "style": "ツンツン",
-          "styleId": 18
-        }
-      ]
+      "id": "volt-jump",
+      "voice": "am_puck",
+      "text": "Hup!",
+      "seconds": 0.391,
+      "peak": 29163,
+      "rms": 5318.79,
+      "sha256": "6e2d0bfb1b4e44a1b2ebddcbb26a8d0843db394a517d31f929d97ed7dde5895e"
     },
     {
-      "clip": "celine-select",
-      "seconds": 1.845,
-      "bytes": 88620,
-      "peak": 27524,
-      "rms": 5546.2,
-      "sha256": "1d21256d0204caba3ce7d73828e2e858b11614613b9e45116c44fe60c942211f",
-      "segments": [
-        {
-          "text": "美しい決闘を。",
-          "kana": "ウ_ツクシ'イ、ケットオオ'",
-          "voice": "九州そら",
-          "style": "ノーマル",
-          "styleId": 16
-        }
-      ]
+      "id": "volt-dash",
+      "voice": "am_puck",
+      "text": "Too slow!",
+      "seconds": 0.635,
+      "peak": 29163,
+      "rms": 7045.95,
+      "sha256": "fc52a036ceb85d78c5e056d33bda3c0f735f29b23532e1621b4cf5cfd9d267d6"
     },
     {
-      "clip": "celine-win",
-      "seconds": 1.824,
-      "bytes": 87596,
-      "peak": 27524,
-      "rms": 5013.2,
-      "sha256": "f110dae54b3aa6f303c8329e8ffd4847b66eef18a10124d3ccbf1be27ff05778",
-      "segments": [
-        {
-          "text": "見事な勝負でした。",
-          "kana": "ミ'ゴトナ/ショ'オブデシタ",
-          "voice": "九州そら",
-          "style": "ノーマル",
-          "styleId": 16
-        }
-      ]
+      "id": "volt-hurt0",
+      "voice": "am_puck",
+      "text": "Ack!",
+      "seconds": 0.408,
+      "peak": 29163,
+      "rms": 6445.53,
+      "sha256": "e7bac346b86e22bbac08eb065ff12a26d3690e2299eb594f37a6a6a24a8dbc98"
     },
     {
-      "clip": "celine-ko",
-      "seconds": 1.504,
-      "bytes": 72236,
-      "peak": 24903,
-      "rms": 4503.3,
-      "sha256": "3668668f95ed519df22c4d3abaca981950dcb8dc5cbc5013529beff62d40e310",
-      "segments": [
-        {
-          "text": "……参りました。",
-          "kana": "マイリマ'シタ",
-          "voice": "九州そら",
-          "style": "ツンツン",
-          "styleId": 18
-        }
-      ]
+      "id": "volt-hurt1",
+      "voice": "am_puck",
+      "text": "Gah!",
+      "seconds": 0.455,
+      "peak": 29163,
+      "rms": 6863.51,
+      "sha256": "5d5fa22f08665b9e0498b7ffe20c267778999ccff817d6db98dbd78f77f92232"
     },
     {
-      "clip": "celine-grabbed",
-      "seconds": 0.265,
-      "bytes": 12752,
-      "peak": 28800,
-      "rms": 2568.7,
-      "sha256": "6e772264051a126aff9dc38fa680a8ca432891d2dd7125b90cab88ce36229aa4",
-      "segments": [
-        {
-          "text": "あっ！",
-          "kana": "ア'ッ",
-          "voice": "九州そら",
-          "style": "ツンツン",
-          "styleId": 18
-        }
-      ]
+      "id": "volt-throw",
+      "voice": "am_puck",
+      "text": "Gotcha!",
+      "seconds": 0.587,
+      "peak": 29163,
+      "rms": 6380.19,
+      "sha256": "3ec80a777c34f6853f65e88a34dfadec9650b55e3ab9d61a55426abf49ea523b"
     },
     {
-      "clip": "celine-throw_release",
-      "seconds": 0.426,
-      "bytes": 20504,
-      "peak": 28800,
-      "rms": 5280.2,
-      "sha256": "6a2565b19baf1927cd9064b9abfa2ad776bd9635c154cf29a38f28520da97bd6",
-      "segments": [
-        {
-          "text": "はあっ！",
-          "kana": "ハ'アッ",
-          "voice": "九州そら",
-          "style": "ツンツン",
-          "styleId": 18
-        }
-      ]
+      "id": "volt-burst",
+      "voice": "am_puck",
+      "text": "Back off!",
+      "seconds": 0.552,
+      "peak": 29163,
+      "rms": 6175.35,
+      "sha256": "95960ca727f7ed436af193365355936326850f51c7de1986f6abd89579c9309b"
     },
     {
-      "clip": "celine-thrown",
-      "seconds": 0.427,
-      "bytes": 20562,
-      "peak": 28800,
-      "rms": 2684.4,
-      "sha256": "aae5d99bc6b3c675ee1cdd1216b81ac32490a9d9f211ae9310987385ec9ed340",
-      "segments": [
-        {
-          "text": "ああっ！",
-          "kana": "ア'アッ",
-          "voice": "九州そら",
-          "style": "ツンツン",
-          "styleId": 18
-        }
-      ]
+      "id": "volt-sp1",
+      "voice": "am_puck",
+      "text": "Plasma Shot!",
+      "seconds": 0.761,
+      "peak": 29163,
+      "rms": 6500.94,
+      "sha256": "c83b2df1c7c726e0a329c646468e46be6538ff7e9d3eac73563cbc7bd3f42459"
     },
     {
-      "clip": "celine-throw_impact",
-      "seconds": 0.235,
-      "bytes": 11308,
-      "peak": 28800,
-      "rms": 5151.5,
-      "sha256": "da2fe2a4e51a9667b9f0e1cb40f2e82c95cfa421719cbac1bedb6f99e4d4a3f4",
-      "segments": [
-        {
-          "text": "くっ！",
-          "kana": "ク'ッ",
-          "voice": "九州そら",
-          "style": "ツンツン",
-          "styleId": 18
-        }
-      ]
+      "id": "volt-sp2",
+      "voice": "am_puck",
+      "text": "Lightning Drive!",
+      "seconds": 0.799,
+      "peak": 29163,
+      "rms": 6597.71,
+      "sha256": "47eac756a3723628ae6a4e0eccb27f43602003af875581e59d08e0885b725a9f"
+    },
+    {
+      "id": "volt-sp3",
+      "voice": "am_puck",
+      "text": "Thunder... Somersault!",
+      "seconds": 1.383,
+      "peak": 29163,
+      "rms": 6259.8,
+      "sha256": "4b23c638d3cb26952cc86a7b7a5d38de520ed247301d59b3fbaaabb71a476b25"
+    },
+    {
+      "id": "volt-super",
+      "voice": "am_puck",
+      "text": "Full throttle! Overdrive... Ragnarok!",
+      "seconds": 2.117,
+      "peak": 29163,
+      "rms": 6137.9,
+      "sha256": "f8ca39b9216aa61dd23c965f1ed6ea14df883b1565ca30bb5cc1baa2e4edc3e1"
+    },
+    {
+      "id": "volt-select",
+      "voice": "am_puck",
+      "text": "Let's crank it up to max speed!",
+      "seconds": 1.628,
+      "peak": 27852,
+      "rms": 4943.42,
+      "sha256": "a5113cbd9b2daddce1eb364a43b5a5b447a03489c922d2cac0aa2a73a9d050e6"
+    },
+    {
+      "id": "volt-win",
+      "voice": "am_puck",
+      "text": "Haha! Victory is mine, baby!",
+      "seconds": 1.709,
+      "peak": 27852,
+      "rms": 4504.71,
+      "sha256": "eb98876fefcca237a705bf2643924821e19d78d2d05354c7e700aa1f9efda39f"
+    },
+    {
+      "id": "volt-ko",
+      "voice": "am_puck",
+      "text": "No way... Seriously?!",
+      "seconds": 1.337,
+      "peak": 25558,
+      "rms": 4423.12,
+      "sha256": "d96579c7449631dd46ae5f1f376319defb63d29117a314f8ffb8a85c54494aa8"
+    },
+    {
+      "id": "volt-grabbed",
+      "voice": "am_puck",
+      "text": "Uh oh!",
+      "seconds": 0.515,
+      "peak": 29163,
+      "rms": 6724.91,
+      "sha256": "34837305c2921e2c88599644db5ab2daa1976baf6087ea480651263e5c0361a7"
+    },
+    {
+      "id": "volt-throw_release",
+      "voice": "am_puck",
+      "text": "See ya!",
+      "seconds": 0.518,
+      "peak": 29163,
+      "rms": 7047.39,
+      "sha256": "571cca0a7d71bccf280bf96e5653877953b420b632f525d93e2691a366c6215d"
+    },
+    {
+      "id": "volt-thrown",
+      "voice": "am_puck",
+      "text": "Whoa, hold on!",
+      "seconds": 0.779,
+      "peak": 29163,
+      "rms": 7385.1,
+      "sha256": "94172b2f092f09a9654047b94f99fbf9b927041551e2a488d76bc03a8b34afe7"
+    },
+    {
+      "id": "volt-throw_impact",
+      "voice": "am_puck",
+      "text": "Oof!",
+      "seconds": 0.397,
+      "peak": 29163,
+      "rms": 6483.0,
+      "sha256": "719394f521cfe4c0d3ff110900598173746ff323a324fd117d111f276da7a2ce"
+    },
+    {
+      "id": "volt-finish",
+      "voice": "am_puck",
+      "text": "Lights out, punk! We're taking this city back!",
+      "seconds": 2.182,
+      "peak": 29163,
+      "rms": 5877.03,
+      "sha256": "f8c9bfa31308818a0794b4b364d2e4237fead8df753065876b4d798631314db4"
+    },
+    {
+      "id": "freya-light0",
+      "voice": "af_bella",
+      "text": "Hah!",
+      "seconds": 0.415,
+      "peak": 23337,
+      "rms": 8027.92,
+      "sha256": "5d1395b31102d7e334cda94d3db4cf0f11945cb68d35ba70badfb2f845b08edb"
+    },
+    {
+      "id": "freya-light1",
+      "voice": "af_bella",
+      "text": "Hyah!",
+      "seconds": 0.439,
+      "peak": 24997,
+      "rms": 8027.92,
+      "sha256": "9877e66fd9f33dc560e360c49d4395e04dcb13cb10f4986e948663c05f78d47b"
+    },
+    {
+      "id": "freya-heavy0",
+      "voice": "af_bella",
+      "text": "Freeze solid!",
+      "seconds": 0.749,
+      "peak": 29163,
+      "rms": 7562.06,
+      "sha256": "e6536e375dd52d58c6daeadc3dfb4599a4905bbda588e9c64f3a58e056cba75d"
+    },
+    {
+      "id": "freya-heavy1",
+      "voice": "af_bella",
+      "text": "Pierce through!",
+      "seconds": 0.676,
+      "peak": 29163,
+      "rms": 7692.61,
+      "sha256": "85e5bb1ee6d6c06e0914f4ac09e4dee958bcc269abdcfd3c05196c9c1069a347"
+    },
+    {
+      "id": "freya-jump",
+      "voice": "af_bella",
+      "text": "Up!",
+      "seconds": 0.373,
+      "peak": 29163,
+      "rms": 6233.94,
+      "sha256": "41e577708aad5eaac29082acb29405dccdf100732f407b5b4733b2bd1540a818"
+    },
+    {
+      "id": "freya-dash",
+      "voice": "af_bella",
+      "text": "Watch yourself!",
+      "seconds": 0.749,
+      "peak": 29163,
+      "rms": 5791.31,
+      "sha256": "9ab705392fcb2aac47b32c174e800458ca0dfbe7cda4325b12d2b10e1789981e"
+    },
+    {
+      "id": "freya-hurt0",
+      "voice": "af_bella",
+      "text": "Ah!",
+      "seconds": 0.365,
+      "peak": 29163,
+      "rms": 6438.64,
+      "sha256": "7a728a3458cb224ac09efeeb09c04b31db38d721e39bdcc2a6b2c9727280fa1f"
+    },
+    {
+      "id": "freya-hurt1",
+      "voice": "af_bella",
+      "text": "Ugh!",
+      "seconds": 0.399,
+      "peak": 29163,
+      "rms": 6874.25,
+      "sha256": "c3117cca646849fc4a1230ad1d240eb984d2d1512d4d26070cf9dbcc2da15fa0"
+    },
+    {
+      "id": "freya-throw",
+      "voice": "af_bella",
+      "text": "Right there!",
+      "seconds": 0.562,
+      "peak": 29163,
+      "rms": 5771.8,
+      "sha256": "80c4d9b7842690e928299ae1665e484a51ed231e95956f404b0a144bb360ff53"
+    },
+    {
+      "id": "freya-burst",
+      "voice": "af_bella",
+      "text": "Keep away from me!",
+      "seconds": 0.803,
+      "peak": 29163,
+      "rms": 6875.35,
+      "sha256": "cd980b3c8e3526f431e7d92079f0c979735a21186b7e51d5f2539f3add83912b"
+    },
+    {
+      "id": "freya-sp1",
+      "voice": "af_bella",
+      "text": "Glacier Pillar!",
+      "seconds": 0.714,
+      "peak": 29163,
+      "rms": 6956.57,
+      "sha256": "021fc5f251fb4c01e2cb918ab0c5b2585d666c079ca9757182152002f73cff3f"
+    },
+    {
+      "id": "freya-sp2",
+      "voice": "af_bella",
+      "text": "Valkyrie Lance!",
+      "seconds": 0.821,
+      "peak": 29163,
+      "rms": 5555.86,
+      "sha256": "3a0c409ad94f1c1d9448495bd248eb2e0f5eb5c21619c923a028d5071d92acdb"
+    },
+    {
+      "id": "freya-sp3",
+      "voice": "af_bella",
+      "text": "Frost... Nova!",
+      "seconds": 1.151,
+      "peak": 29163,
+      "rms": 7997.22,
+      "sha256": "63e3ae67bf1291dcf4940bba9fed03577ca01522644ec1005d4e8fd3cf525407"
+    },
+    {
+      "id": "freya-super",
+      "voice": "af_bella",
+      "text": "Feel the eternal chill... Absolute Zero! Calibur!",
+      "seconds": 3.349,
+      "peak": 29163,
+      "rms": 5103.17,
+      "sha256": "44d41004ad53450ab5dc273aa5f43447ef84e11cc0f10c180070d3ff26480fe6"
+    },
+    {
+      "id": "freya-select",
+      "voice": "af_bella",
+      "text": "May winter grant us... a silent finale.",
+      "seconds": 2.304,
+      "peak": 27852,
+      "rms": 4806.51,
+      "sha256": "96fcc044afb254127f2d09e26f0aa4def0571760c43a4128272fc0fe865dd1b6"
+    },
+    {
+      "id": "freya-win",
+      "voice": "af_bella",
+      "text": "Sleep softly... beneath the ice.",
+      "seconds": 1.944,
+      "peak": 27852,
+      "rms": 4398.66,
+      "sha256": "41629a95311bf8c026337153e1605574e90804455e39fac7ba8aa0543baef54a"
+    },
+    {
+      "id": "freya-ko",
+      "voice": "af_bella",
+      "text": "No... How could this happen...",
+      "seconds": 1.636,
+      "peak": 25558,
+      "rms": 5038.27,
+      "sha256": "a4b47f6395b13888e5ff5e1565784342493e0a06d1df4b85961ba3850e3f7183"
+    },
+    {
+      "id": "freya-grabbed",
+      "voice": "af_bella",
+      "text": "What?!",
+      "seconds": 0.425,
+      "peak": 29070,
+      "rms": 8027.91,
+      "sha256": "adf4e78265d05faa411476bd92367f02bb7bd092e04a88afd9b758d7ed5540fe"
+    },
+    {
+      "id": "freya-throw_release",
+      "voice": "af_bella",
+      "text": "Begone!",
+      "seconds": 0.547,
+      "peak": 29163,
+      "rms": 6882.39,
+      "sha256": "f9e95326bca7d11b9c7948d2d8a7b63bf9f79f431272e7f70c36b51a2858dbe2"
+    },
+    {
+      "id": "freya-thrown",
+      "voice": "af_bella",
+      "text": "Let go of me!",
+      "seconds": 0.699,
+      "peak": 29163,
+      "rms": 8027.26,
+      "sha256": "04b87cd20f2d2781b46817973ee0d3a71c409287aba88e1aa36bed6d015dc71f"
+    },
+    {
+      "id": "freya-throw_impact",
+      "voice": "af_bella",
+      "text": "Ah!",
+      "seconds": 0.365,
+      "peak": 29163,
+      "rms": 6438.64,
+      "sha256": "7a728a3458cb224ac09efeeb09c04b31db38d721e39bdcc2a6b2c9727280fa1f"
+    },
+    {
+      "id": "freya-finish",
+      "voice": "af_bella",
+      "text": "Your tyranny... shatters in ice tonight!",
+      "seconds": 2.081,
+      "peak": 29163,
+      "rms": 7026.28,
+      "sha256": "6c830887167aa2cd317460b387df4e51c43b3dbae9d129f18631923b4bd8ef03"
+    },
+    {
+      "id": "titan-light0",
+      "voice": "bm_george",
+      "text": "Hmph!",
+      "seconds": 1.189,
+      "peak": 27542,
+      "rms": 8027.92,
+      "sha256": "0949c5838e5d304afec4811feb9c4e54ecce4f07fee27dab7b0372608ed67aba"
+    },
+    {
+      "id": "titan-light1",
+      "voice": "bm_george",
+      "text": "Hah!",
+      "seconds": 0.659,
+      "peak": 29163,
+      "rms": 7600.51,
+      "sha256": "d60d3e90fba7971ead6d7eee8a1d3a23bdd750b55b923027477fd6fc3e949ae1"
+    },
+    {
+      "id": "titan-heavy0",
+      "voice": "bm_george",
+      "text": "Crush them!",
+      "seconds": 0.828,
+      "peak": 29163,
+      "rms": 7355.64,
+      "sha256": "53d89991e49f0c9ab397a3e968486937d9508a252dc31fc35ec670048b806d4b"
+    },
+    {
+      "id": "titan-heavy1",
+      "voice": "bm_george",
+      "text": "Shatter!",
+      "seconds": 0.799,
+      "peak": 29163,
+      "rms": 7555.47,
+      "sha256": "24d16f37565a4072b44056fd3cbfdfbe2cdd2dbcb38066d7a4b7c13815bbbb97"
+    },
+    {
+      "id": "titan-jump",
+      "voice": "bm_george",
+      "text": "Hup!",
+      "seconds": 0.783,
+      "peak": 29163,
+      "rms": 6220.1,
+      "sha256": "f78284e16d61fe24eb9d7f45f240b4e87739ea1c62e12212aa095f6047c7ea4d"
+    },
+    {
+      "id": "titan-dash",
+      "voice": "bm_george",
+      "text": "Coming through!",
+      "seconds": 1.054,
+      "peak": 29152,
+      "rms": 8027.92,
+      "sha256": "182b620657996a82984e806837a3a831e791ac6d807f7f5cf89304c5dd652a49"
+    },
+    {
+      "id": "titan-hurt0",
+      "voice": "bm_george",
+      "text": "Ack!",
+      "seconds": 0.599,
+      "peak": 29163,
+      "rms": 8010.39,
+      "sha256": "c0b90e37dbdecf230c78b3985c2fac76b3b0bffe94cee35c5039a458e0124475"
+    },
+    {
+      "id": "titan-hurt1",
+      "voice": "bm_george",
+      "text": "Gah!",
+      "seconds": 0.698,
+      "peak": 26564,
+      "rms": 8027.92,
+      "sha256": "ae4e4874619d59225f30a210707b44122dbf0c124a06931487aaf1b912e7fa26"
+    },
+    {
+      "id": "titan-throw",
+      "voice": "bm_george",
+      "text": "Hold still!",
+      "seconds": 0.989,
+      "peak": 29163,
+      "rms": 7882.96,
+      "sha256": "87a4a1584b8c5d8a0ceeb2403636e8ec30caed4ca0d97f42c73ac27387860661"
+    },
+    {
+      "id": "titan-burst",
+      "voice": "bm_george",
+      "text": "Blow away!",
+      "seconds": 1.012,
+      "peak": 23627,
+      "rms": 8027.91,
+      "sha256": "0ec82914a2901606f62f69c118c5138ae80bf1de84d4a1dc07abda939d26aaef"
+    },
+    {
+      "id": "titan-sp1",
+      "voice": "bm_george",
+      "text": "Quake Stomp! Earth Breaker!",
+      "seconds": 2.113,
+      "peak": 29163,
+      "rms": 7319.45,
+      "sha256": "49f5a980f4997e53031c594d1034d778923563777dc0489485a99fb9de552609"
+    },
+    {
+      "id": "titan-sp2",
+      "voice": "bm_george",
+      "text": "Gigant Tackle!",
+      "seconds": 1.381,
+      "peak": 27021,
+      "rms": 8027.92,
+      "sha256": "dde258da5080494568371c46a604ca9d0ae63346b44fa78f1189ca86a8def6fc"
+    },
+    {
+      "id": "titan-sp3",
+      "voice": "bm_george",
+      "text": "Gaia Buster!",
+      "seconds": 1.122,
+      "peak": 26889,
+      "rms": 8027.92,
+      "sha256": "50fbf2c3c993d85082d84b9f93b3fb1072cedc7698ad2f1529ee1b00eef160d4"
+    },
+    {
+      "id": "titan-super",
+      "voice": "bm_george",
+      "text": "Feel the heavens fall... Meteor! Catastrophe!",
+      "seconds": 4.227,
+      "peak": 29163,
+      "rms": 7769.11,
+      "sha256": "01e7345272bdf72f6eacc7bb85d323d2d496f805515fe7b3c97d565258b1e769"
+    },
+    {
+      "id": "titan-select",
+      "voice": "bm_george",
+      "text": "Bring it on! Give me everything you've got!",
+      "seconds": 2.914,
+      "peak": 26148,
+      "rms": 7044.91,
+      "sha256": "cfcb01a479cfe2baecf4b4c7443285b7f4612a7f336ae5725696b6f9dd1a95c1"
+    },
+    {
+      "id": "titan-win",
+      "voice": "bm_george",
+      "text": "Not bad! Come back when you're stronger!",
+      "seconds": 2.644,
+      "peak": 27852,
+      "rms": 6869.55,
+      "sha256": "aa8242d3ca2060b3c84eeb506bdc879d75f045af2476acc57fa6076de9de874e"
+    },
+    {
+      "id": "titan-ko",
+      "voice": "bm_george",
+      "text": "Gah... A worthy... battle...",
+      "seconds": 2.652,
+      "peak": 25558,
+      "rms": 5797.98,
+      "sha256": "46922a2cc71dc2c55e79f2f51be528fdd8991f9454f9978b306840d207500e71"
+    },
+    {
+      "id": "titan-grabbed",
+      "voice": "bm_george",
+      "text": "What?!",
+      "seconds": 0.868,
+      "peak": 29163,
+      "rms": 7064.7,
+      "sha256": "5a6e653cfbe1c6cc5ac9ac64f112e630f2ea65ff7160accb2d2bb3ecc85a0374"
+    },
+    {
+      "id": "titan-throw_release",
+      "voice": "bm_george",
+      "text": "Fly!",
+      "seconds": 0.728,
+      "peak": 27433,
+      "rms": 8027.91,
+      "sha256": "b50e4a150f0db237a8623c628e1ed272d231a012ab62934e755c5b54a49aa005"
+    },
+    {
+      "id": "titan-thrown",
+      "voice": "bm_george",
+      "text": "Whoa! Curse you!",
+      "seconds": 1.197,
+      "peak": 28992,
+      "rms": 8027.92,
+      "sha256": "d35c9f8d1d5af2e52f12564566f304b251e958ca3b0e40c15eeb977d367e759d"
+    },
+    {
+      "id": "titan-throw_impact",
+      "voice": "bm_george",
+      "text": "Oof!",
+      "seconds": 0.835,
+      "peak": 29163,
+      "rms": 6376.59,
+      "sha256": "97b240a3d45714986f73296019fa5320a2e36abe12fc47ae88e78bf70a08e662"
+    },
+    {
+      "id": "titan-finish",
+      "voice": "bm_george",
+      "text": "True strength... exists to protect the weak!",
+      "seconds": 3.273,
+      "peak": 29163,
+      "rms": 7626.13,
+      "sha256": "d71cccc46f18f69a03b46b970349510a514ab5d27ca533f77fb3308f2c1abe04"
+    },
+    {
+      "id": "ayame-light0",
+      "voice": "af_heart",
+      "text": "Hah!",
+      "seconds": 0.481,
+      "peak": 28378,
+      "rms": 8027.91,
+      "sha256": "a66ceed98ad1930174b3ca0837fc1bf0daf8e2ffb9b81f0b173a23b706c28fa2"
+    },
+    {
+      "id": "ayame-light1",
+      "voice": "af_heart",
+      "text": "Hyah!",
+      "seconds": 0.521,
+      "peak": 29163,
+      "rms": 7647.04,
+      "sha256": "9efa6676dbfcd221add900ba42b59edd85e14a291c25c1ee7cc924b01c3da417"
+    },
+    {
+      "id": "ayame-heavy0",
+      "voice": "af_heart",
+      "text": "Right there!",
+      "seconds": 0.611,
+      "peak": 29163,
+      "rms": 6195.43,
+      "sha256": "93449f73676cc8650b883cb520103b04545a9cc01829c6b33088b65965b1ced3"
+    },
+    {
+      "id": "ayame-heavy1",
+      "voice": "af_heart",
+      "text": "Dance for me!",
+      "seconds": 0.725,
+      "peak": 29163,
+      "rms": 5679.82,
+      "sha256": "654934d243e824eb42d2212b9525540a6a04da624071dd2bab90058352001cdd"
+    },
+    {
+      "id": "ayame-jump",
+      "voice": "af_heart",
+      "text": "Hop!",
+      "seconds": 0.469,
+      "peak": 29163,
+      "rms": 6512.97,
+      "sha256": "179b2031d38544a43dd1c0f8c5b8d6d3ffabca67023037b5d31b5fd05b239f65"
+    },
+    {
+      "id": "ayame-dash",
+      "voice": "af_heart",
+      "text": "Over here!",
+      "seconds": 0.605,
+      "peak": 29163,
+      "rms": 6040.65,
+      "sha256": "260a3095d63b47d74ab41ca557c9bd92d8c4469c3bae0f25d74dac9e398348b7"
+    },
+    {
+      "id": "ayame-hurt0",
+      "voice": "af_heart",
+      "text": "Ow!",
+      "seconds": 0.443,
+      "peak": 29163,
+      "rms": 7043.25,
+      "sha256": "46ec13f495fc68ecc5f313021065063c97cec012900750d3ee21adf30e5b1a32"
+    },
+    {
+      "id": "ayame-hurt1",
+      "voice": "af_heart",
+      "text": "Oh! Ah!",
+      "seconds": 0.616,
+      "peak": 29163,
+      "rms": 6916.92,
+      "sha256": "0922f924374c9d947ce8ada013d73f9ea4678da73eefd34d15a182cfb8406c27"
+    },
+    {
+      "id": "ayame-throw",
+      "voice": "af_heart",
+      "text": "Caught you!",
+      "seconds": 0.589,
+      "peak": 29163,
+      "rms": 7797.47,
+      "sha256": "87be5cd95e8b2b19164a7cbafa1d2f0ba7aa48e240b83151c59892c6927cd05c"
+    },
+    {
+      "id": "ayame-burst",
+      "voice": "af_heart",
+      "text": "Step aside!",
+      "seconds": 0.747,
+      "peak": 29163,
+      "rms": 6292.08,
+      "sha256": "24f860ea56a5d72913da5063c530d614b4240f2a0b8138f9fe0e6b78a3b9d75f"
+    },
+    {
+      "id": "ayame-sp1",
+      "voice": "af_heart",
+      "text": "Violet Moon Fan!",
+      "seconds": 0.954,
+      "peak": 29163,
+      "rms": 6084.19,
+      "sha256": "fbf0882ba22e4636be901ecf523e2c2d6c00f4edd172dd31ff0ab06c4bffb66a"
+    },
+    {
+      "id": "ayame-sp2",
+      "voice": "af_heart",
+      "text": "Swallow's Dance!",
+      "seconds": 0.863,
+      "peak": 29163,
+      "rms": 6205.28,
+      "sha256": "6ddeed89bf96aee6d11b0454e358aa28ccbff8deec3a929aad3d292f98f9eaa9"
+    },
+    {
+      "id": "ayame-sp3",
+      "voice": "af_heart",
+      "text": "Mist... Runner!",
+      "seconds": 1.163,
+      "peak": 29163,
+      "rms": 7436.99,
+      "sha256": "e0bb8ca3806ea651ff0c23c05777769a034a014ecf332efea93418e9a26b8e79"
+    },
+    {
+      "id": "ayame-super",
+      "voice": "af_heart",
+      "text": "Secret Art... Blooming Hundred Flowers!",
+      "seconds": 2.333,
+      "peak": 29163,
+      "rms": 7420.38,
+      "sha256": "d49dc65e634a0119b34aefb6b212c5bdb60094ffa65329565831ac3613a168f6"
+    },
+    {
+      "id": "ayame-select",
+      "voice": "af_heart",
+      "text": "Haha! Think you can catch a shadow?",
+      "seconds": 1.851,
+      "peak": 27852,
+      "rms": 5722.37,
+      "sha256": "b2591eb70d312e8a47b2fa110d386570b8d850d7a9d2db61d13f1d7f3355fa18"
+    },
+    {
+      "id": "ayame-win",
+      "voice": "af_heart",
+      "text": "The curtain falls... on our little dance.",
+      "seconds": 2.134,
+      "peak": 27852,
+      "rms": 4757.17,
+      "sha256": "9bafc92a6ab2d515ae6c4bb8d9080f58f7df967eb050366afb5fa2ab84fab603"
+    },
+    {
+      "id": "ayame-ko",
+      "voice": "af_heart",
+      "text": "Ugh... How careless... of me...",
+      "seconds": 2.042,
+      "peak": 25558,
+      "rms": 3556.2,
+      "sha256": "ca7dfaa77e7c2bd80d67b08e88a781beff2cc2ee734555248847432e70e57bdd"
+    },
+    {
+      "id": "ayame-grabbed",
+      "voice": "af_heart",
+      "text": "Whoa?!",
+      "seconds": 0.477,
+      "peak": 29163,
+      "rms": 7524.71,
+      "sha256": "8d8ad4d62ffcfdac418373a85df3befa721bae6a75ab670d584eae182fd4e420"
+    },
+    {
+      "id": "ayame-throw_release",
+      "voice": "af_heart",
+      "text": "Off you go!",
+      "seconds": 0.699,
+      "peak": 29163,
+      "rms": 6162.93,
+      "sha256": "df9f9e79af0518214c7259df7327aa6f54c2bc148f17aed54008059b4aa7069e"
+    },
+    {
+      "id": "ayame-thrown",
+      "voice": "af_heart",
+      "text": "Ah! Let go!",
+      "seconds": 0.768,
+      "peak": 29163,
+      "rms": 6903.41,
+      "sha256": "cb6db72ed15236e2c8c118059be3aa137949e4d70ada44c458a95fe7f9ade98c"
+    },
+    {
+      "id": "ayame-throw_impact",
+      "voice": "af_heart",
+      "text": "Oof!",
+      "seconds": 0.442,
+      "peak": 29163,
+      "rms": 7831.71,
+      "sha256": "f3e218a9cca1bbfb5a3376950650233db97aa31beba0ecd3bc1672b61214b975"
+    },
+    {
+      "id": "ayame-finish",
+      "voice": "af_heart",
+      "text": "Wicked blossoms... scatter into nothingness!",
+      "seconds": 2.471,
+      "peak": 29163,
+      "rms": 5937.59,
+      "sha256": "f43b222b04665bc3b9be866151d1259bc482b050b8ce8291eb65eda44abd4f13"
+    },
+    {
+      "id": "celine-light0",
+      "voice": "bf_emma",
+      "text": "Hah!",
+      "seconds": 0.735,
+      "peak": 29163,
+      "rms": 6524.01,
+      "sha256": "c5dbe2a9cf4858d828f3a49a97c2d620e83799e407c1f017f4718ddaeebb100d"
+    },
+    {
+      "id": "celine-light1",
+      "voice": "bf_emma",
+      "text": "Hyah!",
+      "seconds": 0.713,
+      "peak": 29163,
+      "rms": 6752.61,
+      "sha256": "215bccfcad7269e608ad1baa5768d2d0cd89ec1b06db244e56bb4a52d3edbd83"
+    },
+    {
+      "id": "celine-heavy0",
+      "voice": "bf_emma",
+      "text": "Right there!",
+      "seconds": 1.043,
+      "peak": 29163,
+      "rms": 6490.54,
+      "sha256": "7ff5aaa2bd169cb4dcb6df6dbfc9ed90dc0c88503a44f62bee820be0753126f9"
+    },
+    {
+      "id": "celine-heavy1",
+      "voice": "bf_emma",
+      "text": "I pierce you!",
+      "seconds": 0.946,
+      "peak": 29163,
+      "rms": 6076.96,
+      "sha256": "6cbe81a89e49099f68d36cbe093ea2130f5650e549728b55fc07afb01b75604d"
+    },
+    {
+      "id": "celine-jump",
+      "voice": "bf_emma",
+      "text": "Hup!",
+      "seconds": 0.68,
+      "peak": 29163,
+      "rms": 5469.97,
+      "sha256": "c2e06047188d4bcccfe7467297f44f1f040c7bbed1216031476d04815c6328bb"
+    },
+    {
+      "id": "celine-dash",
+      "voice": "bf_emma",
+      "text": "Pardon me!",
+      "seconds": 1.125,
+      "peak": 29163,
+      "rms": 6316.61,
+      "sha256": "79cdf322ea53f8d4873dc8f9a4fa68ccd99106d16d62f7a10a162adb7c19d478"
+    },
+    {
+      "id": "celine-hurt0",
+      "voice": "bf_emma",
+      "text": "Ah!",
+      "seconds": 0.661,
+      "peak": 29163,
+      "rms": 5209.53,
+      "sha256": "898224d8ad2336c807f1c57d30e7c4f1f2fb78086995e9854e29ea99cea803f0"
+    },
+    {
+      "id": "celine-hurt1",
+      "voice": "bf_emma",
+      "text": "No!",
+      "seconds": 0.727,
+      "peak": 29163,
+      "rms": 7640.76,
+      "sha256": "971ce62657382a1c264a8a2cbe5eb4df15300c47189d7ca3137b7fe7732cd9f7"
+    },
+    {
+      "id": "celine-throw",
+      "voice": "bf_emma",
+      "text": "Got you!",
+      "seconds": 0.861,
+      "peak": 29163,
+      "rms": 6021.05,
+      "sha256": "7c7607aaeecac547a1922eccb9ab0f6040ed1e50cf11739497f9b713a0b2b2bf"
+    },
+    {
+      "id": "celine-burst",
+      "voice": "bf_emma",
+      "text": "Stand back!",
+      "seconds": 0.847,
+      "peak": 29163,
+      "rms": 6132.31,
+      "sha256": "47e85721b432e22d0af9285fd57867a8856461592e39fd07ee2cee43d2345b05"
+    },
+    {
+      "id": "celine-sp1",
+      "voice": "bf_emma",
+      "text": "Rose Eclair!",
+      "seconds": 0.954,
+      "peak": 29163,
+      "rms": 7222.86,
+      "sha256": "03899720187a8da1536acb08cdee3db3b90607d42f0f37baa76162acb361a3fc"
+    },
+    {
+      "id": "celine-sp2",
+      "voice": "bf_emma",
+      "text": "Fleur Lunge!",
+      "seconds": 0.893,
+      "peak": 29163,
+      "rms": 7602.41,
+      "sha256": "9bb15cd2752778b691172062d67f366e12a546f4edb1a7e544c0a169588d1ac5"
+    },
+    {
+      "id": "celine-sp3",
+      "voice": "bf_emma",
+      "text": "Emerald Riposte!",
+      "seconds": 1.105,
+      "peak": 29163,
+      "rms": 5786.66,
+      "sha256": "00b4c2a0d3612d24d62818800e87faacbcf783c65cdbb4d19ac572d71fade877"
+    },
+    {
+      "id": "celine-super",
+      "voice": "bf_emma",
+      "text": "Star of twilight... Etoile du Soir!",
+      "seconds": 2.593,
+      "peak": 29163,
+      "rms": 5205.86,
+      "sha256": "22744d11952f72556ba61f1875e84941ac004dedf233d48e8b342a95f40daa2e"
+    },
+    {
+      "id": "celine-select",
+      "voice": "bf_emma",
+      "text": "On guard! Shall we share a splendid battle?",
+      "seconds": 2.128,
+      "peak": 27852,
+      "rms": 6701.76,
+      "sha256": "616157e91daa9929965dca2ecb9d84a06e00290757ad8af616bb6c0088a5f1a4"
+    },
+    {
+      "id": "celine-win",
+      "voice": "bf_emma",
+      "text": "Magnificent! What a glorious match.",
+      "seconds": 1.938,
+      "peak": 27852,
+      "rms": 5553.87,
+      "sha256": "3d79c4744d3af1431b54e2c93b9a8e44012f2eb6fcd7e72cd2e31fece5f142ae"
+    },
+    {
+      "id": "celine-ko",
+      "voice": "bf_emma",
+      "text": "Ah... I concede... defeat...",
+      "seconds": 1.859,
+      "peak": 25558,
+      "rms": 5586.11,
+      "sha256": "e42cdff736615ee109b88cf01454e037a07a1ffcb7131fc825566c50a1b75745"
+    },
+    {
+      "id": "celine-grabbed",
+      "voice": "bf_emma",
+      "text": "Oh?!",
+      "seconds": 0.734,
+      "peak": 29163,
+      "rms": 5418.25,
+      "sha256": "a570d2927b019899c5bc21eceb3ebd13a5caff59aa87c7d4b8e48f87107d482b"
+    },
+    {
+      "id": "celine-throw_release",
+      "voice": "bf_emma",
+      "text": "Away with you!",
+      "seconds": 0.898,
+      "peak": 29163,
+      "rms": 7707.06,
+      "sha256": "3ea150eaafeb05b7628a023fc5e0210affae1bd6e6759194f36a32992e1eecb3"
+    },
+    {
+      "id": "celine-thrown",
+      "voice": "bf_emma",
+      "text": "Unhand me!",
+      "seconds": 0.922,
+      "peak": 29163,
+      "rms": 6019.9,
+      "sha256": "e61903ada6754068162df7f58753f3c6e8681b282889e1befbb56c290ec0d0e1"
+    },
+    {
+      "id": "celine-throw_impact",
+      "voice": "bf_emma",
+      "text": "Ugh!",
+      "seconds": 0.534,
+      "peak": 29163,
+      "rms": 5670.92,
+      "sha256": "841ced7ed58e21e104a1d699c93a8f709f70ea65c6100f5991e92e6509f15726"
+    },
+    {
+      "id": "celine-finish",
+      "voice": "bf_emma",
+      "text": "Curtain call! Victory... belongs to me!",
+      "seconds": 2.554,
+      "peak": 29163,
+      "rms": 6322.36,
+      "sha256": "0096109f7eb54db15a203e403fea48da8ef81ffeaaa560132f506b2683a1a931"
+    },
+    {
+      "id": "voss-intro",
+      "voice": "am_michael",
+      "text": "This city belongs to me! Anyone who crosses my path gets crushed!",
+      "seconds": 4.353,
+      "peak": 29163,
+      "rms": 5977.37,
+      "sha256": "277b280bb008312211641eb026b29b42f547a6b8f29bc193d3c4ea65e87d3ca7"
+    },
+    {
+      "id": "voss-defeat",
+      "voice": "am_michael",
+      "text": "No! My empire! Curse you... How could this happen?!",
+      "seconds": 3.681,
+      "peak": 29163,
+      "rms": 5708.42,
+      "sha256": "df6784eba3b2356239abadf4312fd1ce6967ea271011bb9e8d9917389d07f2c7"
+    },
+    {
+      "id": "maw-intro",
+      "voice": "am_michael",
+      "text": "Burn to ashes... Inside my eternal furnace!",
+      "seconds": 3.698,
+      "peak": 29163,
+      "rms": 6075.68,
+      "sha256": "ae0ee8810891d44c0873002cb60c9eef9ee5fcc04bdf0bec66168023da062e8c"
+    },
+    {
+      "id": "maw-defeat",
+      "voice": "am_michael",
+      "text": "Curse you! My furnace... burning out... No!",
+      "seconds": 4.087,
+      "peak": 29163,
+      "rms": 4599.31,
+      "sha256": "e1fff06673284a56af9c501650c08fac642f1abce1aa6707b916f120e18065ef"
+    },
+    {
+      "id": "luka-intro",
+      "voice": "af_sarah",
+      "text": "This paradise is ours alone! You aren't taking one step further!",
+      "seconds": 3.541,
+      "peak": 29163,
+      "rms": 5979.39,
+      "sha256": "841e8a6b4de907082bce5b86bf895300afec5bc42f66f5a56f7a7ea1e1fee969"
+    },
+    {
+      "id": "luka-combo",
+      "voice": "af_sarah",
+      "text": "Misha, strike now!",
+      "seconds": 1.188,
+      "peak": 29163,
+      "rms": 5858.18,
+      "sha256": "71620645d7407a73b9cae046bb86f90aaae5a5c92047c068b1b6e065cf593961"
+    },
+    {
+      "id": "luka-defeat",
+      "voice": "af_sarah",
+      "text": "Ah! Misha, run! Not like this!",
+      "seconds": 1.995,
+      "peak": 29163,
+      "rms": 5298.28,
+      "sha256": "c6024aa9f8b00e6abc8a92d76e73eda5cb99fc7a366cb03ae10273ed552488a1"
+    },
+    {
+      "id": "misha-intro",
+      "voice": "bf_isabella",
+      "text": "Two against one! Let's see if you survive our deadly dance!",
+      "seconds": 3.275,
+      "peak": 29163,
+      "rms": 7549.21,
+      "sha256": "b532e0eb4f04198d5e036befd0de882b1262823f6ee548338e57c92fe2aee65d"
+    },
+    {
+      "id": "misha-combo",
+      "voice": "bf_isabella",
+      "text": "Right behind you! Crush them now!",
+      "seconds": 2.017,
+      "peak": 27399,
+      "rms": 8027.91,
+      "sha256": "05aa609a570c6af4429fd198f3aac4d917b2ff3cc17e8659ea6a575b1eb2f159"
+    },
+    {
+      "id": "misha-defeat",
+      "voice": "bf_isabella",
+      "text": "No! Luka... forgive me!",
+      "seconds": 2.053,
+      "peak": 29163,
+      "rms": 7278.86,
+      "sha256": "6578066d35dca83c14547ea63f177c71c3182ac6f778a78f12128270a7321c7a"
     }
-  ],
-  "warnings": []
+  ]
 }

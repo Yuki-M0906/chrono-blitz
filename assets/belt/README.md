@@ -1,4 +1,24 @@
-# NEON UPRISING — Stage 1 / 2 / 3 / v3.7.2
+# NEON UPRISING — Stage 1〜5 ＋ Bonus / v3.20.1
+
+## v3.20.1 動きの補正
+
+絵のコマごとに体の位置が違い、動作の切り替わりで体が飛んでいた。原画は変えず、描く位置をコマごとに補正する。`art.js` の `cellAnchors`（骨盤帯の横位置と外接矩形を 1 回だけ測る）、`resortNudge`（海辺の敵。全状態で骨盤を待機に合わせる）、`heroNudge`（主人公と同じ絵の敵。待機・歩行・走行だけ骨盤と足裏を合わせる）。共有描画は `poseNudge` を持つ相手にだけ適用するので、対戦格闘は変わらない。当たり判定は絵の位置を使わない。詳細は HTML 冒頭の [ANIM-211]。
+
+## v3.10.0〜v3.20.0 の要点
+
+- ステージ 4 DEADLINE EXPRESS（`METRO_AREAS` / `METRO_ENEMIES`、区画移動は `metroEvent`、観客の音は `MetroCrowd`）。
+- ステージ 3 は区画幅を原画と同じ 1432px にし、区画移動を歩行＋暗転へ（`resort` イベント）。追加 24 姿勢は `beach-*-life`。
+- ボーナス BREAKER YARD は `breaker-yard.js`、ステージ 5 SKYHOOK ASCENT と VESPER MATRIARCH は `skyhook.js`。
+- 開始ステージの選択肢は `STREET_STARTS`（5 面＋ `'bonus'`）。
+- 各版の詳細は HTML 冒頭の該当項。
+
+## v3.9.0 生演奏オーケストラ・聖堂音楽BGM全面刷新
+
+全8曲の BGM を「生音の演奏」による壮大で荘厳な交響楽団・パイプオルガン・聖歌隊サウンドへ全面刷新（`assets/audio/engine.js`）。`STREET.version` のみ `3.9.0` へ更新し、ベルトアクションの進行・当たり判定・敵AI・画像・英語音声・既存42種 SE は v3.8.0 のまま不変。
+
+## v3.8.0 英語・演劇的キャラクター＆ボス音声刷新
+
+主人公6名・ボス2体・双子2体の全142クリップを英語の芝居がかった演技ボイスへ全面刷新（`assets/voices/english-config.json` / `tools/generate-english-voices.py`）。ベルトアクションの進行・当たり判定・敵AI・画像・SE/BGMは v3.7.2 のまま不変。
 
 ## v3.7.2 整合修正
 

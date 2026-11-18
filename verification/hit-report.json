@@ -1,7 +1,7 @@
 {
-  "version": "3.7.2",
+  "version": "3.20.1",
   "distribution": {
-    "htmlBytes": 571317,
+    "htmlBytes": 746581,
     "packs": [
       {
         "name": "sprites-kagura",
@@ -41,17 +41,22 @@
       {
         "name": "voices",
         "kind": "voices",
-        "size": 8191208
+        "size": 11406281
       },
       {
         "name": "belt-backgrounds",
         "kind": "beltArt",
-        "size": 43867856
+        "size": 51156087
       },
       {
         "name": "belt-actors",
         "kind": "beltArt",
-        "size": 36609273
+        "size": 49621620
+      },
+      {
+        "name": "skyhook-art",
+        "kind": "beltArt",
+        "size": 20454846
       },
       {
         "name": "resort-backgrounds",
@@ -61,7 +66,17 @@
       {
         "name": "resort-actors",
         "kind": "beltArt",
-        "size": 24302769
+        "size": 30966160
+      },
+      {
+        "name": "metro-backgrounds",
+        "kind": "beltArt",
+        "size": 18792132
+      },
+      {
+        "name": "metro-actors",
+        "kind": "beltArt",
+        "size": 9474943
       },
       {
         "name": "belt-dash",
@@ -72,13 +87,13 @@
   },
   "boot": {
     "overlayGone": true,
-    "loaded": 235392012,
-    "total": 235392012,
+    "loaded": 314292867,
+    "total": 314292867,
     "failed": [],
     "sprites": null,
-    "belt": 40,
+    "belt": 69,
     "beltErrors": [],
-    "inline": 292026
+    "inline": 399224
   },
   "checks": {
     "Punch connects near the edge of the wider lane": true,

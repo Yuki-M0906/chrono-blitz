@@ -113,9 +113,9 @@ const FighterSprites = {
     switch (state) {
       // Independently painted idle cells vary in anatomy; cycling them makes the whole body pulse.
       case 'IDLE': return 0;
-      case 'WALK_F': return cycle([2, 28, 3, 29, 4, 30, 5, 31], 3);
-      case 'WALK_B': return cycle([31, 5, 30, 4, 29, 3, 28, 2], 3);
-      case 'DASH_F': return cycle([39, 16, 40, 16], 3);
+      case 'WALK_F': return [2, 28, 3, 29, 4, 30, 5, 31][Math.floor(f/3)%8];
+      case 'WALK_B': return [31, 5, 30, 4, 29, 3, 28, 2][Math.floor(f/3)%8];
+      case 'DASH_F': return [39, 16, 40, 16][Math.floor(f/3)%4];
       case 'DASH_B': return f < 4 ? 37 : vy > 0 ? 38 : 7;
       case 'CROUCH': return f < 3 ? 41 : 6;
       case 'JUMP': return f < 4 ? 37 : vy > 2 ? 38 : 7;
@@ -144,10 +144,11 @@ const FighterSprites = {
     }
   },
 
-  draw(fighter, ctx, x, y, facing, state, f, silhouette) {
+  draw(fighter, ctx, x, y, facing, state, f, silhouette, motion = fighter) {
     const id = fighter.data.id;
     const throwFrame = !silhouette ? ThrowMotion.sprite(fighter,state,f) : null;
-    let frame = throwFrame ?? this.frame(id, state, f, fighter.animTick, !silhouette && fighter.blockstun > 0, fighter.vy);
+    const phase = (state==='WALK_F'||state==='WALK_B') ? fighter.gait??f : f;
+    let frame = throwFrame ?? this.frame(id, state, phase, motion.animTick, !silhouette && fighter.blockstun > 0, motion.vy);
     let sheet = this.sheets.get(id + (frame >= 48 ? '-throw' : frame >= 24 ? '-motion' : ''));
     if(!sheet && frame>=48){frame=state==='HIT_AIR'?19:state==='KNOCKDOWN'?20:state==='WAKEUP'?47:22;sheet=this.sheets.get(id+(frame>=24?'-motion':''));}
     if (!sheet && frame >= 24) {
@@ -157,6 +158,9 @@ const FighterSprites = {
     if (!sheet) return false; // The previous procedural renderer remains a decode-failure fallback.
     // Optional clothing palette supplied by the side-scrolling mode; shared source atlases stay intact.
     if (!silhouette && fighter.streetPalette) sheet = fighter.streetPalette.get(frame >= 48 ? '-throw' : frame >= 24 ? '-motion' : '') || sheet;
+    const metroMask=!silhouette&&fighter.metroHue!==undefined?this.metroMasks?.get(id+(frame>=48?'-throw':frame>=24?'-motion':'')):null;
+    // v3.20.1 [ANIM-211] The side-scrolling mode may ask for a per-cell correction (see BeltArt.heroNudge). Versus fighters never set it.
+    const nudge = fighter.poseNudge ? fighter.poseNudge(id, frame >= 48 ? '-throw' : frame >= 24 ? '-motion' : '', frame % 24, state) : null;
     frame %= 24;
     const tick = fighter.animTick;
     const cell = this.cell;
@@ -169,9 +173,12 @@ const FighterSprites = {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
     if (!silhouette && fighter.invuln > 0 && Math.floor(tick / 3) % 2) ctx.globalAlpha *= 0.72;
+    if(metroMask)ctx.filter='hue-rotate('+fighter.metroHue+'deg) saturate('+(fighter.metroSaturation||1)+')';
+    if (nudge) ctx.translate(Math.round(nudge.x * scale), Math.round(nudge.y * scale));
     ctx.drawImage(silhouette ? sheet.ghost : sheet.atlas,
       (frame % 6) * cell, Math.floor(frame / 6) * cell, cell, cell,
       -Math.round(pivotX * scale), -Math.round(pivotY * scale), Math.round(cell * scale), Math.round(cell * scale));
+    if(metroMask){ctx.filter='none';ctx.drawImage(metroMask,(frame%6)*cell,Math.floor(frame/6)*cell,cell,cell,-Math.round(pivotX*scale),-Math.round(pivotY*scale),Math.round(cell*scale),Math.round(cell*scale));}
     ctx.restore();
     return true;
   }

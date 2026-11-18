@@ -1,23 +1,41 @@
 {
-  "version": "3.7.2",
+  "version": "3.20.1",
   "stages": [
     {
-      "title": "BLACK VEIN",
-      "music": 5
+      "id": 0,
+      "label": "STAGE 1",
+      "title": "BLACK VEIN"
     },
     {
-      "title": "INFERNAL WORKS",
-      "music": 3
+      "id": 1,
+      "label": "STAGE 2",
+      "title": "INFERNAL WORKS"
     },
     {
-      "title": "AZURE MIRAGE",
-      "music": 4
+      "id": 2,
+      "label": "STAGE 3",
+      "title": "AZURE MIRAGE"
+    },
+    {
+      "id": 3,
+      "label": "STAGE 4",
+      "title": "DEADLINE EXPRESS"
+    },
+    {
+      "id": 4,
+      "label": "STAGE 5",
+      "title": "SKYHOOK ASCENT"
+    },
+    {
+      "id": "bonus",
+      "label": "BONUS",
+      "title": "BREAKER YARD"
     }
   ],
   "checks": [
     "first click on the button only passes the start gate",
     "button opens the menu on the current stage",
-    "mouse picks the last stage and selects the belt card",
+    "mouse picks the bonus stage and selects the belt card",
     "option over the card does not click through",
     "outside click closes without entering the card",
     "ArrowUp wraps to the last stage",
@@ -29,15 +47,24 @@
     "help opens over the menu",
     "Escape closes the help first",
     "belt card opens hero select for stage 1",
-    "fresh run on stage 1 BLACK VEIN",
-    "pause, Q returns to the HUB and keeps stage 1",
+    "fresh run on BLACK VEIN",
+    "pause, Q keeps BLACK VEIN",
     "belt card opens hero select for stage 2",
-    "fresh run on stage 2 INFERNAL WORKS",
-    "pause, Q returns to the HUB and keeps stage 2",
+    "fresh run on INFERNAL WORKS",
+    "pause, Q keeps INFERNAL WORKS",
     "belt card opens hero select for stage 3",
-    "fresh run on stage 3 AZURE MIRAGE",
-    "pause, Q returns to the HUB and keeps stage 3",
-    "clearing the last stage restarts at stage 1 with a fresh score",
+    "fresh run on AZURE MIRAGE",
+    "pause, Q keeps AZURE MIRAGE",
+    "belt card opens hero select for stage 4",
+    "fresh run on DEADLINE EXPRESS",
+    "pause, Q keeps DEADLINE EXPRESS",
+    "belt card opens hero select for stage 5",
+    "fresh run on SKYHOOK ASCENT",
+    "pause, Q keeps SKYHOOK ASCENT",
+    "belt card opens hero select for stage 6",
+    "fresh run on BREAKER YARD",
+    "pause, Q keeps BREAKER YARD",
+    "clearing stage 5 returns to HUB",
     "drawing the menu changes no state",
     "OVERDRIVE card still opens its title"
   ]

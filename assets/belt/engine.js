@@ -2,7 +2,7 @@
 // Coordinates: x = street distance, y = floor depth, z = height above that floor.
 // Fixed 60 Hz simulation. Draw methods must not change simulation or consume random values.
 const STREET = {
-  version: '3.7.2',
+  version: '3.20.1',
   risingInput: { window: 14, buffer: 6 },
   dash: { tapWindow: 14, speed: 2.2, damage: 112, active: 8, until: 19, end: 38 },
   // v2.6.0 hit detection tuning. One table so the feel can be adjusted without hunting through the methods.
@@ -130,7 +130,10 @@ const RESORT_ENEMIES = {
 // first draw that needed them, which froze the game for about 0.1 s per variant in the middle of stage 3.
 BeltArt.ready = BeltArt.ready.then(() => {
   for (const spec of Object.values(RESORT_ENEMIES)) if (spec.hue)
-    try { BeltArt.beachPalette(spec.resort, spec.hue); } catch (error) { BeltArt.errors.push('palette ' + spec.name + ': ' + error.message); }
+    try {
+      BeltArt.beachPalette(spec.resort, spec.hue);
+      BeltArt.beachPalette(spec.resort+'-life', spec.hue);
+    } catch (error) { BeltArt.errors.push('palette ' + spec.name + ': ' + error.message); }
 });
 const RESORT_AREAS = [
  ['01 / SUNLIT PROMENADE','陽光の遊歩道',[['coral','azure','coral','pearl'],['sunset','coral','azure','lagoon'],['pearl','sunset','azure','coral']]],
@@ -138,18 +141,32 @@ const RESORT_AREAS = [
  ['03 / INFINITY TERRACE','インフィニティ・テラス',[['pearl','orchid','azure','coral'],['lagoon','sunset','pearl','azure'],['orchid','lagoon','sunset','pearl']]],
  ['04 / CORAL GALLERIA','珊瑚色の商店街',[['sunset','lagoon','orchid','coral'],['pearl','azure','sunset','lagoon'],['orchid','pearl','azure','sunset']]],
  ['05 / TWIN CROWN','双冠のプライベートデッキ',[['luka','misha','coral','azure']]]
-].map(([name,jp,waves],i)=>({left:i*1240,right:(i+1)*1240,name,jp,waves}));
+].map(([name,jp,waves],i)=>({left:i*1432,right:(i+1)*1432,name,jp,waves}));
+const METRO_ENEMIES={};
+const metroNames=['SCARLET','AMBER','GOLD','LIME','JADE','EMERALD','TEAL','CYAN','AZURE','COBALT','INDIGO','VIOLET','PLUM','MAGENTA','ROSE','CRIMSON'];
+for(let c=0;c<6;c++)for(let v=0;v<16;v++)METRO_ENEMIES['metro'+(c*16+v)]={char:c,name:metroNames[v]+' '+CHARACTERS[c].name,role:['punk','knife','brute'][c%3],hp:150+(v%4)*18+(c===3?60:0),speed:2.1+(v%4)*.16,damage:30+(v%4)*4,hue:(22.5*v+35+c*9)%360,saturation:1+(v%3)*.1,score:450+(v%4)*70};
+const METRO_AREAS=[
+ ['01 / DEADLINE PLATFORM','廃駅の改札・ホーム',[[0,4,8,12,16,20]]],
+ ['02 / NIGHT CARRIAGES','荒廃した地下鉄車内',[[1,5,9,13,17,21],[2,6,10,14,18,22],[3,7,11,15,19,23]]],
+ ['03 / DRIVER CAB','最前車両・運転席',[[0,6,9,15,17,23],[2,4,11,13,18,20]]],
+ ['04 / FORBIDDEN TRACKS','廃線の先の賭博場',[[1,7,8,14,19,22],[3,5,10,12,16,21],[0,6,11,15,18,23]]],
+ ['05 / IRON SHOGUN','満員の地下闘技場',[['boss',3,14,21]]]
+].map(([name,jp,waves],i)=>({left:i*1920,right:(i+1)*1920,name,jp,waves:waves.map((w,wi)=>w.map((k,ki)=>typeof k==='number'?'metro'+(Math.floor(k/4)*16+(k%4+i*3+wi*5+ki*2)%16):k))}));
 const STREET_STAGES = [
  {title:'BLACK VEIN',jp:'法の消えた街。鉄門の首領、IRON VOSSを倒せ。',areas:STREET.areas,boss:'voss',bossName:'IRON VOSS',music:5},
  {title:'INFERNAL WORKS',jp:'闇に沈む廃工場。炉心に潜む巨大な怪物を倒せ。',areas:FACTORY_AREAS,boss:'maw',bossName:'FURNACE MAW',music:3},
- {title:'AZURE MIRAGE',jp:'真昼の海辺を支配する双子、ルカとミーシャを倒せ。',areas:RESORT_AREAS,boss:'luka',bossName:'LUKA & MISHA',music:4}
+ {title:'AZURE MIRAGE',jp:'真昼の海辺を支配する双子、ルカとミーシャを倒せ。',areas:RESORT_AREAS,boss:'luka',bossName:'LUKA & MISHA',music:4},
+ {title:'DEADLINE EXPRESS',jp:'廃地下鉄の先、地下闘技場の巨漢を倒せ。',areas:METRO_AREAS,boss:'voss',bossName:'OSWALD / IRON SHOGUN',music:3},
+ Skyhook.stage
 ];
 
+const STREET_STARTS = [...STREET_STAGES.map((stage,index)=>({id:index,label:'STAGE '+(index+1),title:stage.title})),
+  {id:'bonus',label:'BONUS',title:BreakerYard.stage.title}];
 const StreetPalettes = {
   cache: new Map(),
   get(kind) {
     if (this.cache.has(kind)) return this.cache.get(kind);
-    const spec = STREET.enemies[kind],
+    const spec = STREET.enemies[kind] || METRO_ENEMIES[kind],
       id = CHARACTERS[spec.char].id,
       result = new Map();
     for (const suffix of ['', '-motion', '-throw']) {
@@ -186,11 +203,40 @@ const StreetPalettes = {
       c.putImageData(changed, 0, 0);
       result.set(suffix, { atlas, ghost: source.ghost });
     }
+    if(kind.startsWith('metro')){const old=[...this.cache.keys()].filter(k=>k.startsWith('metro'));if(old.length>=8)this.cache.delete(old[0]);}
     this.cache.set(kind, result);
     return result;
   }
 };
 
+// Preload skin/neutral masks once per original sheet; spawning never allocates or scans pixels.
+BeltArt.ready=Promise.all([BeltArt.ready,FighterSprites.ready]).then(async()=>{
+  FighterSprites.metroMasks=new Map();
+  for(const [id,sheet] of FighterSprites.sheets){
+    const c=document.createElement('canvas');c.width=sheet.atlas.width;c.height=sheet.atlas.height;
+    const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(sheet.atlas,0,0);
+    const d=g.getImageData(0,0,c.width,c.height),a=d.data;
+    for(let i=0;i<a.length;i+=4){const r=a[i],v=a[i+1],b=a[i+2],neutral=Math.max(r,v,b)-Math.min(r,v,b)<35,skin=r>55&&r>=v*.96&&v>b*1.02&&r-v<80;
+      if(!neutral&&!skin)a[i+3]=0;
+    }g.putImageData(d,0,0);FighterSprites.metroMasks.set(id,c);
+    await new Promise(resolve=>setTimeout(resolve,0));
+  }
+  FighterSprites.metroMasksReady=true;
+});
+const MetroCrowd={buffer:null,node:null,
+  stop(){if(this.node){try{this.node.stop();}catch{}this.node=null;}},
+  update(s){const ctx=sound.ctx;if(!ctx||!sound.seGain)return;
+    if(s.stageIndex!==3||s.area!==4||s.owner.isPaused()||s.result){this.stop();return;}
+    if(this.node)return;
+    if(!this.buffer){const rate=22050,n=rate*6,b=ctx.createBuffer(1,n,rate),d=b.getChannelData(0);let seed=77;
+      for(let i=0;i<n;i++){const t=i/rate;seed=(seed*1664525+1013904223)>>>0;const noise=seed/2147483648-1;let sum=0;
+        for(let j=0;j<12;j++){const phase=(t+j*.47)%2.9,env=Math.pow(Math.max(0,Math.sin(phase/2.9*Math.PI)),3),f=105+j*13+8*Math.sin(t*5+j);sum+=env*(Math.sin(2*Math.PI*f*t)+.4*Math.sin(2*Math.PI*f*3*t)+.2*Math.sin(2*Math.PI*f*7*t));}
+        const applause=Math.pow(Math.max(0,Math.sin(t*37)+Math.sin(t*59)-1),8);
+        d[i]=Math.tanh(sum*.025+noise*(.05+Math.min(.3,applause*.12)))*Math.min(1,t*5,(6-t)*5);
+      }this.buffer=b;
+    }const n=ctx.createBufferSource();n.buffer=this.buffer;n.loop=true;const gain=ctx.createGain();gain.gain.value=.65;n.connect(gain);gain.connect(sound.seGain);n.start();this.node=n;
+  }
+};
 class StreetActor extends Fighter {
   constructor(data, x, y, team, id, kind = 'hero') {
     super(data, team === 0 ? 0 : 1, x, team === 0 ? 1 : -1);
@@ -199,7 +245,7 @@ class StreetActor extends Fighter {
     this.team = team;
     this.uid = id;
     this.kind = kind;
-    this.role = (STREET.enemies[kind] || RESORT_ENEMIES[kind])?.role || kind;
+    this.role = (STREET.enemies[kind] || RESORT_ENEMIES[kind] || METRO_ENEMIES[kind])?.role || kind;
     this.dead = false;
     this.cooldown = 45 + (id % 4) * 16;
     this.attack = null;
@@ -223,7 +269,7 @@ class StreetActor extends Fighter {
       this.power = 0.82 + data.stats[0] * 0.065;
       this.reach = data.weapon === 'greatsword' ? 116 : data.weapon === 'rapier' ? 108 : 96;
     } else {
-      const spec = STREET.enemies[kind] || RESORT_ENEMIES[kind];
+      const spec = STREET.enemies[kind] || RESORT_ENEMIES[kind] || METRO_ENEMIES[kind];
       Object.assign(this, {
         maxHp: spec.hp,
         hp: spec.hp,
@@ -234,6 +280,7 @@ class StreetActor extends Fighter {
         value: spec.score
       });
       if(spec.resort) { this.resort=spec.resort; this.resortHue=spec.hue; this.twin=spec.twin?kind:null; if(this.twin){this.kind='boss';this.scale=1.08;} }
+      else if(kind.startsWith('metro')){this.metroHue=spec.hue;this.metroSaturation=spec.saturation;}
       else this.streetPalette = StreetPalettes.get(kind);
     }
     this.hudHp = this.hp;
@@ -244,15 +291,28 @@ class StreetActor extends Fighter {
     this.f = 0;
     this.attack = null;
   }
+  poseNudge(id, suffix, frame, state) { return BeltArt.heroNudge(id, suffix, frame, state); }
+  walkTo(nextX, nextY, rushing = false) {
+    const stride = Math.hypot(nextX-this.x, (nextY-this.y)/.64);
+    const moving = stride > .01;
+    const retreat = (nextX-this.x)*this.facing < -.01;
+    if (moving) this.gait = this.state !== 'WALK_F' ? 0 : (this.gait || 0) + stride/this.speed;
+    this.walkBack = moving && retreat;
+    this.x = nextX;
+    this.y = nextY;
+    this.rush = moving && rushing && !retreat;
+    this.state = moving ? 'WALK_F' : 'IDLE';
+  }
   speak(event, priority = 40) {
-    if (!this.monster) fighterVoice.play(this.data.id, event, this.team === 0 ? 0 : 1, priority);
+    if(this.alien && event.startsWith('hurt')){fighterVoice.play('vesper','pain',1,priority);return;}
+    if (!this.monster && !this.alien) fighterVoice.play(this.data.id, event, this.team === 0 ? 0 : 1, priority);
   }
   render(c) {
     c.save();
     c.translate(Math.round(this.x), Math.round(this.y));
     c.fillStyle = 'rgba(0,0,0,.46)';
     c.beginPath();
-    c.ellipse(0, 0, 34 * this.scale * (1 - this.z / 700), 9, 0, 0, Math.PI * 2);
+    c.ellipse(0, 0, (this.alien ? 63 : 34) * this.scale * Math.max(0,1 - this.z / 700), this.alien ? 13 : 9, 0, 0, Math.PI * 2);
     c.fill();
     if (this.dead && this.f > 30) c.globalAlpha = Math.max(0, 1 - (this.f - 30) / 40);
     c.translate(0, -this.z);
@@ -262,20 +322,22 @@ class StreetActor extends Fighter {
         ? 'THROWING'
         : this.state === 'DEAD'
           ? 'KNOCKDOWN'
+          : this.state === 'HIT_STAND' && this.z > 0
+            ? 'HIT_AIR'
           : this.state === 'WINDUP'
             ? 'ATK_H'
             : this.state === 'CHARGE'
               ? 'DASH_F'
               : this.state === 'SLAM'
                 ? 'SP_1'
-                : this.state;
+                : this.state==='DROP'?'JUMP':this.state;
     const poseFrame = this.state === 'WINDUP' ? 4 : this.f;
-    if (!BeltArt.drawBurn(this, c) &&
+    if (!(this.alien && Skyhook.creature(this,c)) && !BeltArt.drawBurn(this, c) &&
         !(this.team === 0 && BeltArt.drawRising(this, c)) &&
         !(this.team === 0 && BeltArt.drawDash(this, c)) &&
         !(this.resort && BeltArt.drawResortActor(this,c)) &&
         !(this.kind === 'boss' && BeltArt.drawBoss(this, c, state, poseFrame)))
-      this.drawBody(c, 0, 0, this.facing, this.state === 'STREET_DASH' ? 'DASH_F' :
+      this.drawBody(c, 0, 0, this.facing, this.state === 'WALK_F' && this.walkBack ? 'WALK_B' : this.state === 'STREET_DASH' ? 'DASH_F' :
         this.state === 'DASH_ATTACK' ? 'ATK_H' : state, poseFrame, false);
     c.filter = 'none';
     if (this.team === 0) BeltArt.drawFlameDash(this, c);
@@ -299,10 +361,13 @@ class StreetActor extends Fighter {
 
 class NeonUprising {
   constructor(owner, index, stage = 0, carry = null) {
-    this.stageIndex = Number.isInteger(stage) && STREET_STAGES[stage] ? stage : 0;
-    this.stage = STREET_STAGES[this.stageIndex];
+    this.bonus = stage === 'bonus' ? new BreakerYard() : null;
+    this.lift = stage === 4 ? new Skyhook() : null;
+    this.stageIndex = this.bonus ? -1 : Number.isInteger(stage) && STREET_STAGES[stage] ? stage : 0;
+    this.stage = this.bonus ? BreakerYard.stage : STREET_STAGES[this.stageIndex];
     this.owner = owner;
     this.character = index;
+    if(this.stageIndex===3){this.metroPaletteOffset=((owner.metroRuns||0)*5)%16;owner.metroRuns=(owner.metroRuns||0)+1;}
     this.tick = 0;
     this.resetDashTap();
     this.nextId = 1;
@@ -337,8 +402,8 @@ class NeonUprising {
     this.resultTick = 0;
     this.combo = 0;
     this.comboTime = 0;
-    for (let i = 0; i < 5; i++) {
-      const base = i * 1240;
+    for (let i = 0; !this.bonus && !this.lift && i < 5; i++) {
+      const base = this.stage.areas[i].left;
       this.props.push(
         { x: base + 465, y: 470, hp: 48, type: 'crate', loot: 'food', id: 'box' + i },
         { x: base + 960, y: 603, hp: 48, type: 'barrel', loot: i % 2 ? 'cash' : 'pipe', id: 'barrel' + i }
@@ -346,9 +411,73 @@ class NeonUprising {
     }
     if (carry) { this.score=carry.score; this.kills=carry.kills; this.lives=carry.lives; this.extended=carry.extended; }
     if(this.stageIndex===2) for(const prop of this.props) prop.resort=true;
-    this.spawnWave();
+    if(this.bonus){ this.player.x=335; this.intro=84; this.gate=W-60; }
+    else if(this.lift){this.player.x=-62;this.intro=98;this.timer=180*60;}
+    else this.spawnWave();
     sound.playBGM(this.stage.music);
     this.player.speak('select', 60);
+  }
+  beginMetroEvent(kind){
+    this.breakGrab();this.resetDashTap();input.keys={};input.clear();
+    const timing=kind==='arrival'?{fade:366,cut:400,total:456}:kind==='stop'?{fade:236,cut:270,total:326}:{fade:42,cut:72,total:128};
+    this.metroEvent={kind,f:0,startTick:this.tick,fromArea:this.area,doorWorld:this.areaData().left+1180,walkX:this.player.x,walkY:this.player.y,...timing,swapped:false};
+    this.player.pose('IDLE');sound.playCue(kind==='arrival'?'boss':'cursor');
+  }
+  metroTrainLayout(){
+    const e=this.metroEvent,box=BeltArt.trainFrames?.[0];if(!e||!box)return null;
+    const height=390,width=box.w/box.h*height,finalX=e.doorWorld-width*.516;
+    const t=STREET.clamp(e.f/180,0,1),ease=t*t*t*(10+t*(-15+6*t));
+    const x=(e.fromArea*1920+2200)*(1-ease)+finalX*ease;
+    const open=e.f<200?0:e.f<225?(e.f-200)/25:e.f<340?1:Math.max(0,1-(e.f-340)/26);
+    return {x,y:440-height*.77,w:width,h:height,open,doorX:e.doorWorld};
+  }
+  metroFade(){const e=this.metroEvent;if(!e)return 0;
+    if(e.f<e.fade)return 0;if(e.f<e.cut)return (e.f-e.fade)/(e.cut-e.fade);
+    if(e.f<e.cut+12)return 1;return STREET.clamp((e.total-e.f)/(e.total-e.cut-12),0,1);
+  }
+  updateMetroEvent(){
+    const e=this.metroEvent;e.f++;this.tick++;
+    if(!e.swapped){
+      const p=this.player;
+      if(e.kind==='arrival'){
+        const waitX=e.doorWorld-220;
+        if(e.f<=180){const t=e.f/180,u=t*t*(3-2*t);p.facing=waitX>=e.walkX?1:-1;p.walkTo(e.walkX+(waitX-e.walkX)*u,e.walkY+(505-e.walkY)*u);p.animTick++;}
+        else if(e.f<225)p.state='IDLE';
+        if(e.f===180||e.f===200||e.f===340)sound.playGrapple('impact');
+        if(e.f>=225&&e.f<=340){const t=STREET.clamp((e.f-225)/105,0,1),u=t*t*(3-2*t);p.facing=1;p.walkTo(waitX+220*u,505+(448-505)*u);p.animTick++;}
+        const target=STREET.clamp(p.x-480,e.fromArea*1920,e.fromArea*1920+640);
+        this.camera+=(target-this.camera)*.065;
+      }else if(e.kind==='stop'){
+        if(e.f===110)sound.playGrapple('impact');
+        if(e.f>130){p.facing=1;p.walkTo(p.x+Math.min(4.5,Math.max(0,this.areaData().right-130-p.x)),p.y+(470-p.y)*.04);p.animTick++;}
+      }else{p.facing=1;p.walkTo(p.x+3,p.y);p.animTick++;}
+    }
+    if(e.f===e.cut){
+      e.swapped=true;this.area=e.fromArea+1;this.wave=0;
+      this.backWall=this.areaData().left+45;this.gate=this.areaData().right-65;
+      this.camera=this.areaData().left;this.player.x=this.areaData().left+90;this.player.y=550;this.player.pose('IDLE');
+      this.player.invuln=90;this.enemies=[];this.items=[];this.particles=[];this.popups=[];this.timer=9000;
+    }
+    if(e.swapped&&e.f>e.cut+12){const u=STREET.clamp((e.f-e.cut-12)/(e.total-e.cut-12),0,1);this.player.facing=1;this.player.walkTo(this.areaData().left+90+140*u,this.player.y);this.player.animTick++;}
+    if(e.f>=e.total){this.player.pose('IDLE');this.metroEvent=null;input.keys={};input.clear();this.spawnWave();}
+  }
+  drawMetroTrain(c){
+    const e=this.metroEvent;if(!e||e.kind!=='arrival'||e.swapped)return;
+    const r=this.metroTrainLayout(),image=BeltArt.images.get('subway-train'),frames=BeltArt.trainFrames;
+    if(!r||!image)return;
+    c.save();c.translate(-Math.round(this.camera),0);c.beginPath();c.rect(e.fromArea*1920+180,40,1740,406);c.clip();
+    const a=frames[0],b=frames[1];c.drawImage(image,a.x,a.y,a.w,a.h,r.x,r.y,r.w,r.h);
+    if(r.open>0){c.save();c.beginPath();const half=r.w*.075*r.open;c.rect(e.doorWorld-half,r.y+r.h*.19,half*2,r.h*.61);c.clip();c.drawImage(image,b.x,b.y,b.w,b.h,r.x,r.y,r.w,r.h);c.restore();}
+    c.restore();
+    // Restore near platform edge over the wheels: the train remains behind the platform.
+    const board=BeltArt.metroBoards.get(0);c.drawImage(board,0,446,1920,195,-Math.round(this.camera),446,1920,195);
+  }
+  drawMetroEvent(c){const e=this.metroEvent;if(!e)return;
+    if(e.kind==='stop'&&!e.swapped&&e.f<150){c.fillStyle='rgba(255,55,25,'+(.05+.04*Math.sin(e.f*.4))+')';c.fillRect(0,0,W,641);}
+    const bar=Math.min(1,e.f/20,(e.total-e.f)/20)*48;c.fillStyle='#050910';c.fillRect(0,0,W,bar);c.fillRect(0,641-bar,W,bar);
+    const title=e.kind==='arrival'?(e.f<190?'DEADLINE EXPRESS / ARRIVING':e.f<340?'BOARD THE TRAIN':'DOORS CLOSING'):e.kind==='stop'?(e.f<130?'EMERGENCY BRAKE':'EXIT TO THE TRACKS'):e.kind==='resort'?'AZURE MIRAGE / '+this.stage.areas[Math.min(e.fromArea+1,4)].name:e.fromArea===1?'THROUGH THE GANGWAY':'ENTER THE IRON PIT';
+    STREET.text(c,title,W/2,622,17,'#e6d7b3','center');
+    const alpha=this.metroFade();if(alpha){c.fillStyle='rgba(3,6,10,'+alpha+')';c.fillRect(0,0,W,641);}
   }
   areaData() {
     return this.stage.areas[this.area];
@@ -360,10 +489,12 @@ class NeonUprising {
     this.popups.push({ x: this.player.x, y: this.player.y - 220, text, color, life: 90 });
   }
   spawnWave() {
+    if(this.lift){this.lift.spawn(this);return;}
     const area = this.areaData(),
       types = area.waves[this.wave];
     this.locked = true;
     types.forEach((kind, i) => {
+      if(this.stageIndex===3&&kind.startsWith('metro')){const n=Number(kind.slice(5));kind='metro'+(Math.floor(n/16)*16+(n%16+this.metroPaletteOffset)%16);}
       const fromLeft = this.wave > 0 && i % 2 === 0;
       const x = fromLeft
         ? Math.max(this.backWall + 35, this.camera + 60 + i * 40)
@@ -383,11 +514,12 @@ class NeonUprising {
     }
   }
   spawnEnemy(kind, x, y) {
-    const e = new StreetActor(CHARACTERS[(STREET.enemies[kind] || RESORT_ENEMIES[kind]).char], x, y, 1, this.nextId++, kind);
+    const e = new StreetActor(CHARACTERS[(STREET.enemies[kind] || RESORT_ENEMIES[kind] || METRO_ENEMIES[kind]).char], x, y, 1, this.nextId++, kind);
     if (kind === 'boss' && this.stageIndex === 1) {
       e.monster=true; e.label=this.stage.bossName; e.scale=1.85;
       e.hp=e.maxHp=e.hudHp=2300; e.damage=70; e.speed=1.7; e.value=10000;
     }
+    if(kind==='boss'&&this.stageIndex===3){e.armored=true;e.resort='warlord';e.streetPalette=null;e.label=this.stage.bossName;e.scale=1.55;e.hp=e.maxHp=e.hudHp=2700;e.damage=78;e.value=14000;}
     if(e.twin)this.twins.push(e);
     this.enemies.push(e);
     return e;
@@ -415,20 +547,28 @@ class NeonUprising {
     }
   }
   update() {
-    if (this.owner.isPaused()) return;
+    this.lift?.motor(!this.owner.isPaused()&&!this.result&&!this.finale&&this.lift.height>0);
+    if (this.owner.isPaused()) {MetroCrowd.stop();return;}
+    if(this.bonus){this.bonus.update(this);return;}
+    MetroCrowd.update(this);
     if (this.result) {
       this.resultTick++;
-      if (this.resultTick > 45 && STREET.press('Enter', 'KeyJ', 'KeyZ', 'Space'))
-        this.owner.startStreet(this.character, this.result === 'clear' ? (this.stageIndex+1)%STREET_STAGES.length : this.stageIndex, this.result === 'clear' && this.stageIndex+1<STREET_STAGES.length ? this : null);
+      if (this.resultTick > 45 && STREET.press('Enter', 'KeyJ', 'KeyZ', 'Space')){
+        if(this.result==='clear' && this.lift)this.owner.openHub();
+        else this.owner.startStreet(this.character, this.result === 'clear' ? (this.stageIndex===3?'bonus':this.stageIndex+1) : this.stageIndex, this.result === 'clear' ? this : null);
+      }
       return;
     }
     if (this.finale) { this.updateFinale(); return; }
+    if(this.metroEvent){this.updateMetroEvent();return;}
     this.tick++;
     if (this.shake > 0) this.shake *= 0.82;
     if (this.intro > 0) {
+      if(this.lift)this.lift.board(this);
       this.intro--;
       return;
     }
+    if(this.lift)this.lift.height+=.8;
     if (this.bossIntro > 0) {
       this.bossIntro--;
       if(this.stageIndex===2 && this.bossIntro===this.voiceFrames('misha','intro',3)) { this.twinIntroSpeaker='misha'; fighterVoice.play('misha','intro',1,150); }
@@ -468,6 +608,7 @@ class NeonUprising {
     if (!this.player.dead) this.playerInput();
     for (const e of this.enemies) if (!e.dead) this.enemyAI(e);
     if(this.stageIndex===2) { this.updateTwinProjectiles(); this.coordinateTwins(); }
+    if(this.lift)this.lift.projectiles(this);
     this.resolveBodies();
     if (this.player.dead && this.player.f >= 100) this.respawn();
     if (!this.alive().length && this.locked) {
@@ -475,7 +616,7 @@ class NeonUprising {
         this.wait = 0;
         this.wave++;
         if (this.wave < this.areaData().waves.length) this.spawnWave();
-        else if (this.area === 4) this.finish(true);
+        else if (this.area === 4 || this.lift) this.finish(true);
         else {
           this.locked = false;
           this.gate = this.areaData().right + 300;
@@ -484,7 +625,11 @@ class NeonUprising {
         }
       }
     }
-    if (!this.locked && this.player.x >= this.areaData().right + 110) {
+    if(this.stageIndex===2&&!this.locked&&this.area<4&&this.player.x>=this.areaData().right-230){this.beginMetroEvent('resort');return;}
+    if(this.stageIndex===3&&!this.locked&&this.area<4){
+      if(this.area===0||(this.area===2&&this.player.x>=this.areaData().right-480)||this.player.x>=this.areaData().right-230){this.beginMetroEvent(this.area===0?'arrival':this.area===2?'stop':'passage');return;}
+    }
+    if (this.stageIndex<2 && !this.locked && this.player.x >= this.areaData().right + 110) {
       this.area++;
       this.wave = 0;
       this.backWall = this.areaData().left + 45;
@@ -492,12 +637,14 @@ class NeonUprising {
       this.timer = 150 * 60;
       this.spawnWave();
     }
-    // Camera never scrolls backwards. A cleared section is left behind.
-    const cap = this.areaData().right - W + 70;
-    this.camera = Math.max(
-      this.camera,
-      STREET.clamp(this.player.x - 450, 0, Math.max(0, this.locked ? cap : STREET.width - W))
-    );
+    // Resort and metro use world-anchored rooms; camera and floor always move together.
+    if(this.stageIndex>=2){
+      const target=STREET.clamp(this.player.x-450,this.areaData().left,this.areaData().right-W);
+      const delta=Math.max(0,target-this.camera);this.camera+=Math.min(delta,Math.max(.2,delta*.16));
+    }else{
+      const cap=this.areaData().right-W+70;
+      this.camera=Math.max(this.camera,STREET.clamp(this.player.x-450,0,Math.max(0,this.locked?cap:STREET.width-W)));
+    }
     this.backWall = Math.max(this.backWall, this.camera + 40);
     this.player.x = STREET.clamp(this.player.x, this.backWall, this.gate);
   }
@@ -508,6 +655,7 @@ class NeonUprising {
     else a.hudHp = Math.max(a.hp, a.hudHp - a.maxHp / 65);
     a.f++;
     a.animTick++;
+    if(a.state==='DROP'){this.lift.descend(this,a);return;}
     a.vy = a.z > 0 ? -a.vz : 0;
     if (a.invuln > 0) a.invuln--;
     if (a.cooldown > 0) a.cooldown--;
@@ -567,9 +715,13 @@ class NeonUprising {
       return;
     }
     if (a.state === 'HIT_STAND') {
-      a.x += a.knockX;
+      a.x = STREET.clamp(a.x+a.knockX,this.backWall+8,this.gate-8);
       a.knockX *= 0.7;
-      if (a.f >= 20) a.pose('IDLE');
+      if (a.z > 0 || a.vz > 0) {
+        a.z = Math.max(0,a.z+a.vz);
+        a.vz = a.z > 0 ? a.vz-.72 : 0;
+      }
+      if (a.f >= 20) a.pose(a.z > 0 ? 'JUMP' : 'IDLE');
       return;
     }
     if (a.state === 'THROW_RECOVER') {
@@ -720,13 +872,12 @@ class NeonUprising {
     // While a chain is live (a hit landed and the window is open) the stick's up/down is the throw modifier,
     // not movement: walking off the enemy's lane between hits made the down-held throw unreachable.
     const chaining = p.chain > 0 && p.chainHit && p.comboTTL > 0;
-    if (chaining) dy = 0;
+    if (chaining && !this.bonus) dy = 0;
     if (dx || dy) {
       const norm = dx && dy ? 0.707 : 1;
-      p.x += dx * p.speed * norm;
-      p.y += dy * p.speed * 0.64 * norm;
       if (dx) p.facing = dx;
-      p.state = 'WALK_F';
+      p.walkTo(STREET.clamp(p.x+dx*p.speed*norm,this.backWall+8,this.gate-8),
+        STREET.clamp(p.y+dy*p.speed*.64*norm,STREET.top,STREET.bottom));
       // Walking on either axis can grab the nearest eligible enemy ahead.
       const e = this.grabbable(80, STREET.hit.grabDepth, p.facing);
       if (e) this.beginGrab(e);
@@ -823,6 +974,7 @@ class NeonUprising {
     p.z = p.f < 6 ? 0 : Math.max(0, Math.sin((p.f - 6) / 36 * Math.PI) * 110);
     p.vy = p.f < 24 ? -6 : 6;
     if ([6, 12, 18].includes(p.f)) {
+      if(this.bonus)this.bonus.strike(this,p,{damage:p.f===18?52:24,reach:p.reach+24,depth:60});
       if (p.f === 6) r.targets = this.alive().filter(e => e === r.held ||
         (!e.invuln && !['GRABBED','HIT_AIR','KNOCKDOWN','WAKEUP','THROWING'].includes(e.state) &&
         (e.x-p.x)*p.facing > -18 && (e.x-p.x)*p.facing < p.reach+24 && Math.abs(e.y-p.y)<STREET.hit.playerDepth && e.z<80));
@@ -880,6 +1032,7 @@ class NeonUprising {
     sound.playSwing(stage === 3);
   }
   swing(a, atk) {
+    if(this.bonus){this.bonus.strike(this,a,atk);return;}
     let struck = false;
     for (const b of a.team === 0 ? this.alive() : [this.player]) {
       const dist = (b.x - a.x) * a.facing;
@@ -1079,6 +1232,7 @@ class NeonUprising {
     p.cooldown = 80;
     p.queue = 0;
     let hits = 0;
+    if(this.bonus)this.bonus.strike(this,p,{damage:90*p.power,reach:160,depth:75,radial:true});
     for (const e of this.alive())
       if (Math.abs(e.x - p.x) < 160 && Math.abs(e.y - p.y) < 75)
         if (this.hurt(e, 90 * p.power, e.x >= p.x ? 1 : -1, true, 'burst')) hits++;
@@ -1175,13 +1329,13 @@ class NeonUprising {
     e.facing=p.x>=e.x?1:-1;
     if(!partner&&e.cooldown<=0&&Math.abs(p.x-e.x)<600) {
       e.soloTurn=(e.soloTurn||0)+1;
-      this.beginTwinAttack(e,e.twin==='luka'?(e.soloTurn%2?'spear':'tonfa'):(e.soloTurn%2?'rings':'parasol'),42);
+      // Pattern 2 selects the second motion row. Hits and travel stay on the mode.
+      this.beginTwinAttack(e,e.twin==='luka'?(e.soloTurn%2?'spear':'tonfa'):(e.soloTurn%2?'rings':'parasol'),42,e.soloTurn%4>=2?2:-1);
       return;
     }
     const dx=targetX-e.x,dy=targetY-e.y;
-    e.x=STREET.clamp(e.x+STREET.clamp(dx,-e.speed,e.speed),this.backWall+25,this.gate-25);
-    e.y=STREET.clamp(e.y+STREET.clamp(dy,-e.speed*.65,e.speed*.65),STREET.top,STREET.bottom);
-    e.state=Math.abs(dx)>8||Math.abs(dy)>5?'WALK_F':'IDLE';
+    e.walkTo(STREET.clamp(e.x+STREET.clamp(dx,-e.speed,e.speed),this.backWall+25,this.gate-25),
+      STREET.clamp(e.y+STREET.clamp(dy,-e.speed*.65,e.speed*.65),STREET.top,STREET.bottom),Math.abs(dx)>200);
   }
   updateTwinProjectiles() {
     const p=this.player;
@@ -1208,6 +1362,7 @@ class NeonUprising {
   enemyAI(e) {
     const p = this.player;
     if (p.dead || this.bossIntro > 0 || this.intro > 0) return;
+    if(e.alien){this.lift.ai(this,e);return;}
     if(e.twin) { this.twinAI(e); return; }
     if (e.state === 'WINDUP') {
       if (e.f >= e.windup) {
@@ -1221,6 +1376,8 @@ class NeonUprising {
           e.slamHit = false;
         } else {
           e.pose('ATK_H');
+          e.strike = (e.strikeCursor | 0) % 3;
+          e.strikeCursor = (e.strike + 1) % 3;
           e.attack = {
             active: 5,
             end: 32,
@@ -1238,7 +1395,7 @@ class NeonUprising {
     if (e.state === 'CHARGE') {
       e.x += e.facing * (e.enraged ? 18 : 14);
       e.x = STREET.clamp(e.x, this.backWall + 35, this.gate - 35);
-      if (!e.chargeHit && Math.abs(p.x - e.x) < 95 && Math.abs(p.y - e.y) < STREET.hit.chargeDepth && p.z < 55) {
+      if (!e.chargeHit && Math.abs(p.x - e.x) < (e.armored?160:95) && Math.abs(p.y - e.y) < STREET.hit.chargeDepth && p.z < 55) {
         e.chargeHit = this.hurt(p, e.damage, e.facing, true, 'boss');
       }
       if (e.f >= 30) {
@@ -1266,7 +1423,7 @@ class NeonUprising {
         this.effects(e.x, e.y, '#ffb862', 32);
         this.shake = 14;
         sound.playGrapple('impact');
-        if (Math.abs(p.x - e.x) < (e.monster ? 210 : STREET.hit.slamRange) && Math.abs(p.y - e.y) < (e.monster ? 82 : STREET.hit.slamDepth) && p.z < 48)
+        if (Math.abs(p.x - e.x) < (e.monster ? 210 : e.armored?205:STREET.hit.slamRange) && Math.abs(p.y - e.y) < (e.monster ? 82 : STREET.hit.slamDepth) && p.z < 48)
           this.hurt(p, e.damage, e.facing, true, 'boss');
       }
       if (e.f >= 53) {
@@ -1306,11 +1463,8 @@ class NeonUprising {
     const mx = targetX - e.x,
       my = targetY - e.y,
       speed = e.speed * (e.enraged ? 1.2 : 1);
-    if (Math.abs(mx) > 8) e.x += Math.sign(mx) * speed;
-    if (Math.abs(my) > 5) e.y += Math.sign(my) * speed * 0.62;
-    e.state = Math.abs(mx) > 8 || Math.abs(my) > 5 ? 'WALK_F' : 'IDLE';
-    e.x = STREET.clamp(e.x, this.backWall + 25, this.gate - 25);
-    e.y = STREET.clamp(e.y, STREET.top, STREET.bottom);
+    e.walkTo(STREET.clamp(e.x+(Math.abs(mx)>8 ? Math.sign(mx)*speed : 0),this.backWall+25,this.gate-25),
+      STREET.clamp(e.y+(Math.abs(my)>5 ? Math.sign(my)*speed*.62 : 0),STREET.top,STREET.bottom),Math.abs(mx)>200);
   }
   resolveBodies() {
     const all = [this.player, ...this.alive()];
@@ -1328,6 +1482,13 @@ class NeonUprising {
   }
   kill(a) {
     if (a === this.hudTarget) this.hudTargetUntil = this.tick + 90;
+    if(a === this.player){
+      this.breakGrab();
+      if(this.rising) for(const target of this.rising.targets) if(target.state==='GRABBED'){
+        target.pose('HIT_AIR');target.throwFrame=null;target.vz=0;target.knockX=0;
+      }
+      this.rising=null;
+    }
     a.dead = true;
     a.pose('DEAD');
     a.z = 0;
@@ -1339,7 +1500,6 @@ class NeonUprising {
     } else {
       this.lives--;
       this.combo = 0;
-      this.breakGrab();
       fighterVoice.stopAll();
       a.speak('ko', 110);
     }
@@ -1353,7 +1513,10 @@ class NeonUprising {
     const p = this.player;
     p.dead = false;
     p.hp = p.maxHp;
-    p.z = 0;
+    p.z = p.vz = p.vy = p.airX = p.airY = p.knockX = 0;
+    p.throwFrame = null; p.throwFlight = p.throwLanding = false;
+    p.chain = p.queue = p.comboTTL = p.burnTicks = 0;p.chainHit = false;
+    p.jumpHits.clear();
     p.pose('IDLE');
     p.invuln = 180;
     p.cooldown = 0;
@@ -1368,6 +1531,7 @@ class NeonUprising {
   }
   beginFinale(boss) {
     if (this.finale || this.result) return;
+    this.lift?.motor(false);
     if(boss.twin && this.twins.some(e=>e!==boss&&e.hp>0)) {
       if(!boss.defeatSpoken){fighterVoice.play(boss.twin,'defeat',1,140);boss.defeatSpoken=true;this.announce(boss.label+' DOWN','#ffadc6');}
       return;
@@ -1409,6 +1573,8 @@ class NeonUprising {
     STREET.text(c, line, 640, 597, 23, '#fff0d9', 'center', '800');
   }
   finish(clear) {
+    this.lift?.motor(false);
+    MetroCrowd.stop();
     const cinematicWin = clear && this.finale?.phase === 'victory';
     this.finale = null;
     this.result = clear ? 'clear' : 'over';
@@ -1427,11 +1593,16 @@ class NeonUprising {
   }
 
   draw(c) {
+    if(this.bonus){this.bonus.draw(this,c);return;}
+    c.save();const arrival=this.metroEvent?.kind==='arrival'&&!this.metroEvent.swapped,f=this.metroEvent?.f||0,amp=arrival&&f<200?Math.sin(Math.min(1,f/200)*Math.PI)*9:0;
+    c.translate(Math.sin(f*2.7)*amp,Math.cos(f*3.9)*amp*.65);
+    if(this.stageIndex===2)c.translate(Math.sin(this.tick*2)*this.shake,Math.cos(this.tick*3)*this.shake*.4);
     this.drawStreet(c);
+    if(arrival)this.drawMetroTrain(c);
     c.save();
     c.translate(
-      -Math.round(this.camera) + Math.sin(this.tick * 2) * this.shake,
-      Math.cos(this.tick * 3) * this.shake * 0.4
+      -Math.round(this.camera) + (this.stageIndex===2?0:Math.sin(this.tick * 2) * this.shake),
+      this.stageIndex===2?0:Math.cos(this.tick * 3) * this.shake * 0.4
     );
     // Committed boss attacks display their lane before they can damage the player.
     for (const e of this.alive())
@@ -1449,12 +1620,13 @@ class NeonUprising {
           c.strokeRect(x, e.y - 33, 520, 66);
         } else {
           c.beginPath();
-          c.ellipse(e.x, e.y, e.monster ? 215 : 155, e.monster ? 86 : 78, 0, 0, Math.PI * 2);
+          c.ellipse(e.x, e.y, e.monster ? 215 : e.armored?205:155, e.monster ? 86 : 78, 0, 0, Math.PI * 2);
           c.fill();
           c.stroke();
         }
       }
     if(this.stageIndex===2)this.drawTwinCombat(c);
+    if(this.lift)this.lift.drawHazards(this,c);
     const sorted = [
       ...this.props.filter((p) => p.hp > 0).map((p) => ({ y: p.y, kind: 'prop', data: p })),
       ...this.items.map((p) => ({ y: p.y, kind: 'item', data: p })),
@@ -1466,7 +1638,9 @@ class NeonUprising {
     ].sort((a, b) => a.y - b.y);
     for (const o of sorted) {
       if (o.data.x < this.camera - 220 || o.data.x > this.camera + W + 220) continue;
-      if (o.kind === 'actor') o.data.render(c);
+      if(o.data===this.player&&arrival&&f>=340)continue;
+      if(o.data===this.player&&arrival&&f>305)c.globalAlpha=Math.max(0,(340-f)/35);
+      if (o.kind === 'actor'){o.data.render(c);c.globalAlpha=1;}
       else if (o.kind === 'prop') this.drawProp(c, o.data);
       else this.drawItem(c, o.data);
     }
@@ -1480,8 +1654,11 @@ class NeonUprising {
     if (!this.locked)
       STREET.text(c, 'GO  ➜', Math.min(this.gate - 40, this.camera + 1150), 360, 40, '#ffd08b', 'center', '900');
     c.restore();
+    c.restore();
     this.drawHUD(c);
-    if (this.intro > 0) this.overlay(c, 'STAGE 0' + (this.stageIndex+1), this.stage.title, this.stage.jp);
+    this.drawMetroEvent(c);
+    if (this.intro > 0 && !this.lift) this.overlay(c, 'STAGE 0' + (this.stageIndex+1), this.stage.title, this.stage.jp);
+    if(this.intro>0 && this.lift)STREET.text(c,'STAGE 05   /   SKYHOOK ASCENT',W/2,287,32,'#fff2c7','center','900');
     if (this.bossIntro > 0) {
       STREET.text(c, 'WARNING / ' + this.stage.bossName, W/2, 245, 30, '#ff9876', 'center', '900');
       const voiceId=this.stageIndex===2?(this.twinIntroSpeaker || 'luka'):this.stage.boss;
@@ -1636,7 +1813,7 @@ class NeonUprising {
     );
     STREET.text(
       c,
-      clear ? (this.stageIndex === 0 ? '鉄門の先に、闇に沈む廃工場が待ち受ける。' : this.stageIndex===1 ? '工場を抜けた先は、陽光きらめく海辺の楽園。' : '双冠の支配は終わり、海辺に自由が戻った。') : 'もう一度、この戦いに挑む。',
+      clear ? (this.stageIndex === 0 ? '鉄門の先に、闇に沈む廃工場が待ち受ける。' : this.stageIndex===1 ? '工場を抜けた先は、陽光きらめく海辺の楽園。' : this.stageIndex===2 ? '地下鉄の闇の奥に、最後の闘技場が待つ。' : this.lift ? '巨獣は落ちた。最上部の搬入口が開く。' : '地下闘技場の支配者を倒した。' ) : 'もう一度、この戦いに挑む。',
       W / 2,
       300,
       20,
@@ -1652,8 +1829,8 @@ class NeonUprising {
       '#f4d1a1',
       'center'
     );
-    STREET.text(c, (clear && this.stageIndex+1<STREET_STAGES.length ? 'Enter: ステージ'+(this.stageIndex+2)+'へ進む' : clear ? 'Enter: ステージ1から再挑戦' : 'Enter: このステージを再挑戦') + '     ESC: ゲーム選択', W / 2, 499, 18, '#a8beca', 'center');
-    if (clear) STREET.text(c, this.stageIndex+1<STREET_STAGES.length ? '残機・スコアを引き継ぎ、体力を回復して次へ' : 'ALL STAGES CLEAR', W / 2, 551, 14, '#8497a6', 'center');
+    STREET.text(c, (clear ? this.lift?'Enter: ゲーム選択へ':this.stageIndex===3?'Enter: ボーナスステージへ':'Enter: ステージ'+(this.stageIndex+2)+'へ進む' : 'Enter: このステージを再挑戦') + '     ESC: ゲーム選択', W / 2, 499, 18, '#a8beca', 'center');
+    if (clear) STREET.text(c, this.lift?'ALL STAGES CLEAR':this.stageIndex===3?'BONUS UNLOCKED  /  BREAKER YARD':'残機・スコアを引き継ぎ、体力を回復して次へ', W / 2, 551, 14, '#8497a6', 'center');
   }
   drawProp(c, p) {
     if (BeltArt.drawProp(c, p)) return;
@@ -1710,6 +1887,7 @@ class NeonUprising {
   }
 
   drawStreet(c) {
+    if(this.lift){this.lift.draw(this,c);return;}
     if (BeltArt.drawStreet(this, c)) return;
     c.fillStyle = '#0b1420';
     c.fillRect(0, 0, W, H);
@@ -1959,9 +2137,11 @@ const classicUpdate = Game.prototype.update,
   classicDraw = Game.prototype.draw,
   classicPause = Game.prototype.togglePause;
 Game.prototype.openHub = function () {
+  this.street?.lift?.motor(false);
   ThrowMotion.cancel(this);
   if (this.street) this.street.breakGrab();
   fighterVoice.stopAll();
+  MetroCrowd.stop();
   this.scene = 'HUB';
   this.streetStageMenu = false;
   this.paused = false;
@@ -1980,34 +2160,37 @@ Game.prototype.streetCard = function (i) {
 };
 // Small HUB-only shortcut; starts a fresh run at the selected stage after choosing a hero.
 Game.prototype.streetStageButton = function () { return {x:1000,y:658,w:218,h:30}; };
-Game.prototype.streetStageOption = function (i) { return {x:1000,y:544+i*36,w:218,h:36}; };
+Game.prototype.streetStageOption = function (i) { return {x:1000,y:652-STREET_STARTS.length*36+i*36,w:218,h:36}; };
 Game.prototype.updateStreetStageMenu = function () {
   if(input.clicked&&STREET.inside(this.streetStageButton())) {
-    this.streetStageMenu=!this.streetStageMenu;this.streetStageCursor=this.streetStartStage||0;
+    this.streetStageMenu=!this.streetStageMenu;this.streetStageCursor=STREET_STARTS.findIndex(option=>option.id===(this.streetStartStage??0));
     sound.playUI('cursor');return true;
   }
   if(!this.streetStageMenu)return false;
-  if(STREET.press('ArrowUp','KeyW'))this.streetStageCursor=(this.streetStageCursor+STREET_STAGES.length-1)%STREET_STAGES.length;
-  if(STREET.press('ArrowDown','KeyS'))this.streetStageCursor=(this.streetStageCursor+1)%STREET_STAGES.length;
+  if(STREET.press('ArrowUp','KeyW'))this.streetStageCursor=(this.streetStageCursor+STREET_STARTS.length-1)%STREET_STARTS.length;
+  if(STREET.press('ArrowDown','KeyS'))this.streetStageCursor=(this.streetStageCursor+1)%STREET_STARTS.length;
   let choose=STREET.press('Enter','Space','KeyJ','KeyZ');
   if(input.clicked) {
-    for(let i=0;i<STREET_STAGES.length;i++)if(STREET.inside(this.streetStageOption(i))){this.streetStageCursor=i;choose=true;}
+    for(let i=0;i<STREET_STARTS.length;i++)if(STREET.inside(this.streetStageOption(i))){this.streetStageCursor=i;choose=true;}
     this.streetStageMenu=false;
   }
-  if(choose){this.streetStartStage=this.streetStageCursor;this.streetStageMenu=false;this.hubChoice=1;sound.playUI('confirm');}
+  if(choose){this.streetStartStage=STREET_STARTS[this.streetStageCursor].id;this.streetStageMenu=false;this.hubChoice=1;sound.playUI('confirm');}
   return true;
 };
 Game.prototype.drawStreetStageMenu = function () {
   const r=this.streetStageButton(),hover=STREET.inside(r),selected=this.streetStartStage||0;
   STREET.panel(ctx,r.x,r.y,r.w,r.h,hover?'#182634':'#101b28',hover?'#667c8c':'#344454');
-  STREET.text(ctx,'ベルト開始：STAGE '+(selected+1)+'  ▾',r.x+r.w/2,r.y+20,12,'#96aab9','center');
-  if(this.streetStageMenu)for(let i=0;i<STREET_STAGES.length;i++){
+  STREET.text(ctx,'ベルト開始：'+STREET_STARTS.find(option=>option.id===selected).label+'  ▾',r.x+r.w/2,r.y+20,12,'#96aab9','center');
+  if(this.streetStageMenu)for(let i=0;i<STREET_STARTS.length;i++){
     const q=this.streetStageOption(i),active=i===this.streetStageCursor||STREET.inside(q);
     STREET.panel(ctx,q.x,q.y,q.w,q.h,active?'#233747':'#101b28','#405363');
-    STREET.text(ctx,(i===selected?'✓ ':'')+(i+1)+'  '+STREET_STAGES[i].title,q.x+12,q.y+23,12,active?'#e0eaf0':'#9db2c2');
+    const option=STREET_STARTS[i];STREET.text(ctx,(option.id===selected?'✓ ':'')+(option.id==='bonus'?'BONUS':i+1)+'  '+option.title,q.x+12,q.y+23,12,active?'#e0eaf0':'#9db2c2');
   }
 };
 Game.prototype.startStreet = function (index, stage = 0, carry = null) {
+  this.street?.lift?.motor(false);
+  if((stage===3||stage===4)&&!FighterSprites.metroMasksReady){this.scene='STREET_SELECT';this.metroPreparing=true;BeltArt.ready.then(()=>{this.metroPreparing=false;if(this.scene==='STREET_SELECT')this.startStreet(index,stage,carry);});return;}
+  MetroCrowd.stop();
   fighterVoice.stopAll();
   this.paused = false;
   this.scene = 'STREET';
@@ -2021,6 +2204,8 @@ Game.prototype.togglePause = function () {
     this.paused = !this.paused;
     this.street.resetDashTap();
     if (this.paused) {
+      this.street.lift?.motor(false);
+      MetroCrowd.stop();
       fighterVoice.stopAll();
       input.keys = {};
     } else if (this.street.bossIntro > 0 && this.street.stageIndex===2) {
@@ -2042,6 +2227,7 @@ Game.prototype.update = function () {
     return;
   }
   if (this.isPaused()) {
+    this.street?.lift?.motor(false);
     if (this.scene === 'STREET') this.street.resetDashTap();
     input.clear();
     return;
@@ -2146,7 +2332,7 @@ Game.prototype.draw = function () {
       STREET.text(ctx, i ? '犯罪都市を、拳で切り拓け。' : '一対一、限界を超える決闘。', x + 24, 503, 17, '#bdd0da');
       STREET.text(
         ctx,
-        i ? '1 PLAYER  /  3 STAGES: CITY → FACTORY → RESORT' : 'ARCADE  /  VS CPU  /  VS 2P  /  TRAINING',
+        i ? '1 PLAYER  /  4 STAGES: CITY / FACTORY / RESORT / METRO' : 'ARCADE  /  VS CPU  /  VS 2P  /  TRAINING',
         x + 24,
         540,
         12,
@@ -2180,8 +2366,9 @@ Game.prototype.draw = function () {
   } else {
     STREET.text(ctx, 'NEON UPRISING', 44, 65, 18, '#efb980', 'left', '900');
     STREET.text(ctx, 'VERSION ' + STREET.version, W - 44, 65, 13, '#7c93a3', 'right', '800');
-    STREET.text(ctx, 'CHOOSE YOUR REBEL', 44, 120, 44, '#efeee8', 'left', '900');
-    STREET.text(ctx, 'START STAGE '+((this.streetStartStage||0)+1)+' / '+STREET_STAGES[this.streetStartStage||0].title, 44, 163, 17, '#9bb7c7');
+    STREET.text(ctx, this.metroPreparing?'PREPARING COLORS…':'CHOOSE YOUR REBEL', 44, 120, 44, '#efeee8', 'left', '900');
+    const start=STREET_STARTS.find(option=>option.id===(this.streetStartStage??0));
+    STREET.text(ctx, 'START '+start.label+' / '+start.title, 44, 163, 17, '#9bb7c7');
     for (let i = 0; i < CHARACTERS.length; i++) {
       const d = CHARACTERS[i],
         r = this.streetCard(i),
@@ -2221,6 +2408,8 @@ Game.prototype.draw = function () {
 };
 // Avoid stuck movement on tab switch. Pause active runs until the player explicitly resumes.
 window.addEventListener('blur', () => {
+  game.street?.lift?.motor(false);
+  MetroCrowd.stop();
   input.keys = {};
   input.clear();
   if (game.scene === 'STREET' && !game.street.result) {

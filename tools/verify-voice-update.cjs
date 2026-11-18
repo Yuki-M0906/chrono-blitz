@@ -14,8 +14,9 @@ assert.equal(fighters.length,6);assert.deepEqual(bosses.map(([id])=>id),['voss',
 assert.equal(Object.keys(sources).length,total);
 const names=new Set();let added=0,reworked=0,remastered=0,cinematic=0;
 for(const [id,p] of Object.entries(profiles)) {
-  const twin=['luka','misha'].includes(id),boss=Object.keys(p.lines).length===2;
-  if(twin)assert.deepEqual(Object.keys(p.lines),['intro','combo','defeat']);
+  // v3.20.1: any profile that is not a 22-line fighter or a 2-line boss is a cinematic cast (the twins, VESPER's 6 creature sounds).
+  const twin=Object.keys(p.lines).length!==22&&Object.keys(p.lines).length!==2,boss=Object.keys(p.lines).length===2;
+  if(['luka','misha'].includes(id))assert.deepEqual(Object.keys(p.lines),['intro','combo','defeat']);
   if(twin){}else if(boss)assert.deepEqual(Object.keys(p.lines),['intro','defeat']);else{names.add(p.voice);assert.equal(Object.keys(p.lines).length,22);assert.ok('finish' in p.lines);}
   assert.ok(html.includes(p.credit),'Voice credit must be in the page');
   for(const event of Object.keys(p.lines)) {

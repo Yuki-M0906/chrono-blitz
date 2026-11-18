@@ -15,7 +15,8 @@ const root = path.resolve(__dirname, '..'), out = path.join(root, 'verification'
     await page.goto(pathToFileURL(path.join(root, 'ai_studio_code.html')).href);
     await page.evaluate(async () => { await Promise.all([FighterSprites.ready, StageArt.ready, BeltArt.ready]); sound.playBGM = () => {}; });
     const box = await page.locator('#gameCanvas').boundingBox(), sx = box.width / 1280, sy = box.height / 720;
-    const layout = await page.evaluate(() => ({ button: game.streetStageButton(), options: STREET_STAGES.map((_, i) => game.streetStageOption(i)), stages: STREET_STAGES.map(s => ({ title: s.title, music: s.music })) }));
+    await page.evaluate(()=>BeltArt.ready);
+    const layout = await page.evaluate(() => ({ button: game.streetStageButton(), options: STREET_STARTS.map((_, i) => game.streetStageOption(i)), stages: STREET_STARTS }));
     const mid = r => [r.x + r.w / 2, r.y + r.h / 2], count = layout.stages.length;
     const click = async ([x, y]) => { await page.mouse.click(box.x + x * sx, box.y + y * sy); await page.evaluate(() => { game.update(); game.draw(); }); };
     const key = async k => { await page.keyboard.press(k); await page.evaluate(() => { game.update(); game.draw(); }); };
@@ -29,7 +30,7 @@ const root = path.resolve(__dirname, '..'), out = path.join(root, 'verification'
     await click(button); s = await state(); check(!s.gate && !s.menu && s.scene === 'HUB', 'first click on the button only passes the start gate', s);
     await click(button); s = await state(); check(s.menu && s.cursor === 0, 'button opens the menu on the current stage', s);
     await page.locator('#gameCanvas').screenshot({ path: path.join(out, 'open.png') });
-    await click(mid(layout.options[last])); s = await state(); check(!s.menu && s.start === last && s.hub === 1 && s.scene === 'HUB', 'mouse picks the last stage and selects the belt card', s);
+    await click(mid(layout.options[last])); s = await state(); check(!s.menu && s.start === 'bonus' && s.hub === 1 && s.scene === 'HUB', 'mouse picks the bonus stage and selects the belt card', s);
     await page.locator('#gameCanvas').screenshot({ path: path.join(out, 'closed.png') });
     // Option 0 overlaps the bottom edge of the belt card; neither it nor an outside click may fall through to the card.
     await click(button); await click(mid(layout.options[0])); s = await state(); check(!s.menu && s.start === 0 && s.scene === 'HUB', 'option over the card does not click through', s);
@@ -50,13 +51,11 @@ const root = path.resolve(__dirname, '..'), out = path.join(root, 'verification'
       await click(button); await click(mid(layout.options[i]));
       await key('Enter'); s = await state(); check(s.scene === 'STREET_SELECT', 'belt card opens hero select for stage ' + (i + 1), s);
       await key('ArrowRight'); await key('Enter'); s = await state();
-      check(s.scene === 'STREET' && s.stage === i && s.lives === 3 && s.score === 0 && s.kills === 0, 'fresh run on stage ' + (i + 1) + ' ' + layout.stages[i].title, s);
-      await key('Escape'); await key('KeyQ'); s = await state(); check(s.scene === 'HUB' && !s.menu && s.start === i, 'pause, Q returns to the HUB and keeps stage ' + (i + 1), s);
+      check(s.scene === 'STREET' && s.stage === (layout.stages[i].id==='bonus'?-1:i) && s.lives === 3 && s.score === 0 && s.kills === 0, 'fresh run on '+layout.stages[i].title, s);
+      await key('Escape'); await key('KeyQ'); s = await state(); check(s.scene === 'HUB' && !s.menu && s.start === layout.stages[i].id, 'pause, Q keeps '+layout.stages[i].title, s);
     }
-    // A cleared run still advances in order and the last stage wraps to a fresh stage 1, whatever the start stage was.
-    const flow = await page.evaluate(() => { game.startStreet(0, game.streetStartStage); const s = game.street; s.score = 1234; s.finish(true); const score = s.score; s.resultTick = 46; input.just = { Enter: true }; s.update(); input.just = {};
-      const r = { stage: game.street.stageIndex, score: game.street.score, expected: score }; game.openHub(); return r; });
-    check(flow.stage === 0 && flow.score === 0, 'clearing the last stage restarts at stage 1 with a fresh score', flow);
+    const flow = await page.evaluate(() => { game.startStreet(0,4);const street=game.street;street.finish(true);street.resultTick=46;input.just={Enter:true};game.update();return game.scene; });
+    check(flow==='HUB','clearing stage 5 returns to HUB');
     // The classic game is unaffected, and drawing the HUB never changes state.
     const pure = await page.evaluate(() => { game.streetStageMenu = true; const snap = () => JSON.stringify([game.scene, game.stageTick, game.hubChoice, game.streetStageMenu, game.streetStageCursor, game.streetStartStage, sound.seed]); const a = snap(); for (let i = 0; i < 5; i++) game.draw(); const same = a === snap(); game.streetStageMenu = false; return same; });
     check(pure, 'drawing the menu changes no state');

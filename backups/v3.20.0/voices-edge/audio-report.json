@@ -1,0 +1,1285 @@
+{
+  "version": "3.8.0",
+  "engine": "Microsoft Edge Neural Voices + Theatrical 2-Stage Prosody, NCC-PSOLA Pitch Contouring & Studio Mastering",
+  "sampleRate": 24000,
+  "clips": [
+    {
+      "id": "kagura-light0",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Hyah!",
+      "seconds": 0.363,
+      "peak": 29163,
+      "rms": 5040.19,
+      "sha256": "d1e3de490c3367ab7e899443e30ad064f238354f6d22cccbb3d4b7bed0b70e69"
+    },
+    {
+      "id": "kagura-light1",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Hah!",
+      "seconds": 0.257,
+      "peak": 29163,
+      "rms": 5980.87,
+      "sha256": "5154465eaf652356629b929dc8472d862ca3213d5f430a02980bae13509c1f83"
+    },
+    {
+      "id": "kagura-heavy0",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Cut deep!",
+      "seconds": 0.488,
+      "peak": 29163,
+      "rms": 4788.48,
+      "sha256": "9b0dc53ce7367269753e1b331209b7af84bbc23d29b656ccd5d4711b7b586a72"
+    },
+    {
+      "id": "kagura-heavy1",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Strike true!",
+      "seconds": 0.587,
+      "peak": 29163,
+      "rms": 5869.44,
+      "sha256": "bcaef1d450c790774234049cc2d309dcf1c33a8a7a834f1d4b2ac5d7b6ee7936"
+    },
+    {
+      "id": "kagura-jump",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Hup!",
+      "seconds": 0.195,
+      "peak": 29163,
+      "rms": 5843.06,
+      "sha256": "1ae52faa369c7994452eccf3718258c5c2c763a6bd36dd8d23f789fa264c2541"
+    },
+    {
+      "id": "kagura-dash",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Here I come!",
+      "seconds": 0.519,
+      "peak": 29163,
+      "rms": 6732.56,
+      "sha256": "7a8c8d7c3499642926986dc73ea4d77809383c6785a6b0cde9224d18456f59a5"
+    },
+    {
+      "id": "kagura-hurt0",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Ack!",
+      "seconds": 0.292,
+      "peak": 29163,
+      "rms": 5455.48,
+      "sha256": "704e2d4c0f7264fd552da0541b5aa4ad875b5e809374222ff4bf33e37d273094"
+    },
+    {
+      "id": "kagura-hurt1",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Ugh!",
+      "seconds": 0.294,
+      "peak": 29163,
+      "rms": 5632.06,
+      "sha256": "363d1dc5d33e29b354dabac3247d22d0a36cc74606be60e44f02515db1f0fc4e"
+    },
+    {
+      "id": "kagura-throw",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Got you!",
+      "seconds": 0.371,
+      "peak": 29163,
+      "rms": 4953.02,
+      "sha256": "3e93ac9b5c3cacc1dfd00a176f711c0089c847b58e0b91f1354c2429ea212cf0"
+    },
+    {
+      "id": "kagura-burst",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Get back!",
+      "seconds": 0.476,
+      "peak": 29163,
+      "rms": 5594.29,
+      "sha256": "13db1c2d6763976dbe287b63ee4f13694255705383188062868291e6311b0f60"
+    },
+    {
+      "id": "kagura-sp1",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Crescent Edge!",
+      "seconds": 0.667,
+      "peak": 29163,
+      "rms": 5106.11,
+      "sha256": "a38426bbe7b1bcd339b3b25b8d934729cc79af6806654ef6590de6ac51e98bad"
+    },
+    {
+      "id": "kagura-sp2",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Flying Swallow!",
+      "seconds": 0.783,
+      "peak": 29163,
+      "rms": 6246.98,
+      "sha256": "e36761480eb7635279b666b0787eb6d901a0d2004ecdbf352fd7666483e780a9"
+    },
+    {
+      "id": "kagura-sp3",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Phantom... Sever!",
+      "seconds": 0.921,
+      "peak": 29163,
+      "rms": 5660.98,
+      "sha256": "882875608d8f28a608b4e88cc67f695de9bc72f29f3a03b6b50a6540fffee1e7"
+    },
+    {
+      "id": "kagura-super",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Witness my true flame... Inferno! Heaven Slash!",
+      "seconds": 3.386,
+      "peak": 29163,
+      "rms": 5225.5,
+      "sha256": "998c2d25c9c5b41a57f416306cf515fbb4e0b5a448bd520ae17b33e628ba7378"
+    },
+    {
+      "id": "kagura-select",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Draw your steel! Let's see what you're made of!",
+      "seconds": 2.033,
+      "peak": 27852,
+      "rms": 5663.23,
+      "sha256": "46a29e39979c535f196b8c681dd834517fa5355189810f626f6cda4b0182ddde"
+    },
+    {
+      "id": "kagura-win",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Hmph! A duel well fought!",
+      "seconds": 1.734,
+      "peak": 27852,
+      "rms": 5343.78,
+      "sha256": "35c3a84319ab8713cc2c615b9abc1a7246eb4a934ee1c162b379f35588a87ae3"
+    },
+    {
+      "id": "kagura-ko",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "No... my flame... fades...",
+      "seconds": 2.075,
+      "peak": 25558,
+      "rms": 4069.52,
+      "sha256": "4e5145e381f0b8954a411ce6801341ee492fec9457a3ff60a236d72d180a4934"
+    },
+    {
+      "id": "kagura-grabbed",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "What?!",
+      "seconds": 0.219,
+      "peak": 29163,
+      "rms": 6932.55,
+      "sha256": "3d0c11357f73b17bcd89e11f5b1e95b43b9e6949dad593cb387fa416e8abba76"
+    },
+    {
+      "id": "kagura-throw_release",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Out of my sight!",
+      "seconds": 0.675,
+      "peak": 29163,
+      "rms": 6575.95,
+      "sha256": "1c0679e0458fab6f98ba1290e67bf6573c96569cf65b5935037548e96deb9eae"
+    },
+    {
+      "id": "kagura-thrown",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Damn you!",
+      "seconds": 0.37,
+      "peak": 29163,
+      "rms": 6345.97,
+      "sha256": "e453120c689d5c76f740e8d4ab2a19af5159f2b7c785a9bb5d0074cb6864f9fe"
+    },
+    {
+      "id": "kagura-throw_impact",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Gah!",
+      "seconds": 0.254,
+      "peak": 29163,
+      "rms": 6627.64,
+      "sha256": "a79f7bc6237cbb6e33b7a9955d0c815f842e522f4f148f32780de56ba123aa7f"
+    },
+    {
+      "id": "kagura-finish",
+      "voice": "en-US-AndrewMultilingualNeural",
+      "text": "Your wicked flame ends here... By my blade!",
+      "seconds": 2.635,
+      "peak": 29163,
+      "rms": 5479.93,
+      "sha256": "dc29216e1469cccc6b20b5f4c6e50169419059b48a13feaf55701c539737a1a4"
+    },
+    {
+      "id": "volt-light0",
+      "voice": "en-US-GuyNeural",
+      "text": "Hah!",
+      "seconds": 0.35,
+      "peak": 29163,
+      "rms": 6142.65,
+      "sha256": "eef3a915aa950deb0cdfa46c05b6491c51b8258181dbd405f6ca7bdae469ebe0"
+    },
+    {
+      "id": "volt-light1",
+      "voice": "en-US-GuyNeural",
+      "text": "Bam!",
+      "seconds": 0.437,
+      "peak": 29163,
+      "rms": 4721.32,
+      "sha256": "bdcd5a920b16a3298ac01dc477157638dcf6a3f32e8ab0b267a463d93358bf41"
+    },
+    {
+      "id": "volt-heavy0",
+      "voice": "en-US-GuyNeural",
+      "text": "Eat this!",
+      "seconds": 0.629,
+      "peak": 29163,
+      "rms": 5821.06,
+      "sha256": "0aca58e76e140118dadd4ba7a6b7733d28e45677b09f1c3093d01070449bd025"
+    },
+    {
+      "id": "volt-heavy1",
+      "voice": "en-US-GuyNeural",
+      "text": "Watch this, pal!",
+      "seconds": 1.01,
+      "peak": 29163,
+      "rms": 4962.41,
+      "sha256": "fa168811b3f5580af88d711dd016dc1bbe99cff84187324ec859aef141721e35"
+    },
+    {
+      "id": "volt-jump",
+      "voice": "en-US-GuyNeural",
+      "text": "Hup!",
+      "seconds": 0.336,
+      "peak": 29163,
+      "rms": 5012.16,
+      "sha256": "599ad9ac4642bdafb6801413f51ce3ffcc580e31866aaae5242f72eb3415e8dd"
+    },
+    {
+      "id": "volt-dash",
+      "voice": "en-US-GuyNeural",
+      "text": "Too slow!",
+      "seconds": 0.63,
+      "peak": 29163,
+      "rms": 6462.8,
+      "sha256": "e513298ad8efefb6a0b3a34d9fc250203cf0b63fd9499eadddd88ab0b98b0d98"
+    },
+    {
+      "id": "volt-hurt0",
+      "voice": "en-US-GuyNeural",
+      "text": "Ack!",
+      "seconds": 0.385,
+      "peak": 29163,
+      "rms": 4532.74,
+      "sha256": "3b0cae3366163cb0729aea3dcd6a199bb08542a2b03247a2234f2883a32e8c01"
+    },
+    {
+      "id": "volt-hurt1",
+      "voice": "en-US-GuyNeural",
+      "text": "Gah!",
+      "seconds": 0.391,
+      "peak": 29163,
+      "rms": 5370.47,
+      "sha256": "c3b806034e205e022c461dd77bec58c494bc8db7c65db830b6cd33ed64423e2f"
+    },
+    {
+      "id": "volt-throw",
+      "voice": "en-US-GuyNeural",
+      "text": "Gotcha!",
+      "seconds": 0.471,
+      "peak": 29163,
+      "rms": 4854.34,
+      "sha256": "40926c02be62dc28105fe5398d485b0889a7a5eef3c556687d366587e6775fdb"
+    },
+    {
+      "id": "volt-burst",
+      "voice": "en-US-GuyNeural",
+      "text": "Back off!",
+      "seconds": 0.571,
+      "peak": 29163,
+      "rms": 4888.79,
+      "sha256": "3f96175f2502e473bf09098062ea0944b0a670bd1a827f633257d26213b63699"
+    },
+    {
+      "id": "volt-sp1",
+      "voice": "en-US-GuyNeural",
+      "text": "Plasma Shot!",
+      "seconds": 0.741,
+      "peak": 29163,
+      "rms": 5710.46,
+      "sha256": "bbc704ea05a67cc154af2a869406f85cacd21ebd40282e535b1745840a486b69"
+    },
+    {
+      "id": "volt-sp2",
+      "voice": "en-US-GuyNeural",
+      "text": "Lightning Drive!",
+      "seconds": 0.866,
+      "peak": 29163,
+      "rms": 6222.64,
+      "sha256": "4a9b81afa9ac0916a17cc6a39000ed0da31c17fe197f866120e1085826ff995f"
+    },
+    {
+      "id": "volt-sp3",
+      "voice": "en-US-GuyNeural",
+      "text": "Thunder... Somersault!",
+      "seconds": 1.387,
+      "peak": 29163,
+      "rms": 6292.05,
+      "sha256": "56d2e2b88c72e024f059ea11092e3600bfa824da76db7b2f7ee2d5e8ff738522"
+    },
+    {
+      "id": "volt-super",
+      "voice": "en-US-GuyNeural",
+      "text": "Full throttle! Overdrive... Ragnarok!",
+      "seconds": 3.285,
+      "peak": 29163,
+      "rms": 4644.65,
+      "sha256": "97574cb18faf372c001c2b095f00e1a00ff552b660083f57d95d9b71e9b680d3"
+    },
+    {
+      "id": "volt-select",
+      "voice": "en-US-GuyNeural",
+      "text": "Let's crank it up to max speed!",
+      "seconds": 1.498,
+      "peak": 27852,
+      "rms": 4737.15,
+      "sha256": "845576f6f9618cf6d001becdd9ec2e3fe32e96c25d9ae2cbfc72ee9ce915393e"
+    },
+    {
+      "id": "volt-win",
+      "voice": "en-US-GuyNeural",
+      "text": "Haha! Victory is mine, baby!",
+      "seconds": 2.785,
+      "peak": 27852,
+      "rms": 4489.18,
+      "sha256": "f18fba496579e5a1dd5d04df13efffd3d8120b5a14f675d9fecb33817e19fc71"
+    },
+    {
+      "id": "volt-ko",
+      "voice": "en-US-GuyNeural",
+      "text": "No way... Seriously?!",
+      "seconds": 2.545,
+      "peak": 25558,
+      "rms": 3758.98,
+      "sha256": "38f00c3f4c530a5a7c65a3a34f3f6f60700e277a1133fb7e4a4a8cc2cec6351e"
+    },
+    {
+      "id": "volt-grabbed",
+      "voice": "en-US-GuyNeural",
+      "text": "Uh oh!",
+      "seconds": 0.529,
+      "peak": 29163,
+      "rms": 6673.7,
+      "sha256": "ccd86d096cbaaf301dddb68851c765fe5f25b5259b008854cc9ed80344a71352"
+    },
+    {
+      "id": "volt-throw_release",
+      "voice": "en-US-GuyNeural",
+      "text": "See ya!",
+      "seconds": 0.616,
+      "peak": 29163,
+      "rms": 5414.26,
+      "sha256": "2fb36f5ad102a6a1775a1361aa3d4f322b4356722c327751c3c98de67ddabc81"
+    },
+    {
+      "id": "volt-thrown",
+      "voice": "en-US-GuyNeural",
+      "text": "Whoa, hold on!",
+      "seconds": 0.992,
+      "peak": 29163,
+      "rms": 5114.28,
+      "sha256": "2441785c88105b4a2da39d0b317268bb187274512e1eee2644dc91ae7fa961cc"
+    },
+    {
+      "id": "volt-throw_impact",
+      "voice": "en-US-GuyNeural",
+      "text": "Oof!",
+      "seconds": 0.357,
+      "peak": 29163,
+      "rms": 6420.76,
+      "sha256": "55d7f101902d8f4af8cd8451b73d177a89f9af8f00b1b3f7da04c89335957d74"
+    },
+    {
+      "id": "volt-finish",
+      "voice": "en-US-GuyNeural",
+      "text": "Lights out, punk! We're taking this city back!",
+      "seconds": 2.464,
+      "peak": 29163,
+      "rms": 5015.22,
+      "sha256": "99ea7310c56e0af81bbce3409e53b5c4d6c4eb1ef0b00905ad279b76de127c26"
+    },
+    {
+      "id": "freya-light0",
+      "voice": "en-US-AriaNeural",
+      "text": "Hah!",
+      "seconds": 0.37,
+      "peak": 29163,
+      "rms": 5980.03,
+      "sha256": "2bc0d3c8b47732095b4cb0eade56a0fe8ef5cc7aee1ebf2f2ec0fabc1efcb894"
+    },
+    {
+      "id": "freya-light1",
+      "voice": "en-US-AriaNeural",
+      "text": "Hyah!",
+      "seconds": 0.456,
+      "peak": 29163,
+      "rms": 5554.54,
+      "sha256": "18cd584222d79284c07b7f9e5c6e6d20c6b04d4763118d72f9856d0f39b8c8a8"
+    },
+    {
+      "id": "freya-heavy0",
+      "voice": "en-US-AriaNeural",
+      "text": "Freeze solid!",
+      "seconds": 0.796,
+      "peak": 29163,
+      "rms": 5393.91,
+      "sha256": "2e06bfbc7db7800a060a7654cbc74bfaae92475deb88088979d85c81f642ab37"
+    },
+    {
+      "id": "freya-heavy1",
+      "voice": "en-US-AriaNeural",
+      "text": "Pierce through!",
+      "seconds": 0.735,
+      "peak": 29163,
+      "rms": 7008.58,
+      "sha256": "aecab440949dbf27318c26ee3c0c7578718df3cd1b4ac2dcf57bcd3252cc3d46"
+    },
+    {
+      "id": "freya-jump",
+      "voice": "en-US-AriaNeural",
+      "text": "Up!",
+      "seconds": 0.398,
+      "peak": 29163,
+      "rms": 5235.56,
+      "sha256": "20bc1bb696f1876f353de8cc2e3eaa26ef7d59e127e435c389f9a721b5c68716"
+    },
+    {
+      "id": "freya-dash",
+      "voice": "en-US-AriaNeural",
+      "text": "Watch yourself!",
+      "seconds": 0.834,
+      "peak": 29163,
+      "rms": 5964.35,
+      "sha256": "738d31b6f09c23dd44271c187a601911db030ec484549902d0a5893e6a22bf83"
+    },
+    {
+      "id": "freya-hurt0",
+      "voice": "en-US-AriaNeural",
+      "text": "Ah!",
+      "seconds": 0.304,
+      "peak": 29163,
+      "rms": 5670.33,
+      "sha256": "f27f5e3875a1acf9eab99d28170dccf8bef24df2c0386a6984f6a2179b3245bb"
+    },
+    {
+      "id": "freya-hurt1",
+      "voice": "en-US-AriaNeural",
+      "text": "Ugh!",
+      "seconds": 0.347,
+      "peak": 29163,
+      "rms": 6018.46,
+      "sha256": "3f60382eb58d950648b35a6aabc45bfaa358c6841349dbb7049eac490c26f1b9"
+    },
+    {
+      "id": "freya-throw",
+      "voice": "en-US-AriaNeural",
+      "text": "Right there!",
+      "seconds": 0.63,
+      "peak": 29163,
+      "rms": 5381.11,
+      "sha256": "8936d07dd17c60fd058128c92d502767926f068842a23121a78f64ef423da1b3"
+    },
+    {
+      "id": "freya-burst",
+      "voice": "en-US-AriaNeural",
+      "text": "Keep away from me!",
+      "seconds": 0.921,
+      "peak": 29163,
+      "rms": 6875.16,
+      "sha256": "cf8251458754eee28b2648dcadbc30a81948b306d895c7c48f0e95ecfda10f54"
+    },
+    {
+      "id": "freya-sp1",
+      "voice": "en-US-AriaNeural",
+      "text": "Glacier Pillar!",
+      "seconds": 0.782,
+      "peak": 29163,
+      "rms": 4952.97,
+      "sha256": "693bd5ece8ed4a87a068f189af8eb5d4af2084683dc7cae58022a2f8d3c0f663"
+    },
+    {
+      "id": "freya-sp2",
+      "voice": "en-US-AriaNeural",
+      "text": "Valkyrie Lance!",
+      "seconds": 1.006,
+      "peak": 29163,
+      "rms": 5437.05,
+      "sha256": "dc06480969a76d30e9717b05e07ee85a3ad857cd8b97f0e7376dfb2367107650"
+    },
+    {
+      "id": "freya-sp3",
+      "voice": "en-US-AriaNeural",
+      "text": "Frost... Nova!",
+      "seconds": 1.308,
+      "peak": 29163,
+      "rms": 6019.4,
+      "sha256": "cea29931dba5599c227ea6a23dd49a3723c6f16498e1b1aa02806e20aabc28e1"
+    },
+    {
+      "id": "freya-super",
+      "voice": "en-US-AriaNeural",
+      "text": "Feel the eternal chill... Absolute Zero! Calibur!",
+      "seconds": 4.328,
+      "peak": 29163,
+      "rms": 4360.73,
+      "sha256": "5f8edc8b52e3805808d3af0ac98f0e8c81fcd0e99d174453bea5c0ab19b68bc3"
+    },
+    {
+      "id": "freya-select",
+      "voice": "en-US-AriaNeural",
+      "text": "May winter grant us... a silent finale.",
+      "seconds": 2.422,
+      "peak": 27852,
+      "rms": 5327.65,
+      "sha256": "90a69aa207af7183c1aea8b6e5e834fe3faffe24fc573ea9a313b9d503b675fe"
+    },
+    {
+      "id": "freya-win",
+      "voice": "en-US-AriaNeural",
+      "text": "Sleep softly... beneath the ice.",
+      "seconds": 1.951,
+      "peak": 27852,
+      "rms": 5326.45,
+      "sha256": "7968d64eb906e90d5da1bf7623c79ba0fd5f55c1767eb855b92d9b267dd971e4"
+    },
+    {
+      "id": "freya-ko",
+      "voice": "en-US-AriaNeural",
+      "text": "No... How could this happen...",
+      "seconds": 2.712,
+      "peak": 25558,
+      "rms": 3725.19,
+      "sha256": "3f095a6068f3efff08a0c87e64b4200ccf0aa308be227a65ff7a857ac536d8da"
+    },
+    {
+      "id": "freya-grabbed",
+      "voice": "en-US-AriaNeural",
+      "text": "What?!",
+      "seconds": 0.421,
+      "peak": 29163,
+      "rms": 5849.4,
+      "sha256": "e90f508a6616d14349467c9c2c3816164b7408d4a41d2342123dd7a34303473d"
+    },
+    {
+      "id": "freya-throw_release",
+      "voice": "en-US-AriaNeural",
+      "text": "Begone!",
+      "seconds": 0.561,
+      "peak": 29163,
+      "rms": 6621.25,
+      "sha256": "9f6a7033cd76ad5ed21effd4ed45a4f0eea219ca18e08fd67f2c42c85b2f1a8b"
+    },
+    {
+      "id": "freya-thrown",
+      "voice": "en-US-AriaNeural",
+      "text": "Let go of me!",
+      "seconds": 0.834,
+      "peak": 29163,
+      "rms": 6467.95,
+      "sha256": "4b033b7c51c0379c2f9322a3eb747c60c895c0b3ee774aff92a1b633579b207a"
+    },
+    {
+      "id": "freya-throw_impact",
+      "voice": "en-US-AriaNeural",
+      "text": "Ah!",
+      "seconds": 0.304,
+      "peak": 29163,
+      "rms": 5670.33,
+      "sha256": "f27f5e3875a1acf9eab99d28170dccf8bef24df2c0386a6984f6a2179b3245bb"
+    },
+    {
+      "id": "freya-finish",
+      "voice": "en-US-AriaNeural",
+      "text": "Your tyranny... shatters in ice tonight!",
+      "seconds": 2.338,
+      "peak": 29163,
+      "rms": 5767.38,
+      "sha256": "a385a8c2032a6e24cf4c47075e9e994afd07edef34295b35c835296f334ee650"
+    },
+    {
+      "id": "titan-light0",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Hmph!",
+      "seconds": 0.581,
+      "peak": 29163,
+      "rms": 5166.32,
+      "sha256": "8f1ead3b9a095339f93eb14de43bb26d8e828f5dce2c680789800785df61d51c"
+    },
+    {
+      "id": "titan-light1",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Hah!",
+      "seconds": 0.431,
+      "peak": 29163,
+      "rms": 4260.55,
+      "sha256": "b423af3264b4bf71acf9989841ee65cda66ca637f6775ac0203d74fe75a348ba"
+    },
+    {
+      "id": "titan-heavy0",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Crush them!",
+      "seconds": 0.705,
+      "peak": 29163,
+      "rms": 4514.77,
+      "sha256": "419aed91187ab85eff27887182835a3b82474f9e5bf5633c73f094211f7e6faf"
+    },
+    {
+      "id": "titan-heavy1",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Shatter!",
+      "seconds": 0.585,
+      "peak": 29163,
+      "rms": 4630.83,
+      "sha256": "adf995814004846bff83e87e2e49554aa45ac06094fccee947a2537226637d35"
+    },
+    {
+      "id": "titan-jump",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Hup!",
+      "seconds": 0.391,
+      "peak": 29163,
+      "rms": 3346.86,
+      "sha256": "46f1c79358178661e62958c067bee6b5b4013d826b7dec01fa30b3a49157c70c"
+    },
+    {
+      "id": "titan-dash",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Coming through!",
+      "seconds": 0.823,
+      "peak": 29163,
+      "rms": 5752.77,
+      "sha256": "f9c4ec9e0c26fc1fb5051ce4e92b426f4effff41efe1a946e32a07cd8b7c368a"
+    },
+    {
+      "id": "titan-hurt0",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Ack!",
+      "seconds": 0.483,
+      "peak": 29163,
+      "rms": 2908.14,
+      "sha256": "7b2d10e40d145ebd9e795827c5ebb342d5e9a8c899022291752333f28bba4ba5"
+    },
+    {
+      "id": "titan-hurt1",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Gah!",
+      "seconds": 0.506,
+      "peak": 29163,
+      "rms": 4344.16,
+      "sha256": "a4108d40c5e13fb47cde750e76093e45d2b39c46a0046075d869ff04d6aec153"
+    },
+    {
+      "id": "titan-throw",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Hold still!",
+      "seconds": 0.83,
+      "peak": 29163,
+      "rms": 5952.83,
+      "sha256": "87e5d02fb3de953409cad37525914e703356371824c4e28fd91fa5c6ca0c98be"
+    },
+    {
+      "id": "titan-burst",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Blow away!",
+      "seconds": 0.838,
+      "peak": 29163,
+      "rms": 6943.36,
+      "sha256": "dba6deed122300e53f6ed4bf3adb8283c743b2f87028b9caec4a6524e8c72c72"
+    },
+    {
+      "id": "titan-sp1",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Quake Stomp! Earth Breaker!",
+      "seconds": 1.759,
+      "peak": 29163,
+      "rms": 5228.97,
+      "sha256": "1902f079b8ba47ba7c2ff7be40b616dfc91cbbe318c43d8399a863b7f1b710a5"
+    },
+    {
+      "id": "titan-sp2",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Gigant Tackle!",
+      "seconds": 0.946,
+      "peak": 29163,
+      "rms": 5127.9,
+      "sha256": "c0ab42639d8b680110901c8ecddeef51a056ffcfd26d8cb7e2d091ff09623481"
+    },
+    {
+      "id": "titan-sp3",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Gaia Buster!",
+      "seconds": 0.855,
+      "peak": 29163,
+      "rms": 5499.01,
+      "sha256": "ba9870ef75dbbf0c67ce3b9a2821dddb89434c981c6881d00f0be9a767928dba"
+    },
+    {
+      "id": "titan-super",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Feel the heavens fall... Meteor! Catastrophe!",
+      "seconds": 4.243,
+      "peak": 29163,
+      "rms": 4703.8,
+      "sha256": "3073fcb04d238691586a304d50abcf90cfaa0cb11135e0d983e550f02709457e"
+    },
+    {
+      "id": "titan-select",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Bring it on! Give me everything you've got!",
+      "seconds": 3.22,
+      "peak": 27852,
+      "rms": 5101.79,
+      "sha256": "da2994a7eac5ab60a1b532fef9069ad4efa796ce4e6498e8d466420a28a5a624"
+    },
+    {
+      "id": "titan-win",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Not bad! Come back when you're stronger!",
+      "seconds": 3.25,
+      "peak": 27852,
+      "rms": 4246.36,
+      "sha256": "44e77aa1cc9f38fa30f61b1bffc94218171217289ab835881b151ed5e269776d"
+    },
+    {
+      "id": "titan-ko",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Gah... A worthy... battle...",
+      "seconds": 3.068,
+      "peak": 25558,
+      "rms": 3676.28,
+      "sha256": "b2fbd7e5d397c633e9bf180a6f53c1d303034458b33584a34ebb4b7468c791c9"
+    },
+    {
+      "id": "titan-grabbed",
+      "voice": "en-US-ChristopherNeural",
+      "text": "What?!",
+      "seconds": 0.435,
+      "peak": 29163,
+      "rms": 5064.64,
+      "sha256": "a2adce00185763d8309100dc650b6f85689c6871d8fa69073f795202f272dc52"
+    },
+    {
+      "id": "titan-throw_release",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Fly!",
+      "seconds": 0.586,
+      "peak": 29163,
+      "rms": 5263.03,
+      "sha256": "b86a598cfb6ac30b1c7e19bf42a036cad4932edc2317f3eede0fc29525d77f78"
+    },
+    {
+      "id": "titan-thrown",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Whoa! Curse you!",
+      "seconds": 2.053,
+      "peak": 29163,
+      "rms": 4219.81,
+      "sha256": "b2f85b40e44dc197d4c03fe957336998fbba66de2291458bd11099304b1408e0"
+    },
+    {
+      "id": "titan-throw_impact",
+      "voice": "en-US-ChristopherNeural",
+      "text": "Oof!",
+      "seconds": 0.537,
+      "peak": 29163,
+      "rms": 5521.31,
+      "sha256": "0265db1e0074a5a01fab9b02e398b108f7799e6ab3b3efc4e004fe8b026ec02f"
+    },
+    {
+      "id": "titan-finish",
+      "voice": "en-US-ChristopherNeural",
+      "text": "True strength... exists to protect the weak!",
+      "seconds": 2.826,
+      "peak": 29163,
+      "rms": 5154.26,
+      "sha256": "e2f21bf773de17b88732cbbfddfaf7fbf5137928aa31586469c05e4fc908da01"
+    },
+    {
+      "id": "ayame-light0",
+      "voice": "en-US-AnaNeural",
+      "text": "Hah!",
+      "seconds": 0.346,
+      "peak": 29163,
+      "rms": 7140.78,
+      "sha256": "9b656f0cc3ad24d226a5ffffb9661c8c457d1e4f584e9cf8f56dfc3d5ac31941"
+    },
+    {
+      "id": "ayame-light1",
+      "voice": "en-US-AnaNeural",
+      "text": "Hyah!",
+      "seconds": 0.387,
+      "peak": 29163,
+      "rms": 5123.52,
+      "sha256": "9e872f06e7f227dab9705eeb34e6a06ec4f7530d337eb46353fc8133d40b1c38"
+    },
+    {
+      "id": "ayame-heavy0",
+      "voice": "en-US-AnaNeural",
+      "text": "Right there!",
+      "seconds": 0.58,
+      "peak": 29163,
+      "rms": 6291.76,
+      "sha256": "81dfe4449fef28d1b55e6e51e8b3007f305bfd80a7be870cbb5bf46229071d2d"
+    },
+    {
+      "id": "ayame-heavy1",
+      "voice": "en-US-AnaNeural",
+      "text": "Dance for me!",
+      "seconds": 0.814,
+      "peak": 28915,
+      "rms": 8027.91,
+      "sha256": "6e4f66dc8cd1ab027c168262b8e35a447733fc9f27770b20c4c35310e3d07e8c"
+    },
+    {
+      "id": "ayame-jump",
+      "voice": "en-US-AnaNeural",
+      "text": "Hop!",
+      "seconds": 0.356,
+      "peak": 29163,
+      "rms": 6170.74,
+      "sha256": "28a80d04bc8d272fb137229a37ac46e04525cafac1218de2d094308c7119c6f5"
+    },
+    {
+      "id": "ayame-dash",
+      "voice": "en-US-AnaNeural",
+      "text": "Over here!",
+      "seconds": 0.638,
+      "peak": 29163,
+      "rms": 7808.2,
+      "sha256": "a61836e8553fe8c2ce722eed0a28f3c2a9b7d027c3d2e03d915d4948ccc04c03"
+    },
+    {
+      "id": "ayame-hurt0",
+      "voice": "en-US-AnaNeural",
+      "text": "Ow!",
+      "seconds": 0.259,
+      "peak": 29163,
+      "rms": 6134.48,
+      "sha256": "1a828352cfffab3cf49f6d411d23dc0023076f24cfb2859b5c1a9caf1ddb3ead"
+    },
+    {
+      "id": "ayame-hurt1",
+      "voice": "en-US-AnaNeural",
+      "text": "Oh! Ah!",
+      "seconds": 1.337,
+      "peak": 29163,
+      "rms": 4808.75,
+      "sha256": "f9f55ae59ac6e344647f92012789ec6a12fe39b018a2e7d85e73c7d59f99a31d"
+    },
+    {
+      "id": "ayame-throw",
+      "voice": "en-US-AnaNeural",
+      "text": "Caught you!",
+      "seconds": 0.547,
+      "peak": 29163,
+      "rms": 7044.8,
+      "sha256": "70322076f59dfb09afb3fc0790aebee08489186bb9a1922a8bac83bbe99cf976"
+    },
+    {
+      "id": "ayame-burst",
+      "voice": "en-US-AnaNeural",
+      "text": "Step aside!",
+      "seconds": 0.823,
+      "peak": 29163,
+      "rms": 4851.09,
+      "sha256": "dda409ef364ee2325b7f352719b84fafdb19f21a0dba559595d474c2a31976b4"
+    },
+    {
+      "id": "ayame-sp1",
+      "voice": "en-US-AnaNeural",
+      "text": "Violet Moon Fan!",
+      "seconds": 1.077,
+      "peak": 29163,
+      "rms": 6052.38,
+      "sha256": "6b028c33a6bd05f2f47044839a5f8d7458b6422ee676b6da79e096df5cad3472"
+    },
+    {
+      "id": "ayame-sp2",
+      "voice": "en-US-AnaNeural",
+      "text": "Swallow's Dance!",
+      "seconds": 1.097,
+      "peak": 29163,
+      "rms": 6006.31,
+      "sha256": "0b7feb1f37684c61c3f012c92acc6c42ff280784b0f1a5cf419c7ec6ad16f54f"
+    },
+    {
+      "id": "ayame-sp3",
+      "voice": "en-US-AnaNeural",
+      "text": "Mist... Runner!",
+      "seconds": 0.996,
+      "peak": 29163,
+      "rms": 6543.67,
+      "sha256": "37cba986595c953ef90d355d1d6d97bb5b7ebcfc665111270bcd68c8c34d9500"
+    },
+    {
+      "id": "ayame-super",
+      "voice": "en-US-AnaNeural",
+      "text": "Secret Art... Blooming Hundred Flowers!",
+      "seconds": 2.73,
+      "peak": 29163,
+      "rms": 6202.77,
+      "sha256": "2f34b722395f29f661a4a48e23cc0316e03eb1ea1d6f13ed2e68ac84af3537e7"
+    },
+    {
+      "id": "ayame-select",
+      "voice": "en-US-AnaNeural",
+      "text": "Haha! Think you can catch a shadow?",
+      "seconds": 2.507,
+      "peak": 27852,
+      "rms": 4180.07,
+      "sha256": "644fcfeb123eb94806ef62dfc20ebc2ac646a7740bad54b7a1322df6c5b0ca81"
+    },
+    {
+      "id": "ayame-win",
+      "voice": "en-US-AnaNeural",
+      "text": "The curtain falls... on our little dance.",
+      "seconds": 2.496,
+      "peak": 27852,
+      "rms": 5200.66,
+      "sha256": "a94f92a3544bc8da6356df309344e45c82f272d1df211846e5e278d0828154a4"
+    },
+    {
+      "id": "ayame-ko",
+      "voice": "en-US-AnaNeural",
+      "text": "Ugh... How careless... of me...",
+      "seconds": 3.107,
+      "peak": 25558,
+      "rms": 4171.25,
+      "sha256": "400bd641ce8cb967c6582c000d1b25bb848697f7ee55dd9f1454404f0148ff56"
+    },
+    {
+      "id": "ayame-grabbed",
+      "voice": "en-US-AnaNeural",
+      "text": "Whoa?!",
+      "seconds": 0.308,
+      "peak": 29163,
+      "rms": 6653.97,
+      "sha256": "334a63cc3ad6222044b25d77d87536eee51efa5ad4e846e08af223cb7330970d"
+    },
+    {
+      "id": "ayame-throw_release",
+      "voice": "en-US-AnaNeural",
+      "text": "Off you go!",
+      "seconds": 0.664,
+      "peak": 29163,
+      "rms": 6531.56,
+      "sha256": "b1d4c0ec20a3804f75e166ae383d301ed9e196b4108eac4527704a027a31ef83"
+    },
+    {
+      "id": "ayame-thrown",
+      "voice": "en-US-AnaNeural",
+      "text": "Ah! Let go!",
+      "seconds": 1.59,
+      "peak": 29163,
+      "rms": 4668.12,
+      "sha256": "e34c23517ecd5c2e9e7282d30409cb4869bcc81f827376ea37659a11b4d7812a"
+    },
+    {
+      "id": "ayame-throw_impact",
+      "voice": "en-US-AnaNeural",
+      "text": "Oof!",
+      "seconds": 0.377,
+      "peak": 25666,
+      "rms": 8027.91,
+      "sha256": "536aa2a548935a13059b1b8e54b62f1f0415d69586ca9d6de62bd79cfda7cc42"
+    },
+    {
+      "id": "ayame-finish",
+      "voice": "en-US-AnaNeural",
+      "text": "Wicked blossoms... scatter into nothingness!",
+      "seconds": 2.951,
+      "peak": 29163,
+      "rms": 5710.3,
+      "sha256": "bdaad4c812c0a2f19cae1807dfe3ae2103092c35628c699946a3f3c1cca36340"
+    },
+    {
+      "id": "celine-light0",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "Hah!",
+      "seconds": 0.295,
+      "peak": 29163,
+      "rms": 6524.28,
+      "sha256": "f259a461c2e28dd0baeeed4c5da6c48962408549fefc6c382679fbe782205bf9"
+    },
+    {
+      "id": "celine-light1",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "Hyah!",
+      "seconds": 0.431,
+      "peak": 29163,
+      "rms": 7545.99,
+      "sha256": "cef357cdb1dc4c2ab821336e95c0034213624c0242e6488e559f62ea3646877c"
+    },
+    {
+      "id": "celine-heavy0",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "Right there!",
+      "seconds": 0.572,
+      "peak": 29163,
+      "rms": 7252.73,
+      "sha256": "c760e8f3689ed41b69539472eddfeea031f44e7da27d0696666133cc3b77848b"
+    },
+    {
+      "id": "celine-heavy1",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "I pierce you!",
+      "seconds": 0.721,
+      "peak": 28732,
+      "rms": 8027.92,
+      "sha256": "567e7e7743f58035c780a1c5dc847e1e4541b8e5ae5adbe3823a7b52c497131d"
+    },
+    {
+      "id": "celine-jump",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "Hup!",
+      "seconds": 0.376,
+      "peak": 29163,
+      "rms": 6789.89,
+      "sha256": "4fb196f11388eee290767a46be5d274cfa6dc5fa1ec1ca69162dfce5e600bcb3"
+    },
+    {
+      "id": "celine-dash",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "Pardon me!",
+      "seconds": 0.53,
+      "peak": 24810,
+      "rms": 8027.92,
+      "sha256": "2c444ddaa9fc55c1b9271f220d61de2599d1d046a7dbd3deb86bf292f74d268f"
+    },
+    {
+      "id": "celine-hurt0",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "Ah!",
+      "seconds": 0.261,
+      "peak": 29163,
+      "rms": 4511.49,
+      "sha256": "8211edbee22b27ea0022dda86367ab89ea0b61d23c5060410ed342d9adbb91e7"
+    },
+    {
+      "id": "celine-hurt1",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "No!",
+      "seconds": 0.379,
+      "peak": 22545,
+      "rms": 8027.91,
+      "sha256": "c0f6b5f21ed0bd4783a8b908c911767c03638ada6f78b49fa47490b0e181ec59"
+    },
+    {
+      "id": "celine-throw",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "Got you!",
+      "seconds": 0.542,
+      "peak": 29163,
+      "rms": 7510.23,
+      "sha256": "75e6716e36359285dc3f36aaeaa27c9d0dc28b5707ef6008d2f4dbd85d850d1a"
+    },
+    {
+      "id": "celine-burst",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "Stand back!",
+      "seconds": 0.702,
+      "peak": 29163,
+      "rms": 6973.74,
+      "sha256": "dbfcfdbcab485aacacf56bfc46a32df5abdca013dd4913163dd541c1df419c71"
+    },
+    {
+      "id": "celine-sp1",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "Rose Eclair!",
+      "seconds": 0.762,
+      "peak": 28729,
+      "rms": 8027.91,
+      "sha256": "e20be3274b747064185a2163cfd1ddb2fcc06d57192e731045e12fd61a73dbda"
+    },
+    {
+      "id": "celine-sp2",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "Fleur Lunge!",
+      "seconds": 0.738,
+      "peak": 26799,
+      "rms": 8027.91,
+      "sha256": "1874f1505924011687d2d3c64175a0ce1fb34eadfb025fd437711b273d054913"
+    },
+    {
+      "id": "celine-sp3",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "Emerald Riposte!",
+      "seconds": 0.96,
+      "peak": 29026,
+      "rms": 8027.91,
+      "sha256": "81fb9b1107e46914ddf0a9a245bbd14c9a338954133a7bd0781f8f7da43140fd"
+    },
+    {
+      "id": "celine-super",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "Star of twilight... Etoile du Soir!",
+      "seconds": 2.171,
+      "peak": 29163,
+      "rms": 6879.54,
+      "sha256": "78ffbb495cc7da53a71023a4627eea1455dcd6682886279ee24b7c4f42912cd5"
+    },
+    {
+      "id": "celine-select",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "On guard! Shall we share a splendid battle?",
+      "seconds": 2.543,
+      "peak": 27032,
+      "rms": 7044.91,
+      "sha256": "a348fc0e5de2e655fe7f37ccce2437293f1c09cfabecb28d8987bd2bda1d0aa7"
+    },
+    {
+      "id": "celine-win",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "Magnificent! What a glorious match.",
+      "seconds": 2.453,
+      "peak": 27852,
+      "rms": 6585.94,
+      "sha256": "224577ff9833c2b9e119c2443297074738f1123c82c4fb1ca2dcdff5fa2b655f"
+    },
+    {
+      "id": "celine-ko",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "Ah... I concede... defeat...",
+      "seconds": 2.326,
+      "peak": 25558,
+      "rms": 3756.98,
+      "sha256": "36acf5b0169b4c6caaeecf5e9066b9367b06d68e8f4dd976c24081601f7a3465"
+    },
+    {
+      "id": "celine-grabbed",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "Oh?!",
+      "seconds": 0.247,
+      "peak": 28423,
+      "rms": 8027.91,
+      "sha256": "89374dd42e1d74476abe64b8426f9dc4bc2e9ba039e21b7d4876f36982c90f8a"
+    },
+    {
+      "id": "celine-throw_release",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "Away with you!",
+      "seconds": 0.688,
+      "peak": 26662,
+      "rms": 8027.91,
+      "sha256": "c5d05e6594220f1ad316c235e779a560becb026eb456bf1722a54e538fc8e0d1"
+    },
+    {
+      "id": "celine-thrown",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "Unhand me!",
+      "seconds": 0.652,
+      "peak": 24196,
+      "rms": 8027.91,
+      "sha256": "a6c31e0c3fbaabf1b05d4784d4b1c7dcd85ccb56c66bfc65e31192482005fff4"
+    },
+    {
+      "id": "celine-throw_impact",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "Ugh!",
+      "seconds": 0.35,
+      "peak": 29163,
+      "rms": 5604.5,
+      "sha256": "1196ab6c1522ee5d1920a8d587a29ffe59e634f2dd44d3b64eb678f39c526cdd"
+    },
+    {
+      "id": "celine-finish",
+      "voice": "fr-FR-VivienneMultilingualNeural",
+      "text": "Curtain call! Victory... belongs to me!",
+      "seconds": 2.114,
+      "peak": 29163,
+      "rms": 7601.08,
+      "sha256": "1755ec7afe35aedf4f68190b1f905fa1471e4b27b7f3b8dba00d962cc6ebe376"
+    },
+    {
+      "id": "voss-intro",
+      "voice": "en-US-BrianMultilingualNeural",
+      "text": "This city belongs to me! Anyone who crosses my path gets crushed!",
+      "seconds": 4.193,
+      "peak": 29163,
+      "rms": 6805.6,
+      "sha256": "79f3a0ebd4384339a39cab2c0ac8a6b46ac902a5668b7a8262bab684580b0acc"
+    },
+    {
+      "id": "voss-defeat",
+      "voice": "en-US-BrianMultilingualNeural",
+      "text": "No! My empire! Curse you... How could this happen?!",
+      "seconds": 4.08,
+      "peak": 29163,
+      "rms": 4884.71,
+      "sha256": "675ce45e8691a51fc1d5ef89654cbe85d82251d1e8ea3d7075038ff392ed4cd2"
+    },
+    {
+      "id": "maw-intro",
+      "voice": "en-US-BrianMultilingualNeural",
+      "text": "Burn to ashes... Inside my eternal furnace!",
+      "seconds": 3.48,
+      "peak": 29163,
+      "rms": 6374.48,
+      "sha256": "e94310bdee49d6b6c3545202c098ccef90d204d9ba4004cb7df66434301f7f97"
+    },
+    {
+      "id": "maw-defeat",
+      "voice": "en-US-BrianMultilingualNeural",
+      "text": "Curse you! My furnace... burning out... No!",
+      "seconds": 4.124,
+      "peak": 29163,
+      "rms": 4920.91,
+      "sha256": "6a3ed51aadf64f38b1e707db36ce3849986d926bddaa18ac62a8bfef69b514d9"
+    },
+    {
+      "id": "luka-intro",
+      "voice": "en-US-AvaNeural",
+      "text": "This paradise is ours alone! You aren't taking one step further!",
+      "seconds": 3.862,
+      "peak": 29163,
+      "rms": 6094.01,
+      "sha256": "ae9af734e46425164633abf4bd158be495fc4c0a6d97c5df0a4def748054a070"
+    },
+    {
+      "id": "luka-combo",
+      "voice": "en-US-AvaNeural",
+      "text": "Misha, strike now!",
+      "seconds": 0.996,
+      "peak": 29163,
+      "rms": 6889.14,
+      "sha256": "50cfcae23f0dadda92051ca4f2fcb26dd56f8a0e9b6661106338849cf3b0e9c8"
+    },
+    {
+      "id": "luka-defeat",
+      "voice": "en-US-AvaNeural",
+      "text": "Ah! Misha, run! Not like this!",
+      "seconds": 3.318,
+      "peak": 29163,
+      "rms": 4713.28,
+      "sha256": "8f8c6009fcde3a9a84a50841b232852ca6fbe6e38d97d91d91606c945109577f"
+    },
+    {
+      "id": "misha-intro",
+      "voice": "en-GB-SoniaNeural",
+      "text": "Two against one! Let's see if you survive our deadly dance!",
+      "seconds": 3.752,
+      "peak": 28249,
+      "rms": 8027.92,
+      "sha256": "77d99103f0a1f6426d2def7448139c786be3f87b8ada215cf8f11212d2bd6499"
+    },
+    {
+      "id": "misha-combo",
+      "voice": "en-GB-SoniaNeural",
+      "text": "Right behind you! Crush them now!",
+      "seconds": 2.042,
+      "peak": 29163,
+      "rms": 7900.48,
+      "sha256": "595f161f67643b9e1681fd32489825787512e4046e221282e7a3e3d23965af9c"
+    },
+    {
+      "id": "misha-defeat",
+      "voice": "en-GB-SoniaNeural",
+      "text": "No! Luka... forgive me!",
+      "seconds": 2.655,
+      "peak": 29163,
+      "rms": 6137.92,
+      "sha256": "eaee527cbbb410f3282c297e55c3dc9d400779b4563e8291117349c1e95879ac"
+    }
+  ]
+}

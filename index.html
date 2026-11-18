@@ -30,7 +30,7 @@
 <body>
 <main>
   <h1>CHRONO BLITZ<span>ARCADE COLLECTION — DEMO</span></h1>
-  <p class="version">VERSION 3.7.2 — ステージ3「AZURE MIRAGE」追加。動く真昼の海辺リゾート、専用水着女性敵6種類、武器連携を繰り出す双子ボス「ルカとミーシャ」。ステージ2クリア後Enterで進行。ゲーム選択画面右下のボタンから開始ステージも選べます。</p>
+  <p class="version">VERSION 3.20.1 — 全 5 ステージ＋ボーナス。鉄道高架から雲の層へ昇るステージ 5 と VESPER MATRIARCH。キャラクターの動きのずれを補正。</p>
   <p class="lead">
     ブラウザだけで動く 2 本立てのアーケードゲームです。1 対 1 の 2D 対戦格闘「OVERDRIVE」と、1 人用ベルトスクロールアクション「NEON UPRISING」をゲーム選択画面から遊べます。
     画像・音声はゲーム本体と同じ場所の data フォルダにまとめてあり、サーバーや追加インストールは不要です。<br>
@@ -39,9 +39,9 @@
 
   <a class="play" href="ai_studio_code.html">▶ PLAY DEMO / デモをプレイ</a>
   <p class="note">
-    初回は約 225MB のデータを読み込むため数秒〜数十秒かかります（進捗バーが出ます。2 回目以降はブラウザキャッシュで速くなります）。
+    初回は約 315MB のデータを読み込むため数秒〜数十秒かかります（進捗バーが出ます。2 回目以降はブラウザキャッシュで速くなります）。
     キーボードが必要です。音が出ます。推奨: PC の Chrome / Edge / Firefox。<br>
-    The first load fetches about 225 MB of asset packs and shows a progress bar. Keyboard required, audio on. Desktop Chrome / Edge / Firefox recommended.
+    The first load fetches about 315 MB of asset packs and shows a progress bar. Keyboard required, audio on. Desktop Chrome / Edge / Firefox recommended.
   </p>
 
   <div class="grid">
@@ -57,7 +57,7 @@
     <div class="card">
       <h2>NEON UPRISING — ベルトスクロール / Beat 'em up</h2>
       <ul>
-        <li>全 3 ステージ。犯罪都市 BLACK VEIN（ボス IRON VOSS）をクリアすると、廃工場 INFERNAL WORKS（巨大怪物 FURNACE MAW）、海辺 AZURE MIRAGE（双子ルカとミーシャ）へ進む。各 5 区画</li>
+        <li>全 5 ステージ＋ボーナス。犯罪都市 BLACK VEIN（IRON VOSS）→ 廃工場 INFERNAL WORKS（FURNACE MAW）→ 海辺 AZURE MIRAGE（双子ルカとミーシャ）→ 廃地下鉄 DEADLINE EXPRESS（IRON SHOGUN）→ 車を壊すボーナス BREAKER YARD → 上昇するリフト SKYHOOK ASCENT（VESPER MATRIARCH）。ゲーム選択画面右下のボタンから開始ステージを選べる</li>
         <li>移動 <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>　攻撃 / 拾う <kbd>J</kbd>　ジャンプ <kbd>K</kbd>　緊急技 <kbd>L</kbd>　投げ <kbd>I</kbd></li>
         <li><kbd>J</kbd> 連打でパンチ → ボディブロー → アッパー（当たった時だけ次へ）。<kbd>S</kbd> を入れたまま 3 発目で投げに変化</li>
         <li>歩いて接近すると掴み。<kbd>J</kbd> で追撃（2 回まで、3 回目は吹き飛ばす強打）、方向＋<kbd>J</kbd> か <kbd>I</kbd> で投げ。投げた敵は他の敵にも当たる</li>
@@ -78,18 +78,15 @@
       <h2>技術 / Tech</h2>
       <ul>
         <li>HTML5 Canvas 2D、固定 60Hz 更新、1280×720 論理解像度</li>
-        <li>Web Audio API でローカル合成する 8 曲の BGM と効果音</li>
+        <li>Web Audio API でローカル合成する 9 曲の BGM と効果音</li>
         <li>共通 432 姿勢＋ボス 72 姿勢＋ダッシュ 144 姿勢、対戦背景 4 枚＋街背景 5 枚、物体・アイテム 8 コマ</li>
-        <li>キャラクターボイスは VOICEVOX による合成音声（下記クレジット）</li>
+        <li>キャラクターボイスは英語の合成音声 148 本（下記クレジット）</li>
       </ul>
     </div>
   </div>
 
   <footer>
-    <p>音声クレジット / Voice credits: VOICEVOX:玄野武宏、VOICEVOX:白上虎太郎、VOICEVOX:四国めたん、VOICEVOX:麒ヶ島宗麟、VOICEVOX:中国うさぎ、VOICEVOX:九州そら —
-      <a href="https://voicevox.hiroshiba.jp/term/" target="_blank" rel="noopener noreferrer">VOICEVOX 利用規約</a> ／
-      <a href="https://www.virvoxproject.com/voicevoxの利用規約" target="_blank" rel="noopener noreferrer">玄野武宏・白上虎太郎・麒ヶ島宗麟</a> ／
-      <a href="https://zunko.jp/con_ongen_kiyaku.html" target="_blank" rel="noopener noreferrer">四国めたん・中国うさぎ・九州そら</a></p>
+    <p>音声クレジット / Voice credits: Kokoro-82M（Apache-2.0 のオープンソース音声合成モデル。ローカル生成） — KAGURA (am_fenrir)、VOLT (am_puck)、FREYA (af_bella)、TITAN (bm_george)、AYAME (af_heart)、CELINE (bf_emma)、IRON VOSS (am_michael)、FURNACE MAW (am_michael)、LUKA (af_sarah)、MISHA (bf_isabella)。VESPER MATRIARCH は独自合成 / original synthesis。<br><a href="https://huggingface.co/hexgrad/Kokoro-82M" target="_blank" rel="noopener noreferrer">Kokoro-82M</a></p>
     <p>仕様・修正履歴はゲーム本体 HTML の冒頭コメントと <a href="https://github.com/Yuki-M0906/chrono-blitz">リポジトリの README</a> を参照してください。</p>
   </footer>
 </main>

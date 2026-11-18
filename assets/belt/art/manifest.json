@@ -1,7 +1,23 @@
 {
-  "version": "3.7.0",
+  "version": "3.11.0",
   "provider": "built-in image_gen",
   "assets": {
+    "ascent-stride": {"file":"skyhook-v3200/stride.png"},
+    "ascent-strike": {"file":"skyhook-v3200/strike.png"},
+    "ascent-reaction": {"file":"skyhook-v3200/reaction.png"},
+    "ascent-feral": {"file":"skyhook-v3200/feral.png"},
+    "ascent-railworks": {"file":"skyhook-v3200/railworks.png"},
+    "ascent-skyline": {"file":"skyhook-v3200/skyline.png"},
+    "ascent-summit": {"file":"skyhook-v3200/summit.png"},
+    "ascent-estuary": {"file":"skyhook-v3200/estuary.jpg"},
+    "hoist-vesper": {"file":"skyhook-v3190/vesper.png"},
+    "skyhook-towers": {"file":"skyhook-v3190/tower-block.png"},
+    "skyhook-aerial": {"file":"skyhook-v3190/port-panorama.jpg"},
+    "yard-gt": {"file":"industrial-v3172/gt-atlas.png"},
+    "hoist-metal": {"file":"industrial-v3172/hoist-metal.png"},
+    "hoist-gantry": {"file":"skyhook-v3180/gantry.png"},
+    "hoist-winch": {"file":"skyhook-v3180/winch.png"},
+    "skyhook-sunset": {"file":"skyhook-v3171/sunset-hoist.png","horizon":0.677},
     "district-0": {
       "file": "neon-row.png",
       "horizon": 0.71
@@ -182,10 +198,66 @@
       "columns": 6,
       "rows": 4
     },
+    "beach-coral-life": {
+      "file": "resort-v370/coral-life.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "beach-azure-life": {
+      "file": "resort-v370/azure-life.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "beach-pearl-life": {
+      "file": "resort-v370/pearl-life.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "beach-luka-life": {
+      "file": "resort-v370/luka-life.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "beach-misha-life": {
+      "file": "resort-v370/misha-life.png",
+      "columns": 6,
+      "rows": 4
+    },
     "beach-decor": {
       "file": "resort-v370/decor.png",
       "columns": 4,
       "rows": 2
+    },
+    "metro-0": {
+      "file": "metro-v3110/platform.png",
+      "horizon": 0.7
+    },
+    "metro-1": {
+      "file": "metro-v3110/carriage.png",
+      "horizon": 0.75
+    },
+    "metro-2": {
+      "file": "metro-v3110/cab.png",
+      "horizon": 0.76
+    },
+    "metro-3": {
+      "file": "metro-v3110/tracks.png",
+      "horizon": 0.7
+    },
+    "metro-4": {
+      "file": "metro-v3110/arena.png",
+      "horizon": 0.7
+    },
+    "beach-warlord": {
+      "file": "metro-v3100/beach-warlord.png"
+    },
+    "subway-train": {
+      "file": "metro-v3110/train.png",
+      "horizon": 0.5
+    },
+    "arena-crowd": {
+      "file": "metro-v3101/crowd-transparent.png",
+      "horizon": 0.6796875
     }
   }
 }

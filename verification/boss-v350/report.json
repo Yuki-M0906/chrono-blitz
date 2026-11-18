@@ -153,13 +153,13 @@
   "peak": 0.763087809085846,
   "rms": 0.1376208340073274,
   "voiceDurations": {
-    "kagura-finish": 1.6502721088435375,
-    "volt-finish": 2.6026530612244896,
-    "titan-finish": 2.357324263038549,
-    "freya-finish": 2.1678684807256237,
-    "ayame-finish": 2.250657596371882,
-    "voss-defeat": 1.8773242630385487,
-    "celine-finish": 3.0719954648526078,
-    "voss-intro": 3.56265306122449
+    "volt-finish": 2.1817460317460315,
+    "kagura-finish": 2.367687074829932,
+    "freya-finish": 2.0812471655328797,
+    "titan-finish": 3.273106575963719,
+    "ayame-finish": 2.470748299319728,
+    "celine-finish": 2.5543990929705216,
+    "voss-defeat": 3.681315192743764,
+    "voss-intro": 4.353287981859411
   }
 }

@@ -7,7 +7,8 @@ const root=path.resolve(__dirname,'..'),out=path.join(root,'verification/audio')
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto(pathToFileURL(path.join(root,'ai_studio_code.html')).href);
  const tracks=[];
- for(let id=0;id<8;id++) {
+ const trackCount=await page.evaluate(()=>ARCADE_TRACKS.length);
+ for(let id=0;id<trackCount;id++) {
   const result=await page.evaluate(async id=>{
    const cfg=ARCADE_TRACKS[id],seconds=32*240/cfg.bpm,rate=24000,offline=new OfflineAudioContext(2,Math.ceil((seconds+1.3)*rate),rate),engine=new SoundEngine();engine.attach(offline,false);
    for(let step=0;step<512;step++)engine.tick(id,step,.05+step*60/cfg.bpm/4);
@@ -17,7 +18,7 @@ const root=path.resolve(__dirname,'..'),out=path.join(root,'verification/audio')
    for(let bar=0;bar<32;bar++){const start=Math.floor(bar*240/cfg.bpm*rate),end=Math.floor((bar+1)*240/cfg.bpm*rate);let energy=0;for(let i=start;i<end;i++)energy+=l[i]**2+r[i]**2;blocks.push(Math.sqrt(energy/(2*(end-start))));}
    // Preview the first chorus, not just the intro; no preview audio goes in the game file.
    let wav=null;
-   if([0,5,6].includes(id)){
+   if([0,5,6,8].includes(id)){
     const start=Math.floor(4*240/cfg.bpm*rate),n=18*rate,bytes=new Uint8Array(44+n*4),v=new DataView(bytes.buffer),str=(offset,s)=>{for(let i=0;i<s.length;i++)bytes[offset+i]=s.charCodeAt(i);};
     str(0,'RIFF');v.setUint32(4,36+n*4,true);str(8,'WAVE');str(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,2,true);v.setUint32(24,rate,true);v.setUint32(28,rate*4,true);v.setUint16(32,4,true);v.setUint16(34,16,true);str(36,'data');v.setUint32(40,n*4,true);
     for(let i=0;i<n;i++){v.setInt16(44+i*4,Math.round(Math.max(-1,Math.min(1,l[start+i]))*32767),true);v.setInt16(46+i*4,Math.round(Math.max(-1,Math.min(1,r[start+i]))*32767),true);}
@@ -25,20 +26,20 @@ const root=path.resolve(__dirname,'..'),out=path.join(root,'verification/audio')
    }
    return {id,name:cfg.name,bpm:cfg.bpm,bars:32,seconds,peak,rms:Math.sqrt(sum/(l.length*2)),stereoDifference:Math.sqrt(difference/l.length),invalid,barRms:blocks,events:engine.stats.started,ended:engine.stats.ended,score:JSON.stringify(Array.from({length:512},(_,s)=>engine.score(id,s))),wav};
   },id);
-  if(result.wav){const file=['menu-preview.wav',null,null,null,null,'black-vein-preview.wav','boss-preview.wav'][id];fs.writeFileSync(path.join(out,file),Buffer.from(result.wav,'base64'));}delete result.wav;
+  if(result.wav){const file={0:'menu-preview.wav',5:'black-vein-preview.wav',6:'boss-preview.wav',8:'redline-rig-preview.wav'}[id];fs.writeFileSync(path.join(out,file),Buffer.from(result.wav,'base64'));}delete result.wav;
   result.scoreHash=crypto.createHash('sha256').update(result.score).digest('hex');delete result.score;
   tracks.push(result);console.log(JSON.stringify({track:result.name,peak:result.peak,rms:result.rms,events:result.events}));
   assert.equal(result.invalid,0);assert.ok(result.peak<.99&&result.peak>.05,'Music peak '+id);assert.ok(result.rms>.008&&result.rms<.24,'Music RMS '+id);assert.ok(result.stereoDifference>.001);assert.ok(result.barRms.every(v=>v>.004),'Silent arrangement bar');assert.equal(result.events,result.ended,'Unreleased audio voices');
  }
- assert.equal(new Set(tracks.map(t=>t.scoreHash)).size,8);
+ assert.equal(new Set(tracks.map(t=>t.scoreHash)).size,trackCount);
  const effects=await page.evaluate(async()=>{
-  const offline=new OfflineAudioContext(2,24000*15,24000),e=new SoundEngine();e.attach(offline,false);
-  const keys=['punch0','heavy0','slash0','metal0','wood0','swingHeavy','catch','landing','energy'];
+  const offline=new OfflineAudioContext(2,24000*19,24000),e=new SoundEngine();e.attach(offline,false);
+  const keys=['punch0','heavy0','slash0','metal0','wood0','swingHeavy','catch','landing','energy','yard-panel','yard-glass','yard-frame'];
   keys.forEach((key,i)=>e.sample(key,.1+i*1.5,1,1,0,null,e.seGain,'effect'));
   const buffer=await offline.startRendering(),data=buffer.getChannelData(0),windows=keys.map((key,i)=>{const start=Math.floor((.1+i*1.5)*24000),end=start+24000;let sum=0,peak=0;for(let j=start;j<end;j++){sum+=data[j]**2;peak=Math.max(peak,Math.abs(data[j]));}return {key,rms:Math.sqrt(sum/24000),peak};});
   return {bank:e.bank.size,windows,started:e.stats.started,ended:e.stats.ended};
  });
- assert.equal(effects.bank,42);assert.equal(effects.started,effects.ended);for(const w of effects.windows)assert.ok(w.rms>.004&&w.peak<.99,w.key);
+ assert.equal(effects.bank,45);assert.equal(effects.started,effects.ended);for(const w of effects.windows)assert.ok(w.rms>.004&&w.peak<.99,w.key);
  await page.locator('#gameCanvas').click({position:{x:50,y:50}});
  const live=await page.evaluate(async()=>{
   await fighterVoice.ready;fighterVoice.stopAll();sound.stopBGM();const sleep=ms=>new Promise(r=>setTimeout(r,ms));

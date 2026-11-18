@@ -1,8 +1,9 @@
 # 版ごとのバックアップ（v2.5.0 以前は単体で動く 60〜123MB の完全版）。配布物は ai_studio_code.html と data/
 ai_studio_code.v*.backup.html
 
-# VOICEVOX 実行環境（約 540MB の venv / モデル）。再生成手順は assets/voices/*.md を参照
+# VOICEVOX / English 音声生成実行環境。再生成手順は assets/voices/*.md を参照
 tools/voicevox-runtime/
+tools/english-voice-runtime/
 
 # 中間生成物
 assets/voices/generated-*/
@@ -43,3 +44,15 @@ assets/belt/art/resort-v370/pearl.png
 assets/belt/art/resort-v370/luka-motion.png
 assets/belt/art/resort-v370/misha-motion.png
 backups/v3.7.1-swim-src/
+
+# ---- v3.20.1: [REPO-215]。同じ方針で、ビルドが読まない原画を外す（手元には残す） ----
+# v3.11.0 で作り直す前の地下鉄の背景・列車、透過処理前の観客
+assets/belt/art/metro-v3100/metro-*.png
+assets/belt/art/metro-v3100/subway-train.png
+assets/belt/art/metro-v3101/arena.png
+assets/belt/art/metro-v3101/cab.png
+assets/belt/art/metro-v3101/crowd.png
+# 控えフォルダ内の差し替え前の原画（コードと manifest の控えは管理対象のまま）
+backups/**/*.png
+backups/**/*.jpg
+backups/**/*.wav

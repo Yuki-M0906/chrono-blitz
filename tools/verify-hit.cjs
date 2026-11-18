@@ -13,7 +13,7 @@ const b64=(...p)=>fs.readFileSync(path.join(root,...p)).toString('base64');
 for(const [id,uri] of Object.entries(packs.assets.sprites))assert.equal(uri,'data:image/png;base64,'+b64('assets/sprites/design-v33',id+'.png'),id);
 for(const s of packs.assets.stages)assert.equal(s.src,'data:image/png;base64,'+b64('assets/stages',s.id+'.png'),s.id);
 for(const [id,uri] of Object.entries(packs.assets.voices))assert.equal(uri,'data:audio/wav;base64,'+b64('assets/voices',id+'.wav'),id);
-for(const [id,e] of Object.entries(packs.assets.beltArt))assert.equal(e.src,'data:image/png;base64,'+b64('assets/belt/art',e.file),id);
+for(const [id,e] of Object.entries(packs.assets.beltArt))assert.equal(e.src,'data:image/'+(/\.jpe?g$/i.test(e.file)?'jpeg':'png')+';base64,'+b64('assets/belt/art',e.file),id); // v3.20.1: the aerial views of stage 5 are JPEG
 assert.equal(Object.keys(packs.assets.sprites).length,18);assert.equal(packs.assets.stages.length,4);
 assert.equal(Object.keys(packs.assets.voices).length,Object.values(JSON.parse(fs.readFileSync(path.join(root,'assets/voices/manifest.json'),'utf8')).profiles).reduce((n,p)=>n+Object.keys(p.lines).length,0));assert.equal(Object.keys(packs.assets.beltArt).length,artCount);
 (async()=>{

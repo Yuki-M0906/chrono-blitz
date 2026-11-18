@@ -118,49 +118,49 @@
         "key": "voss-intro",
         "accepted": true,
         "active": "voss-intro",
-        "signal": 0.17729701101779938
+        "signal": 0.2923353910446167
       },
       {
         "key": "voss-defeat",
         "accepted": true,
         "active": "voss-defeat",
-        "signal": 0.18471311032772064
+        "signal": 0.4562649428844452
       },
       {
         "key": "kagura-finish",
         "accepted": true,
         "active": "kagura-finish",
-        "signal": 0.048518106341362
+        "signal": 0.18774020671844482
       },
       {
         "key": "volt-finish",
         "accepted": true,
         "active": "volt-finish",
-        "signal": 0.25782427191734314
+        "signal": 0.5003072023391724
       },
       {
         "key": "freya-finish",
         "accepted": true,
         "active": "freya-finish",
-        "signal": 0.3433166444301605
+        "signal": 0.3520733714103699
       },
       {
         "key": "titan-finish",
         "accepted": true,
         "active": "titan-finish",
-        "signal": 0.04548016935586929
+        "signal": 0.3459989130496979
       },
       {
         "key": "ayame-finish",
         "accepted": true,
         "active": "ayame-finish",
-        "signal": 0.005526799242943525
+        "signal": 0.2600696384906769
       },
       {
         "key": "celine-finish",
         "accepted": true,
         "active": "celine-finish",
-        "signal": 0.34766656160354614
+        "signal": 0.4838944673538208
       }
     ],
     "zero": false,

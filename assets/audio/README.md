@@ -1,47 +1,38 @@
-# Arcade Soundtrack & Sound Engine / v3.6.0
+# Arcade Soundtrack & Sound Engine / v3.9.0
 
-`engine.js` が現行 `SoundEngine` の編集元（v3.4.2で上昇技・炎のSEを5種追加。BGM楽曲は維持）。`node tools/build-sprites.mjs` で `ai_studio_code.html` の `AUDIO_ENGINE` 領域に反映する。
-配布物は `ai_studio_code.html` ＋ `data/*.js`（11 パック）。
-復元用に `ai_studio_code.v3.1.0.backup.html`、`ai_studio_code.v3.0.0.backup.html`、`assets/audio/engine.v3.0.0.js`（および旧版 `v2.6.0` / `v2.5.0` / `v2.4.0` / `v2.3.1` / `v2.0.0` バックアップ）を保存している。
+`engine.js` が現行 `SoundEngine` の編集元（v3.9.0 で全8曲 BGM を「生音の演奏」による交響曲・聖堂音楽へ全面刷新。既存 SE 42 音は完全維持）。`node tools/build-sprites.mjs` で `ai_studio_code.html` の `AUDIO_ENGINE` 領域に反映する。
+配布物は `ai_studio_code.html` ＋ `data/*.js`（13 パック）。
+復元用に `assets/audio/engine.v3.8.0.js`、`ai_studio_code.v3.8.0.backup.html`（および旧版バックップ）を保存している。
 
-## v3.5.0 重量感のある打撃
+## v3.9.0 生演奏シンフォニー・大聖堂音楽刷新
 
-`synthImpactBody`で`impactBody`/`impactCrush`を追加（バンク42音）。通常・強打・斬撃・上昇技・炎命中・投げ着地に低音と短い残響を重ねます。強打は43Hzへ落ちる衝撃と長めの減衰で迫力を補強。既存SEバスとリミッターを共用。`tools/verify-weight-v350.cjs`で変更前後の低域量、波形ピーク、SE消音、追加台詞8本の実再生を検証します。
+- 従来のノコギリ波・矩形波オシレータ主体（いわゆるピコピコ音）を廃止し、物理・共鳴モデリングによる **13種のオーケストラ／聖堂生楽器** と **音程付きティンパニ＋生打楽器群**、さらに左右非対称の初期反射音と空気吸収を備えた **2.25秒ステレオ・シンフォニーホール残響（`impulse(2.25)`）** へ全面刷新。
+- 音楽同時発音上限を `72 → 128` へ拡張し、豊かな和声の余韻とダイナミックレンジを確保。
+- 既存 SE バンク（`this.bank` 42 音：打撃・斬撃・重撃・上昇技・炎・`impactBody` / `impactCrush` 等）および `play*` API・48% ボイスダッキングは一切不変。
 
-## v3.4.2 専用アクションSE
+## 曲と編集箇所（全8曲・完全独立交響楽／聖堂編成）
 
-`synthArcadeAction` が `rising0/1/2`（3打撃）、`fireLaunch`（炎突進）、`fireHit`（炎上命中）を固定シードで合成します。サンプルバンクは35→40。`playRising` / `playFlame` から既存SEバスへ送るため、音量・ミュート・音声優先処理を共用します。音響波形の検証と5秒試聴ファイルは `verification/actions-v342/`、検証スクリプトは `tools/verify-actions-v342.cjs`。
-
-## 曲と編集箇所（全8曲・完全独立ダイアトニック編成）
-
-| ID | 曲 | BPM | 調・旋法 | 場面 |
+| ID | 曲 | BPM | 調・旋法 | 編成・場面 |
 |---|---|---:|---|---|
-| 0 | NIGHT SIGNAL | 108 | D Dorian | メニュー（シンセウェイヴ・アーケード導入） |
-| 1 | CRIMSON IGNITION | 164 | E Aeolian | 古城（ドライヴ・ギター＆ブラス・ロック） |
-| 2 | NEON CIRCUIT | 142 | F# Dorian | 電脳都市（サイバー・ファンク＆シンセリード） |
-| 3 | FROZEN CROWN | 128 | F Aeolian | 聖堂（クリスタルFMベル＆ゴシック・パッド） |
-| 4 | AMBER RUN | 122 | A Dorian | 港（アップビート・ブラス＆スラップベース・グルーヴ） |
-| 5 | BLACK VEIN / AFTER DARK | 112 | C Dorian | ベルトスクロール市街（ダウンテンポ・ストリート・ファンク） |
-| 6 | IRON REIGN | 156 | D Aeolian | IRON VOSS戦（インダストリアル・ボス・アンセム） |
-| 7 | BREAK THE DAWN | 126 | G Dorian | 両ゲームのクリア（凱旋ファンファーレ） |
+| 0 | NIGHT SIGNAL | 84 | D Aeolian | メニュー大序曲（グランドピアノ・弦楽・ホルン・ティンパニ） |
+| 1 | CRIMSON IGNITION | 102 | E Aeolian | 古城（木管フルート・ハープ・弦楽・大太鼓・和太鼓の武士道交響曲） |
+| 2 | NEON CIRCUIT | 112 | A Aeolian | 都市決戦（跳弓スピッカート弦・ピアノ・トランペット・ティンパニ） |
+| 3 | FROZEN CROWN | 80 | F# Aeolian | 氷聖堂（16'+8'+4' パイプオルガン・SATB聖歌隊・ハープ・鐘） |
+| 4 | AMBER RUN | 96 | G Dorian | 港（クラシックギター・ホルン・弦楽・ティンパニの叙情曲） |
+| 5 | BLACK VEIN / AFTER DARK | 90 | C# Aeolian | 犯罪都市ベルト本編（チェロ／コントラバス・ピアノ・低金管の夜想曲） |
+| 6 | IRON REIGN | 104 | C Aeolian | ボス戦（聖歌隊・オルガン・重金管・スピッカート・小太鼓＆シンバルの鎮魂曲） |
+| 7 | BREAK THE DAWN | 94 | D Major | クリア（戴冠式トランペット＆ホルン・合唱・鐘・全合奏ファンファーレ） |
 
-- 全曲32小節・16分音符512ステップ。`ARCADE_TRACKS` でテンポ、ルート、和音、主役音色、スウィングを指定。
-- 旧版（v2.1〜v2.3.1）では `score(track, step)` が全8曲で同一の半音階オフセット配列を共有していたため、全曲が同じメロディに聞こえるうえ非ダイアトニックな音の衝突が発生していた。
-- v2.4.0 では `TRACK_COMPOSITIONS` により8曲それぞれに固有の旋法（Aeolian / Dorian）、和音進行、ベースライン、アルペジオ、Aメロ (`leadA`)、Bメロ (`leadB`)、オブリガート (`counter`)、ドラムパターンを実装。
-- `degreeToSemi(scale, deg)` により和音構成音とメロディ音程をすべて旋法内のダイアトニック度数で解決し、32小節（Intro / Verse / Chorus / Breakdown / Climax / Outro）を通じて不協和音のない明快なアーケード楽曲を実現。
+- 全曲32小節・16分音符512ステップ。`ARCADE_TRACKS` / `TRACK_COMPOSITIONS` により10度＋5度＋9度のオープンボイシングと導入→主題→副主題→クライマックス構成で演奏。
 - 音楽の時計は `AudioContext`、ゲームの時計は従来の固定60Hz。戦闘フレームから音符の長さを決めない。
 
 ## マルチサンプル音色・効果音（Foley）
 
-- `buildBank` は35個の共通PCM音源（`this.bank`）に加え、7種の楽器を音域別にサンプリングした47個のマルチサンプル音色バンク（`this.noteBank`）を生成する：
-  - `bass`: MIDI `[31, 36, 41, 46, 51]`（5音域）
-  - `guitar, lead, keys, brass, pad, bell`: MIDI `[48, 54, 60, 66, 72, 78, 84]`（各7音域）
-- 旧版では単一のC3/C4サンプルを `playbackRate` で最大±18半音伸縮していたため、エンベロープやビブラート速度が崩壊しエイリアシングノイズが発生していた。v2.4.0 では `note()` が最近傍のマルチサンプルを選択し、ピッチシフト幅を最大±3半音以内に抑えることで自然な倍音と減衰を維持する。
-- 全楽器の合成に時変 State Variable Filter (`svf`)、ユニゾン・デチューン、FMベル倍音、ギター4×オーバーサンプリング・チューブ飽和＋キャビネットフィルタを採用。
-- 21種の効果音バッファ（`punch0..2, heavy0..2, slash0..2, metal0..2, wood0..2, swing, swingHeavy, catch, landing, energy, reverse`）と手続き合成レイヤーを全面刷新。v3.1.0 では打撃音の爽快感を極大化するため、全打撃・斬撃・破壊・投げ・超必殺SEに多段FMウィップクラック（6.8kHz→420Hz指数スイープ）、デュアルオシレーターFMによる骨砕きグロウル（520Hz→110Hz）、地響きサブベース（260Hz→36Hz）、6モード・ダマスカス鋼レゾナンス（820Hz〜7.15kHz）、ヒットスパーク多重倍音（1.8k/3.4k/5.1k/7.2kHz）およびステレオ・マルチレイヤー演出（`playHit / playGrapple / playSuper / playBreak`）を導入。
-- `seGain` を 0.82 に調整し、BGMや新キャラクターボイスとの理想的なアーケード音圧バランスを確立。
-- 公開API（`playUI / playSwing / playHit / playGrapple / playSuper / playBreak / playPickup / playCue / announce`）およびプロパティ契約は100%互換維持。
-- 音色の乱数は独立xorshiftを使用し、ゲームの `Math.random` を一切変更・消費しない。
+- `buildBank` は 42 個の共通 PCM 音源（`this.bank`）に加え、計 **131 個** の音域別オーケストラ／打楽器マルチサンプル（`this.noteBank`）を生成する：
+  - **オーケストラ・聖堂音色 13 種（計 99 音域別）**: `strings` (9音域, 6人合奏), `lowStrings` (7音域, チェロ+コントラバス), `spiccato` (6音域), `horn` (7音域, 4本), `trumpet` (7音域, 3本), `lowBrass` (6音域, トロンボーン+チューバ), `piano` (12音域, 非調和性弦+3弦ユニゾン), `harp` (8音域), `choir` (8音域, 7人F1/F2/F3フォルマント合唱), `organ` (9音域, 16'+8'+4'+チフ+トレムラント), `wind` (6音域), `acguitar` (8音域), `chimes` (6音域, モーダル管鐘)
+  - **ティンパニ＆生打楽器 13 種**: `timpani:36..54` (7音程), `orch:grancassa / orchsnare / orchsnare_soft / piatti / cymbal_swell / taiko` (6種)
+  - **レガシー互換用 19 音域**: `bass` (5音域), `keys` (7音域), `bell` (7音域)
+- 上記オーケストラ音源と並行して、既存効果音 42 音（`punch/heavy/slash/wood/metal/swing/catch/landing/energy/reverse/rising/fire/impactBody/impactCrush` 等）を完全保持。
 
 ## ミックスと管理
 

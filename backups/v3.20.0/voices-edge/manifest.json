@@ -1,0 +1,224 @@
+{
+  "version": "3.8.0",
+  "engine": "Microsoft Edge Neural Voices + Theatrical 2-Stage Prosody, NCC-PSOLA Pitch Contouring & Studio Mastering",
+  "language": "en-US",
+  "profiles": {
+    "kagura": {
+      "voice": "EdgeNeural:Andrew",
+      "neuralVoice": "en-US-AndrewMultilingualNeural",
+      "credit": "Microsoft Edge Neural (en-US-AndrewMultilingualNeural)",
+      "lines": {
+        "light0": "Hyah!",
+        "light1": "Hah!",
+        "heavy0": "Cut deep!",
+        "heavy1": "Strike true!",
+        "jump": "Hup!",
+        "dash": "Here I come!",
+        "hurt0": "Ack!",
+        "hurt1": "Ugh!",
+        "throw": "Got you!",
+        "burst": "Get back!",
+        "sp1": "Crescent Edge!",
+        "sp2": "Flying Swallow!",
+        "sp3": "Phantom... Sever!",
+        "super": "Witness my true flame... Inferno! Heaven Slash!",
+        "select": "Draw your steel! Let's see what you're made of!",
+        "win": "Hmph! A duel well fought!",
+        "ko": "No... my flame... fades...",
+        "grabbed": "What?!",
+        "throw_release": "Out of my sight!",
+        "thrown": "Damn you!",
+        "throw_impact": "Gah!",
+        "finish": "Your wicked flame ends here... By my blade!"
+      }
+    },
+    "volt": {
+      "voice": "EdgeNeural:Guy",
+      "neuralVoice": "en-US-GuyNeural",
+      "credit": "Microsoft Edge Neural (en-US-GuyNeural)",
+      "lines": {
+        "light0": "Hah!",
+        "light1": "Bam!",
+        "heavy0": "Eat this!",
+        "heavy1": "Watch this, pal!",
+        "jump": "Hup!",
+        "dash": "Too slow!",
+        "hurt0": "Ack!",
+        "hurt1": "Gah!",
+        "throw": "Gotcha!",
+        "burst": "Back off!",
+        "sp1": "Plasma Shot!",
+        "sp2": "Lightning Drive!",
+        "sp3": "Thunder... Somersault!",
+        "super": "Full throttle! Overdrive... Ragnarok!",
+        "select": "Let's crank it up to max speed!",
+        "win": "Haha! Victory is mine, baby!",
+        "ko": "No way... Seriously?!",
+        "grabbed": "Uh oh!",
+        "throw_release": "See ya!",
+        "thrown": "Whoa, hold on!",
+        "throw_impact": "Oof!",
+        "finish": "Lights out, punk! We're taking this city back!"
+      }
+    },
+    "freya": {
+      "voice": "EdgeNeural:Aria",
+      "neuralVoice": "en-US-AriaNeural",
+      "credit": "Microsoft Edge Neural (en-US-AriaNeural)",
+      "lines": {
+        "light0": "Hah!",
+        "light1": "Hyah!",
+        "heavy0": "Freeze solid!",
+        "heavy1": "Pierce through!",
+        "jump": "Up!",
+        "dash": "Watch yourself!",
+        "hurt0": "Ah!",
+        "hurt1": "Ugh!",
+        "throw": "Right there!",
+        "burst": "Keep away from me!",
+        "sp1": "Glacier Pillar!",
+        "sp2": "Valkyrie Lance!",
+        "sp3": "Frost... Nova!",
+        "super": "Feel the eternal chill... Absolute Zero! Calibur!",
+        "select": "May winter grant us... a silent finale.",
+        "win": "Sleep softly... beneath the ice.",
+        "ko": "No... How could this happen...",
+        "grabbed": "What?!",
+        "throw_release": "Begone!",
+        "thrown": "Let go of me!",
+        "throw_impact": "Ah!",
+        "finish": "Your tyranny... shatters in ice tonight!"
+      }
+    },
+    "titan": {
+      "voice": "EdgeNeural:Christopher",
+      "neuralVoice": "en-US-ChristopherNeural",
+      "credit": "Microsoft Edge Neural (en-US-ChristopherNeural)",
+      "lines": {
+        "light0": "Hmph!",
+        "light1": "Hah!",
+        "heavy0": "Crush them!",
+        "heavy1": "Shatter!",
+        "jump": "Hup!",
+        "dash": "Coming through!",
+        "hurt0": "Ack!",
+        "hurt1": "Gah!",
+        "throw": "Hold still!",
+        "burst": "Blow away!",
+        "sp1": "Quake Stomp! Earth Breaker!",
+        "sp2": "Gigant Tackle!",
+        "sp3": "Gaia Buster!",
+        "super": "Feel the heavens fall... Meteor! Catastrophe!",
+        "select": "Bring it on! Give me everything you've got!",
+        "win": "Not bad! Come back when you're stronger!",
+        "ko": "Gah... A worthy... battle...",
+        "grabbed": "What?!",
+        "throw_release": "Fly!",
+        "thrown": "Whoa! Curse you!",
+        "throw_impact": "Oof!",
+        "finish": "True strength... exists to protect the weak!"
+      }
+    },
+    "ayame": {
+      "voice": "EdgeNeural:Ana",
+      "neuralVoice": "en-US-AnaNeural",
+      "credit": "Microsoft Edge Neural (en-US-AnaNeural)",
+      "lines": {
+        "light0": "Hah!",
+        "light1": "Hyah!",
+        "heavy0": "Right there!",
+        "heavy1": "Dance for me!",
+        "jump": "Hop!",
+        "dash": "Over here!",
+        "hurt0": "Ow!",
+        "hurt1": "Oh! Ah!",
+        "throw": "Caught you!",
+        "burst": "Step aside!",
+        "sp1": "Violet Moon Fan!",
+        "sp2": "Swallow's Dance!",
+        "sp3": "Mist... Runner!",
+        "super": "Secret Art... Blooming Hundred Flowers!",
+        "select": "Haha! Think you can catch a shadow?",
+        "win": "The curtain falls... on our little dance.",
+        "ko": "Ugh... How careless... of me...",
+        "grabbed": "Whoa?!",
+        "throw_release": "Off you go!",
+        "thrown": "Ah! Let go!",
+        "throw_impact": "Oof!",
+        "finish": "Wicked blossoms... scatter into nothingness!"
+      }
+    },
+    "celine": {
+      "voice": "EdgeNeural:Vivienne",
+      "neuralVoice": "fr-FR-VivienneMultilingualNeural",
+      "credit": "Microsoft Edge Neural (fr-FR-VivienneMultilingualNeural)",
+      "lines": {
+        "light0": "Hah!",
+        "light1": "Hyah!",
+        "heavy0": "Right there!",
+        "heavy1": "I pierce you!",
+        "jump": "Hup!",
+        "dash": "Pardon me!",
+        "hurt0": "Ah!",
+        "hurt1": "No!",
+        "throw": "Got you!",
+        "burst": "Stand back!",
+        "sp1": "Rose Eclair!",
+        "sp2": "Fleur Lunge!",
+        "sp3": "Emerald Riposte!",
+        "super": "Star of twilight... Etoile du Soir!",
+        "select": "On guard! Shall we share a splendid battle?",
+        "win": "Magnificent! What a glorious match.",
+        "ko": "Ah... I concede... defeat...",
+        "grabbed": "Oh?!",
+        "throw_release": "Away with you!",
+        "thrown": "Unhand me!",
+        "throw_impact": "Ugh!",
+        "finish": "Curtain call! Victory... belongs to me!"
+      }
+    },
+    "voss": {
+      "voice": "EdgeNeural:Brian",
+      "neuralVoice": "en-US-BrianMultilingualNeural",
+      "credit": "Microsoft Edge Neural (en-US-BrianMultilingualNeural)",
+      "lines": {
+        "intro": "This city belongs to me! Anyone who crosses my path gets crushed!",
+        "defeat": "No! My empire! Curse you... How could this happen?!"
+      }
+    },
+    "vesper": {
+      "voice": "Vesper creature vocals",
+      "credit": "Original synthesized creature vocals",
+      "lines": {"intro":"[Roar]","acid":"[Acid hiss]","tail":"[Snarl]","ram":"[Bellow]","pain":"[Cry]","defeat":"[Death howl]"}
+    },
+    "maw": {
+      "voice": "EdgeNeural:BrianMaw",
+      "neuralVoice": "en-US-BrianMultilingualNeural",
+      "credit": "Microsoft Edge Neural (en-US-BrianMultilingualNeural + Furnace Monster FX)",
+      "lines": {
+        "intro": "Burn to ashes... Inside my eternal furnace!",
+        "defeat": "Curse you! My furnace... burning out... No!"
+      }
+    },
+    "luka": {
+      "voice": "EdgeNeural:Ava",
+      "neuralVoice": "en-US-AvaNeural",
+      "credit": "Microsoft Edge Neural (en-US-AvaNeural)",
+      "lines": {
+        "intro": "This paradise is ours alone! You aren't taking one step further!",
+        "combo": "Misha, strike now!",
+        "defeat": "Ah! Misha, run! Not like this!"
+      }
+    },
+    "misha": {
+      "voice": "EdgeNeural:Sonia",
+      "neuralVoice": "en-GB-SoniaNeural",
+      "credit": "Microsoft Edge Neural (en-GB-SoniaNeural)",
+      "lines": {
+        "intro": "Two against one! Let's see if you survive our deadly dance!",
+        "combo": "Right behind you! Crush them now!",
+        "defeat": "No! Luka... forgive me!"
+      }
+    }
+  }
+}

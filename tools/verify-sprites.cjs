@@ -17,7 +17,7 @@ const beltManifest = JSON.parse(fs.readFileSync(path.join(root, 'assets/belt/art
 const voiceManifest = JSON.parse(fs.readFileSync(path.join(root, 'assets/voices/manifest.json'), 'utf8'));
 const PNG_TOTAL = 18 + 4 + Object.keys(beltManifest.assets).length; // 18 fighter atlases + 4 versus backgrounds + belt art
 const VOICE_TOTAL = Object.values(voiceManifest.profiles).reduce((n, p) => n + Object.keys(p.lines).length, 0);
-assert.equal((packed.match(/data:image\/png;base64,/g) || []).length, PNG_TOTAL);
+assert.equal((packed.match(/data:image\/(png|jpeg);base64,/g) || []).length, PNG_TOTAL); // v3.20.1: stage 5 has two JPEG aerial views
 assert.equal((packed.match(/data:audio\/wav;base64,/g) || []).length, VOICE_TOTAL);
 const { chromium } = require('playwright');
 let browser;

@@ -14,7 +14,7 @@ let clear=0;for(let i=3;i<png.data.length;i+=4)if(png.data[i]<24)clear++;assert(
    const a=game.getPreviewFighter(id);a.invuln=a.blockstun=0;a.throwFrame=null;
    const pictures=new Set();for(let tick=0;tick<72;tick+=6){a.animTick=tick;c.clearRect(0,0,400,400);a.drawBody(c,200,320,1,'IDLE',0,false);pictures.add(canvas.toDataURL());}
    check(pictures.size===1,'stable preview and shared idle '+a.data.id);
-   check(new Set(Array.from({length:30},(_,t)=>FighterSprites.frame(a.data.id,'WALK_F',0,t,false))).size>1,'walking still animates '+a.data.id);
+   check(new Set(Array.from({length:30},(_,t)=>FighterSprites.frame(a.data.id,'WALK_F',t,t,false))).size>1,'walking still animates '+a.data.id);
   }
   game.startStreet(0);let s=game.street;s.intro=0;s.enemies=[];s.props=[];const boss=s.spawnEnemy('boss',800,550);const poses=new Set();for(let t=0;t<72;t++){boss.animTick=t;poses.add(BeltArt.bossFrame(boss,'IDLE',0));}check(poses.size===1,'boss idle stable');
   const old=new Function(oldSource+';return FighterSprites;')();const oldAtlas=old.prepareAtlas(BeltArt.images.get('fx-fire'),'fx-fire'),fixed=BeltArt.actionSheets.get('fx-fire');

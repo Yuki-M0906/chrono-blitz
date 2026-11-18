@@ -1,0 +1,15 @@
+{
+  "sprites-kagura.js": true,
+  "sprites-volt.js": true,
+  "sprites-freya.js": true,
+  "sprites-titan.js": true,
+  "sprites-ayame.js": true,
+  "sprites-celine.js": true,
+  "stages.js": true,
+  "voices.js": true,
+  "belt-backgrounds.js": true,
+  "belt-actors.js": true,
+  "resort-backgrounds.js": true,
+  "resort-actors.js": true,
+  "belt-dash.js": true
+}
