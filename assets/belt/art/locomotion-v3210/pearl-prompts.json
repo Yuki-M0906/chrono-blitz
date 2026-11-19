@@ -1,0 +1,43 @@
+{
+  "character": "pearl",
+  "tool": "OpenAI ImageGen",
+  "reference": "assets/belt/art/resort-v370/pearl-life.png cell 0",
+  "generations": [
+    {
+      "mode": "walk",
+      "references": [
+        "idle cell 0",
+        "walk skeletal pose guide",
+        "VOLT approved walk cycle"
+      ],
+      "prompt": "Production animation cels for a 2D cel-shaded arcade beat-em-up. Reference 1 defines EXACT character identity, anatomy, palette, clothing, silhouette and carried objects. PEARL: adult woman, short silver hair, sunglasses, purple beach fighting outfit and boots, closed parasol held low along body, leisurely measured gait. Angle her closed parasol back along the left outer edge of her silhouette; leave both feet distinct and visible. Make exactly EIGHT isolated, entire, RIGHT-facing figures regularly laid out in a four column by two row grid, generous clear gutters including outermost edges. True transparent background; no floor/shadow/FX/text/labels. Ref 2 is skeletal choreography only; ref 3 is an approved male character animation for rhythm and leg ordering ONLY, do not adopt his wardrobe or face. Same scale, camera, lighting and model across all frames. Outlines clean like the identity reference. Same serious expression as idle. Draw near anatomical RIGHT leg and arm in light, far LEFT leg slightly darker and behind it when they overlap. Upper body in three-quarter right-facing profile, face to screen right. Cloth and hair lag smoothly. Never repeat the same leg leading in both rows. For the very FIRST CEL of row TWO, the entire lighter near thigh from the visible hip to the knee extends BACK towards SCREEN LEFT and connects to the rear shoe; the darker far leg leads forward to screen RIGHT. The near forearm is in FRONT of the rib cage. This contrasts with the first cel of row ONE, where the near knee and shoe lead and the near forearm trails behind the rib cage. Do not duplicate the top row. Each row must depict different near-leg silhouette and occlusions at the hip. Two half cycles with precisely equal and opposite stride and knee lift. Guarded upright WALK cycle. Top row: near/right leg stepping forward onto heel with far leg stretched back on toe; next near leg flat under weight, dark far shoe lifting behind; then near leg straight under pelvis, far knee bent passing it; finally far leg swinging forward and near leg behind. Bottom row opposite: FAR/left thigh and shoe forward on heel in the first pose, right/near leg stretching backward with near/right foot visibly behind, near arm forward. Follow with loading, passing, opposite foot swing. A continuous cycle where eighth frame leads back to first. In contact poses toe-to-toe span about 40% of standing height. Pelvis stays fixed, support foot moves uniformly backwards."
+    },
+    {
+      "mode": "run",
+      "references": [
+        "idle cell 0",
+        "run skeletal pose guide",
+        "VOLT approved run cycle",
+        "this character walk cels"
+      ],
+      "prompt": "Production animation cels for a 2D cel-shaded arcade beat-em-up. Reference 1 defines EXACT character identity, anatomy, palette, clothing, silhouette and carried objects. PEARL: adult woman, short silver hair, sunglasses, purple beach fighting outfit and boots, closed parasol held low along body, leisurely measured gait. Angle her closed parasol back along the left outer edge of her silhouette; leave both feet distinct and visible. Make exactly EIGHT isolated, entire, RIGHT-facing figures regularly laid out in a four column by two row grid, generous clear gutters including outermost edges. True transparent background; no floor/shadow/FX/text/labels. Ref 2 is skeletal choreography only; ref 3 is an approved male character animation for rhythm and leg ordering ONLY, do not adopt his wardrobe or face. Same scale, camera, lighting and model across all frames. Outlines clean like the identity reference. Same serious expression as idle. Draw near anatomical RIGHT leg and arm in light, far LEFT leg slightly darker and behind it when they overlap. Upper body in three-quarter right-facing profile, face to screen right. Cloth and hair lag smoothly. Never repeat the same leg leading in both rows. For the very FIRST CEL of row TWO, the entire lighter near thigh from the visible hip to the knee extends BACK towards SCREEN LEFT and connects to the rear shoe; the darker far leg leads forward to screen RIGHT. The near forearm is in FRONT of the rib cage. This contrasts with the first cel of row ONE, where the near knee and shoe lead and the near forearm trails behind the rib cage. Do not duplicate the top row. Each row must depict different near-leg silhouette and occlusions at the hip. Two half cycles with precisely equal and opposite stride and knee lift. Reference 4 is this same character walking. Match all features and scale. Compact light JOG at walking travel speed, tiny low airborne phases and an 8–12 degree lean with bent elbows. Bring each foot down almost below the pelvis; unlike the long VOLT sprint in reference 3, footprints are only about a quarter of body height apart at contact. Subtly lift the recovering heel, no hurdling or full-split stride. Follow the short foot spacings of the colored pose guide for all 8 poses. Top row right/near leg lands in front, then supports weight while the left heel lifts, right push-off as left knee drives up, then airborne as far/left foot reaches in front. Bottom row mirror leg depth ONLY so left/far foot lands ahead, then loading and pushing off, airborne with right/near leg reaching forward. All faces RIGHT. Front shoe lands on ball, shoes clear of one another in split poses."
+    },
+    {
+      "mode": "walk opposite supporting leg",
+      "references": [
+        "idle cell 0",
+        "AZURE cels 4-7 / 16-19 as a pose template"
+      ],
+      "prompt": "Reference 1 defines Pearl, an adult silver-bob-haired beach fighter wearing black sunglasses, a purple two-piece athletic beach outfit and purple ankle boots with heels, holding a purple and brass CLOSED parasol. Ref 2 is a strict four-frame pose template. Redraw all FOUR figures of ref 2 as PEARL. Match each pose exactly including WHICH THIGH IS IN FRONT in projection at the crotch; trace the hip, knee, ankle and foot paths, near arm direction and shoulder turn. Do not copy the other character's color, skin tone, costume, hairstyle, or weapons. Match Pearl's face and body from image 1. First pose must show the brightly lit leg at her near hip going BACK and DOWN to the shoe at the LEFT. Shade the other thigh extending forward toward the right. The NEAR forearm in the FIRST pose is IN FRONT of the torso. Her near hand holds the closed parasol; carry it pointed back left diagonally, clear of legs (shorten with foreshortening if necessary). Four whole figures, one horizontal row, right facing. Separate them by clear gutters and margins, transparent background with no floor or writing. This is the left-support half of a leisurely guarded walk, not four same-foot landings."
+    },
+    {
+      "mode": "run opposite supporting leg",
+      "references": [
+        "idle cell 0",
+        "AZURE cels 4-7 / 16-19 as a pose template"
+      ],
+      "prompt": "Reference 1 defines Pearl, an adult silver-bob-haired beach fighter wearing black sunglasses, a purple two-piece athletic beach outfit and purple ankle boots with heels, holding a purple and brass CLOSED parasol. Ref 2 is a strict four-frame pose template. Redraw all FOUR figures of ref 2 as PEARL. Match each pose exactly including WHICH THIGH IS IN FRONT in projection at the crotch; trace the hip, knee, ankle and foot paths, near arm direction and shoulder turn. Do not copy the other character's color, skin tone, costume, hairstyle, or weapons. Match Pearl's face and body from image 1. First pose must show the brightly lit leg at her near hip going BACK and DOWN to the shoe at the LEFT. Shade the other thigh extending forward toward the right. The NEAR forearm in the FIRST pose is IN FRONT of the torso. Her near hand holds the closed parasol; carry it pointed back left diagonally, clear of legs (shorten with foreshortening if necessary). Four whole figures, one horizontal row, right facing. Separate them by clear gutters and margins, transparent background with no floor or writing. This is the left-support half of a compact low jog, not four same-foot landings."
+    }
+  ],
+  "registration": "8コマごとに生成し、頭・腰・足のランドマークで原画を位置合わせ。足の奥行きと接地を調整し、縮小後に透過と輪郭を検査。"
+}

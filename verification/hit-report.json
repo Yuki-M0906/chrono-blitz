@@ -1,37 +1,37 @@
 {
-  "version": "3.20.2",
+  "version": "3.22.0",
   "distribution": {
-    "htmlBytes": 753675,
+    "htmlBytes": 796256,
     "packs": [
       {
         "name": "sprites-kagura",
         "kind": "sprites",
-        "size": 9859583
+        "size": 10815137
       },
       {
         "name": "sprites-volt",
         "kind": "sprites",
-        "size": 10152522
+        "size": 11097961
       },
       {
         "name": "sprites-freya",
         "kind": "sprites",
-        "size": 10618201
+        "size": 11830377
       },
       {
         "name": "sprites-titan",
         "kind": "sprites",
-        "size": 10355373
+        "size": 11556269
       },
       {
         "name": "sprites-ayame",
         "kind": "sprites",
-        "size": 9909828
+        "size": 10836949
       },
       {
         "name": "sprites-celine",
         "kind": "sprites",
-        "size": 9628795
+        "size": 10619153
       },
       {
         "name": "stages",
@@ -51,7 +51,7 @@
       {
         "name": "belt-actors",
         "kind": "beltArt",
-        "size": 49621620
+        "size": 50807688
       },
       {
         "name": "skyhook-art",
@@ -66,7 +66,7 @@
       {
         "name": "resort-actors",
         "kind": "beltArt",
-        "size": 30966160
+        "size": 34962719
       },
       {
         "name": "metro-backgrounds",
@@ -76,7 +76,7 @@
       {
         "name": "metro-actors",
         "kind": "beltArt",
-        "size": 9474943
+        "size": 9919668
       },
       {
         "name": "belt-dash",
@@ -87,13 +87,13 @@
   },
   "boot": {
     "overlayGone": true,
-    "loaded": 314292867,
-    "total": 314292867,
+    "loaded": 326151760,
+    "total": 326151760,
     "failed": [],
     "sprites": null,
-    "belt": 69,
+    "belt": 77,
     "beltErrors": [],
-    "inline": 400503
+    "inline": 422047
   },
   "checks": {
     "Punch connects near the edge of the wider lane": true,

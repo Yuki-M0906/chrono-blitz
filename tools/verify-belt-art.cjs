@@ -36,7 +36,7 @@ let browser;
   });
   assert.equal(loaded.images,Object.keys(manifest.assets).length); assert.equal(loaded.districts,5); assert.equal(loaded.factory,5); assert.equal(loaded.monsterCells,24);
   assert.equal(loaded.props,8); assert.equal(loaded.bossPoses,72); assert.deepEqual(loaded.errors,[]);
-  for(const a of loaded.transparent)assert(a.ratio>.35 && a.ratio<.9, a.id+' alpha');
+  for(const a of loaded.transparent)assert(a.ratio>.35 && a.ratio<(a.id.endsWith('-walk')?.97:.9), a.id+' alpha'); // v3.21.0: walk sheets fill 8 or 16 of 24 cells
   const stage = async (area, seam=false, stageIndex=0) => {
     await page.evaluate(({area,seam,stageIndex})=>{
       sound.playBGM=()=>{}; sound.announce=()=>{}; fighterVoice.play=()=>false;

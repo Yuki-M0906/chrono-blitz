@@ -1,0 +1,43 @@
+{
+  "character": "coral",
+  "tool": "OpenAI ImageGen",
+  "reference": "assets/belt/art/resort-v370/coral-life.png cell 0",
+  "generations": [
+    {
+      "mode": "walk",
+      "references": [
+        "idle cell 0",
+        "walk skeletal pose guide",
+        "VOLT approved walk cycle"
+      ],
+      "prompt": "Production animation cels for a 2D cel-shaded arcade beat-em-up. Reference 1 defines EXACT character identity, anatomy, palette, clothing, silhouette and carried objects. CORAL: adult athletic woman, black bob, red beach fighting outfit and red sneakers, fingerless gloves, unarmed. Make exactly EIGHT isolated, entire, RIGHT-facing figures regularly laid out in a four column by two row grid, generous clear gutters including outermost edges. True transparent background; no floor/shadow/FX/text/labels. Ref 2 is skeletal choreography only; ref 3 is an approved male character animation for rhythm and leg ordering ONLY, do not adopt his wardrobe or face. Same scale, camera, lighting and model across all frames. Outlines clean like the identity reference. Same serious expression as idle. Draw near anatomical RIGHT leg and arm in light, far LEFT leg slightly darker and behind it when they overlap. Upper body in three-quarter right-facing profile, face to screen right. Cloth and hair lag smoothly. Never repeat the same leg leading in both rows. Two half cycles with precisely equal and opposite stride and knee lift. Guarded upright WALK cycle. Top row: near/right leg stepping forward onto heel with far leg stretched back on toe; next near leg flat under weight, dark far shoe lifting behind; then near leg straight under pelvis, far knee bent passing it; finally far leg swinging forward and near leg behind. Bottom row opposite: FAR/left thigh and shoe forward on heel in the first pose, right/near leg stretching backward with near/right foot visibly behind, near arm forward. Follow with loading, passing, opposite foot swing. A continuous cycle where eighth frame leads back to first. In contact poses toe-to-toe span about 45% of standing height. Pelvis stays fixed, support foot moves uniformly backwards."
+    },
+    {
+      "mode": "run",
+      "references": [
+        "idle cell 0",
+        "run skeletal pose guide",
+        "VOLT approved run cycle",
+        "this character walk cels"
+      ],
+      "prompt": "Production animation cels for a 2D cel-shaded arcade beat-em-up. Reference 1 defines EXACT character identity, anatomy, palette, clothing, silhouette and carried objects. CORAL: adult athletic woman, black bob, red beach fighting outfit and red sneakers, fingerless gloves, unarmed. Make exactly EIGHT isolated, entire, RIGHT-facing figures regularly laid out in a four column by two row grid, generous clear gutters including outermost edges. True transparent background; no floor/shadow/FX/text/labels. Ref 2 is skeletal choreography only; ref 3 is an approved male character animation for rhythm and leg ordering ONLY, do not adopt his wardrobe or face. Same scale, camera, lighting and model across all frames. Outlines clean like the identity reference. Same serious expression as idle. Draw near anatomical RIGHT leg and arm in light, far LEFT leg slightly darker and behind it when they overlap. Upper body in three-quarter right-facing profile, face to screen right. Cloth and hair lag smoothly. Never repeat the same leg leading in both rows. Two half cycles with precisely equal and opposite stride and knee lift. Reference 4 is this same character walking. Match all features and scale. Compact light JOG at walking travel speed, tiny low airborne phases and an 8–12 degree lean with bent elbows. Bring each foot down almost below the pelvis; unlike the long VOLT sprint in reference 3, footprints are only about a quarter of body height apart at contact. Subtly lift the recovering heel, no hurdling or full-split stride. Follow the short foot spacings of the colored pose guide for all 8 poses. Top row right/near leg lands in front, then supports weight while the left heel lifts, right push-off as left knee drives up, then airborne as far/left foot reaches in front. Bottom row mirror leg depth ONLY so left/far foot lands ahead, then loading and pushing off, airborne with right/near leg reaching forward. All faces RIGHT. Front shoe lands on ball, shoes clear of one another in split poses."
+    },
+    {
+      "mode": "walk opposite supporting leg",
+      "references": [
+        "idle cell 0",
+        "walk first generated cels"
+      ],
+      "prompt": "Animation cleanup for the ADULT arcade fighter CORAL. Reference 1 exact character model, reference 2 walk cels to correct. Draw four separate full-body poses in ONE horizontal row on transparent, all facing RIGHT. Make the anatomically far/left leg clearly leading forward in the first drawing, opposite the top-left of reference 2. Her near/right hip and its proximal thigh forms a continuous path all the way to the TRAILING red shoe at screen LEFT. Keep that trailing thigh in the light with a crisp leading contour overlapping the far/front thigh at the groin. Her far/shaded leg extends ahead to the RIGHT, behind the near thigh. Near right arm swings FORWARD in front of chest at first then recoils. Frame 2 far leg takes weight, near heel lifts behind. Frame 3 weight on straight far leg as near thigh and bent knee pass across the front. Frame 4 near knee and sneaker swing forward into the next heel strike. Clear contrast between foreground and background legs; keep proportions, red sneakers, fingerless gloves, hairstyle, red beach fighting costume, cel shading identical. Compact heel-to-toe gait, no gesture from another action. No captions, effects, flat ground or shadow. Fully separated figures."
+    },
+    {
+      "mode": "run opposite supporting leg",
+      "references": [
+        "idle cell 0",
+        "run first generated cels"
+      ],
+      "prompt": "CORAL JOG – opposite half-cycle correction. Draw a single horizontal row of four clean, widely separated, transparent full-body animation frames of the adult fighter from the attachments. Facing SCREEN RIGHT. Left foot takes the next step. NEAR muscular arm must be visibly swung forward on the right across her chest, near gloved fist in front of her collar, and FAR ARM swinging behind. Near hip with visible waistband of her red athletic two-piece beach combat costume and the entire brightly lit NEAR leg angle BACK toward LEFT, the far/darker thigh is visible beyond the hip and extends FORWARD RIGHT to the foremost shoe. Both shoes are red sneakers. Source 1 defines exact character, source 2 defines scale & cel art. Show four small-step jogging poses: left/far forefoot first to touch ground, right/near shoe behind; left leg supporting, right heel lifts behind; left foot pushing off as near/right knee passes in front; low airborne with near right shoe reaching forward and far shoe trailing. Choppy short stride; about 1/4 body height between toes on landing; slight forward lean. Maintain the black bob and consistent warm skin palette. No props, floor, effects, captions or border."
+    }
+  ],
+  "registration": "8コマごとに生成し、頭・腰・足のランドマークで原画を位置合わせ。足の奥行きと接地を調整し、縮小後に透過と輪郭を検査。"
+}

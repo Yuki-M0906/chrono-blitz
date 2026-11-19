@@ -1,0 +1,27 @@
+{
+  "character": "celine",
+  "tool": "OpenAI ImageGen",
+  "reference": "assets/sprites/design-v33/celine.png cell 0",
+  "generations": [
+    {
+      "mode": "walk",
+      "references": [
+        "idle cell 0",
+        "walk skeletal pose guide",
+        "VOLT approved walk cycle"
+      ],
+      "prompt": "Production animation cels for a 2D cel-shaded arcade beat-em-up. Reference 1 defines EXACT character identity, anatomy, palette, clothing, silhouette and carried objects. CELINE: red wavy hair, emerald long coat, white gloves, brown boots, red sash, right hand grips rapier held behind angled down; skirt clear of both boots. Carry the thin rapier pointing to screen LEFT in every cel. Foreshorten it enough that the tip remains in the same cell and above ankle height. Keep the blade out of the leg silhouette. Make exactly EIGHT isolated, entire, RIGHT-facing figures regularly laid out in a four column by two row grid, generous clear gutters including outermost edges. True transparent background; no floor/shadow/FX/text/labels. Ref 2 is skeletal choreography only; ref 3 is an approved male character animation for rhythm and leg ordering ONLY, do not adopt his wardrobe or face. Same scale, camera, lighting and model across all frames. Outlines clean like the identity reference. Same serious expression as idle. Draw near anatomical RIGHT leg and arm in light, far LEFT leg slightly darker and behind it when they overlap. Upper body in three-quarter right-facing profile, face to screen right. Cloth and hair lag smoothly. Never repeat the same leg leading in both rows. Two half cycles with precisely equal and opposite stride and knee lift. Guarded upright WALK cycle. Top row: near/right leg stepping forward onto heel with far leg stretched back on toe; next near leg flat under weight, dark far shoe lifting behind; then near leg straight under pelvis, far knee bent passing it; finally far leg swinging forward and near leg behind. Bottom row opposite: FAR/left thigh and shoe forward on heel in the first pose, right/near leg stretching backward with near/right foot visibly behind, near arm forward. Follow with loading, passing, opposite foot swing. A continuous cycle where eighth frame leads back to first. In contact poses toe-to-toe span about 48% of standing height. Pelvis stays fixed, support foot moves uniformly backwards."
+    },
+    {
+      "mode": "run",
+      "references": [
+        "idle cell 0",
+        "run skeletal pose guide",
+        "VOLT approved run cycle",
+        "this character walk cels"
+      ],
+      "prompt": "Production animation cels for a 2D cel-shaded arcade beat-em-up. Reference 1 defines EXACT character identity, anatomy, palette, clothing, silhouette and carried objects. CELINE: red wavy hair, emerald long coat, white gloves, brown boots, red sash, right hand grips rapier held behind angled down; skirt clear of both boots. Carry the thin rapier pointing to screen LEFT in every cel. Foreshorten it enough that the tip remains in the same cell and above ankle height. Keep the blade out of the leg silhouette. Make exactly EIGHT isolated, entire, RIGHT-facing figures regularly laid out in a four column by two row grid, generous clear gutters including outermost edges. True transparent background; no floor/shadow/FX/text/labels. Ref 2 is skeletal choreography only; ref 3 is an approved male character animation for rhythm and leg ordering ONLY, do not adopt his wardrobe or face. Same scale, camera, lighting and model across all frames. Outlines clean like the identity reference. Same serious expression as idle. Draw near anatomical RIGHT leg and arm in light, far LEFT leg slightly darker and behind it when they overlap. Upper body in three-quarter right-facing profile, face to screen right. Cloth and hair lag smoothly. Never repeat the same leg leading in both rows. Two half cycles with precisely equal and opposite stride and knee lift. Reference 4 is this same character walking. Match all features and scale. Energetic RUN with 10–15 degree forward lean, bent arms pumping, a meaningful split stride. Top row right/near leg lands in front, then supports weight while the left heel lifts, right push-off as left knee drives up, then airborne as far/left foot reaches in front. Bottom row mirror leg depth ONLY so left/far foot lands ahead, then loading and pushing off, airborne with right/near leg reaching forward. All faces RIGHT. Front shoe lands on ball, shoes clear of one another in split poses."
+    }
+  ],
+  "registration": "8コマごとに生成し、頭・腰・足のランドマークで原画を位置合わせ。足の奥行きと接地を調整し、縮小後に透過と輪郭を検査。"
+}

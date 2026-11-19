@@ -1,7 +1,7 @@
 const fs=require('fs'),path=require('path'),assert=require('assert/strict'),{chromium}=require('playwright');
 (async()=>{const b=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||'C:/Users/User/AppData/Local/Google/Chrome/Application/chrome.exe',args:['--mute-audio']});try{
 const out=path.resolve('verification/refinement-v362');fs.mkdirSync(out,{recursive:true});const p=await b.newPage({viewport:{width:1440,height:960}}),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.addInitScript(()=>window.requestAnimationFrame=()=>0);await p.goto(require('url').pathToFileURL(path.resolve('ai_studio_code.html')).href);
-const report=await p.evaluate(async()=>{await Promise.all([FighterSprites.ready,BeltArt.ready]);const checks=[],check=(v,n)=>{if(!v)throw Error(n);checks.push(n);};check(!BeltArt.errors.length,'all new images decoded');check(BeltArt.monsterAtlases.size===3,'72 added monster poses');
+const report=await p.evaluate(async()=>{await Promise.all([FighterSprites.ready,BeltArt.ready]);const checks=[],check=(v,n)=>{if(!v)throw Error(n);checks.push(n);};check(!BeltArt.errors.length,'all new images decoded');check(['maw-motion','maw-breath','maw-hurt'].every(id=>BeltArt.monsterAtlases.has(id)),'72 added monster poses');
 sound.init=()=>{};sound.playBGM=()=>{};fighterVoice.play=()=>false;const flames=[];sound.playFlame=x=>flames.push(x);
 const setup=(id=0,stage=1)=>{input.keys={};input.just={};game.startStreet(id,stage);const s=game.street;s.intro=0;s.bossIntro=0;s.enemies=[];s.props=[];s.player.x=850;s.player.y=550;s.player.invuln=0;return s;};
 const key=(s,keys)=>{input.keys=keys;input.just={};s.playerInput();s.tick++;};

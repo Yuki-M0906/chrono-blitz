@@ -1,0 +1,18 @@
+{
+  "character": "maw",
+  "tool": "OpenAI ImageGen",
+  "reference": "assets/belt/art/actions-v360/maw.png cell 0",
+  "generations": [
+    {
+      "mode": "walk",
+      "references": [
+        "idle cell 0",
+        "walk skeletal pose guide",
+        "VOLT approved walk cycle",
+        "maw-motion first row"
+      ],
+      "prompt": "Production animation cels for a 2D cel-shaded arcade beat-em-up. Reference 1 defines EXACT character identity, anatomy, palette, clothing, silhouette and carried objects. FURNACE MAW: massive hunched black volcanic biped with glowing lava fissures and chest, hanging clawed arms and chains. Compact shuffling gait, readable feet, consistent crack map. Keep toes, ankles and lower leg outlines readable below the heavy clawed arms, no chains below the soles. Make exactly EIGHT isolated, entire, RIGHT-facing figures regularly laid out in a four column by two row grid, generous clear gutters including outermost edges. True transparent background; no floor/shadow/FX/text/labels. Ref 2 is skeletal choreography only; ref 3 is an approved male character animation for rhythm and leg ordering ONLY, do not adopt his wardrobe or face. Same scale, camera, lighting and model across all frames. Outlines clean like the identity reference. Same serious expression as idle. Draw near anatomical RIGHT leg and arm in light, far LEFT leg slightly darker and behind it when they overlap. Upper body in three-quarter right-facing profile, face to screen right. Cloth and hair lag smoothly. Never repeat the same leg leading in both rows. For the very FIRST CEL of row TWO, the entire lighter near thigh from the visible hip to the knee extends BACK towards SCREEN LEFT and connects to the rear shoe; the darker far leg leads forward to screen RIGHT. The near forearm is in FRONT of the rib cage. This contrasts with the first cel of row ONE, where the near knee and shoe lead and the near forearm trails behind the rib cage. Do not duplicate the top row. Each row must depict different near-leg silhouette and occlusions at the hip. Two half cycles with precisely equal and opposite stride and knee lift. Heavy low, deeply hunched, bipedal WALK cycle. Reference 4 is the original walking model; match its torso inclination, compact toes and extraordinary heavy spined silhouette. Top row: near/right leg stepping forward onto heel with far leg stretched back on toe; next near leg flat under weight, dark far shoe lifting behind; then near leg straight under pelvis, far knee bent passing it; finally far leg swinging forward and near leg behind. Bottom row opposite: FAR/left thigh and shoe forward on heel in the first pose, right/near leg stretching backward with near/right foot visibly behind, near arm forward. Follow with loading, passing, opposite foot swing. A continuous cycle where eighth frame leads back to first. In contact poses toe-to-toe span about 23% of standing height. Pelvis stays fixed, support foot moves uniformly backwards. Compact the silhouette: maintain a hunched body that is about as wide as tall, corral hanging chains to the wrists, bright chest, overlapping legs with two distinct FOOT soles visible across all eight frames. The claws belong to the arms and do not count as walking feet."
+    }
+  ],
+  "registration": "8コマごとに生成し、頭・腰・足のランドマークで原画を位置合わせ。足の奥行きと接地を調整し、縮小後に透過と輪郭を検査。"
+}

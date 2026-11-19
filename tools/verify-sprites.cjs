@@ -15,7 +15,9 @@ assert.equal((code.match(/data:(image|audio)\//g) || []).length, 0, 'HTML must n
 // v3.6.1: expected counts follow the manifests (they were literals 37 / 126 and went stale at v3.4.2 / v3.5.0).
 const beltManifest = JSON.parse(fs.readFileSync(path.join(root, 'assets/belt/art/manifest.json'), 'utf8'));
 const voiceManifest = JSON.parse(fs.readFileSync(path.join(root, 'assets/voices/manifest.json'), 'utf8'));
-const PNG_TOTAL = 18 + 4 + Object.keys(beltManifest.assets).length; // 18 fighter atlases + 4 versus backgrounds + belt art
+// v3.21.0 [ANIM-217]: a character may have a fourth sheet, <id>-locomotion.png (walk / run). Count the ones that exist.
+const LOCOMOTION = fs.readdirSync(path.join(root, 'assets/sprites/design-v33')).filter(name => name.endsWith('-locomotion.png')).length;
+const PNG_TOTAL = 18 + LOCOMOTION + 4 + Object.keys(beltManifest.assets).length; // 18 fighter atlases + walk / run sheets + 4 versus backgrounds + belt art
 const VOICE_TOTAL = Object.values(voiceManifest.profiles).reduce((n, p) => n + Object.keys(p.lines).length, 0);
 assert.equal((packed.match(/data:image\/(png|jpeg);base64,/g) || []).length, PNG_TOTAL); // v3.20.1: stage 5 has two JPEG aerial views
 assert.equal((packed.match(/data:audio\/wav;base64,/g) || []).length, VOICE_TOTAL);
@@ -42,7 +44,7 @@ let browser;
     game.draw();
     return { count: FighterSprites.sheets.size, errors: FighterSprites.errors, stages:StageArt.artwork.size, stageErrors:StageArt.errors };
   });
-  assert.deepEqual(loaded, { count: 18, errors: [], stages:4,stageErrors:[] });
+  assert.deepEqual(loaded, { count: 18 + LOCOMOTION, errors: [], stages:4,stageErrors:[] });
   await current.screenshot({ path: path.join(root, 'verification/title.png') });
 
   const simulate = () => {
@@ -117,7 +119,8 @@ let browser;
     }
     // Inspect all decoded cells to catch empty/missing frames.
     let nonempty=0;
-    for(const sheet of FighterSprites.sheets.values()) {
+    for(const [key,sheet] of FighterSprites.sheets) {
+      if(key.endsWith('-locomotion')) continue; // 16 of 24 cells by design; verify-motion-v3151 checks them
       const c=sheet.atlas.getContext('2d');
       for(let n=0;n<24;n++) {const p=c.getImageData(n%6*FighterSprites.cell,Math.floor(n/6)*FighterSprites.cell,FighterSprites.cell,FighterSprites.cell).data;let visible=0;for(let i=3;i<p.length;i+=4)if(p[i]>32)visible++;if(visible>100)nonempty++;}
     }

@@ -118,7 +118,7 @@
         "key": "voss-intro",
         "accepted": true,
         "active": "voss-intro",
-        "signal": 0.33298438787460327
+        "signal": 0.35121679306030273
       },
       {
         "key": "voss-defeat",
@@ -136,25 +136,25 @@
         "key": "volt-finish",
         "accepted": true,
         "active": "volt-finish",
-        "signal": 0.3897179663181305
+        "signal": 0.5003072023391724
       },
       {
         "key": "freya-finish",
         "accepted": true,
         "active": "freya-finish",
-        "signal": 0.34908491373062134
+        "signal": 0.3520733714103699
       },
       {
         "key": "titan-finish",
         "accepted": true,
         "active": "titan-finish",
-        "signal": 0.38107484579086304
+        "signal": 0.3459989130496979
       },
       {
         "key": "ayame-finish",
         "accepted": true,
         "active": "ayame-finish",
-        "signal": 0.2600696384906769
+        "signal": 0.0677468329668045
       },
       {
         "key": "celine-finish",

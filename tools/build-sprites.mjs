@@ -20,7 +20,9 @@ const art = filter => Object.fromEntries(Object.entries(artManifest.assets).filt
 
 // ---- Asset packs. Order matters: the game reads keys in insertion order. Each pack stays far below 50 MB.
 const packs = [
-  ...characters.map(id => ({name: 'sprites-' + id, kind: 'sprites', data: Object.fromEntries([id, id + '-motion', id + '-throw'].map(key =>
+  ...characters.map(id => ({name: 'sprites-' + id, kind: 'sprites', data: Object.fromEntries([id, id + '-motion', id + '-throw', id + '-locomotion'].filter(key =>
+    // v3.21.0 [ANIM-217]: the walk / run sheet is optional; a character without one keeps the older cells.
+    !key.endsWith('-locomotion') || fs.existsSync(path.join(root, 'assets', 'sprites', 'design-v33', key + '.png'))).map(key =>
     [key, 'data:image/png;base64,' + b64('assets', 'sprites', 'design-v33', key + '.png')]))})),
   {name: 'stages', kind: 'stages', data: stageIds.map((id, i) => ({id, horizon: stageHorizons[i], src: 'data:image/png;base64,' + b64('assets/stages', id + '.png')}))},
   {name: 'voices', kind: 'voices', data: Object.fromEntries(Object.entries(voiceProfiles).flatMap(([id, profile]) => Object.keys(profile.lines).map(event =>
@@ -29,9 +31,9 @@ const packs = [
   {name: 'belt-actors', kind: 'beltArt', data: art(id => !id.startsWith('ascent-') && !id.startsWith('skyhook-') && !id.startsWith('district-') && !id.startsWith('factory-') && !id.startsWith('dash-') && !id.startsWith('resort-') && !id.startsWith('beach-') && !id.startsWith('metro-') && id!=='subway-train' && id!=='arena-crowd')},
   {name: 'skyhook-art', kind:'beltArt',data:art(id=>id.startsWith('ascent-'))},
   {name: 'resort-backgrounds',kind:'beltArt',data:art(id=>id.startsWith('resort-'))},
-  {name: 'resort-actors',kind:'beltArt',data:art(id=>id.startsWith('beach-')&&id!=='beach-warlord')},
+  {name: 'resort-actors',kind:'beltArt',data:art(id=>id.startsWith('beach-')&&!id.startsWith('beach-warlord'))},
   {name:'metro-backgrounds',kind:'beltArt',data:art(id=>id.startsWith('metro-'))},
-  {name:'metro-actors',kind:'beltArt',data:art(id=>id==='subway-train'||id==='beach-warlord'||id==='arena-crowd')},
+  {name:'metro-actors',kind:'beltArt',data:art(id=>id==='subway-train'||id.startsWith('beach-warlord')||id==='arena-crowd')},
   {name: 'belt-dash', kind: 'beltArt', data: art(id => id.startsWith('dash-'))}
 ];
 fs.mkdirSync(dataDir, {recursive: true});

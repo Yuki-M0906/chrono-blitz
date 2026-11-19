@@ -1,0 +1,746 @@
+{
+  "character": "volt",
+  "sourceBrief": "assets/sprites/LOCOMOTION-ART-BRIEF.md",
+  "reference": "assets/sprites/design-v33/volt.png (cell 0)",
+  "referenceSha256": "e6280c361c5f601c4055c641a1f427e60a016ceeeea2d2cff15174115b33ec5a",
+  "file": "volt-locomotion.png",
+  "sha256": "0920bcb152118fc6037e0e8ad6d6461b35bbc877d83a25537bc0a23ef557672f",
+  "size": [
+    1536,
+    1024
+  ],
+  "mode": "RGBA",
+  "cellSize": [
+    256,
+    256
+  ],
+  "columns": 6,
+  "rows": 4,
+  "coordinateSystem": "コマ左上が(0,0)。外接範囲・ランドマークは両端を含む。アルファが1以上の全画素を検査。腰は頭頂から絵の高さの48～66%に入る行を対象に、全画素のxの中央値。頭部は目視で定めたあご先列で、肌色の末端に接する輪郭までを測定。歩幅は前かかとx−後ろつま先x。通過姿勢の負値は靴の水平投影が重なることを表す。判定対象は着地4コマ。",
+  "cells": [
+    {
+      "index": 0,
+      "phase": "right heel strike",
+      "topY": 20,
+      "bottomY": 249,
+      "hipMedianX": 128.0,
+      "boundsInclusive": [
+        40,
+        20,
+        217,
+        249
+      ],
+      "clearMarginsLTRB": [
+        40,
+        20,
+        38,
+        6
+      ],
+      "connectedComponents4": 1,
+      "chinXY": [
+        146,
+        67
+      ],
+      "headHeightPx": 47,
+      "frontHeelXY": [
+        178,
+        241
+      ],
+      "rearToeXY": [
+        82,
+        244
+      ],
+      "projectedStridePx": 96,
+      "strideAcceptanceApplies": true
+    },
+    {
+      "index": 1,
+      "phase": "right loading",
+      "topY": 19,
+      "bottomY": 249,
+      "hipMedianX": 128.0,
+      "boundsInclusive": [
+        45,
+        19,
+        173,
+        249
+      ],
+      "clearMarginsLTRB": [
+        45,
+        19,
+        82,
+        6
+      ],
+      "connectedComponents4": 1,
+      "chinXY": [
+        146,
+        66
+      ],
+      "headHeightPx": 47,
+      "frontHeelXY": [
+        114,
+        244
+      ],
+      "rearToeXY": [
+        77,
+        217
+      ],
+      "projectedStridePx": 37,
+      "strideAcceptanceApplies": false
+    },
+    {
+      "index": 2,
+      "phase": "left passing",
+      "topY": 16,
+      "bottomY": 249,
+      "hipMedianX": 128.0,
+      "boundsInclusive": [
+        45,
+        16,
+        170,
+        249
+      ],
+      "clearMarginsLTRB": [
+        45,
+        16,
+        85,
+        6
+      ],
+      "connectedComponents4": 1,
+      "chinXY": [
+        146,
+        62
+      ],
+      "headHeightPx": 46,
+      "frontHeelXY": [
+        120,
+        192
+      ],
+      "rearToeXY": [
+        126,
+        246
+      ],
+      "projectedStridePx": -6,
+      "strideAcceptanceApplies": false
+    },
+    {
+      "index": 3,
+      "phase": "left swing",
+      "topY": 18,
+      "bottomY": 249,
+      "hipMedianX": 128.0,
+      "boundsInclusive": [
+        35,
+        18,
+        204,
+        249
+      ],
+      "clearMarginsLTRB": [
+        35,
+        18,
+        51,
+        6
+      ],
+      "connectedComponents4": 1,
+      "chinXY": [
+        146,
+        64
+      ],
+      "headHeightPx": 46,
+      "frontHeelXY": [
+        164,
+        215
+      ],
+      "rearToeXY": [
+        77,
+        247
+      ],
+      "projectedStridePx": 87,
+      "strideAcceptanceApplies": false
+    },
+    {
+      "index": 4,
+      "phase": "left heel strike",
+      "topY": 20,
+      "bottomY": 249,
+      "hipMedianX": 128.0,
+      "boundsInclusive": [
+        44,
+        20,
+        221,
+        249
+      ],
+      "clearMarginsLTRB": [
+        44,
+        20,
+        34,
+        6
+      ],
+      "connectedComponents4": 1,
+      "chinXY": [
+        145,
+        66
+      ],
+      "headHeightPx": 46,
+      "frontHeelXY": [
+        181,
+        243
+      ],
+      "rearToeXY": [
+        86,
+        245
+      ],
+      "projectedStridePx": 95,
+      "strideAcceptanceApplies": true
+    },
+    {
+      "index": 5,
+      "phase": "left loading",
+      "topY": 19,
+      "bottomY": 249,
+      "hipMedianX": 128.0,
+      "boundsInclusive": [
+        45,
+        19,
+        186,
+        249
+      ],
+      "clearMarginsLTRB": [
+        45,
+        19,
+        69,
+        6
+      ],
+      "connectedComponents4": 1,
+      "chinXY": [
+        146,
+        65
+      ],
+      "headHeightPx": 46,
+      "frontHeelXY": [
+        138,
+        242
+      ],
+      "rearToeXY": [
+        83,
+        239
+      ],
+      "projectedStridePx": 55,
+      "strideAcceptanceApplies": false
+    },
+    {
+      "index": 6,
+      "phase": "right passing",
+      "topY": 16,
+      "bottomY": 249,
+      "hipMedianX": 128.0,
+      "boundsInclusive": [
+        44,
+        16,
+        177,
+        249
+      ],
+      "clearMarginsLTRB": [
+        44,
+        16,
+        78,
+        6
+      ],
+      "connectedComponents4": 1,
+      "chinXY": [
+        146,
+        62
+      ],
+      "headHeightPx": 46,
+      "frontHeelXY": [
+        103,
+        242
+      ],
+      "rearToeXY": [
+        115,
+        217
+      ],
+      "projectedStridePx": -12,
+      "strideAcceptanceApplies": false
+    },
+    {
+      "index": 7,
+      "phase": "right swing",
+      "topY": 18,
+      "bottomY": 249,
+      "hipMedianX": 128.0,
+      "boundsInclusive": [
+        40,
+        18,
+        206,
+        249
+      ],
+      "clearMarginsLTRB": [
+        40,
+        18,
+        49,
+        6
+      ],
+      "connectedComponents4": 1,
+      "chinXY": [
+        146,
+        65
+      ],
+      "headHeightPx": 47,
+      "frontHeelXY": [
+        163,
+        239
+      ],
+      "rearToeXY": [
+        94,
+        246
+      ],
+      "projectedStridePx": 69,
+      "strideAcceptanceApplies": false
+    },
+    {
+      "index": 12,
+      "phase": "right forefoot strike",
+      "topY": 24,
+      "bottomY": 249,
+      "hipMedianX": 128.0,
+      "boundsInclusive": [
+        21,
+        24,
+        236,
+        249
+      ],
+      "clearMarginsLTRB": [
+        21,
+        24,
+        19,
+        6
+      ],
+      "connectedComponents4": 1,
+      "chinXY": [
+        164,
+        71
+      ],
+      "headHeightPx": 47,
+      "frontHeelXY": [
+        194,
+        240
+      ],
+      "rearToeXY": [
+        38,
+        247
+      ],
+      "projectedStridePx": 156,
+      "strideAcceptanceApplies": true
+    },
+    {
+      "index": 13,
+      "phase": "right loading",
+      "topY": 26,
+      "bottomY": 249,
+      "hipMedianX": 128.0,
+      "boundsInclusive": [
+        47,
+        26,
+        194,
+        249
+      ],
+      "clearMarginsLTRB": [
+        47,
+        26,
+        61,
+        6
+      ],
+      "connectedComponents4": 1,
+      "chinXY": [
+        164,
+        73
+      ],
+      "headHeightPx": 47,
+      "frontHeelXY": [
+        127,
+        242
+      ],
+      "rearToeXY": [
+        67,
+        202
+      ],
+      "projectedStridePx": 60,
+      "strideAcceptanceApplies": false
+    },
+    {
+      "index": 14,
+      "phase": "right push-off / left knee drive",
+      "topY": 23,
+      "bottomY": 249,
+      "hipMedianX": 128.0,
+      "boundsInclusive": [
+        49,
+        23,
+        194,
+        249
+      ],
+      "clearMarginsLTRB": [
+        49,
+        23,
+        61,
+        6
+      ],
+      "connectedComponents4": 1,
+      "chinXY": [
+        164,
+        70
+      ],
+      "headHeightPx": 47,
+      "frontHeelXY": [
+        114,
+        183
+      ],
+      "rearToeXY": [
+        96,
+        245
+      ],
+      "projectedStridePx": 18,
+      "strideAcceptanceApplies": false
+    },
+    {
+      "index": 15,
+      "phase": "flight / left leading",
+      "topY": 20,
+      "bottomY": 244,
+      "hipMedianX": 128.0,
+      "boundsInclusive": [
+        29,
+        20,
+        228,
+        244
+      ],
+      "clearMarginsLTRB": [
+        29,
+        20,
+        27,
+        11
+      ],
+      "connectedComponents4": 1,
+      "chinXY": [
+        163,
+        67
+      ],
+      "headHeightPx": 47,
+      "frontHeelXY": [
+        193,
+        238
+      ],
+      "rearToeXY": [
+        46,
+        241
+      ],
+      "projectedStridePx": 147,
+      "strideAcceptanceApplies": false
+    },
+    {
+      "index": 16,
+      "phase": "left forefoot strike",
+      "topY": 24,
+      "bottomY": 249,
+      "hipMedianX": 128.0,
+      "boundsInclusive": [
+        24,
+        24,
+        235,
+        249
+      ],
+      "clearMarginsLTRB": [
+        24,
+        24,
+        20,
+        6
+      ],
+      "connectedComponents4": 1,
+      "chinXY": [
+        163,
+        71
+      ],
+      "headHeightPx": 47,
+      "frontHeelXY": [
+        196,
+        240
+      ],
+      "rearToeXY": [
+        40,
+        247
+      ],
+      "projectedStridePx": 156,
+      "strideAcceptanceApplies": true
+    },
+    {
+      "index": 17,
+      "phase": "left loading",
+      "topY": 26,
+      "bottomY": 249,
+      "hipMedianX": 128.0,
+      "boundsInclusive": [
+        38,
+        26,
+        204,
+        249
+      ],
+      "clearMarginsLTRB": [
+        38,
+        26,
+        51,
+        6
+      ],
+      "connectedComponents4": 1,
+      "chinXY": [
+        168,
+        72
+      ],
+      "headHeightPx": 46,
+      "frontHeelXY": [
+        148,
+        242
+      ],
+      "rearToeXY": [
+        55,
+        169
+      ],
+      "projectedStridePx": 93,
+      "strideAcceptanceApplies": false
+    },
+    {
+      "index": 18,
+      "phase": "left push-off / right knee drive",
+      "topY": 23,
+      "bottomY": 249,
+      "hipMedianX": 128.0,
+      "boundsInclusive": [
+        53,
+        23,
+        192,
+        249
+      ],
+      "clearMarginsLTRB": [
+        53,
+        23,
+        63,
+        6
+      ],
+      "connectedComponents4": 1,
+      "chinXY": [
+        163,
+        70
+      ],
+      "headHeightPx": 47,
+      "frontHeelXY": [
+        101,
+        195
+      ],
+      "rearToeXY": [
+        95,
+        244
+      ],
+      "projectedStridePx": 6,
+      "strideAcceptanceApplies": false
+    },
+    {
+      "index": 19,
+      "phase": "flight / right leading",
+      "topY": 20,
+      "bottomY": 244,
+      "hipMedianX": 129.0,
+      "boundsInclusive": [
+        33,
+        20,
+        236,
+        244
+      ],
+      "clearMarginsLTRB": [
+        33,
+        20,
+        19,
+        11
+      ],
+      "connectedComponents4": 1,
+      "chinXY": [
+        164,
+        67
+      ],
+      "headHeightPx": 47,
+      "frontHeelXY": [
+        200,
+        236
+      ],
+      "rearToeXY": [
+        53,
+        239
+      ],
+      "projectedStridePx": 147,
+      "strideAcceptanceApplies": false
+    }
+  ],
+  "emptyCells": [
+    8,
+    9,
+    10,
+    11,
+    20,
+    21,
+    22,
+    23
+  ],
+  "playback": {
+    "renderedTicks": 193,
+    "walkHolds": 8,
+    "runHolds": 3,
+    "walkSequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      0
+    ],
+    "runSequence": [
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      12
+    ],
+    "renderer": "Chrome canvas / requestAnimationFrame, 1 callback = 1 game tick",
+    "anatomy": "手前の右太もものポケットを目印に、支持脚・振り出す脚を全16コマと周期境界で目視確認。"
+  },
+  "checks": [
+    {
+      "number": 1,
+      "result": "pass",
+      "detail": "RGBA 1536×1024。未使用8コマは全画素RGBA=0。中間調の背景に重ねて輪郭外のもやも点検。"
+    },
+    {
+      "number": 2,
+      "result": "pass",
+      "detail": "四辺の最小余白は6px。"
+    },
+    {
+      "number": 3,
+      "result": "pass",
+      "detail": "全16コマで上下左右の4近傍による塗りつぶしは1成分。"
+    },
+    {
+      "number": 4,
+      "result": "pass",
+      "detail": "接地14コマの足裏はy=249。空中の15・19はy=244。"
+    },
+    {
+      "number": 5,
+      "result": "pass",
+      "detail": "腰のx中央値の範囲は[128.0, 129.0]。"
+    },
+    {
+      "number": 6,
+      "result": "pass",
+      "detail": "歩行の頭頂yは[20, 19, 16, 18, 20, 19, 16, 18]、走行は[24, 26, 23, 20, 24, 26, 23, 20]。"
+    },
+    {
+      "number": 7,
+      "result": "pass",
+      "detail": "前かかとから後ろつま先の水平距離は{0: 96, 4: 95, 12: 156, 16: 156}px。"
+    },
+    {
+      "number": 8,
+      "result": "pass",
+      "detail": "頭頂からあご先の輪郭まで46～47px。"
+    },
+    {
+      "number": 9,
+      "result": "pass",
+      "detail": "1コマを歩行8・走行3ゲームフレーム保持して同時に193フレーム描画。歩行3周・走行8周。右・左の着地と周回後の右着地を確認。"
+    },
+    {
+      "number": 10,
+      "result": "pass",
+      "detail": "待機と同じ倍率で並べ、顔・金髪・二本の水色のはちまき・ベストとパンツの配色・グローブ・スニーカー・体格を照合。"
+    }
+  ],
+  "handoffComment": "ヴォルト原画のみ先行納品。1コマ256×256、6列。右向きの歩行0～7、走行12～19を番号順で循環。接地は四辺6pxの余白を満たすy=249。左向きは組み込み時に反転。残り5人は依頼者確認後。"
+}

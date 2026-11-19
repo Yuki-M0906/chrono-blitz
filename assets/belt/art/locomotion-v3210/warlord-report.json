@@ -1,0 +1,961 @@
+{
+  "character": "warlord",
+  "sourceBrief": "assets/belt/ENEMY-LOCOMOTION-ART-BRIEF.md",
+  "reference": "assets/belt/art/metro-v3100/beach-warlord.png",
+  "file": "warlord.png",
+  "sha256": "2e8d6f4407667792411d1a4937d848d17828357f86d833092c2a8475c5d7a4b7",
+  "size": [
+    1536,
+    1024
+  ],
+  "mode": "RGBA",
+  "cellSize": [
+    256,
+    256
+  ],
+  "emptyCells": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+  ],
+  "cells": [
+    {
+      "cell": 0,
+      "topY": 28,
+      "bottomY": 249,
+      "boundsInclusive": [
+        58,
+        28,
+        232,
+        249
+      ],
+      "hipMedianX": 128.0,
+      "chinXY": [
+        152,
+        86
+      ],
+      "headHeightPx": 58,
+      "stridePx": 33,
+      "toeSpanPx": 75,
+      "frontToe": [
+        182,
+        222
+      ],
+      "rearToe": [
+        107,
+        247
+      ],
+      "frontHeel": [
+        140,
+        247
+      ],
+      "halfCycleSupport": "right",
+      "supportToe": [
+        182,
+        222
+      ],
+      "oppositeToe": [
+        107,
+        247
+      ],
+      "airborne": false,
+      "torsoOnlyMedianX": 130.0,
+      "torsoPolygonXY": [
+        [
+          109,
+          126
+        ],
+        [
+          148,
+          126
+        ],
+        [
+          153,
+          146
+        ],
+        [
+          155,
+          154
+        ],
+        [
+          143,
+          153
+        ],
+        [
+          141,
+          158
+        ],
+        [
+          155,
+          164
+        ],
+        [
+          155,
+          179
+        ],
+        [
+          98,
+          179
+        ],
+        [
+          99,
+          164
+        ],
+        [
+          119,
+          150
+        ],
+        [
+          121,
+          145
+        ],
+        [
+          110,
+          139
+        ]
+      ]
+    },
+    {
+      "cell": 1,
+      "topY": 27,
+      "bottomY": 249,
+      "boundsInclusive": [
+        62,
+        27,
+        229,
+        249
+      ],
+      "hipMedianX": 128.0,
+      "chinXY": [
+        152,
+        85
+      ],
+      "headHeightPx": 58,
+      "stridePx": -6,
+      "toeSpanPx": 41,
+      "frontToe": [
+        163,
+        245
+      ],
+      "rearToe": [
+        122,
+        232
+      ],
+      "frontHeel": [
+        116,
+        245
+      ],
+      "halfCycleSupport": "right",
+      "supportToe": [
+        163,
+        245
+      ],
+      "oppositeToe": [
+        122,
+        232
+      ],
+      "airborne": false,
+      "torsoOnlyMedianX": 132.0,
+      "torsoPolygonXY": [
+        [
+          110,
+          126
+        ],
+        [
+          150,
+          126
+        ],
+        [
+          155,
+          146
+        ],
+        [
+          157,
+          154
+        ],
+        [
+          145,
+          153
+        ],
+        [
+          143,
+          158
+        ],
+        [
+          156,
+          164
+        ],
+        [
+          156,
+          179
+        ],
+        [
+          102,
+          179
+        ],
+        [
+          103,
+          164
+        ],
+        [
+          120,
+          150
+        ],
+        [
+          122,
+          145
+        ],
+        [
+          111,
+          139
+        ]
+      ]
+    },
+    {
+      "cell": 2,
+      "topY": 24,
+      "bottomY": 249,
+      "boundsInclusive": [
+        56,
+        24,
+        230,
+        249
+      ],
+      "hipMedianX": 128.0,
+      "chinXY": [
+        152,
+        82
+      ],
+      "headHeightPx": 58,
+      "stridePx": -26,
+      "toeSpanPx": 20,
+      "frontToe": [
+        144,
+        245
+      ],
+      "rearToe": [
+        124,
+        222
+      ],
+      "frontHeel": [
+        98,
+        245
+      ],
+      "halfCycleSupport": "right",
+      "supportToe": [
+        144,
+        245
+      ],
+      "oppositeToe": [
+        124,
+        222
+      ],
+      "airborne": false,
+      "torsoOnlyMedianX": 130.0,
+      "torsoPolygonXY": [
+        [
+          108,
+          126
+        ],
+        [
+          147,
+          126
+        ],
+        [
+          152,
+          146
+        ],
+        [
+          154,
+          154
+        ],
+        [
+          142,
+          153
+        ],
+        [
+          140,
+          158
+        ],
+        [
+          156,
+          164
+        ],
+        [
+          156,
+          179
+        ],
+        [
+          100,
+          179
+        ],
+        [
+          101,
+          164
+        ],
+        [
+          118,
+          150
+        ],
+        [
+          120,
+          145
+        ],
+        [
+          109,
+          139
+        ]
+      ]
+    },
+    {
+      "cell": 3,
+      "topY": 26,
+      "bottomY": 249,
+      "boundsInclusive": [
+        60,
+        26,
+        229,
+        249
+      ],
+      "hipMedianX": 128.0,
+      "chinXY": [
+        152,
+        84
+      ],
+      "headHeightPx": 58,
+      "stridePx": 10,
+      "toeSpanPx": 48,
+      "frontToe": [
+        173,
+        205
+      ],
+      "rearToe": [
+        125,
+        245
+      ],
+      "frontHeel": [
+        135,
+        230
+      ],
+      "halfCycleSupport": "right",
+      "supportToe": [
+        125,
+        245
+      ],
+      "oppositeToe": [
+        173,
+        205
+      ],
+      "airborne": false,
+      "torsoOnlyMedianX": 131.0,
+      "torsoPolygonXY": [
+        [
+          109,
+          126
+        ],
+        [
+          149,
+          126
+        ],
+        [
+          154,
+          146
+        ],
+        [
+          156,
+          154
+        ],
+        [
+          144,
+          153
+        ],
+        [
+          142,
+          158
+        ],
+        [
+          158,
+          164
+        ],
+        [
+          158,
+          179
+        ],
+        [
+          98,
+          179
+        ],
+        [
+          99,
+          164
+        ],
+        [
+          119,
+          150
+        ],
+        [
+          121,
+          145
+        ],
+        [
+          110,
+          139
+        ]
+      ]
+    },
+    {
+      "cell": 4,
+      "topY": 28,
+      "bottomY": 249,
+      "boundsInclusive": [
+        58,
+        28,
+        227,
+        249
+      ],
+      "hipMedianX": 128.0,
+      "chinXY": [
+        152,
+        86
+      ],
+      "headHeightPx": 58,
+      "stridePx": 31,
+      "toeSpanPx": 74,
+      "frontToe": [
+        181,
+        223
+      ],
+      "rearToe": [
+        107,
+        247
+      ],
+      "frontHeel": [
+        138,
+        245
+      ],
+      "halfCycleSupport": "left",
+      "supportToe": [
+        181,
+        223
+      ],
+      "oppositeToe": [
+        107,
+        247
+      ],
+      "airborne": false,
+      "torsoOnlyMedianX": 130.0,
+      "torsoPolygonXY": [
+        [
+          109,
+          126
+        ],
+        [
+          146,
+          126
+        ],
+        [
+          151,
+          146
+        ],
+        [
+          153,
+          154
+        ],
+        [
+          141,
+          153
+        ],
+        [
+          139,
+          158
+        ],
+        [
+          151,
+          164
+        ],
+        [
+          151,
+          179
+        ],
+        [
+          104,
+          179
+        ],
+        [
+          105,
+          164
+        ],
+        [
+          119,
+          150
+        ],
+        [
+          121,
+          145
+        ],
+        [
+          110,
+          139
+        ]
+      ]
+    },
+    {
+      "cell": 5,
+      "topY": 27,
+      "bottomY": 249,
+      "boundsInclusive": [
+        63,
+        27,
+        228,
+        249
+      ],
+      "hipMedianX": 128.0,
+      "chinXY": [
+        152,
+        85
+      ],
+      "headHeightPx": 58,
+      "stridePx": -7,
+      "toeSpanPx": 41,
+      "frontToe": [
+        163,
+        244
+      ],
+      "rearToe": [
+        122,
+        231
+      ],
+      "frontHeel": [
+        115,
+        244
+      ],
+      "halfCycleSupport": "left",
+      "supportToe": [
+        163,
+        244
+      ],
+      "oppositeToe": [
+        122,
+        231
+      ],
+      "airborne": false,
+      "torsoOnlyMedianX": 130.0,
+      "torsoPolygonXY": [
+        [
+          107,
+          126
+        ],
+        [
+          148,
+          126
+        ],
+        [
+          153,
+          146
+        ],
+        [
+          155,
+          154
+        ],
+        [
+          143,
+          153
+        ],
+        [
+          141,
+          158
+        ],
+        [
+          151,
+          164
+        ],
+        [
+          151,
+          179
+        ],
+        [
+          103,
+          179
+        ],
+        [
+          104,
+          164
+        ],
+        [
+          117,
+          150
+        ],
+        [
+          119,
+          145
+        ],
+        [
+          108,
+          139
+        ]
+      ]
+    },
+    {
+      "cell": 6,
+      "topY": 24,
+      "bottomY": 249,
+      "boundsInclusive": [
+        56,
+        24,
+        231,
+        249
+      ],
+      "hipMedianX": 128.0,
+      "chinXY": [
+        152,
+        82
+      ],
+      "headHeightPx": 58,
+      "stridePx": -29,
+      "toeSpanPx": 20,
+      "frontToe": [
+        144,
+        246
+      ],
+      "rearToe": [
+        124,
+        228
+      ],
+      "frontHeel": [
+        95,
+        244
+      ],
+      "halfCycleSupport": "left",
+      "supportToe": [
+        144,
+        246
+      ],
+      "oppositeToe": [
+        124,
+        228
+      ],
+      "airborne": false,
+      "torsoOnlyMedianX": 130.0,
+      "torsoPolygonXY": [
+        [
+          108,
+          126
+        ],
+        [
+          147,
+          126
+        ],
+        [
+          152,
+          146
+        ],
+        [
+          154,
+          154
+        ],
+        [
+          142,
+          153
+        ],
+        [
+          140,
+          158
+        ],
+        [
+          156,
+          164
+        ],
+        [
+          156,
+          179
+        ],
+        [
+          102,
+          179
+        ],
+        [
+          103,
+          164
+        ],
+        [
+          118,
+          150
+        ],
+        [
+          120,
+          145
+        ],
+        [
+          109,
+          139
+        ]
+      ]
+    },
+    {
+      "cell": 7,
+      "topY": 26,
+      "bottomY": 249,
+      "boundsInclusive": [
+        62,
+        26,
+        229,
+        249
+      ],
+      "hipMedianX": 128.0,
+      "chinXY": [
+        152,
+        84
+      ],
+      "headHeightPx": 58,
+      "stridePx": 7,
+      "toeSpanPx": 47,
+      "frontToe": [
+        172,
+        212
+      ],
+      "rearToe": [
+        125,
+        245
+      ],
+      "frontHeel": [
+        132,
+        234
+      ],
+      "halfCycleSupport": "left",
+      "supportToe": [
+        125,
+        245
+      ],
+      "oppositeToe": [
+        172,
+        212
+      ],
+      "airborne": false,
+      "torsoOnlyMedianX": 131.0,
+      "torsoPolygonXY": [
+        [
+          109,
+          126
+        ],
+        [
+          149,
+          126
+        ],
+        [
+          154,
+          146
+        ],
+        [
+          156,
+          154
+        ],
+        [
+          144,
+          153
+        ],
+        [
+          142,
+          158
+        ],
+        [
+          153,
+          164
+        ],
+        [
+          153,
+          179
+        ],
+        [
+          102,
+          179
+        ],
+        [
+          103,
+          164
+        ],
+        [
+          119,
+          150
+        ],
+        [
+          121,
+          145
+        ],
+        [
+          110,
+          139
+        ]
+      ]
+    }
+  ],
+  "notes": "セル左上を原点とした原画px。alpha>0を全て含む。腰は頭頂を起点に絵の高さ48～66%の帯のx中央値。足は原画上の解剖学的位置を登録し、変形後の輪郭で測定。前後の靴が重なる通過姿勢では歩幅が負になる。",
+  "minimumMargin": 6,
+  "hipRange": [
+    128.0,
+    128.0
+  ],
+  "headRange": [
+    58,
+    58
+  ],
+  "walkCrown": [
+    28,
+    27,
+    24,
+    26,
+    28,
+    27,
+    24,
+    26
+  ],
+  "runCrown": [],
+  "walkSupportTravel": [
+    [
+      19,
+      19,
+      19,
+      18
+    ],
+    [
+      18,
+      19,
+      19,
+      18
+    ]
+  ],
+  "runSupportTravel": [],
+  "pairedPhases": [
+    {
+      "cells": [
+        0,
+        4
+      ],
+      "footOpeningDiff": 1,
+      "crownDiff": 0
+    },
+    {
+      "cells": [
+        1,
+        5
+      ],
+      "footOpeningDiff": 0,
+      "crownDiff": 0
+    },
+    {
+      "cells": [
+        2,
+        6
+      ],
+      "footOpeningDiff": 0,
+      "crownDiff": 0
+    },
+    {
+      "cells": [
+        3,
+        7
+      ],
+      "footOpeningDiff": 1,
+      "crownDiff": 0
+    }
+  ],
+  "playback": {
+    "walkFramesPerCel": 12,
+    "runFramesPerCel": null,
+    "walk": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      0
+    ],
+    "run": [],
+    "verified": true
+  },
+  "checks": [
+    {
+      "number": 1,
+      "item": "format / unused cells / alpha",
+      "pass": true
+    },
+    {
+      "number": 2,
+      "item": "cell margins",
+      "pass": true
+    },
+    {
+      "number": 3,
+      "item": "single 4-connected silhouette",
+      "pass": true
+    },
+    {
+      "number": 4,
+      "item": "ground and flight",
+      "pass": true
+    },
+    {
+      "number": 5,
+      "item": "pelvis median",
+      "pass": true
+    },
+    {
+      "number": 6,
+      "item": "crown range",
+      "pass": true
+    },
+    {
+      "number": 7,
+      "item": "toe spacing",
+      "pass": true
+    },
+    {
+      "number": 8,
+      "item": "toe travel",
+      "pass": true
+    },
+    {
+      "number": 9,
+      "item": "paired half cycles",
+      "pass": true
+    },
+    {
+      "number": 10,
+      "item": "head size",
+      "pass": true
+    },
+    {
+      "number": 11,
+      "item": "playback and alternating leg order",
+      "pass": true
+    },
+    {
+      "number": 12,
+      "item": "idle reference comparison",
+      "pass": true
+    }
+  ]
+}

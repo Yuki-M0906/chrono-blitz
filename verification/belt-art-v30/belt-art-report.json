@@ -1,7 +1,7 @@
 {
-  "version": "3.20.2",
+  "version": "3.22.0",
   "loaded": {
-    "images": 69,
+    "images": 77,
     "districts": 5,
     "factory": 5,
     "monsterCells": 24,
@@ -52,6 +52,14 @@
       {
         "id": "maw-flame",
         "ratio": 0.707525889078776
+      },
+      {
+        "id": "voss-walk",
+        "ratio": 0.9087886810302734
+      },
+      {
+        "id": "maw-walk",
+        "ratio": 0.8687648773193359
       },
       {
         "id": "beach-coral",
@@ -106,6 +114,30 @@
         "ratio": 0.6480979919433594
       },
       {
+        "id": "beach-coral-walk",
+        "ratio": 0.8812026977539062
+      },
+      {
+        "id": "beach-azure-walk",
+        "ratio": 0.8704535166422526
+      },
+      {
+        "id": "beach-pearl-walk",
+        "ratio": 0.8768259684244791
+      },
+      {
+        "id": "beach-luka-walk",
+        "ratio": 0.8804295857747396
+      },
+      {
+        "id": "beach-misha-walk",
+        "ratio": 0.8811346689860026
+      },
+      {
+        "id": "beach-warlord-walk",
+        "ratio": 0.9187895456949869
+      },
+      {
         "id": "dash-kagura",
         "ratio": 0.6457227071126302
       },
@@ -142,7 +174,7 @@
     "randomCalls": 0,
     "fallback": true,
     "bossStates": true,
-    "meanRenderMs": 0.2625
+    "meanRenderMs": 0.2725000003973643
   },
   "browserErrors": []
 }

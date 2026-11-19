@@ -1,0 +1,87 @@
+{
+  "character": "volt",
+  "brief": "assets/sprites/LOCOMOTION-ART-BRIEF.md",
+  "reference": "assets/sprites/design-v33/volt.png — cell 0",
+  "generator": "OpenAI ImageGen",
+  "transparent_background": true,
+  "generations": [
+    {
+      "id": "walk",
+      "references": [
+        "idle",
+        "walk pose guide"
+      ],
+      "final_cells": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "prompt": "Production animation cels for the exact anime fighter in reference 1 (VOLT): spiky golden blond, cyan headband with two tails, sleeveless open dark navy hooded vest with white shoulder panels, naked abs, black fingerless gloves, navy tapered cargo pants cyan piping white knee panels and white hi-tops with turquoise sole trim. SAME face, proportions, line weight and cel shading. Reference 2 is anatomical timing ONLY, copy the leg choreography and layout of all EIGHT stick figures. Orange represents the foreground RIGHT arm/leg, gray-blue the far LEFT. Do not import guide colors. Frame layout 4 columns by 2 rows, full body at same scale, always facing screen RIGHT, same slight three-quarter side view. ONE continuous WALK cycle, restrained defensive walking, hands kept in a light guard. First row: right heel lands ahead, right foot flattens and other leg peels up, right leg directly under hip supporting while bent LEFT knee passes, left leg swings forward over right toe off. Second row repeat the four phases with opposite limbs in front of camera. Both passing frames must have knees overlapping, one sneaker above the other. Feet never move forward together. Short stride, at heel contact distance between front heel and rear toe 40% of standing height. Pelvis directly above center in every tile, head almost level, continuity from last to first pose. Clean sharp identical athletic silhouette, clothes move slightly and two short cyan ribbons trail behind. Transparent background, isolated figures with generous gutters, no floor, shadow, motion marks, text, diagram or grid. Exactly eight total complete figures; every shoe, ribbon and hair tip visible."
+    },
+    {
+      "id": "run",
+      "references": [
+        "idle",
+        "walk",
+        "run pose guide"
+      ],
+      "final_cells": [
+        15,
+        18
+      ],
+      "prompt": "A clean animation production sheet of exactly EIGHT FULL BODY RUNNING CELS in 4 columns x 2 rows. Reference 1 defines VOLT's identity, detailed muscular bare arms and eight-head-tall adult proportions, spiky blond hair, cyan headband, navy sleeveless vest white epaulets, black fingerless gloves, navy cargo pants pale fitted knees, white high top sneakers with cyan trim; reference 2 is his walk, match scale and clothing. Reference 3 gives the precise POSE OF EACH LIMB in each cell for the run (orange = near/right leg and arm, blue-gray = far/left, don't use those colors in costume). RIGHT-facing in profile, consistent angle. Crucial: active, coherent RUN cycle, opposing arm/leg swing, 12-degree forward lean, elbows bent, hands alternating from behind the HIP to above CHEST. The near leg with its cargo pocket must travel forward in TOP LEFT and backward in BOTTOM LEFT. Columns show 1 long-stride contact: front foot landing EXTENDED toward screen right, rear leg extended toward screen LEFT nearly straight, wide gap (2/3 of standing height between front heel and rear toe), 2 weight bearing, recovering rear heel lifts and folds, 3 push off with opposite knee driving up, 4 opposite foot reaching forward in midair, trailing foot off floor. Row TWO follows precisely same phases but opposite legs and arms; keep foreground limb lighter and rear limb slightly darker for clarity. Match all head and shoe sizes. Lead foot and front arm on anatomically opposite sides. Calm serious face. Hair and headband stream backwards. Identical well separated figures at consistent scale, same hip axis, complete hair and both shoes visible, generous outer margins new cels especially the head, transparent background, no floor no shadow no effect no writing."
+    },
+    {
+      "id": "walk-right-support",
+      "references": [
+        "idle",
+        "walk"
+      ],
+      "final_cells": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "prompt": "Correction sheet: exactly FOUR full body VOLT cels, a SINGLE HORIZONTAL ROW of FOUR. Use reference 1 for identity and reference 2 exclusively for character model and pose rhythm. All figures face screen RIGHT. Depict the OPPOSITE half of the cycle from the top row of reference 2. ABSOLUTE PRIORITY: in frame ONE the NEAR thigh (the bright thigh with the large rectangular cargo pocket) extends diagonally FORWARD towards the right edge, the POCKET is on the right-going thigh, and leads all the way to the FRONT shoe; the dark FAR thigh and far shoe extend behind the butt toward screen LEFT. The near muscular bare arm is swung BACKWARD in frame 1, behind waist not in front of chest, far hand forward. Frame TWO shows the same near pocket leg bearing weight under the body, darker far foot lifted behind. Frame THREE shows the near pocket leg staying straight down or diagonally BACK under body onto ground; dark far knee visibly raised and passing forward, NOT the pocket knee. Frame FOUR the near pocket leg clearly sweeps behind to the LEFT, far knee and shoe now prominently raised forward to right. Near arm swings forward. Maintain identical head, scale, hairstyle, light and cel style as the references in all four. Navy sleeveless hooded vest with short WHITE shoulder panels, blue headband tails, dark cargo pants cyan lines and white knees, white cyan-edged sneakers, fingerless gloves. Feet always completely visible, generous transparent margins even at frame edges. No floor or FX or text. Showing a sequential shift of weight with recognizable foreground limb is more important than making individually flashy illustrations. WALKING upright in a compact controlled defensive gait. Heel strike, loading, passing beneath hips, swing. Grounded near foot through frames 1-3. Small changes in vertical height, hands loosely held up in guard."
+    },
+    {
+      "id": "run-right-support",
+      "references": [
+        "idle",
+        "run"
+      ],
+      "final_cells": [
+        13,
+        14,
+        19
+      ],
+      "prompt": "Correction sheet: exactly FOUR full body VOLT cels, a SINGLE HORIZONTAL ROW of FOUR. Use reference 1 for identity and reference 2 exclusively for character model and pose rhythm. All figures face screen RIGHT. Depict the OPPOSITE half of the cycle from the top row of reference 2. ABSOLUTE PRIORITY: in frame ONE the NEAR thigh (the bright thigh with the large rectangular cargo pocket) extends diagonally FORWARD towards the right edge, the POCKET is on the right-going thigh, and leads all the way to the FRONT shoe; the dark FAR thigh and far shoe extend behind the butt toward screen LEFT. The near muscular bare arm is swung BACKWARD in frame 1, behind waist not in front of chest, far hand forward. Frame TWO shows the same near pocket leg bearing weight under the body, darker far foot lifted behind. Frame THREE shows the near pocket leg staying straight down or diagonally BACK under body onto ground; dark far knee visibly raised and passing forward, NOT the pocket knee. Frame FOUR the near pocket leg clearly sweeps behind to the LEFT, far knee and shoe now prominently raised forward to right. Near arm swings forward. Maintain identical head, scale, hairstyle, light and cel style as the references in all four. Navy sleeveless hooded vest with short WHITE shoulder panels, blue headband tails, dark cargo pants cyan lines and white knees, white cyan-edged sneakers, fingerless gloves. Feet always completely visible, generous transparent margins even at frame edges. No floor or FX or text. Showing a sequential shift of weight with recognizable foreground limb is more important than making individually flashy illustrations. RUNNING forward with elbows deeply bent and torso leaning forward. Long forward leg and nearly extended rear leg at first contact. Knee up and back toe push in frame 3. Frame 4 is briefly AIRBORNE."
+    },
+    {
+      "id": "run-left-support",
+      "references": [
+        "idle",
+        "run"
+      ],
+      "final_cells": [
+        17
+      ],
+      "prompt": "Create two specific consecutive-direction sprint animation poses of reference VOLT, a polished anime arcade fighter. Two full-body characters side by side with ample separation and margins on actual transparent background. Face RIGHT in BOTH, same lens, body proportions, blonde spikes, blue ribbons, navy sleeveless vest, right-thigh external cargo pocket, cyan-trim sneakers. Left image is running AIRBORNE toward screen right: NEAR (pocket) THIGH EXTENDS BACKWARD TO SCREEN LEFT, its knee bent and sneaker trailing in the air, while the visually FAR thigh with NO pocket is prominently thrust toward screen RIGHT and lower leg reaching forward to land, NEAR bent ARM punches forward, far arm swings back. Right image is the immediately AFTER-landing cushioning pose on the same plain FAR leg: left/no-pocket thigh in front, bent weight-bearing far leg under chest with sneaker planted on ground, the near RIGHT thigh with its visible cargo pocket is still trailing BEHIND toward screen left, knee flexed and lifted white sneaker kicked up behind the body. Right/near arm is still forward. Make the depth unmistakable: both images the thigh with the pocket is to the LEFT of the crotch and the leg without pocket is to the RIGHT. Foreshorten chest 3/4 facing screen right, tilt torse forward modestly, face with determined closed mouth. Loose pants, double ribbons stretch backwards to the left. Use the second reference only for style/character scale. No text, no ground, no shadow."
+    },
+    {
+      "id": "run-contacts",
+      "references": [
+        "idle",
+        "run"
+      ],
+      "final_cells": [
+        12,
+        16
+      ],
+      "prompt": "Make 2 matching transparent full-body animation drawings of the attached anime fighter. These are two opposite-foot FOOT STRIKE key poses of the same RIGHT-FACING SPRINT. Keep the character design, turned up blonde hair, cyan bandana, navy vest/cargo trousers and white detailed sneakers. Use the first image as the design reference, the second for cel style only. Two figures side by side, widely separated. Both in SAME grounded split stride, matching torso leaning 12 degrees, face looking to the RIGHT. Critically both land BALL OF THE FRONT FOOT FIRST: front shoe at far right is nearly flat and slightly tipping TOES DOWN, heel raised; front shin slopes forward from knee. Long trailing leg to the left, its heel has lifted, trailing sneaker points down and toward the ground. No shoe toes should lift upwards. LEFT cel: R runner leg with the visible large cargo pocket on outer thigh leading ALL THE WAY FORWARD to screen right; far left leg behind. Near/right arm back on far LEFT of his rib cage, bent far arm forward. RIGHT cel: large-pocket RIGHT thigh is the TRAILING leg stretching backward to far LEFT, pocketless far left thigh extended forward to the RIGHT landing on the ball of the foot. Near arm bent and swinging FORWARD, far arm behind. Closely spaced parallel twin cyan ribbons stream horizontally back LEFT. No writing, captions, shadows, ground or scenery, transparent. Athletic build and line finish exactly as reference."
+    }
+  ],
+  "registration": "生成した原画から採用コマを抽出し、頭頂・あご・腰・足裏・歩幅を原画ピクセル単位で位置合わせ。縮小時に輪郭をアンチエイリアス処理し、1コマ1人物に整えて6列4行に配置。"
+}

@@ -2,8 +2,159 @@
 <!--
 ================================================================================
   CHRONO BLITZ: ARCADE COLLECTION - 技術仕様書 兼 開発引き継ぎドキュメント
-  Version: 3.20.2 (Even Stride)
+  Version: 3.22.0 (Deadline Express)
 ================================================================================
+
+【v3.22.0 更新・引き継ぎ / 2026-11-19 / Claude Fable 5.2 (Claude Code)】
+  依頼内容: ステージ 4 の地下鉄イベント（入線〜乗車、降車）の動きが不自然。迫力は保ちつつ物理的に理にかなった見やすい動きにし、
+            迫力のある音を付ける。降車イベントには急停車の演出を入れる。
+  復元    : backups/v3.21.0/（変更直前の HTML、街エンジン engine.js、街描画 art.js、音エンジン audio-engine.js（今回は未変更）、
+            地下鉄の検査、README、index.html）。
+  変更範囲: ベルト側ステージ 4 の区画 1→2（入線・乗車・発車）と区画 3→4（急停車・降車）の演出と音だけ。戦闘、当たり判定、
+            敵、得点、ほかのステージ、対戦格闘 OVERDRIVE は変更なし。配布パックは変更なし（HTML のみ +15KB）。
+            v3.21.0（歩行・走行シート）は未コミットのまま、その上に積んでいる。
+
+  [EVENT-220] 地下鉄イベントを物理に沿った動きへ作り直し
+    症状   : (1) 電車が画面外で静止した状態から加速し、中間で最速になって減速していた（位置を 5 次の補間で動かしていたため）。
+             (2) 入線中の 3.3 秒間、画面全体が最大 9px、毎フレーム不規則に揺れ続けた。
+             (3) 主人公の移動も位置の補間で、歩く速さが最大 1.5 倍に伸び縮みした。電車に反応せず歩き続けた。
+             (4) 停車の直後に間を置かず扉が開き、扉が閉まるとすぐ暗転した（発車の場面が無い）。乗車は主人公を半透明にして消していた。
+             (5) 降車は最初の約 2 秒、主人公が棒立ちで、変化は窓の外の光の減速と薄い赤の点滅だけだった。
+    修正   : NeonUprising.beginMetroEvent ほか（assets/belt/engine.js）。イベントの各拍のフレーム番号は開始時に決める
+             （主人公の歩く速さだけに依存）。総フレーム数 e.total は従来どおり開始時に確定する。
+             入線（arrival）: 予兆 50F（トンネル壁に前照灯の光）→ 進入 170F。電車は 21.9px/F で入り、一定の減速度で扉の位置に
+               止まる（位置 = 停止位置 + 距離 × (1-u)²）。停止の瞬間に車体が最大 4px 前後に揺り戻す → 空気音 → チャイム →
+               扉が 30F でなめらかに開く → 主人公が自分の歩く速さで乗り込む → 扉が閉まる → 一定の加速度（0.22px/F²）で発車 → 暗転。
+               長さは 7.6 秒 → 約 9.5 秒（ヴォルト 568F、タイタン 590F）。
+             主人公（metroStep）: 待つ位置（扉の 150px 手前、黄色い線の内側）まで、遠ければ走り（走行 8 コマ）、260px 以内は歩く。
+               着いたら電車の来る方を向いて待つ。乗車後は drawMetroTrain が扉の開口の内側に描き、閉まる扉に隠れ、発車する
+               電車と一緒に動く。
+             画面の揺れ（metroShake）: 電車の速さに比例（最大 3px）。止まれば 0。
+             風: 電車の速さに応じてホームの埃が流れる。前照灯は車両の先頭に光と光線を足した。
+             降車（stop）: 警報 → 24F 目から急ブレーキ 150F（速さは直線的に 1→0。metroBrakeSpeed / metroTravel）。
+               電車は左へ走っている（車内の窓の光が右へ流れる）ので、固定されていない物は左へ持っていかれる:
+               カメラ最大 16px、主人公 約 80px（のけぞり 14F → 後ずさり → しゃがんで踏ん張る）、樽などの小物 約 100px。
+               窓の下に火花の光、車内灯のちらつき。停止時に縦 6px の揺り戻し → 空気音 → 34F 後に主人公が歩く速さで出口へ。
+               長さは 5.4 秒 → 約 6.3〜7.2 秒。
+             BeltArt.drawMetroStreet（art.js）: 窓の外の光は s.metroTravel() から描く。ブレーキ中は火花の光を足す。
+             イベント中は「GO ➜」の表示を出さない。
+  [SE-221] 地下鉄の効果音（合成）
+    内容   : MetroSound（assets/belt/engine.js）。Web Audio のその場合成で、音声ファイルは追加していない。出力は効果音の音量
+             （sound.seGain）とリミッターを通る。11 種: rumble（走行の低音）、horn（警笛）、clack（レールの継ぎ目。電車が 230px
+             進むごとに 2 連）、screech（ブレーキのきしみ。速さとともに音程が下がる）、hiss（空気）、chime（2 音）、slide（扉）、
+             thunk（衝撃）、motor（発車の加速音）、alarm、spark。鳴らすフレームは updateMetroEvent に固定で書いてある。
+             音声コンテキストが動いていないとき（最初のキー入力前、検査環境）は鳴らさない。呼び出しは MetroSound.log に残る。
+    測定   : 実際の音声コンテキストで 11 種すべてを鳴らし、効果音バス上の波形を測定。例外なし、無音時 0、単独の最大は thunk の
+             0.61（フルスケール比）、入線でいちばん重なる瞬間 0.57、急ブレーキの瞬間 0.89。1.0 を超えない。
+    残り   : 聴感の確認はしていない（波形の大きさだけ）。音色や音量の好みは MetroSound.level（全体）と各関数の数値で調整する。
+             ポーズ中も、すでに鳴り始めた長い音（走行音、きしみ）は鳴り終わるまで止まらない。
+  検証     : tools/verify-metro-v3110.cjs を新しい動きに合わせて書き直した（3737 項目）: 進入の速さ、減速度が一定、揺り戻し 4px 以内、
+             扉の開閉中は静止、発車の加速度が一定、拍の順序、主人公が走る速さを超えない・歩行中は歩く速さ、停車時に待機位置で
+             電車を向いている、乗車、揺れ 3px 以内で停車中は 0、効果音の順序、継ぎ目の音 8 回以上、急停車の速さが直線的、
+             主人公と小物が前方へ滑る、カメラ 16px 以内、出口へ歩く速さ。画面の確認はコマ撮り（入線 16 枚、降車 15 枚）。
+             検査 28 本すべて合格。
+  残り     : 主人公の「のけぞる」「踏ん張る」は既存のやられ・しゃがみの絵の流用。専用の絵は無い。
+             電車に車輪の絵は無い（ホームの縁に隠れる構図）。火花は窓の下の光だけで表している。
+             実際に遊んでの見え方と聞こえ方は未確認（コマごとの静止画、測定値、波形の大きさで確かめた）。
+
+【v3.21.0 更新・引き継ぎ / 2026-11-19 / Claude Fable 5.2 (Claude Code)】
+  依頼内容: 画像生成担当から納品されたヴォルトの歩行・走行シートを、先にゲームへ組み込んで動きを確かめる（残り 5 人は確認後）。
+  復元    : backups/v3.20.2/（変更直前の HTML、街エンジン、街描画、共有描画、ビルド、変更した検査 5 本）。
+  変更範囲: ベルト側のヴォルト（主人公と、ヴォルトの絵を使う敵 RAZOR / SURGE / 地下鉄の色違い）の歩行と、主人公ヴォルトのダッシュ走行。
+            対戦格闘 OVERDRIVE、移動速度、当たり判定、AI、音は変更なし。配布パックは sprites-volt だけ変わる（+0.9MB）。
+            同じ日のうちに残り 5 人も同じ仕組みで組み込んだ（[ANIM-218]。sprites-<id> 5 パックが各 +0.5MB 前後）。
+
+  [ANIM-217] ヴォルトの歩行・走行を専用シート（8 コマ＋8 コマ）へ切り替え
+    素材   : assets/sprites/design-v33/volt-locomotion.png（1536×1024、256px×6 列。コマ 0〜7 歩行、12〜19 走行、ほかは透明）。
+             依頼書は assets/sprites/LOCOMOTION-ART-BRIEF.md、担当の測定は同じフォルダの locomotion-report.json、
+             生成プロンプトは locomotion-prompts.json。受け入れ時にコード担当も測り直した: 腰の x は全 16 コマで 128〜129、
+             歩行の足裏は全コマ同じ高さ、頭の上下は歩行 4px・走行 6px、輪郭は全コマひとつながり、未使用 8 コマは完全に透明。
+    仕組み : 1 人につき 4 枚目のシート <id>-locomotion を任意で持てるようにした（無いキャラクターは v3.20.2 のまま）。
+             - tools/build-sprites.mjs: ファイルがあるキャラクターだけ sprites-<id> パックに入れる。
+             - FighterSprites: コマ番号 72〜95 がこのシート。番号→シートの対応は suffixOf(frame) に集約（0〜23 基本、24〜47 補間、
+               48〜71 投げ、72〜95 歩行・走行）。このシートは 64px のはみ出しを取り込まず、256px のコマをそのまま使う
+               （絵がコマの内側 6px に収まっているため。隣のコマの手足を拾わない）。
+             - BeltArt.locomotion(id) / heroWalkCell(id, gait, 後退, hold) / strideHold / runCell(f) / runHold。
+               StreetActor.walkCell は heroWalkCell を呼ぶ。シートが無ければ従来の walkCell（基本 4 コマ）に落ちる。
+             - BeltArt.heroNudge: このシートは腰を待機の腰に合わせるだけで、足裏の高さは歩行コマ 0 を基準に全コマ同じ量だけ動かす
+               （走行の空中コマ 15・19 を床へ引き下ろさないため）。
+             - BeltArt.drawDash: STREET_DASH の走行ループを、シートがあれば走行 8 コマから描く。ダッシュ攻撃（dash-<id> の 8〜23）は従来どおり。
+             - StreetPalettes（街の色違い敵）と metroMasks（地下鉄の色違い）も 4 枚目を扱う。
+    速さ   : 歩行は 1 コマ 6 フレーム（1 歩 24 フレーム、1 秒に 2.5 歩）、走行は 1 コマ 5 フレーム（1 歩 20 フレーム）。
+             依頼書では「1 歩 16 フレーム / 12 フレーム」と書いていたが、組み込んで測ると接地した足が後ろへ滑った
+             （接地足の先端が 3 コマで 40px 後退）。原因は依頼書の歩幅の決め方: 「前足のかかと〜後ろ足のつま先」を 1 歩の距離と
+             していたが、足が実際に地面の上を動く量はそれに靴 1 足ぶんが加わる（ヴォルトで約 140px。指定の 95px ではない）。
+             絵は変えず、再生の速さを絵に合わせた。同じ測定で接地足の先端のずれは 3 コマで 12px（歩行）、15px（走行）。
+             速さを変えるときは、絵の足運び（接地足が 1 コマで後ろへ動く量。ヴォルトは歩行 約 33px、走行 約 69px、原画 px）と
+             「移動速度 × hold ÷ 表示倍率」が合うようにする。
+    訂正   : v3.20.2 [ANIM-216] の「残り」に、走行は [39, 16, 40, 16] と書いたのは誤り。主人公のダッシュは dash-<id> シートの
+             コマ 0〜7 を 3 フレームずつ出していた（[39, 16, 40, 16] は共有描画の DASH_F で、ベルト側の主人公では使われない）。
+             その 8 コマはコマ 0 が立ち姿で、腰の位置が 34px 振れていた。ヴォルトは今回の走行 8 コマに置き換わった。
+    検証   : 実際にキーを押して歩行 96 フレーム・歩いて止まる 120 フレーム・ダッシュ 60 フレームを撮り、1 フレームずつ輪郭を測定。
+             歩行: 頭の上下 3px、足裏の高さ一定、腰のずれ 1px。ダッシュ: 腰の振れ 25px → 1px。ページエラーなし。
+             修正前後を並べた比較: verification/volt-walk-compare.gif、volt-stopgo-compare.gif、volt-dash-compare.gif。
+             tools/verify-motion-v3151.cjs にシートの検査を追加（16 コマが埋まり未使用コマが空、腰と足裏が一直線、
+             歩行と走行のコマ順、空中コマを引き下ろさない、色違い敵と地下鉄マスクが 4 枚目を持つ）。70 項目。
+             枚数を直書きしていた検査 4 本（sprites / hit / anime / throws）は、4 枚目を数に含めない・ファイルから数える形へ。
+    依頼書 : 主人公の残り 5 人は assets/sprites/LOCOMOTION-ART-BRIEF.md（第 2 版）。専用の絵を持つ敵 8 体（CORAL / AZURE / PEARL /
+             LUKA / MISHA / IRON VOSS / IRON SHOGUN / FURNACE MAW）は assets/belt/ENEMY-LOCOMOTION-ART-BRIEF.md。
+             どちらも納品・組み込み済み（[ANIM-218] [ANIM-219]）。
+    残り   : 残り 5 人は [ANIM-218] で組み込み済み。ヴォルトの絵は、歩行の前半と後半で足の開きが少し違う（コマ 3 と 7 で 87px と 69px）。接地足の動く量もコマごとに均一ではない
+             （55 / 34 / 50px）ため、足の滑りは 0 にはならない。
+             対戦格闘側は従来の歩行のまま。色違いの敵は歩く速さが違うが、位相は移動距離から決まるので足運びは同じ割合で合う。
+
+  [ANIM-218] 残り 5 人（神楽・フレイヤ・タイタン・綾女・セリーヌ）の歩行・走行シートを組み込み
+    素材   : assets/sprites/design-v33/<id>-locomotion.png（5 枚）。担当の測定は locomotion-report-<id>.json、プロンプトは
+             locomotion-prompts-<id>.json。コード担当の測り直し: 5 枚とも 1536×1024、腰の x は全 16 コマで 127〜128、足裏は
+             歩行の全コマ y=249（走行の空中コマ 15・19 は 244）、輪郭ひとつながり、未使用 8 コマは透明、前半と後半は対称。
+             接地足が 1 コマで動く量（原画 px、歩行 / 走行）: 神楽 29 / 55、フレイヤ 26 / 47、タイタン 24 / 38、綾女 33 / 60、
+             セリーヌ 29 / 53（依頼書第 2 版の指定どおり）。
+    変更   : コードの変更なし（[ANIM-217] の仕組みがファイルの有無で働く）。ビルドし直しただけ。strideHold 6（タイタン 7）、
+             runHold 5 のまま。絵の足運び × 表示倍率と、移動速度 × hold の差は 1 コマあたり歩行 1.3〜2.8px、走行 2.3〜4.7px
+             （ヴォルトと同程度。hold は整数なのでこれ以上は合わせられない）。
+    検証   : 5 人それぞれ実際にキーを押して歩行 96・歩いて止まる 120・ダッシュ 60 フレームを測定。頭の上下は歩行 3〜4px、
+             足裏の高さの振れ 1px、腰のずれ 1〜2px、ページエラーなし。検査 28 本すべて合格（verify-motion-v3151 は 110 項目）。
+             同検査の「歩行の足裏が一直線」は許容を 1px → 2px にした（タイタンの靴底の縁のぼかしで、不透明度 170 超の最下端が
+             247〜249 に分かれるため。不透明度 0 超では全コマ 249）。
+    残り   : 立ち姿から歩行へ切り替わるとき頭の高さが下がる（画面 px。タイタン 10、神楽・セリーヌ 5〜7、ほか 4〜5）。立ち姿は
+             斜め正面、歩行は真横の絵なので、切り替わりで体の向きも変わる。つなぎの絵は無い。
+
+  [ANIM-219] 専用の絵を持つ敵 8 体の歩行を 8 コマのシートへ切り替え（海辺の 5 体は小走り 8 コマも）
+    素材   : assets/belt/art/locomotion-v3210/<名前>.png（coral / azure / pearl / luka / misha / voss / warlord / maw）と、
+             担当の <名前>-report.json / <名前>-prompts.json。依頼書は assets/belt/ENEMY-LOCOMOTION-ART-BRIEF.md。
+             コード担当の測り直し: 8 枚とも 1536×1024、歩行の足裏 y=249、腰 x=128、輪郭ひとつ、未使用コマは透明。
+             ボス 3 体（voss / warlord / maw）は歩行 8 コマのみで、コマ 12〜19 は空。
+    登録   : manifest.json に 8 件（beach-<名前>-walk ×6（warlord 含む）、voss-walk、maw-walk）。パックは
+             resort-actors（海辺 5 体。29.5 → 33.3MB）、metro-actors（warlord。9.0 → 9.5MB）、belt-actors（voss・maw。47.3 → 48.5MB）。
+             belt-actors は 50MB の目安に近い。これ以上足すときはパックを分けること。
+    仕組み : - BeltArt.prepareWalkAtlas(image, left): 256px のコマを隣のはみ出しなしでそのまま 384px のコマへ写す
+               （海辺の系統は left=96、ほかは 64。既存アトラスと腰の位置をそろえるため）。
+             - BeltArt.enemyWalkHold / enemyWalkCell(name, gait, 後退, 小走り): 1 コマの長さ（gait 単位。[歩行, 小走り]）は
+               coral・azure・luka・misha [8, 7]、pearl [10, 9]、voss 10、warlord 12、maw 12。後退は逆順に再生。
+             - resortPose: <名前>-walk があれば WALK_F をそこから返す。遠くから詰めるとき（a.rush）は小走り 12〜19。
+               IRON SHOGUN（resort='warlord'）は末尾のフォールバック側で同じ切り替え。突進（9〜11）は従来の絵のまま。
+             - drawResortActor: 歩行シートは resortNudge で腰を待機の腰へ、resortWalkDrop で足裏を待機の足裏へ合わせる。
+               旧コマ番号に結び付いていた上下の補正（bob）は歩行シートでは使わない。
+             - bossFrame: IRON VOSS の WALK_F は 72 + コマ（drawBoss が 72 以上を voss-walk から描く。足裏はコマ 0 の高さで統一）。
+             - monsterPose: FURNACE MAW の WALK_F は ['maw-walk', コマ]。足裏はコマ 0 の高さで統一。立ち姿は軸より左に
+               描かれているので、歩行シートは輪郭の中心の差だけ横へずらして描く（歩き出しの横跳び 16 → 9px）。
+             - 色違い（SUNSET / LAGOON / ORCHID）は beachPalette が <名前>-walk も色替えする。読み込み時に作っておく（engine.js）。
+             シートが無い場合は v3.20.2 のコマ選択にそのまま落ちる（分岐はすべて「あれば使う」）。
+    速さ   : 実機で測ると、接地足のつま先が 1 コマで後ろへ動く量（画面 px）と、体が 1 コマで進む量（速度 × hold）は
+             coral 22 / 21.2、azure 21 / 20、pearl 19 / 18.5、luka 24 / 24、misha 21〜24 / 22.4、voss 20.5 / 20.5、
+             maw 20.5 / 20.4、warlord 25 / 24.6。小走りは coral 16.5 / 18.5、azure 17.5 / 17.5、pearl 16 / 16.6、luka 20 / 21、
+             misha 21 / 19.6。依頼書 4 章の計算値のままで合ったので調整していない。
+    検証   : 10 種（色違い 2 種を含む）を実機で歩行 200・小走り 140・後退 60 フレーム動かし、1 フレームずつ輪郭を測定。
+             頭の上下 3〜6px、足裏の振れ 0〜1px（小走りの空中コマを除く）、腰のずれ 1〜2px、ページエラーなし。
+             verify-motion-v3151 に敵の項目を追加（シートの読み込み、使うコマ・空のコマ、腰と足裏の一直線、歩行 8 コマ・
+             小走り 8 コマ、後退の逆再生、色違いの事前生成、ボス 3 体が 8 コマを一巡して描けること）。計 487 項目。
+             枚数を直書きしていた検査 3 本を修正: verify-anime（voss-walk を v3.3 の 27 枚に数えない）、verify-belt-art
+             （歩行シートは透明部分が 9 割を超えるので上限を 0.97 に）、verify-refinement-v362（モンスターの追加 3 枚を
+             名前で確認）。検査 28 本すべて合格。
+    残り   : IRON SHOGUN は歩くと頭の位置が立ち姿より 15〜20px 低い（依頼書どおり。立ち姿は斜め正面で背を伸ばした絵）。
+             MISHA は歩くと 4〜7px 高い。FURNACE MAW の歩き出しには 9px の横ずれが残る。
+             VESPER MATRIARCH と、ボスの突進・攻撃・やられの絵は変えていない。
+             復元は backups/v3.21.0-pre-enemy/（この項目の直前の HTML、art.js、engine.js、manifest.json、build-sprites.mjs）。
 
 【v3.20.2 更新・引き継ぎ / 2026-11-19 / Claude Fable 5.2 (Claude Code)】
   依頼内容: 主人公と敵の歩き方がかくかくしていて不自然。点検して修正。
@@ -782,12 +933,12 @@
       hit / chain / boss-v350 / dash の10本すべて通過。ブラウザ例外なし。
     scope-report.json: ヘッダー・生成ローダー・BELT_ENGINE以外のHTML実行部分が3.6.1と完全一致。
 
-【0. 現行構成サマリ / v3.20.2 時点 — 引き継ぐ人はまずここを読む】
+【0. 現行構成サマリ / v3.21.0 時点 — 引き継ぐ人はまずここを読む】
   ■ 配布物（v2.6.0 から 2 点セット。必ず同じフォルダに置く）
     ai_studio_code.html（約 0.7MB。コードとこの文書だけ）＋ data フォルダ（アセットパック 16 本、計 約 300MiB、最大 約 49MiB）。
     data/sprites-<キャラ>.js ×6、stages.js、voices.js、belt-backgrounds.js、belt-actors.js、belt-dash.js、resort-backgrounds.js、resort-actors.js、metro-backgrounds.js、metro-actors.js、skyhook-art.js。
     中身は data URI（共通キャラ・対戦背景のPNG 22枚、ベルト用の素材登録69件、WAV 148本）。1ファイル1行の CB_ASSETS.add("種類",{...},バイト数); 形式。
-    PNG 内訳: 共通キャラ 18 アトラス（432 姿勢）、対戦背景 4、街背景 5、工場背景 5、物体 1（8 コマ）、IRON VOSS 3（72 姿勢）、
+    PNG 内訳: 共通キャラ 18 アトラス（432 姿勢）＋歩行・走行シート 6 枚（各 16 姿勢。[ANIM-217] [ANIM-218]）、対戦背景 4、街背景 5、工場背景 5、物体 1（8 コマ）、IRON VOSS 3（72 姿勢）、
               ダッシュ 6（144 姿勢）、上昇エフェクト1（24コマ）、炎1（24コマ）、FURNACE MAW 4（96姿勢）、火炎放射1（12コマ）。
               海辺背景5・通常敵3・双子4・装飾1を追加。海辺の追加動作5枚（各24姿勢）を resort-actors に追加。v3.13.0で等身と動作の対応を合わせ、v3.14.0で同じ役割の姿勢を描き直し、v3.15.0で全姿勢が再生に載るよう歩幅と状態の対応を組み直した。地下鉄背景5・列車1・甲冑ボス1を追加。街専用の 47 枚は assets/belt/art/manifest.json が一覧（belt-backgrounds に背景 10、belt-dash にダッシュ 6、海辺背景/人物/装飾はresort-の2パック、残りは belt-actors）。
     WAV 内訳: 主人公6人×22＝132、voss / maw の登場・絶叫＝4、双子2人×3＝6、vesperの非言語音声＝6。
@@ -849,7 +1000,8 @@
     BeltArt          街専用の背景（boards / factoryBoards）・物体・ボス・怪物・上昇技・炎の描画と画像キャッシュ。
                      上昇技は通常原画の人体＋独立VFX。怪物追加姿勢はmonsterAtlases、火炎はbreathFx。
                      海辺・地下鉄の背景と人物、コマごとの体の位置の補正（cellAnchors / resortNudge / heroNudge。[ANIM-211]）、
-                     ベルト側の歩行コマの選択（walkCell / walkHold。[ANIM-216]）もここ。
+                     ベルト側の歩行コマの選択（walkCell / walkHold。[ANIM-216]）、歩行・走行シートを持つキャラクターの
+                     コマ選択と速さ（locomotion / heroWalkCell / strideHold / runCell / runHold。[ANIM-217]）もここ。
                      戦闘状態・入力・乱数・音声には触れない。
     Skyhook          ステージ 5。lift.height が唯一の高度。背景は高度だけで決まり、VESPER は 52 コマを cel() で状態に対応させる。
     BreakerYard      ボーナス面。車の左右の耐久、破損段階、飛散、得点。strike() が主人公の各攻撃から呼ばれる。
@@ -3168,7 +3320,7 @@ node --check: OK（メイン script を切り出して検査）。ビルドは 2
 <script data-cb-loader>
 // Asset registry filled by data/*.js. The main script reads CB_ASSETS.sprites / stages / voices / beltArt.
 const CB_ASSETS = {
-  sprites: {}, stages: [], voices: {}, beltArt: {}, total: 314292867, loaded: 0, failed: [],
+  sprites: {}, stages: [], voices: {}, beltArt: {}, total: 326151760, loaded: 0, failed: [],
   add(kind, data, bytes) {
     if (Array.isArray(this[kind])) this[kind].push(...data); else Object.assign(this[kind], data);
     this.loaded += bytes;
@@ -3185,21 +3337,21 @@ const CB_ASSETS = {
 };
 document.addEventListener('DOMContentLoaded', () => { if (!CB_ASSETS.failed.length) document.getElementById('cbLoading').remove(); });
 </script>
-<script src="data/sprites-kagura.js?v=d56544f088" onerror="CB_ASSETS.fail('sprites-kagura')"></script>
-<script src="data/sprites-volt.js?v=b3557b809c" onerror="CB_ASSETS.fail('sprites-volt')"></script>
-<script src="data/sprites-freya.js?v=eb9ed8c158" onerror="CB_ASSETS.fail('sprites-freya')"></script>
-<script src="data/sprites-titan.js?v=6666bf5d09" onerror="CB_ASSETS.fail('sprites-titan')"></script>
-<script src="data/sprites-ayame.js?v=b29efb740c" onerror="CB_ASSETS.fail('sprites-ayame')"></script>
-<script src="data/sprites-celine.js?v=d63ab94ae3" onerror="CB_ASSETS.fail('sprites-celine')"></script>
+<script src="data/sprites-kagura.js?v=daf2225163" onerror="CB_ASSETS.fail('sprites-kagura')"></script>
+<script src="data/sprites-volt.js?v=572cdfc476" onerror="CB_ASSETS.fail('sprites-volt')"></script>
+<script src="data/sprites-freya.js?v=e6533541a5" onerror="CB_ASSETS.fail('sprites-freya')"></script>
+<script src="data/sprites-titan.js?v=9a03aed6a3" onerror="CB_ASSETS.fail('sprites-titan')"></script>
+<script src="data/sprites-ayame.js?v=7ebbb32cdd" onerror="CB_ASSETS.fail('sprites-ayame')"></script>
+<script src="data/sprites-celine.js?v=d7dd059229" onerror="CB_ASSETS.fail('sprites-celine')"></script>
 <script src="data/stages.js?v=d036b44337" onerror="CB_ASSETS.fail('stages')"></script>
 <script src="data/voices.js?v=bfd401516a" onerror="CB_ASSETS.fail('voices')"></script>
 <script src="data/belt-backgrounds.js?v=2e0ea95a14" onerror="CB_ASSETS.fail('belt-backgrounds')"></script>
-<script src="data/belt-actors.js?v=2394aa3427" onerror="CB_ASSETS.fail('belt-actors')"></script>
+<script src="data/belt-actors.js?v=2ee670ec4e" onerror="CB_ASSETS.fail('belt-actors')"></script>
 <script src="data/skyhook-art.js?v=f088deb738" onerror="CB_ASSETS.fail('skyhook-art')"></script>
 <script src="data/resort-backgrounds.js?v=f425ff0b4e" onerror="CB_ASSETS.fail('resort-backgrounds')"></script>
-<script src="data/resort-actors.js?v=468bcc88e2" onerror="CB_ASSETS.fail('resort-actors')"></script>
+<script src="data/resort-actors.js?v=0411eda956" onerror="CB_ASSETS.fail('resort-actors')"></script>
 <script src="data/metro-backgrounds.js?v=39340f2cdb" onerror="CB_ASSETS.fail('metro-backgrounds')"></script>
-<script src="data/metro-actors.js?v=2dfb193e09" onerror="CB_ASSETS.fail('metro-actors')"></script>
+<script src="data/metro-actors.js?v=889eb1ba57" onerror="CB_ASSETS.fail('metro-actors')"></script>
 <script src="data/belt-dash.js?v=49653fc7a5" onerror="CB_ASSETS.fail('belt-dash')"></script>
 <!-- DATA_PACKS_END -->
 
@@ -3336,12 +3488,14 @@ const FighterSprites = {
   visualScale: 1.15,
   scaleFor(id) { return (id === 'titan' ? 1.48 : 1.36) * .5 * this.visualScale; },
   sheets: new Map(),
+  // Cells 0-23 base, 24-47 in-betweens, 48-71 throws, 72-95 walk / run (v3.21.0, optional per character).
+  suffixOf(frame) { return frame >= 72 ? '-locomotion' : frame >= 48 ? '-throw' : frame >= 24 ? '-motion' : ''; },
   errors: [],
   ready: null,
 
   load(sources) {
     this.ready = Promise.all(Object.entries(sources).map(([id, src]) => new Promise(resolve => {
-      const motion = /-(motion|throw)$/.test(id), characterId = id.replace(/-(motion|throw)$/,'');
+      const characterId = id.replace(/-(motion|throw|locomotion)$/,'');
       const image = new Image();
       image.onload = () => {
         try {
@@ -3374,9 +3528,10 @@ const FighterSprites = {
       // Full 64px bleed preserves long blades, capes and horizontal defeats. Components
       // of neighboring poses are removed below; never crop at the nominal 256px cell edge.
       const sourceFrame = frame;
-      if (key === 'fx-fire' || key === 'maw') {
+      if (key === 'fx-fire' || key === 'maw' || key.endsWith('-locomotion')) {
         // VFX cells contain complete figures. Bleeding the previous row imports a second burning body,
         // especially above the low, lying-down poses. Keep exactly one 256px source cell.
+        // The walk / run sheets are authored inside their cells with a 6px margin, so they take the same path.
         c.drawImage(image, col * 256, row * 256, 256, 256,
           col * cell + this.gutter, row * cell + this.gutter, 256, 256);
       } else {
@@ -3479,7 +3634,8 @@ const FighterSprites = {
     // v3.20.2 [ANIM-216] The side-scrolling mode supplies its own walk cell (see BeltArt.walkCell). Versus fighters never set it.
     const ownWalk = fighter.walkCell && (state === 'WALK_F' || state === 'WALK_B') ? fighter.walkCell(state === 'WALK_B') : null;
     let frame = throwFrame ?? ownWalk ?? this.frame(id, state, phase, motion.animTick, !silhouette && fighter.blockstun > 0, motion.vy);
-    let sheet = this.sheets.get(id + (frame >= 48 ? '-throw' : frame >= 24 ? '-motion' : ''));
+    const suffix = this.suffixOf(frame);
+    let sheet = this.sheets.get(id + suffix);
     if(!sheet && frame>=48){frame=state==='HIT_AIR'?19:state==='KNOCKDOWN'?20:state==='WAKEUP'?47:22;sheet=this.sheets.get(id+(frame>=24?'-motion':''));}
     if (!sheet && frame >= 24) {
       frame = [0,1,1,0,2,3,4,5,8,9,8,10,11,7,7,16,16,6,21,18,14,8,17,6][frame - 24];
@@ -3487,10 +3643,10 @@ const FighterSprites = {
     }
     if (!sheet) return false; // The previous procedural renderer remains a decode-failure fallback.
     // Optional clothing palette supplied by the side-scrolling mode; shared source atlases stay intact.
-    if (!silhouette && fighter.streetPalette) sheet = fighter.streetPalette.get(frame >= 48 ? '-throw' : frame >= 24 ? '-motion' : '') || sheet;
-    const metroMask=!silhouette&&fighter.metroHue!==undefined?this.metroMasks?.get(id+(frame>=48?'-throw':frame>=24?'-motion':'')):null;
+    if (!silhouette && fighter.streetPalette) sheet = fighter.streetPalette.get(this.suffixOf(frame)) || sheet;
+    const metroMask=!silhouette&&fighter.metroHue!==undefined?this.metroMasks?.get(id+this.suffixOf(frame)):null;
     // v3.20.1 [ANIM-211] The side-scrolling mode may ask for a per-cell correction (see BeltArt.heroNudge). Versus fighters never set it.
-    const nudge = fighter.poseNudge ? fighter.poseNudge(id, frame >= 48 ? '-throw' : frame >= 24 ? '-motion' : '', frame % 24, state) : null;
+    const nudge = fighter.poseNudge ? fighter.poseNudge(id, this.suffixOf(frame), frame % 24, state) : null;
     frame %= 24;
     const tick = fighter.animTick;
     const cell = this.cell;
@@ -7966,6 +8122,7 @@ const BeltArt = {
   risingFx: null,
   breathFx: null,
   bossCells: new Map(),
+  bossWalk: null,
   bossSheets: new Map(),
   dashSheets: new Map(),
   actionSheets: new Map(),
@@ -7991,12 +8148,20 @@ const BeltArt = {
             this.trainFrames=[top,this.bounds(g,0,img.height/2,img.width,img.height/2)];this.trainBounds=top;
           }
           else if(id==='beach-decor')this.prepareBeachDecor(img);
+          else if(id.startsWith('beach-')&&id.endsWith('-walk'))this.beachSheets.set(id.slice(6),this.prepareWalkAtlas(img,96));
           else if(id.startsWith('beach-'))this.beachSheets.set(id.slice(6),this.prepareBeachAtlas(img));
           else if (id.startsWith('factory-')) this.prepareBoard(Number(id.slice(-1)), img, entry.horizon, this.factoryBoards);
           else if (id === 'maw') {
             this.monsterSheet = FighterSprites.prepareAtlas(img, 'maw');
             const c=this.monsterSheet.getContext('2d',{willReadFrequently:true}),cell=FighterSprites.cell;
             this.monsterCells=Array.from({length:24},(_,i)=>this.bounds(c,i%6*cell,Math.floor(i/6)*cell,cell,cell));
+          }
+          else if (id === 'maw-walk' || id === 'voss-walk') {
+            // v3.21.0 [ANIM-219] Walk sheets of the two bosses. One sole line (cell 0) is used for all eight cells.
+            const atlas=this.prepareWalkAtlas(img,64),c=atlas.getContext('2d',{willReadFrequently:true}),cell=FighterSprites.cell;
+            const foot=this.bounds(c,0,0,cell,cell).bottom+1;
+            if(id==='maw-walk'){this.monsterAtlases.set(id,atlas);this.monsterContacts.set(id,Array.from({length:24},()=>foot));}
+            else this.bossWalk={atlas,foot};
           }
           else if (['maw-motion','maw-breath','maw-hurt'].includes(id)) {
             const atlas=this.prepareStrictAtlas(img),c=atlas.getContext('2d',{willReadFrequently:true}),cell=FighterSprites.cell;
@@ -8038,11 +8203,17 @@ const BeltArt = {
   },
 
   drawDash(actor, c) {
-    const f = this.dashFrame(actor), image = this.dashSheets.get(actor.data.id);
+    let f = this.dashFrame(actor), image = this.dashSheets.get(actor.data.id);
     if (f === null || !image) return false;
     const scale = FighterSprites.scaleFor(actor.data.id), cell = FighterSprites.cell;
+    // v3.21.0 [ANIM-217] The running loop comes from the walk / run sheet when the character has one. The older loop
+    // started on a standing pose and its hips wandered 34 px. The dash attack (cells 8-23) stays on the dash sheet.
+    const run = actor.state === 'STREET_DASH' ? this.locomotion(actor.data.id) : null;
+    let nudge = null;
+    if (run) { f = this.runCell(actor.f); image = run.atlas; nudge = this.heroNudge(actor.data.id, '-locomotion', f, 'DASH_F'); }
     c.save(); c.scale(actor.facing, 1); c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
     if (actor.invuln > 0 && Math.floor(actor.animTick / 3) % 2) c.globalAlpha *= .72;
+    if (nudge) c.translate(Math.round(nudge.x * scale), Math.round(nudge.y * scale));
     const draw = offset => c.drawImage(image, f % 6 * cell, Math.floor(f / 6) * cell, cell, cell,
       -Math.round(FighterSprites.pivotX * scale) + offset, -Math.round(FighterSprites.pivotY * scale), Math.round(cell * scale), Math.round(cell * scale));
     const alpha = c.globalAlpha;
@@ -8064,6 +8235,23 @@ const BeltArt = {
     c.drawImage(image, frame % 6 * cell, Math.floor(frame / 6) * cell, cell, cell,
       -FighterSprites.pivotX * scale + offsetX, -FighterSprites.pivotY * scale + offsetY, cell * scale, cell * scale);
     c.restore(); return true;
+  },
+  // v3.21.0 [ANIM-219] Enemy walk sheets (assets/belt/art/locomotion-v3210): 256 px cells, cells 0-7 walk, 12-19 jog,
+  // hips at x = 128, soles at y = 249, 6 px margin. Each cell is copied as it is (no bleed from its neighbours).
+  // `left` is where the cell's left edge goes inside the 384 px atlas cell: 96 for the seaside sheets (their atlases
+  // keep 96 px of bleed on the left), 64 for the others.
+  prepareWalkAtlas(image, left) {
+    const c=document.createElement('canvas'),cell=FighterSprites.cell; c.width=cell*6; c.height=cell*4;
+    const g=c.getContext('2d',{willReadFrequently:true});
+    for(let f=0;f<24;f++) g.drawImage(image,f%6*256,Math.floor(f/6)*256,256,256,f%6*cell+left,Math.floor(f/6)*cell+64,256,256);
+    return c;
+  },
+  // Cell of an enemy walk sheet. `hold` is in units of actor.gait (one unit = one frame at the actor's full walking
+  // speed): [walk, jog]. It is chosen per enemy so that speed x hold / drawn scale is what the planted foot moves per cell.
+  enemyWalkHold: { coral:[8,7], azure:[8,7], pearl:[10,9], luka:[8,7], misha:[8,7], warlord:[12,12], voss:[10,10], maw:[12,12] },
+  enemyWalkCell(name, gait, back, jog = false) {
+    const hold=this.enemyWalkHold[name][jog?1:0], step=Math.floor((gait||0)/hold)%8;
+    return (jog?12:0)+(back?(8-step)%8:step);
   },
   prepareStrictAtlas(image, effects = false) {
     // New atlases never borrow pixels from adjacent drawings. Shared renderer stays unchanged.
@@ -8285,6 +8473,10 @@ const BeltArt = {
         const strike=[14,15,16][(a.strike|0)%3];
         return [life, af<4?13:af<16?strike:af<24?17:0];
       }
+      if(a.state==='WALK_F'&&this.beachSheets.has(a.resort+'-walk')){
+        // v3.21.0 [ANIM-219] Eight-cell walk, and an eight-cell jog while closing in from far away.
+        return [a.resort+'-walk', this.enemyWalkCell(a.resort, a.gait|0, a.walkBack, !!a.rush&&!a.walkBack)];
+      }
       if(a.state==='WALK_F'){
         const pace=Math.max(6,Math.min(8,Math.round(15/Math.max(1.5,a.speed||2))));
         const gait=a.gait|0;
@@ -8318,6 +8510,7 @@ const BeltArt = {
     else if(a.state==='HIT_STAND')f=16;
     else if(a.state==='WINDUP')f=8;
     else if(a.state==='ATK_H')f=a.f<5?8:a.f<12?9:a.f<20?10:11;
+    else if(a.state==='WALK_F'&&this.beachSheets.has(a.resort+'-walk')) return [a.resort+'-walk', this.enemyWalkCell(a.resort, a.gait??a.animTick, a.walkBack)]; // v3.21.0 [ANIM-219] IRON SHOGUN
     else if(a.state==='WALK_F'){const step=Math.floor((a.gait??a.animTick)/4)%6;f=2+(a.walkBack?(6-step)%6:step);}
     return [a.resort,f];
   },
@@ -8357,13 +8550,22 @@ const BeltArt = {
     return cells;
   },
   // Shift (in source pixels) that puts this cell's body over the idle pose's body. Upright poses align hips.
+  // Walk sheets have one sole line of their own: put cell 0's soles where the idle pose stands (source px).
+  resortWalkDrop(id) {
+    if (!id.endsWith('-walk')) return 0;
+    const name = id.slice(0, -5), sheet = this.beachSheets.get(id), px = FighterSprites.pivotX + 32;
+    const life = this.beachSheets.get(name + '-life'), base = this.beachSheets.get(name);
+    const ref = (life ? this.cellAnchors('beach-' + name + '-life', life, px)[0] : null) || (base ? this.cellAnchors('beach-' + name, base, px)[0] : null);
+    const own = sheet ? this.cellAnchors('beach-' + id, sheet, px)[0] : null;
+    return ref && own ? ref.bottom - own.bottom : 0;
+  },
   resortNudge(id, f) {
-    const sheet = this.beachSheets.get(id), base = this.beachSheets.get(id.replace(/-(life|motion)$/, ''));
+    const sheet = this.beachSheets.get(id), base = this.beachSheets.get(id.replace(/-(life|motion|walk)$/, ''));
     if (!sheet || !base) return 0;
     const px = FighterSprites.pivotX + 32, cellInfo = this.cellAnchors('beach-' + id, sheet, px)[f];
-    const life = this.beachSheets.get(id.replace(/-(life|motion)$/, '') + '-life');
-    const ref = (life ? this.cellAnchors('beach-' + id.replace(/-(life|motion)$/, '') + '-life', life, px)[0] : null) ||
-      this.cellAnchors('beach-' + id.replace(/-(life|motion)$/, ''), base, px)[0];
+    const life = this.beachSheets.get(id.replace(/-(life|motion|walk)$/, '') + '-life');
+    const ref = (life ? this.cellAnchors('beach-' + id.replace(/-(life|motion|walk)$/, '') + '-life', life, px)[0] : null) ||
+      this.cellAnchors('beach-' + id.replace(/-(life|motion|walk)$/, ''), base, px)[0];
     if (!cellInfo || !ref) return 0;
     const upright = cellInfo.h > ref.h * .75;
     return Math.max(-90, Math.min(90, ref.hip - (upright ? cellInfo.hip : cellInfo.centre)));
@@ -8379,6 +8581,21 @@ const BeltArt = {
     const step = Math.floor((gait || 0) / hold) % 4;
     return 2 + (back ? (4 - step) % 4 : step);
   },
+  // v3.21.0 [ANIM-217] Characters with a walk / run sheet (<id>-locomotion: cells 0-7 walk, 12-19 run, drawn as one
+  // continuous cycle at one size) use it; the rest keep the four base cells above. Returned cells are 72 + n.
+  // Pace: one cell lasts strideHold units of actor.gait (walk) or runHold frames (run). They are set so that the
+  // body advances as far per cell as the planted foot moves back in the art (VOLT: about 33 source px a cell walking,
+  // 69 running; measured on the delivered sheet), which keeps the planted foot nearly still on the ground.
+  // Walk: 24 frames a step (2.5 steps a second). Run: 20 frames a step. Faster holds make the feet skate.
+  locomotion(id) { return FighterSprites.sheets.get(id + '-locomotion') || null; },
+  strideHold: 6,
+  heroWalkCell(id, gait, back, hold = this.walkHold) {
+    if (!this.locomotion(id)) return this.walkCell(gait, back, hold);
+    const step = Math.floor((gait || 0) / (this.strideHold + (id === 'titan' ? 1 : 0))) % 8;
+    return 72 + (back ? (8 - step) % 8 : step);
+  },
+  runHold: 5,
+  runCell(f) { return 12 + Math.floor(f / this.runHold) % 8; },
   // Player heroes and the recoloured street / metro enemies share the fighter atlases. While standing, walking
   // and running the hips stay over the feet and the soles stay on one line; other states keep their authored lunge.
   heroNudge(id, suffix, f, state) {
@@ -8391,12 +8608,15 @@ const BeltArt = {
     // One sole line for every character (source px below the pivot). Attack cells already sit within a few px of it;
     // TITAN's idle and walk cells were drawn up to 13 px low, so he sank and rose whenever he started or stopped.
     const floor = 6;
+    // The walk / run sheet has one sole line of its own; cells that are higher are the flight phase of the run.
+    if (suffix === '-locomotion') return { x: Math.max(-70, Math.min(70, ref.hip - cellInfo.hip)), y: floor - (this.cellAnchors('hero-' + id + suffix, sheet.atlas, FighterSprites.pivotX)[0]?.bottom ?? floor) };
     return { x: Math.max(-70, Math.min(70, ref.hip - cellInfo.hip)), y: Math.max(-14, Math.min(14, floor - cellInfo.bottom)) };
   },
   drawResortActor(a,c) {
     const [id,f]=this.resortPose(a),image=this.beachPalette(id,a.resortHue||0);if(!image)return false;
     const cell=FighterSprites.cell,k=FighterSprites.scaleFor(a.data.id);c.save();c.scale(a.facing,1);c.imageSmoothingEnabled=true;
-    if(a.state==='WALK_F'){
+    if(id.endsWith('-walk')) c.translate(0, Math.round(this.resortWalkDrop(id)*k));
+    else if(a.state==='WALK_F'){
       const who=a.resort;
       const passing=(who==='coral'&&f===7)||(who==='azure'&&(f===7||f===9))||(who==='misha'&&f===9);
       const bob=f===11?-2:(passing?1:0);
@@ -8411,7 +8631,12 @@ const BeltArt = {
       c.save();c.beginPath();c.rect(s.camera,0,W,641);c.clip();c.drawImage(this.metroBoards.get(i),x,0);
       // Structural joins hide the hard boundary between deliberately different environments.
       
-      if(i===1||i===2){const ev=s.metroEvent,u=ev?.kind==='stop'?Math.min(150,ev.f):0,travel=ev?.kind==='stop'?ev.startTick+u-u*u/300:s.tick;for(let n=0;n<6;n++){const xx=x+(travel*14+n*270)%1920;c.save();c.beginPath();c.rect(x+30,205,i===2?1000:1500,95);c.clip();c.fillStyle='rgba(255,193,99,.12)';c.fillRect(xx,205,7,95);c.restore();}}
+      if(i===1||i===2){const travel=s.metroTravel();c.save();c.beginPath();c.rect(x+30,205,i===2?1000:1500,95);c.clip();c.fillStyle='rgba(255,193,99,.12)';
+        for(let n=0;n<6;n++){const xx=x+(travel*14+n*270)%1920;c.fillRect(xx,205,7,95);}
+        // v3.22.0 [EVENT-220] Emergency brake: sparks from the wheels light the windows from below, fewer as the train slows.
+        const ev=s.metroEvent;if(ev?.kind==='stop'&&!ev.swapped&&ev.f>=ev.brakeAt&&ev.f<ev.stopAt){const v=s.metroBrakeSpeed();
+          for(let n=0;n<5;n++){const h=Math.sin((ev.f*7+n)*12.9898)*43758.5453,r=h-Math.floor(h);if(r<.5*v+.1){const g=c.createLinearGradient(0,300,0,205);g.addColorStop(0,'rgba(255,170,70,'+(.5*v+.12)+')');g.addColorStop(1,'rgba(255,170,70,0)');c.fillStyle=g;c.fillRect(x+30+(n*397+ev.f*53)%1500,205,40+r*120,95);}}}
+        c.restore();}
       if(i===4){const image=this.images.get('arena-crowd');if(image)for(let tier=0;tier<3;tier++){
         const width=[150,180,220][tier],height=328*width/768,base=[170,270,355][tier];
         for(let j=0;j<Math.ceil(1920/width)+1;j++){const frame=Math.floor(s.tick/12+j+tier)%4;
@@ -8508,6 +8733,7 @@ const BeltArt = {
     if (actor.state === 'WINDUP') return actor.plan === 'slam' ? 44 : 39;
     // Match the existing damage / sound event at SLAM frame 20 exactly.
     if (actor.state === 'SLAM') return f < 20 ? 44 : f < 33 ? 14 : f < 43 ? 47 : 11;
+    if (state === 'WALK_F' && this.bossWalk) return 72 + this.enemyWalkCell('voss', actor.gait ?? f, actor.walkBack); // v3.21.0 [ANIM-219] IRON VOSS: eight-cell walk sheet
     if (state === 'WALK_F') return this.walkCell(actor.gait ?? f, actor.walkBack, this.walkHold + 1); // IRON VOSS: same four matching cells, a heavier pace
     return FighterSprites.frame('titan', state, f, actor.animTick, actor.blockstun > 0, actor.vy);
   },
@@ -8530,6 +8756,7 @@ const BeltArt = {
     if(a.state==='SLAM') return ['maw-motion',f<20?8+Math.min(1,Math.floor(f/10)):f<30?10:11];
     if(a.state==='CHARGE') return ['maw-motion',12+Math.floor(f/3)%6];
     if(a.state==='ATK_H') return ['maw-motion',18+Math.min(5,Math.floor(f/5))];
+    if(a.state==='WALK_F'&&this.monsterAtlases.has('maw-walk')) return ['maw-walk',this.enemyWalkCell('maw',a.gait??a.animTick,a.walkBack)]; // v3.21.0 [ANIM-219]
     if(a.state==='WALK_F'){const step=Math.floor((a.gait??a.animTick)/5)%6;return ['maw-motion',a.walkBack?(6-step)%6:step];}
     return ['maw',0];
   },
@@ -8547,7 +8774,14 @@ const BeltArt = {
     c.save(); c.scale(actor.burnTicks>0 ? (actor.burnDirection || actor.facing) : actor.facing,1);
     if(actor.burnTicks>0){c.filter='sepia(.7) saturate(3)';c.shadowColor='#ff6a14';c.shadowBlur=16;}
     c.imageSmoothingEnabled=true;
-    c.drawImage(image,frame%6*cell,Math.floor(frame/6)*cell,cell,cell,-FighterSprites.pivotX*scale,-foot*scale,cell*scale,cell*scale);
+    // v3.21.0 [ANIM-219] The walk sheet is centred on the hips; the standing pose sits a few px to the left of the pivot.
+    // Shift the walk by the difference of the two silhouettes' centres so the body does not jump when a step starts.
+    let shift=0;
+    if(id==='maw-walk'&&this.monsterSheet){
+      const stand=this.cellAnchors('maw',this.monsterSheet,FighterSprites.pivotX)[0],walk=this.cellAnchors('maw-walk',image,FighterSprites.pivotX)[0];
+      if(stand&&walk) shift=Math.max(-20,Math.min(20,stand.centre-walk.centre));
+    }
+    c.drawImage(image,frame%6*cell,Math.floor(frame/6)*cell,cell,cell,(shift-FighterSprites.pivotX)*scale,-foot*scale,cell*scale,cell*scale);
     c.restore(); return true;
   },
   drawMonsterBreath(actor,c) {
@@ -8563,10 +8797,10 @@ const BeltArt = {
   drawBoss(actor, c, state, f) {
     if (actor.monster) return this.drawMonster(actor,c);
     if (this.bossCells.size !== 3) return false;
-    const pose = this.bossFrame(actor, state, f);
+    const pose = this.bossFrame(actor, state, f), walk = pose >= 72;
     const id = pose >= 48 ? 'voss-throw' : pose >= 24 ? 'voss-motion' : 'voss-base';
-    const frame = pose % 24, image = this.bossSheets.get(id), box = this.bossCells.get(id)[frame];
-    const scale = FighterSprites.scaleFor('titan'), cell = FighterSprites.cell, foot = actor.z > 0 ? FighterSprites.pivotY : box.bottom + 1;
+    const frame = pose % 24, image = walk ? this.bossWalk.atlas : this.bossSheets.get(id), box = walk ? null : this.bossCells.get(id)[frame];
+    const scale = FighterSprites.scaleFor('titan'), cell = FighterSprites.cell, foot = actor.z > 0 ? FighterSprites.pivotY : walk ? this.bossWalk.foot : box.bottom + 1;
     c.save(); c.scale(actor.facing, 1); c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
     if (actor.invuln > 0 && Math.floor(actor.animTick / 3) % 2) c.globalAlpha *= .72;
     c.drawImage(image, frame % 6 * cell, Math.floor(frame / 6) * cell, cell, cell, -FighterSprites.pivotX * scale, -foot * scale, cell * scale, cell * scale);
@@ -9435,7 +9669,7 @@ class Skyhook {
 // Coordinates: x = street distance, y = floor depth, z = height above that floor.
 // Fixed 60 Hz simulation. Draw methods must not change simulation or consume random values.
 const STREET = {
-  version: '3.20.2',
+  version: '3.22.0',
   risingInput: { window: 14, buffer: 6 },
   dash: { tapWindow: 14, speed: 2.2, damage: 112, active: 8, until: 19, end: 38 },
   // v2.6.0 hit detection tuning. One table so the feel can be adjusted without hunting through the methods.
@@ -9549,6 +9783,88 @@ const FACTORY_AREAS = [
  ['04 / MUTATION WARD','変異実験区画',[['ghost','raven','viper','surge'],['goliath','sable','brute','viper']]],
  ['05 / FURNACE HEART','炉心の怪物',[['boss','goliath','ghost']]]
 ].map(([name,jp,waves],i)=>({left:i*1240,right:(i+1)*1240,name,jp,waves}));
+// v3.22.0 [SE-221] Sounds of the subway events, synthesized on the spot with Web Audio (no audio files).
+// Everything goes through the game's sound-effect volume (sound.seGain) and its limiter. Nothing plays while the
+// audio context is not running (before the first key press, in the tests). Each call is logged for the tests.
+const MetroSound = {
+  buffer: null, log: [],
+  level: 2, // master level of these sounds. Measured on the sound-effect bus: the loudest moment (brake onset) peaks near 0.85 of full scale.
+  ready() { return typeof sound !== 'undefined' && !!sound.ctx && !!sound.seGain && sound.ctx.state === 'running'; },
+  play(name, a = {}) {
+    this.log.push(name); if (this.log.length > 200) this.log.shift();
+    if (!this.ready() || !this[name + '_']) return false;
+    try { this[name + '_'](a); return true; } catch (error) { return false; }
+  },
+  noise() {
+    const c = sound.ctx;
+    if (!this.buffer || this.buffer.sampleRate !== c.sampleRate) {
+      const n = c.sampleRate * 2, b = c.createBuffer(1, n, c.sampleRate), d = b.getChannelData(0); let seed = 22222;
+      for (let i = 0; i < n; i++) { seed = (seed * 1664525 + 1013904223) >>> 0; d[i] = seed / 2147483648 - 1; }
+      this.buffer = b;
+    }
+    const source = c.createBufferSource(); source.buffer = this.buffer; source.loop = true; return source;
+  },
+  osc(type, from, to, dur, delay = 0) {
+    const c = sound.ctx, o = c.createOscillator(), t = c.currentTime + .01 + delay; o.type = type;
+    o.frequency.setValueAtTime(from, t); if (to && to !== from) o.frequency.exponentialRampToValueAtTime(to, t + dur);
+    return o;
+  },
+  filter(type, from, q = .7, to = 0, dur = 0, delay = 0) {
+    const c = sound.ctx, f = c.createBiquadFilter(), t = c.currentTime + .01 + delay; f.type = type; f.Q.value = q;
+    f.frequency.setValueAtTime(from, t); if (to) f.frequency.exponentialRampToValueAtTime(to, t + dur);
+    return f;
+  },
+  // source -> filters -> envelope -> pan -> sound-effect bus. `points` are [seconds, level] pairs from the start.
+  voice(source, filters, points, pan = 0, delay = 0) {
+    const c = sound.ctx, t = c.currentTime + .01 + delay, gain = c.createGain(), panner = c.createStereoPanner();
+    let node = source; const chain = [source, ...filters, gain, panner];
+    for (const f of filters) { node.connect(f); node = f; }
+    node.connect(gain); gain.connect(panner); panner.connect(sound.seGain); panner.pan.value = pan;
+    gain.gain.setValueAtTime(.0001, t);
+    for (const [at, level] of points) gain.gain.linearRampToValueAtTime(Math.max(.0001, level * this.level), t + at);
+    const end = points[points.length - 1][0];
+    source.onended = () => { for (const n of chain) try { n.disconnect(); } catch (error) {} };
+    source.start(t); source.stop(t + end + .05);
+  },
+  // Weight of the train: low noise and a sub tone. Swells toward the stop of an arrival; `fall` fades with the speed.
+  rumble_({ dur = 3, peak = .5, fall = false }) {
+    const shape = fall ? [[.08, peak], [dur * .7, peak * .45], [dur, 0]] : [[dur * .25, peak * .3], [dur * .7, peak], [dur, peak * .35], [dur + .5, 0]];
+    this.voice(this.noise(), [this.filter('lowpass', fall ? 300 : 110, .8, fall ? 90 : 300, dur)], shape, fall ? 0 : .25);
+    this.voice(this.osc('sine', fall ? 62 : 44, fall ? 34 : 58, dur), [], shape.map(([at, v]) => [at, v * .55]));
+  },
+  horn_() {
+    for (const [freq, pan] of [[311, .3], [392, .18]])
+      this.voice(this.osc('sawtooth', freq, freq * .955, .95), [this.filter('lowpass', 1500, .9)], [[.04, .17], [.7, .16], [.95, 0]], pan);
+  },
+  // Two wheel sets over one rail joint.
+  clack_({ vol = .3 }) {
+    for (const delay of [0, .085]) {
+      this.voice(this.noise(), [this.filter('bandpass', 820, 1.4)], [[.004, vol], [.07, 0]], .1, delay);
+      this.voice(this.osc('sine', 150, 70, .07, delay), [], [[.004, vol * .7], [.08, 0]], .1, delay);
+    }
+  },
+  // Brake blocks on steel: a narrow band of noise and a whine, both sinking as the train slows.
+  screech_({ dur = 2, vol = .15 }) {
+    this.voice(this.noise(), [this.filter('bandpass', 3300, 10, 1700, dur)], [[.12, vol * 3.6], [dur * .8, vol * 2.7], [dur, 0]], -.1);
+    this.voice(this.osc('sawtooth', 2500, 1050, dur), [this.filter('bandpass', 2400, 6, 1100, dur)], [[.15, vol * .75], [dur * .85, vol * .5], [dur, 0]], .1);
+  },
+  hiss_() { this.voice(this.noise(), [this.filter('highpass', 3600, .7)], [[.02, .24], [.45, .06], [.9, 0]]); },
+  chime_() {
+    this.voice(this.osc('sine', 659.3, 0, .4), [], [[.01, .2], [.38, 0]]);
+    this.voice(this.osc('sine', 523.3, 0, .5, .3), [], [[.01, .2], [.5, 0]], 0, .3);
+  },
+  slide_() { this.voice(this.noise(), [this.filter('lowpass', 520, .8, 900, .45)], [[.05, .5], [.38, .38], [.48, 0]]); },
+  thunk_({ vol = .4 }) {
+    this.voice(this.osc('sine', 96, 36, .28), [], [[.005, vol], [.32, 0]]);
+    this.voice(this.noise(), [this.filter('lowpass', 320, .8)], [[.004, vol * .7], [.13, 0]]);
+  },
+  motor_({ dur = 1.7 }) {
+    this.voice(this.osc('sawtooth', 68, 250, dur), [this.filter('lowpass', 950, .8)], [[.3, .18], [dur, .24], [dur + .3, 0]], -.15);
+    this.voice(this.osc('square', 136, 500, dur), [this.filter('lowpass', 1300, .8)], [[.3, .03], [dur, .045], [dur + .3, 0]], .15);
+  },
+  alarm_() { for (let i = 0; i < 3; i++) this.voice(this.osc('square', i % 2 ? 660 : 880, 0, .12, i * .13), [this.filter('lowpass', 2600, .7)], [[.006, .18], [.1, .18], [.12, 0]], 0, i * .13); },
+  spark_() { this.voice(this.noise(), [this.filter('highpass', 5200, .7)], [[.002, .13], [.045, 0]], -.3); }
+};
 const RESORT_ENEMIES = {
  coral:{char:4,name:'CORAL',resort:'coral',role:'punk',hp:118,speed:2.65,damage:27,hue:0,score:350},
  sunset:{char:4,name:'SUNSET',resort:'coral',role:'punk',hp:128,speed:2.8,damage:28,hue:45,score:400},
@@ -9566,6 +9882,7 @@ BeltArt.ready = BeltArt.ready.then(() => {
     try {
       BeltArt.beachPalette(spec.resort, spec.hue);
       BeltArt.beachPalette(spec.resort+'-life', spec.hue);
+      BeltArt.beachPalette(spec.resort+'-walk', spec.hue);
     } catch (error) { BeltArt.errors.push('palette ' + spec.name + ': ' + error.message); }
 });
 const RESORT_AREAS = [
@@ -9602,8 +9919,9 @@ const StreetPalettes = {
     const spec = STREET.enemies[kind] || METRO_ENEMIES[kind],
       id = CHARACTERS[spec.char].id,
       result = new Map();
-    for (const suffix of ['', '-motion', '-throw']) {
+    for (const suffix of ['', '-motion', '-throw', '-locomotion']) {
       const source = FighterSprites.sheets.get(id + suffix);
+      if (!source && suffix === '-locomotion') continue; // optional sheet (v3.21.0)
       if (!source) return null;
       const atlas = document.createElement('canvas');
       atlas.width = source.atlas.width;
@@ -9725,7 +10043,7 @@ class StreetActor extends Fighter {
     this.attack = null;
   }
   poseNudge(id, suffix, frame, state) { return BeltArt.heroNudge(id, suffix, frame, state); }
-  walkCell(back) { return BeltArt.walkCell(this.gait, back, BeltArt.walkHold + (this.data.id === 'titan' ? 1 : 0)); }
+  walkCell(back) { return BeltArt.heroWalkCell(this.data.id, this.gait, back, BeltArt.walkHold + (this.data.id === 'titan' ? 1 : 0)); }
   walkTo(nextX, nextY, rushing = false) {
     const stride = Math.hypot(nextX-this.x, (nextY-this.y)/.64);
     const moving = stride > .01;
@@ -9851,39 +10169,133 @@ class NeonUprising {
     sound.playBGM(this.stage.music);
     this.player.speak('select', 60);
   }
+  // v3.22.0 [EVENT-220] Subway events of stage 4, rebuilt on physical motion.
+  // arrival: the train enters at speed and brakes at a constant rate (speed falls linearly to zero at the door mark),
+  //          its body rocks once on the springs, the doors open after a beat, the hero boards at walking speed, the
+  //          doors close and the train pulls out with constant acceleration before the cut.
+  // stop   : emergency brake inside the train. The train runs to the left (the tunnel lights pass to the right), so
+  //          everything loose is carried to the left: the camera, the hero and the props. Speed falls linearly.
+  // Every frame number is fixed when the event begins (they depend only on the hero's walking speed), so the event
+  // has a known length (e.total). Sounds are cues fired on fixed frames (MetroSound).
   beginMetroEvent(kind){
     this.breakGrab();this.resetDashTap();input.keys={};input.clear();
-    const timing=kind==='arrival'?{fade:366,cut:400,total:456}:kind==='stop'?{fade:236,cut:270,total:326}:{fade:42,cut:72,total:128};
-    this.metroEvent={kind,f:0,startTick:this.tick,fromArea:this.area,doorWorld:this.areaData().left+1180,walkX:this.player.x,walkY:this.player.y,...timing,swapped:false};
-    this.player.pose('IDLE');sound.playCue(kind==='arrival'?'boss':'cursor');
+    const p=this.player,area=this.areaData();
+    const e={kind,f:0,startTick:this.tick,fromArea:this.area,doorWorld:area.left+1180,walkX:p.x,walkY:p.y,swapped:false};
+    if(kind==='arrival'){
+      e.enter=50;e.brake=170;e.stopAt=e.enter+e.brake;
+      e.waitX=e.doorWorld-150;e.waitY=505;e.doorY=448;
+      e.hissAt=e.stopAt+6;e.chimeAt=e.stopAt+30;e.openAt=e.stopAt+44;e.openEnd=e.openAt+30;
+      e.boardAt=e.openEnd+8;e.boardEnd=e.boardAt+Math.ceil(Math.hypot(e.doorWorld-e.waitX,(e.waitY-e.doorY)/.64)/p.speed);
+      e.closeAt=e.boardEnd+22;e.closeEnd=e.closeAt+28;e.departAt=e.closeEnd+18;
+      e.fade=e.departAt+70;e.cut=e.fade+34;e.total=e.cut+56;e.wind=0;e.clack=0;e.boarded=false;
+    }else if(kind==='stop'){
+      e.brakeAt=24;e.brake=150;e.stopAt=e.brakeAt+e.brake;e.recover=e.stopAt+34;e.cam0=this.camera;e.slide0=3.6;e.decay=.955;
+      let x=p.x;for(let t=0;t<e.brake;t++)x=Math.max(this.backWall+8,x-e.slide0*Math.pow(e.decay,t));
+      e.exitX=area.right-130;
+      e.fade=e.recover+Math.max(20,Math.ceil((e.exitX-x)/p.speed)-12);e.cut=e.fade+34;e.total=e.cut+56;
+    }else Object.assign(e,{fade:42,cut:72,total:128});
+    this.metroEvent=e;
+    p.pose('IDLE');if(kind!=='arrival'&&kind!=='stop')sound.playCue('cursor');
+  }
+  // Where the train is, in world px, on frame f of the arrival.
+  metroTrainX(f,width){
+    const e=this.metroEvent,rest=e.doorWorld-width*.516,start=e.fromArea*1920+2200;
+    const u=STREET.clamp((f-e.enter)/e.brake,0,1);
+    let x=rest+(start-rest)*(1-u)*(1-u);
+    // The body leans on its springs as it stops: forward, back, and still within half a second.
+    if(f>=e.stopAt){const t=f-e.stopAt;x-=4*Math.exp(-t/8)*Math.sin(t*.5);}
+    if(f>e.departAt){const d=f-e.departAt;x-=.11*d*d;}
+    return x;
+  }
+  metroTrainSpeed(){
+    const e=this.metroEvent,box=BeltArt.trainFrames?.[0];if(!e||e.kind!=='arrival'||!box)return 0;
+    const width=box.w/box.h*390;return Math.abs(this.metroTrainX(e.f,width)-this.metroTrainX(e.f-1,width));
   }
   metroTrainLayout(){
     const e=this.metroEvent,box=BeltArt.trainFrames?.[0];if(!e||!box)return null;
-    const height=390,width=box.w/box.h*height,finalX=e.doorWorld-width*.516;
-    const t=STREET.clamp(e.f/180,0,1),ease=t*t*t*(10+t*(-15+6*t));
-    const x=(e.fromArea*1920+2200)*(1-ease)+finalX*ease;
-    const open=e.f<200?0:e.f<225?(e.f-200)/25:e.f<340?1:Math.max(0,1-(e.f-340)/26);
-    return {x,y:440-height*.77,w:width,h:height,open,doorX:e.doorWorld};
+    const height=390,width=box.w/box.h*height,ease=t=>{t=STREET.clamp(t,0,1);return t*t*(3-2*t);};
+    const open=e.f<e.openAt?0:e.f<e.closeAt?ease((e.f-e.openAt)/(e.openEnd-e.openAt)):1-ease((e.f-e.closeAt)/(e.closeEnd-e.closeAt));
+    return {x:this.metroTrainX(e.f,width),rest:e.doorWorld-width*.516,y:440-height*.77,w:width,h:height,open,doorX:e.doorWorld};
+  }
+  // How fast the braking train still runs inside the cars: 1 = cruising, 0 = stopped.
+  metroBrakeSpeed(){const e=this.metroEvent;if(!e||e.kind!=='stop')return 1;return 1-STREET.clamp((e.f-e.brakeAt)/e.brake,0,1);}
+  // Distance the train has run, in ticks at cruising speed. The tunnel lights of the cars are drawn from it.
+  metroTravel(){
+    const e=this.metroEvent;if(!e||e.kind!=='stop')return this.tick;
+    const u=STREET.clamp(e.f-e.brakeAt,0,e.brake);return e.startTick+Math.min(e.f,e.brakeAt)+u-u*u/(2*e.brake);
+  }
+  // Screen shake of the two events, in px. It follows the speed of the train and stops with it.
+  metroShake(){
+    const e=this.metroEvent;if(!e||e.swapped)return [0,0];
+    if(e.kind==='arrival'){const speed=this.metroTrainSpeed();if(speed<.05)return [0,0];const amp=Math.min(3,speed/22*3);return [Math.sin(e.f*1.3)*amp*.5,Math.cos(e.f*1.9)*amp];}
+    if(e.kind==='stop'){
+      const v=this.metroBrakeSpeed(),on=e.f>=e.brakeAt&&e.f<e.stopAt?1:0,s=e.f-e.stopAt;
+      const thump=s>=0?6*Math.exp(-s/5)*Math.cos(s*.9):0;
+      return [on*v*1.2*Math.sin(e.f*2.3),on*(.6+v*2)*Math.sin(e.f*1.7)+thump];
+    }
+    return [0,0];
   }
   metroFade(){const e=this.metroEvent;if(!e)return 0;
     if(e.f<e.fade)return 0;if(e.f<e.cut)return (e.f-e.fade)/(e.cut-e.fade);
     if(e.f<e.cut+12)return 1;return STREET.clamp((e.total-e.f)/(e.total-e.cut-12),0,1);
+  }
+  // One frame of walking (or running when far away) toward a point, at the hero's own speed. True on arrival.
+  metroStep(x,y,canRun=false){
+    const p=this.player,dx=x-p.x,dy=(y-p.y)/.64,d=Math.hypot(dx,dy);
+    if(d<.5){if(p.state!=='IDLE')p.pose('IDLE');return true;}
+    const run=canRun&&d>260,v=Math.min(d,p.speed*(run?STREET.dash.speed:1));
+    if(Math.abs(dx)>2)p.facing=dx>0?1:-1;
+    const nx=p.x+dx/d*v,ny=p.y+dy/d*v*.64;
+    if(run){if(p.state!=='STREET_DASH')p.pose('STREET_DASH');else p.f++;p.x=nx;p.y=ny;}
+    else{if(p.state==='STREET_DASH')p.pose('IDLE');p.walkTo(nx,ny);}
+    p.animTick++;return false;
   }
   updateMetroEvent(){
     const e=this.metroEvent;e.f++;this.tick++;
     if(!e.swapped){
       const p=this.player;
       if(e.kind==='arrival'){
-        const waitX=e.doorWorld-220;
-        if(e.f<=180){const t=e.f/180,u=t*t*(3-2*t);p.facing=waitX>=e.walkX?1:-1;p.walkTo(e.walkX+(waitX-e.walkX)*u,e.walkY+(505-e.walkY)*u);p.animTick++;}
-        else if(e.f<225)p.state='IDLE';
-        if(e.f===180||e.f===200||e.f===340)sound.playGrapple('impact');
-        if(e.f>=225&&e.f<=340){const t=STREET.clamp((e.f-225)/105,0,1),u=t*t*(3-2*t);p.facing=1;p.walkTo(waitX+220*u,505+(448-505)*u);p.animTick++;}
+        const speed=this.metroTrainSpeed();
+        if(e.f===1)MetroSound.play('rumble',{dur:e.stopAt/60,peak:.55});
+        if(e.f===e.enter+10)MetroSound.play('horn');
+        if(e.f===e.enter+70)MetroSound.play('screech',{dur:(e.stopAt-e.f)/60,vol:.13});
+        if(e.f===e.stopAt)MetroSound.play('thunk',{vol:.35});
+        if(e.f===e.hissAt)MetroSound.play('hiss');
+        if(e.f===e.chimeAt||e.f===e.closeAt-16)MetroSound.play('chime');
+        if(e.f===e.openAt||e.f===e.closeAt)MetroSound.play('slide');
+        if(e.f===e.openEnd||e.f===e.closeEnd)MetroSound.play('thunk',{vol:.28});
+        if(e.f===e.departAt){MetroSound.play('motor',{dur:(e.cut-e.f)/60});MetroSound.play('rumble',{dur:(e.cut-e.f)/60,peak:.4});}
+        // Rail joints: one double knock for every 230 px the train covers.
+        e.clack+=speed;if(e.clack>=230){e.clack-=230;MetroSound.play('clack',{vol:Math.min(.5,.12+speed/50)});}
+        e.wind+=speed*.6;
+        if(e.f<e.boardAt){if(this.metroStep(e.waitX,e.waitY,true))p.facing=1;}
+        else if(!e.boarded){if(this.metroStep(e.doorWorld,e.doorY)||e.f>=e.boardEnd){e.boarded=true;p.x=e.doorWorld;p.y=e.doorY;p.pose('IDLE');p.facing=1;}}
         const target=STREET.clamp(p.x-480,e.fromArea*1920,e.fromArea*1920+640);
         this.camera+=(target-this.camera)*.065;
       }else if(e.kind==='stop'){
-        if(e.f===110)sound.playGrapple('impact');
-        if(e.f>130){p.facing=1;p.walkTo(p.x+Math.min(4.5,Math.max(0,this.areaData().right-130-p.x)),p.y+(470-p.y)*.04);p.animTick++;}
+        const t=e.f-e.brakeAt,left=this.backWall+8;
+        if(e.f===1)MetroSound.play('alarm');
+        if(t===0){MetroSound.play('thunk',{vol:.5});MetroSound.play('screech',{dur:e.brake/60,vol:.2});MetroSound.play('rumble',{dur:e.brake/60,peak:.5,fall:true});}
+        if(t>0&&e.f<e.stopAt&&t%9===4&&this.metroBrakeSpeed()>.25)MetroSound.play('spark');
+        if(e.f===e.stopAt)MetroSound.play('thunk',{vol:.6});
+        if(e.f===e.stopAt+8)MetroSound.play('hiss');
+        if(t>=0&&e.f<e.stopAt){
+          // Inertia: the hero is carried toward the front of the train, catches the slide with back steps, then braces.
+          const slide=e.slide0*Math.pow(e.decay,t),nx=Math.max(left,p.x-slide);
+          p.facing=1;
+          if(t<14){if(t===0)p.pose('HIT_STAND');else p.f++;p.x=nx;}
+          else if(slide>.9)p.walkTo(nx,p.y);
+          else{if(p.state!=='CROUCH')p.pose('CROUCH');else p.f++;p.x=nx;}
+          p.animTick++;
+          if(t>5)for(const q of this.props)if(q.hp>0)q.x=Math.max(this.backWall+20,q.x-slide*1.25);
+        }else if(e.f>=e.stopAt&&e.f<e.recover){if(e.f===e.stopAt+16)p.pose('IDLE');else if(p.state==='CROUCH')p.f++;}
+        else if(e.f>=e.recover){
+          const dx=Math.min(p.speed,Math.max(0,e.exitX-p.x));
+          if(dx>.01){p.facing=1;p.walkTo(p.x+dx,p.y+(470-p.y)*.04);p.animTick++;}else if(p.state!=='IDLE')p.pose('IDLE');
+        }
+        // The camera is carried the same way and comes back when the train has stopped.
+        const s=e.f-e.stopAt,lurch=t<0?0:s<0?16*(1-Math.exp(-t/7)):16*Math.exp(-s/6)*Math.max(0,Math.cos(s*.5));
+        this.camera=STREET.clamp(e.cam0-lurch,this.areaData().left,this.areaData().right-W);
       }else{p.facing=1;p.walkTo(p.x+3,p.y);p.animTick++;}
     }
     if(e.f===e.cut){
@@ -9899,17 +10311,51 @@ class NeonUprising {
     const e=this.metroEvent;if(!e||e.kind!=='arrival'||e.swapped)return;
     const r=this.metroTrainLayout(),image=BeltArt.images.get('subway-train'),frames=BeltArt.trainFrames;
     if(!r||!image)return;
-    c.save();c.translate(-Math.round(this.camera),0);c.beginPath();c.rect(e.fromArea*1920+180,40,1740,406);c.clip();
+    const speed=this.metroTrainSpeed(),left=e.fromArea*1920;
+    c.save();c.translate(-Math.round(this.camera),0);c.beginPath();c.rect(left+180,40,1740,406);c.clip();
+    // Headlight on the tunnel wall before the train is in sight, growing as it comes.
+    if(e.f>12&&e.f<e.stopAt&&r.x>left+1500){
+      const k=STREET.clamp((e.f-12)/(e.enter+20),0,1),g=c.createLinearGradient(left+1920,0,left+1920-900*k,0);
+      g.addColorStop(0,'rgba(255,236,190,'+(.34*k)+')');g.addColorStop(1,'rgba(255,236,190,0)');
+      c.fillStyle=g;c.fillRect(left+1020,150,900,296);
+    }
     const a=frames[0],b=frames[1];c.drawImage(image,a.x,a.y,a.w,a.h,r.x,r.y,r.w,r.h);
-    if(r.open>0){c.save();c.beginPath();const half=r.w*.075*r.open;c.rect(e.doorWorld-half,r.y+r.h*.19,half*2,r.h*.61);c.clip();c.drawImage(image,b.x,b.y,b.w,b.h,r.x,r.y,r.w,r.h);c.restore();}
+    const half=r.w*.075*r.open,doorX=e.doorWorld+(r.x-r.rest),doorTop=r.y+r.h*.19,doorH=r.h*.61;
+    if(r.open>0){c.save();c.beginPath();c.rect(doorX-half,doorTop,half*2,doorH);c.clip();c.drawImage(image,b.x,b.y,b.w,b.h,r.x,r.y,r.w,r.h);
+      // Once aboard the hero stands inside the car: behind the door leaves, and carried along when the train leaves.
+      if(e.boarded){c.translate(r.x-r.rest,0);this.player.render(c);c.fillStyle='rgba(24,14,6,.22)';c.fillRect(e.doorWorld-half-2,doorTop,half*2+4,doorH);}
+      c.restore();}
+    // Headlight of the moving train: a glow at its nose and a beam along the track ahead of it.
+    if(speed>.3){
+      const nx=r.x+34,ny=r.y+r.h*.66,k=Math.min(1,speed/8);
+      c.save();c.globalCompositeOperation='lighter';
+      const beam=c.createLinearGradient(nx,0,nx-620,0);beam.addColorStop(0,'rgba(255,232,180,'+(.3*k)+')');beam.addColorStop(1,'rgba(255,232,180,0)');
+      c.fillStyle=beam;c.beginPath();c.moveTo(nx,ny-14);c.lineTo(nx-620,ny-110);c.lineTo(nx-620,ny+70);c.lineTo(nx,ny+14);c.fill();
+      const glow=c.createRadialGradient(nx,ny,2,nx,ny,120);glow.addColorStop(0,'rgba(255,244,214,'+(.75*k)+')');glow.addColorStop(1,'rgba(255,244,214,0)');
+      c.fillStyle=glow;c.fillRect(nx-120,ny-120,240,240);c.restore();
+    }
     c.restore();
     // Restore near platform edge over the wheels: the train remains behind the platform.
     const board=BeltArt.metroBoards.get(0);c.drawImage(board,0,446,1920,195,-Math.round(this.camera),446,1920,195);
+    // Draught of the passing train: dust carried along the platform, as fast and as dense as the train is fast.
+    if(speed>1.5){
+      c.save();c.strokeStyle='rgba(226,216,196,'+Math.min(.34,speed/50)+')';c.lineWidth=2;c.beginPath();
+      for(let n=0;n<16;n++){
+        const x=((n*211.7-e.wind)%1500+1500)%1500-110,y=452+(n*47.3)%150,len=6+speed*1.5;
+        c.moveTo(x,y);c.lineTo(x+len,y-(n%3-1));
+      }
+      c.stroke();c.restore();
+    }
   }
   drawMetroEvent(c){const e=this.metroEvent;if(!e)return;
-    if(e.kind==='stop'&&!e.swapped&&e.f<150){c.fillStyle='rgba(255,55,25,'+(.05+.04*Math.sin(e.f*.4))+')';c.fillRect(0,0,W,641);}
+    if(e.kind==='stop'&&!e.swapped){
+      const v=this.metroBrakeSpeed(),braking=e.f>=e.brakeAt&&e.f<e.stopAt;
+      // Car lights flicker while the brakes bite, then settle to the dim red emergency lighting.
+      if(braking){const n=Math.floor(e.f/3),h=Math.sin(n*12.9898)*43758.5453,r=h-Math.floor(h);if(r>.58){c.fillStyle='rgba(4,6,10,'+(.1+.2*v)+')';c.fillRect(0,0,W,641);}}
+      if(e.f<e.recover+30){c.fillStyle='rgba(255,55,25,'+(.05+.04*Math.sin(e.f*.4))+')';c.fillRect(0,0,W,641);}
+    }
     const bar=Math.min(1,e.f/20,(e.total-e.f)/20)*48;c.fillStyle='#050910';c.fillRect(0,0,W,bar);c.fillRect(0,641-bar,W,bar);
-    const title=e.kind==='arrival'?(e.f<190?'DEADLINE EXPRESS / ARRIVING':e.f<340?'BOARD THE TRAIN':'DOORS CLOSING'):e.kind==='stop'?(e.f<130?'EMERGENCY BRAKE':'EXIT TO THE TRACKS'):e.kind==='resort'?'AZURE MIRAGE / '+this.stage.areas[Math.min(e.fromArea+1,4)].name:e.fromArea===1?'THROUGH THE GANGWAY':'ENTER THE IRON PIT';
+    const title=e.kind==='arrival'?(e.f<e.stopAt?'DEADLINE EXPRESS / ARRIVING':e.f<e.closeAt?'BOARD THE TRAIN':e.f<e.departAt?'DOORS CLOSING':'DEPARTING'):e.kind==='stop'?(e.f<e.recover?'EMERGENCY BRAKE':'EXIT TO THE TRACKS'):e.kind==='resort'?'AZURE MIRAGE / '+this.stage.areas[Math.min(e.fromArea+1,4)].name:e.fromArea===1?'THROUGH THE GANGWAY':'ENTER THE IRON PIT';
     STREET.text(c,title,W/2,622,17,'#e6d7b3','center');
     const alpha=this.metroFade();if(alpha){c.fillStyle='rgba(3,6,10,'+alpha+')';c.fillRect(0,0,W,641);}
   }
@@ -11028,8 +11474,8 @@ class NeonUprising {
 
   draw(c) {
     if(this.bonus){this.bonus.draw(this,c);return;}
-    c.save();const arrival=this.metroEvent?.kind==='arrival'&&!this.metroEvent.swapped,f=this.metroEvent?.f||0,amp=arrival&&f<200?Math.sin(Math.min(1,f/200)*Math.PI)*9:0;
-    c.translate(Math.sin(f*2.7)*amp,Math.cos(f*3.9)*amp*.65);
+    c.save();const arrival=this.metroEvent?.kind==='arrival'&&!this.metroEvent.swapped,f=this.metroEvent?.f||0;
+    {const [sx,sy]=this.metroShake();c.translate(sx,sy);} // v3.22.0 [EVENT-220] shake follows the train's speed
     if(this.stageIndex===2)c.translate(Math.sin(this.tick*2)*this.shake,Math.cos(this.tick*3)*this.shake*.4);
     this.drawStreet(c);
     if(arrival)this.drawMetroTrain(c);
@@ -11072,8 +11518,7 @@ class NeonUprising {
     ].sort((a, b) => a.y - b.y);
     for (const o of sorted) {
       if (o.data.x < this.camera - 220 || o.data.x > this.camera + W + 220) continue;
-      if(o.data===this.player&&arrival&&f>=340)continue;
-      if(o.data===this.player&&arrival&&f>305)c.globalAlpha=Math.max(0,(340-f)/35);
+      if(o.data===this.player&&arrival&&this.metroEvent.boarded)continue; // aboard: drawn inside the car by drawMetroTrain
       if (o.kind === 'actor'){o.data.render(c);c.globalAlpha=1;}
       else if (o.kind === 'prop') this.drawProp(c, o.data);
       else this.drawItem(c, o.data);
@@ -11085,7 +11530,7 @@ class NeonUprising {
     }
     c.globalAlpha = 1;
     for (const p of this.popups) STREET.text(c, p.text, p.x, p.y, 19, p.color, 'center', '800');
-    if (!this.locked)
+    if (!this.locked && !this.metroEvent)
       STREET.text(c, 'GO  ➜', Math.min(this.gate - 40, this.camera + 1150), 360, 40, '#ffd08b', 'center', '900');
     c.restore();
     c.restore();

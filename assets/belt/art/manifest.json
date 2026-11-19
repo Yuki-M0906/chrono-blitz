@@ -258,6 +258,46 @@
     "arena-crowd": {
       "file": "metro-v3101/crowd-transparent.png",
       "horizon": 0.6796875
+    },
+    "beach-coral-walk": {
+      "file": "locomotion-v3210/coral.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "beach-azure-walk": {
+      "file": "locomotion-v3210/azure.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "beach-pearl-walk": {
+      "file": "locomotion-v3210/pearl.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "beach-luka-walk": {
+      "file": "locomotion-v3210/luka.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "beach-misha-walk": {
+      "file": "locomotion-v3210/misha.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "beach-warlord-walk": {
+      "file": "locomotion-v3210/warlord.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "voss-walk": {
+      "file": "locomotion-v3210/voss.png",
+      "columns": 6,
+      "rows": 4
+    },
+    "maw-walk": {
+      "file": "locomotion-v3210/maw.png",
+      "columns": 6,
+      "rows": 4
     }
   }
 }

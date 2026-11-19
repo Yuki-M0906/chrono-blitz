@@ -8,12 +8,14 @@ const FighterSprites = {
   visualScale: 1.15,
   scaleFor(id) { return (id === 'titan' ? 1.48 : 1.36) * .5 * this.visualScale; },
   sheets: new Map(),
+  // Cells 0-23 base, 24-47 in-betweens, 48-71 throws, 72-95 walk / run (v3.21.0, optional per character).
+  suffixOf(frame) { return frame >= 72 ? '-locomotion' : frame >= 48 ? '-throw' : frame >= 24 ? '-motion' : ''; },
   errors: [],
   ready: null,
 
   load(sources) {
     this.ready = Promise.all(Object.entries(sources).map(([id, src]) => new Promise(resolve => {
-      const motion = /-(motion|throw)$/.test(id), characterId = id.replace(/-(motion|throw)$/,'');
+      const characterId = id.replace(/-(motion|throw|locomotion)$/,'');
       const image = new Image();
       image.onload = () => {
         try {
@@ -46,9 +48,10 @@ const FighterSprites = {
       // Full 64px bleed preserves long blades, capes and horizontal defeats. Components
       // of neighboring poses are removed below; never crop at the nominal 256px cell edge.
       const sourceFrame = frame;
-      if (key === 'fx-fire' || key === 'maw') {
+      if (key === 'fx-fire' || key === 'maw' || key.endsWith('-locomotion')) {
         // VFX cells contain complete figures. Bleeding the previous row imports a second burning body,
         // especially above the low, lying-down poses. Keep exactly one 256px source cell.
+        // The walk / run sheets are authored inside their cells with a 6px margin, so they take the same path.
         c.drawImage(image, col * 256, row * 256, 256, 256,
           col * cell + this.gutter, row * cell + this.gutter, 256, 256);
       } else {
@@ -151,7 +154,8 @@ const FighterSprites = {
     // v3.20.2 [ANIM-216] The side-scrolling mode supplies its own walk cell (see BeltArt.walkCell). Versus fighters never set it.
     const ownWalk = fighter.walkCell && (state === 'WALK_F' || state === 'WALK_B') ? fighter.walkCell(state === 'WALK_B') : null;
     let frame = throwFrame ?? ownWalk ?? this.frame(id, state, phase, motion.animTick, !silhouette && fighter.blockstun > 0, motion.vy);
-    let sheet = this.sheets.get(id + (frame >= 48 ? '-throw' : frame >= 24 ? '-motion' : ''));
+    const suffix = this.suffixOf(frame);
+    let sheet = this.sheets.get(id + suffix);
     if(!sheet && frame>=48){frame=state==='HIT_AIR'?19:state==='KNOCKDOWN'?20:state==='WAKEUP'?47:22;sheet=this.sheets.get(id+(frame>=24?'-motion':''));}
     if (!sheet && frame >= 24) {
       frame = [0,1,1,0,2,3,4,5,8,9,8,10,11,7,7,16,16,6,21,18,14,8,17,6][frame - 24];
@@ -159,10 +163,10 @@ const FighterSprites = {
     }
     if (!sheet) return false; // The previous procedural renderer remains a decode-failure fallback.
     // Optional clothing palette supplied by the side-scrolling mode; shared source atlases stay intact.
-    if (!silhouette && fighter.streetPalette) sheet = fighter.streetPalette.get(frame >= 48 ? '-throw' : frame >= 24 ? '-motion' : '') || sheet;
-    const metroMask=!silhouette&&fighter.metroHue!==undefined?this.metroMasks?.get(id+(frame>=48?'-throw':frame>=24?'-motion':'')):null;
+    if (!silhouette && fighter.streetPalette) sheet = fighter.streetPalette.get(this.suffixOf(frame)) || sheet;
+    const metroMask=!silhouette&&fighter.metroHue!==undefined?this.metroMasks?.get(id+this.suffixOf(frame)):null;
     // v3.20.1 [ANIM-211] The side-scrolling mode may ask for a per-cell correction (see BeltArt.heroNudge). Versus fighters never set it.
-    const nudge = fighter.poseNudge ? fighter.poseNudge(id, frame >= 48 ? '-throw' : frame >= 24 ? '-motion' : '', frame % 24, state) : null;
+    const nudge = fighter.poseNudge ? fighter.poseNudge(id, this.suffixOf(frame), frame % 24, state) : null;
     frame %= 24;
     const tick = fighter.animTick;
     const cell = this.cell;

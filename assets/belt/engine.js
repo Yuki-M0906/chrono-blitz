@@ -2,7 +2,7 @@
 // Coordinates: x = street distance, y = floor depth, z = height above that floor.
 // Fixed 60 Hz simulation. Draw methods must not change simulation or consume random values.
 const STREET = {
-  version: '3.20.2',
+  version: '3.22.0',
   risingInput: { window: 14, buffer: 6 },
   dash: { tapWindow: 14, speed: 2.2, damage: 112, active: 8, until: 19, end: 38 },
   // v2.6.0 hit detection tuning. One table so the feel can be adjusted without hunting through the methods.
@@ -116,6 +116,88 @@ const FACTORY_AREAS = [
  ['04 / MUTATION WARD','変異実験区画',[['ghost','raven','viper','surge'],['goliath','sable','brute','viper']]],
  ['05 / FURNACE HEART','炉心の怪物',[['boss','goliath','ghost']]]
 ].map(([name,jp,waves],i)=>({left:i*1240,right:(i+1)*1240,name,jp,waves}));
+// v3.22.0 [SE-221] Sounds of the subway events, synthesized on the spot with Web Audio (no audio files).
+// Everything goes through the game's sound-effect volume (sound.seGain) and its limiter. Nothing plays while the
+// audio context is not running (before the first key press, in the tests). Each call is logged for the tests.
+const MetroSound = {
+  buffer: null, log: [],
+  level: 2, // master level of these sounds. Measured on the sound-effect bus: the loudest moment (brake onset) peaks near 0.85 of full scale.
+  ready() { return typeof sound !== 'undefined' && !!sound.ctx && !!sound.seGain && sound.ctx.state === 'running'; },
+  play(name, a = {}) {
+    this.log.push(name); if (this.log.length > 200) this.log.shift();
+    if (!this.ready() || !this[name + '_']) return false;
+    try { this[name + '_'](a); return true; } catch (error) { return false; }
+  },
+  noise() {
+    const c = sound.ctx;
+    if (!this.buffer || this.buffer.sampleRate !== c.sampleRate) {
+      const n = c.sampleRate * 2, b = c.createBuffer(1, n, c.sampleRate), d = b.getChannelData(0); let seed = 22222;
+      for (let i = 0; i < n; i++) { seed = (seed * 1664525 + 1013904223) >>> 0; d[i] = seed / 2147483648 - 1; }
+      this.buffer = b;
+    }
+    const source = c.createBufferSource(); source.buffer = this.buffer; source.loop = true; return source;
+  },
+  osc(type, from, to, dur, delay = 0) {
+    const c = sound.ctx, o = c.createOscillator(), t = c.currentTime + .01 + delay; o.type = type;
+    o.frequency.setValueAtTime(from, t); if (to && to !== from) o.frequency.exponentialRampToValueAtTime(to, t + dur);
+    return o;
+  },
+  filter(type, from, q = .7, to = 0, dur = 0, delay = 0) {
+    const c = sound.ctx, f = c.createBiquadFilter(), t = c.currentTime + .01 + delay; f.type = type; f.Q.value = q;
+    f.frequency.setValueAtTime(from, t); if (to) f.frequency.exponentialRampToValueAtTime(to, t + dur);
+    return f;
+  },
+  // source -> filters -> envelope -> pan -> sound-effect bus. `points` are [seconds, level] pairs from the start.
+  voice(source, filters, points, pan = 0, delay = 0) {
+    const c = sound.ctx, t = c.currentTime + .01 + delay, gain = c.createGain(), panner = c.createStereoPanner();
+    let node = source; const chain = [source, ...filters, gain, panner];
+    for (const f of filters) { node.connect(f); node = f; }
+    node.connect(gain); gain.connect(panner); panner.connect(sound.seGain); panner.pan.value = pan;
+    gain.gain.setValueAtTime(.0001, t);
+    for (const [at, level] of points) gain.gain.linearRampToValueAtTime(Math.max(.0001, level * this.level), t + at);
+    const end = points[points.length - 1][0];
+    source.onended = () => { for (const n of chain) try { n.disconnect(); } catch (error) {} };
+    source.start(t); source.stop(t + end + .05);
+  },
+  // Weight of the train: low noise and a sub tone. Swells toward the stop of an arrival; `fall` fades with the speed.
+  rumble_({ dur = 3, peak = .5, fall = false }) {
+    const shape = fall ? [[.08, peak], [dur * .7, peak * .45], [dur, 0]] : [[dur * .25, peak * .3], [dur * .7, peak], [dur, peak * .35], [dur + .5, 0]];
+    this.voice(this.noise(), [this.filter('lowpass', fall ? 300 : 110, .8, fall ? 90 : 300, dur)], shape, fall ? 0 : .25);
+    this.voice(this.osc('sine', fall ? 62 : 44, fall ? 34 : 58, dur), [], shape.map(([at, v]) => [at, v * .55]));
+  },
+  horn_() {
+    for (const [freq, pan] of [[311, .3], [392, .18]])
+      this.voice(this.osc('sawtooth', freq, freq * .955, .95), [this.filter('lowpass', 1500, .9)], [[.04, .17], [.7, .16], [.95, 0]], pan);
+  },
+  // Two wheel sets over one rail joint.
+  clack_({ vol = .3 }) {
+    for (const delay of [0, .085]) {
+      this.voice(this.noise(), [this.filter('bandpass', 820, 1.4)], [[.004, vol], [.07, 0]], .1, delay);
+      this.voice(this.osc('sine', 150, 70, .07, delay), [], [[.004, vol * .7], [.08, 0]], .1, delay);
+    }
+  },
+  // Brake blocks on steel: a narrow band of noise and a whine, both sinking as the train slows.
+  screech_({ dur = 2, vol = .15 }) {
+    this.voice(this.noise(), [this.filter('bandpass', 3300, 10, 1700, dur)], [[.12, vol * 3.6], [dur * .8, vol * 2.7], [dur, 0]], -.1);
+    this.voice(this.osc('sawtooth', 2500, 1050, dur), [this.filter('bandpass', 2400, 6, 1100, dur)], [[.15, vol * .75], [dur * .85, vol * .5], [dur, 0]], .1);
+  },
+  hiss_() { this.voice(this.noise(), [this.filter('highpass', 3600, .7)], [[.02, .24], [.45, .06], [.9, 0]]); },
+  chime_() {
+    this.voice(this.osc('sine', 659.3, 0, .4), [], [[.01, .2], [.38, 0]]);
+    this.voice(this.osc('sine', 523.3, 0, .5, .3), [], [[.01, .2], [.5, 0]], 0, .3);
+  },
+  slide_() { this.voice(this.noise(), [this.filter('lowpass', 520, .8, 900, .45)], [[.05, .5], [.38, .38], [.48, 0]]); },
+  thunk_({ vol = .4 }) {
+    this.voice(this.osc('sine', 96, 36, .28), [], [[.005, vol], [.32, 0]]);
+    this.voice(this.noise(), [this.filter('lowpass', 320, .8)], [[.004, vol * .7], [.13, 0]]);
+  },
+  motor_({ dur = 1.7 }) {
+    this.voice(this.osc('sawtooth', 68, 250, dur), [this.filter('lowpass', 950, .8)], [[.3, .18], [dur, .24], [dur + .3, 0]], -.15);
+    this.voice(this.osc('square', 136, 500, dur), [this.filter('lowpass', 1300, .8)], [[.3, .03], [dur, .045], [dur + .3, 0]], .15);
+  },
+  alarm_() { for (let i = 0; i < 3; i++) this.voice(this.osc('square', i % 2 ? 660 : 880, 0, .12, i * .13), [this.filter('lowpass', 2600, .7)], [[.006, .18], [.1, .18], [.12, 0]], 0, i * .13); },
+  spark_() { this.voice(this.noise(), [this.filter('highpass', 5200, .7)], [[.002, .13], [.045, 0]], -.3); }
+};
 const RESORT_ENEMIES = {
  coral:{char:4,name:'CORAL',resort:'coral',role:'punk',hp:118,speed:2.65,damage:27,hue:0,score:350},
  sunset:{char:4,name:'SUNSET',resort:'coral',role:'punk',hp:128,speed:2.8,damage:28,hue:45,score:400},
@@ -133,6 +215,7 @@ BeltArt.ready = BeltArt.ready.then(() => {
     try {
       BeltArt.beachPalette(spec.resort, spec.hue);
       BeltArt.beachPalette(spec.resort+'-life', spec.hue);
+      BeltArt.beachPalette(spec.resort+'-walk', spec.hue);
     } catch (error) { BeltArt.errors.push('palette ' + spec.name + ': ' + error.message); }
 });
 const RESORT_AREAS = [
@@ -169,8 +252,9 @@ const StreetPalettes = {
     const spec = STREET.enemies[kind] || METRO_ENEMIES[kind],
       id = CHARACTERS[spec.char].id,
       result = new Map();
-    for (const suffix of ['', '-motion', '-throw']) {
+    for (const suffix of ['', '-motion', '-throw', '-locomotion']) {
       const source = FighterSprites.sheets.get(id + suffix);
+      if (!source && suffix === '-locomotion') continue; // optional sheet (v3.21.0)
       if (!source) return null;
       const atlas = document.createElement('canvas');
       atlas.width = source.atlas.width;
@@ -292,7 +376,7 @@ class StreetActor extends Fighter {
     this.attack = null;
   }
   poseNudge(id, suffix, frame, state) { return BeltArt.heroNudge(id, suffix, frame, state); }
-  walkCell(back) { return BeltArt.walkCell(this.gait, back, BeltArt.walkHold + (this.data.id === 'titan' ? 1 : 0)); }
+  walkCell(back) { return BeltArt.heroWalkCell(this.data.id, this.gait, back, BeltArt.walkHold + (this.data.id === 'titan' ? 1 : 0)); }
   walkTo(nextX, nextY, rushing = false) {
     const stride = Math.hypot(nextX-this.x, (nextY-this.y)/.64);
     const moving = stride > .01;
@@ -418,39 +502,133 @@ class NeonUprising {
     sound.playBGM(this.stage.music);
     this.player.speak('select', 60);
   }
+  // v3.22.0 [EVENT-220] Subway events of stage 4, rebuilt on physical motion.
+  // arrival: the train enters at speed and brakes at a constant rate (speed falls linearly to zero at the door mark),
+  //          its body rocks once on the springs, the doors open after a beat, the hero boards at walking speed, the
+  //          doors close and the train pulls out with constant acceleration before the cut.
+  // stop   : emergency brake inside the train. The train runs to the left (the tunnel lights pass to the right), so
+  //          everything loose is carried to the left: the camera, the hero and the props. Speed falls linearly.
+  // Every frame number is fixed when the event begins (they depend only on the hero's walking speed), so the event
+  // has a known length (e.total). Sounds are cues fired on fixed frames (MetroSound).
   beginMetroEvent(kind){
     this.breakGrab();this.resetDashTap();input.keys={};input.clear();
-    const timing=kind==='arrival'?{fade:366,cut:400,total:456}:kind==='stop'?{fade:236,cut:270,total:326}:{fade:42,cut:72,total:128};
-    this.metroEvent={kind,f:0,startTick:this.tick,fromArea:this.area,doorWorld:this.areaData().left+1180,walkX:this.player.x,walkY:this.player.y,...timing,swapped:false};
-    this.player.pose('IDLE');sound.playCue(kind==='arrival'?'boss':'cursor');
+    const p=this.player,area=this.areaData();
+    const e={kind,f:0,startTick:this.tick,fromArea:this.area,doorWorld:area.left+1180,walkX:p.x,walkY:p.y,swapped:false};
+    if(kind==='arrival'){
+      e.enter=50;e.brake=170;e.stopAt=e.enter+e.brake;
+      e.waitX=e.doorWorld-150;e.waitY=505;e.doorY=448;
+      e.hissAt=e.stopAt+6;e.chimeAt=e.stopAt+30;e.openAt=e.stopAt+44;e.openEnd=e.openAt+30;
+      e.boardAt=e.openEnd+8;e.boardEnd=e.boardAt+Math.ceil(Math.hypot(e.doorWorld-e.waitX,(e.waitY-e.doorY)/.64)/p.speed);
+      e.closeAt=e.boardEnd+22;e.closeEnd=e.closeAt+28;e.departAt=e.closeEnd+18;
+      e.fade=e.departAt+70;e.cut=e.fade+34;e.total=e.cut+56;e.wind=0;e.clack=0;e.boarded=false;
+    }else if(kind==='stop'){
+      e.brakeAt=24;e.brake=150;e.stopAt=e.brakeAt+e.brake;e.recover=e.stopAt+34;e.cam0=this.camera;e.slide0=3.6;e.decay=.955;
+      let x=p.x;for(let t=0;t<e.brake;t++)x=Math.max(this.backWall+8,x-e.slide0*Math.pow(e.decay,t));
+      e.exitX=area.right-130;
+      e.fade=e.recover+Math.max(20,Math.ceil((e.exitX-x)/p.speed)-12);e.cut=e.fade+34;e.total=e.cut+56;
+    }else Object.assign(e,{fade:42,cut:72,total:128});
+    this.metroEvent=e;
+    p.pose('IDLE');if(kind!=='arrival'&&kind!=='stop')sound.playCue('cursor');
+  }
+  // Where the train is, in world px, on frame f of the arrival.
+  metroTrainX(f,width){
+    const e=this.metroEvent,rest=e.doorWorld-width*.516,start=e.fromArea*1920+2200;
+    const u=STREET.clamp((f-e.enter)/e.brake,0,1);
+    let x=rest+(start-rest)*(1-u)*(1-u);
+    // The body leans on its springs as it stops: forward, back, and still within half a second.
+    if(f>=e.stopAt){const t=f-e.stopAt;x-=4*Math.exp(-t/8)*Math.sin(t*.5);}
+    if(f>e.departAt){const d=f-e.departAt;x-=.11*d*d;}
+    return x;
+  }
+  metroTrainSpeed(){
+    const e=this.metroEvent,box=BeltArt.trainFrames?.[0];if(!e||e.kind!=='arrival'||!box)return 0;
+    const width=box.w/box.h*390;return Math.abs(this.metroTrainX(e.f,width)-this.metroTrainX(e.f-1,width));
   }
   metroTrainLayout(){
     const e=this.metroEvent,box=BeltArt.trainFrames?.[0];if(!e||!box)return null;
-    const height=390,width=box.w/box.h*height,finalX=e.doorWorld-width*.516;
-    const t=STREET.clamp(e.f/180,0,1),ease=t*t*t*(10+t*(-15+6*t));
-    const x=(e.fromArea*1920+2200)*(1-ease)+finalX*ease;
-    const open=e.f<200?0:e.f<225?(e.f-200)/25:e.f<340?1:Math.max(0,1-(e.f-340)/26);
-    return {x,y:440-height*.77,w:width,h:height,open,doorX:e.doorWorld};
+    const height=390,width=box.w/box.h*height,ease=t=>{t=STREET.clamp(t,0,1);return t*t*(3-2*t);};
+    const open=e.f<e.openAt?0:e.f<e.closeAt?ease((e.f-e.openAt)/(e.openEnd-e.openAt)):1-ease((e.f-e.closeAt)/(e.closeEnd-e.closeAt));
+    return {x:this.metroTrainX(e.f,width),rest:e.doorWorld-width*.516,y:440-height*.77,w:width,h:height,open,doorX:e.doorWorld};
+  }
+  // How fast the braking train still runs inside the cars: 1 = cruising, 0 = stopped.
+  metroBrakeSpeed(){const e=this.metroEvent;if(!e||e.kind!=='stop')return 1;return 1-STREET.clamp((e.f-e.brakeAt)/e.brake,0,1);}
+  // Distance the train has run, in ticks at cruising speed. The tunnel lights of the cars are drawn from it.
+  metroTravel(){
+    const e=this.metroEvent;if(!e||e.kind!=='stop')return this.tick;
+    const u=STREET.clamp(e.f-e.brakeAt,0,e.brake);return e.startTick+Math.min(e.f,e.brakeAt)+u-u*u/(2*e.brake);
+  }
+  // Screen shake of the two events, in px. It follows the speed of the train and stops with it.
+  metroShake(){
+    const e=this.metroEvent;if(!e||e.swapped)return [0,0];
+    if(e.kind==='arrival'){const speed=this.metroTrainSpeed();if(speed<.05)return [0,0];const amp=Math.min(3,speed/22*3);return [Math.sin(e.f*1.3)*amp*.5,Math.cos(e.f*1.9)*amp];}
+    if(e.kind==='stop'){
+      const v=this.metroBrakeSpeed(),on=e.f>=e.brakeAt&&e.f<e.stopAt?1:0,s=e.f-e.stopAt;
+      const thump=s>=0?6*Math.exp(-s/5)*Math.cos(s*.9):0;
+      return [on*v*1.2*Math.sin(e.f*2.3),on*(.6+v*2)*Math.sin(e.f*1.7)+thump];
+    }
+    return [0,0];
   }
   metroFade(){const e=this.metroEvent;if(!e)return 0;
     if(e.f<e.fade)return 0;if(e.f<e.cut)return (e.f-e.fade)/(e.cut-e.fade);
     if(e.f<e.cut+12)return 1;return STREET.clamp((e.total-e.f)/(e.total-e.cut-12),0,1);
+  }
+  // One frame of walking (or running when far away) toward a point, at the hero's own speed. True on arrival.
+  metroStep(x,y,canRun=false){
+    const p=this.player,dx=x-p.x,dy=(y-p.y)/.64,d=Math.hypot(dx,dy);
+    if(d<.5){if(p.state!=='IDLE')p.pose('IDLE');return true;}
+    const run=canRun&&d>260,v=Math.min(d,p.speed*(run?STREET.dash.speed:1));
+    if(Math.abs(dx)>2)p.facing=dx>0?1:-1;
+    const nx=p.x+dx/d*v,ny=p.y+dy/d*v*.64;
+    if(run){if(p.state!=='STREET_DASH')p.pose('STREET_DASH');else p.f++;p.x=nx;p.y=ny;}
+    else{if(p.state==='STREET_DASH')p.pose('IDLE');p.walkTo(nx,ny);}
+    p.animTick++;return false;
   }
   updateMetroEvent(){
     const e=this.metroEvent;e.f++;this.tick++;
     if(!e.swapped){
       const p=this.player;
       if(e.kind==='arrival'){
-        const waitX=e.doorWorld-220;
-        if(e.f<=180){const t=e.f/180,u=t*t*(3-2*t);p.facing=waitX>=e.walkX?1:-1;p.walkTo(e.walkX+(waitX-e.walkX)*u,e.walkY+(505-e.walkY)*u);p.animTick++;}
-        else if(e.f<225)p.state='IDLE';
-        if(e.f===180||e.f===200||e.f===340)sound.playGrapple('impact');
-        if(e.f>=225&&e.f<=340){const t=STREET.clamp((e.f-225)/105,0,1),u=t*t*(3-2*t);p.facing=1;p.walkTo(waitX+220*u,505+(448-505)*u);p.animTick++;}
+        const speed=this.metroTrainSpeed();
+        if(e.f===1)MetroSound.play('rumble',{dur:e.stopAt/60,peak:.55});
+        if(e.f===e.enter+10)MetroSound.play('horn');
+        if(e.f===e.enter+70)MetroSound.play('screech',{dur:(e.stopAt-e.f)/60,vol:.13});
+        if(e.f===e.stopAt)MetroSound.play('thunk',{vol:.35});
+        if(e.f===e.hissAt)MetroSound.play('hiss');
+        if(e.f===e.chimeAt||e.f===e.closeAt-16)MetroSound.play('chime');
+        if(e.f===e.openAt||e.f===e.closeAt)MetroSound.play('slide');
+        if(e.f===e.openEnd||e.f===e.closeEnd)MetroSound.play('thunk',{vol:.28});
+        if(e.f===e.departAt){MetroSound.play('motor',{dur:(e.cut-e.f)/60});MetroSound.play('rumble',{dur:(e.cut-e.f)/60,peak:.4});}
+        // Rail joints: one double knock for every 230 px the train covers.
+        e.clack+=speed;if(e.clack>=230){e.clack-=230;MetroSound.play('clack',{vol:Math.min(.5,.12+speed/50)});}
+        e.wind+=speed*.6;
+        if(e.f<e.boardAt){if(this.metroStep(e.waitX,e.waitY,true))p.facing=1;}
+        else if(!e.boarded){if(this.metroStep(e.doorWorld,e.doorY)||e.f>=e.boardEnd){e.boarded=true;p.x=e.doorWorld;p.y=e.doorY;p.pose('IDLE');p.facing=1;}}
         const target=STREET.clamp(p.x-480,e.fromArea*1920,e.fromArea*1920+640);
         this.camera+=(target-this.camera)*.065;
       }else if(e.kind==='stop'){
-        if(e.f===110)sound.playGrapple('impact');
-        if(e.f>130){p.facing=1;p.walkTo(p.x+Math.min(4.5,Math.max(0,this.areaData().right-130-p.x)),p.y+(470-p.y)*.04);p.animTick++;}
+        const t=e.f-e.brakeAt,left=this.backWall+8;
+        if(e.f===1)MetroSound.play('alarm');
+        if(t===0){MetroSound.play('thunk',{vol:.5});MetroSound.play('screech',{dur:e.brake/60,vol:.2});MetroSound.play('rumble',{dur:e.brake/60,peak:.5,fall:true});}
+        if(t>0&&e.f<e.stopAt&&t%9===4&&this.metroBrakeSpeed()>.25)MetroSound.play('spark');
+        if(e.f===e.stopAt)MetroSound.play('thunk',{vol:.6});
+        if(e.f===e.stopAt+8)MetroSound.play('hiss');
+        if(t>=0&&e.f<e.stopAt){
+          // Inertia: the hero is carried toward the front of the train, catches the slide with back steps, then braces.
+          const slide=e.slide0*Math.pow(e.decay,t),nx=Math.max(left,p.x-slide);
+          p.facing=1;
+          if(t<14){if(t===0)p.pose('HIT_STAND');else p.f++;p.x=nx;}
+          else if(slide>.9)p.walkTo(nx,p.y);
+          else{if(p.state!=='CROUCH')p.pose('CROUCH');else p.f++;p.x=nx;}
+          p.animTick++;
+          if(t>5)for(const q of this.props)if(q.hp>0)q.x=Math.max(this.backWall+20,q.x-slide*1.25);
+        }else if(e.f>=e.stopAt&&e.f<e.recover){if(e.f===e.stopAt+16)p.pose('IDLE');else if(p.state==='CROUCH')p.f++;}
+        else if(e.f>=e.recover){
+          const dx=Math.min(p.speed,Math.max(0,e.exitX-p.x));
+          if(dx>.01){p.facing=1;p.walkTo(p.x+dx,p.y+(470-p.y)*.04);p.animTick++;}else if(p.state!=='IDLE')p.pose('IDLE');
+        }
+        // The camera is carried the same way and comes back when the train has stopped.
+        const s=e.f-e.stopAt,lurch=t<0?0:s<0?16*(1-Math.exp(-t/7)):16*Math.exp(-s/6)*Math.max(0,Math.cos(s*.5));
+        this.camera=STREET.clamp(e.cam0-lurch,this.areaData().left,this.areaData().right-W);
       }else{p.facing=1;p.walkTo(p.x+3,p.y);p.animTick++;}
     }
     if(e.f===e.cut){
@@ -466,17 +644,51 @@ class NeonUprising {
     const e=this.metroEvent;if(!e||e.kind!=='arrival'||e.swapped)return;
     const r=this.metroTrainLayout(),image=BeltArt.images.get('subway-train'),frames=BeltArt.trainFrames;
     if(!r||!image)return;
-    c.save();c.translate(-Math.round(this.camera),0);c.beginPath();c.rect(e.fromArea*1920+180,40,1740,406);c.clip();
+    const speed=this.metroTrainSpeed(),left=e.fromArea*1920;
+    c.save();c.translate(-Math.round(this.camera),0);c.beginPath();c.rect(left+180,40,1740,406);c.clip();
+    // Headlight on the tunnel wall before the train is in sight, growing as it comes.
+    if(e.f>12&&e.f<e.stopAt&&r.x>left+1500){
+      const k=STREET.clamp((e.f-12)/(e.enter+20),0,1),g=c.createLinearGradient(left+1920,0,left+1920-900*k,0);
+      g.addColorStop(0,'rgba(255,236,190,'+(.34*k)+')');g.addColorStop(1,'rgba(255,236,190,0)');
+      c.fillStyle=g;c.fillRect(left+1020,150,900,296);
+    }
     const a=frames[0],b=frames[1];c.drawImage(image,a.x,a.y,a.w,a.h,r.x,r.y,r.w,r.h);
-    if(r.open>0){c.save();c.beginPath();const half=r.w*.075*r.open;c.rect(e.doorWorld-half,r.y+r.h*.19,half*2,r.h*.61);c.clip();c.drawImage(image,b.x,b.y,b.w,b.h,r.x,r.y,r.w,r.h);c.restore();}
+    const half=r.w*.075*r.open,doorX=e.doorWorld+(r.x-r.rest),doorTop=r.y+r.h*.19,doorH=r.h*.61;
+    if(r.open>0){c.save();c.beginPath();c.rect(doorX-half,doorTop,half*2,doorH);c.clip();c.drawImage(image,b.x,b.y,b.w,b.h,r.x,r.y,r.w,r.h);
+      // Once aboard the hero stands inside the car: behind the door leaves, and carried along when the train leaves.
+      if(e.boarded){c.translate(r.x-r.rest,0);this.player.render(c);c.fillStyle='rgba(24,14,6,.22)';c.fillRect(e.doorWorld-half-2,doorTop,half*2+4,doorH);}
+      c.restore();}
+    // Headlight of the moving train: a glow at its nose and a beam along the track ahead of it.
+    if(speed>.3){
+      const nx=r.x+34,ny=r.y+r.h*.66,k=Math.min(1,speed/8);
+      c.save();c.globalCompositeOperation='lighter';
+      const beam=c.createLinearGradient(nx,0,nx-620,0);beam.addColorStop(0,'rgba(255,232,180,'+(.3*k)+')');beam.addColorStop(1,'rgba(255,232,180,0)');
+      c.fillStyle=beam;c.beginPath();c.moveTo(nx,ny-14);c.lineTo(nx-620,ny-110);c.lineTo(nx-620,ny+70);c.lineTo(nx,ny+14);c.fill();
+      const glow=c.createRadialGradient(nx,ny,2,nx,ny,120);glow.addColorStop(0,'rgba(255,244,214,'+(.75*k)+')');glow.addColorStop(1,'rgba(255,244,214,0)');
+      c.fillStyle=glow;c.fillRect(nx-120,ny-120,240,240);c.restore();
+    }
     c.restore();
     // Restore near platform edge over the wheels: the train remains behind the platform.
     const board=BeltArt.metroBoards.get(0);c.drawImage(board,0,446,1920,195,-Math.round(this.camera),446,1920,195);
+    // Draught of the passing train: dust carried along the platform, as fast and as dense as the train is fast.
+    if(speed>1.5){
+      c.save();c.strokeStyle='rgba(226,216,196,'+Math.min(.34,speed/50)+')';c.lineWidth=2;c.beginPath();
+      for(let n=0;n<16;n++){
+        const x=((n*211.7-e.wind)%1500+1500)%1500-110,y=452+(n*47.3)%150,len=6+speed*1.5;
+        c.moveTo(x,y);c.lineTo(x+len,y-(n%3-1));
+      }
+      c.stroke();c.restore();
+    }
   }
   drawMetroEvent(c){const e=this.metroEvent;if(!e)return;
-    if(e.kind==='stop'&&!e.swapped&&e.f<150){c.fillStyle='rgba(255,55,25,'+(.05+.04*Math.sin(e.f*.4))+')';c.fillRect(0,0,W,641);}
+    if(e.kind==='stop'&&!e.swapped){
+      const v=this.metroBrakeSpeed(),braking=e.f>=e.brakeAt&&e.f<e.stopAt;
+      // Car lights flicker while the brakes bite, then settle to the dim red emergency lighting.
+      if(braking){const n=Math.floor(e.f/3),h=Math.sin(n*12.9898)*43758.5453,r=h-Math.floor(h);if(r>.58){c.fillStyle='rgba(4,6,10,'+(.1+.2*v)+')';c.fillRect(0,0,W,641);}}
+      if(e.f<e.recover+30){c.fillStyle='rgba(255,55,25,'+(.05+.04*Math.sin(e.f*.4))+')';c.fillRect(0,0,W,641);}
+    }
     const bar=Math.min(1,e.f/20,(e.total-e.f)/20)*48;c.fillStyle='#050910';c.fillRect(0,0,W,bar);c.fillRect(0,641-bar,W,bar);
-    const title=e.kind==='arrival'?(e.f<190?'DEADLINE EXPRESS / ARRIVING':e.f<340?'BOARD THE TRAIN':'DOORS CLOSING'):e.kind==='stop'?(e.f<130?'EMERGENCY BRAKE':'EXIT TO THE TRACKS'):e.kind==='resort'?'AZURE MIRAGE / '+this.stage.areas[Math.min(e.fromArea+1,4)].name:e.fromArea===1?'THROUGH THE GANGWAY':'ENTER THE IRON PIT';
+    const title=e.kind==='arrival'?(e.f<e.stopAt?'DEADLINE EXPRESS / ARRIVING':e.f<e.closeAt?'BOARD THE TRAIN':e.f<e.departAt?'DOORS CLOSING':'DEPARTING'):e.kind==='stop'?(e.f<e.recover?'EMERGENCY BRAKE':'EXIT TO THE TRACKS'):e.kind==='resort'?'AZURE MIRAGE / '+this.stage.areas[Math.min(e.fromArea+1,4)].name:e.fromArea===1?'THROUGH THE GANGWAY':'ENTER THE IRON PIT';
     STREET.text(c,title,W/2,622,17,'#e6d7b3','center');
     const alpha=this.metroFade();if(alpha){c.fillStyle='rgba(3,6,10,'+alpha+')';c.fillRect(0,0,W,641);}
   }
@@ -1595,8 +1807,8 @@ class NeonUprising {
 
   draw(c) {
     if(this.bonus){this.bonus.draw(this,c);return;}
-    c.save();const arrival=this.metroEvent?.kind==='arrival'&&!this.metroEvent.swapped,f=this.metroEvent?.f||0,amp=arrival&&f<200?Math.sin(Math.min(1,f/200)*Math.PI)*9:0;
-    c.translate(Math.sin(f*2.7)*amp,Math.cos(f*3.9)*amp*.65);
+    c.save();const arrival=this.metroEvent?.kind==='arrival'&&!this.metroEvent.swapped,f=this.metroEvent?.f||0;
+    {const [sx,sy]=this.metroShake();c.translate(sx,sy);} // v3.22.0 [EVENT-220] shake follows the train's speed
     if(this.stageIndex===2)c.translate(Math.sin(this.tick*2)*this.shake,Math.cos(this.tick*3)*this.shake*.4);
     this.drawStreet(c);
     if(arrival)this.drawMetroTrain(c);
@@ -1639,8 +1851,7 @@ class NeonUprising {
     ].sort((a, b) => a.y - b.y);
     for (const o of sorted) {
       if (o.data.x < this.camera - 220 || o.data.x > this.camera + W + 220) continue;
-      if(o.data===this.player&&arrival&&f>=340)continue;
-      if(o.data===this.player&&arrival&&f>305)c.globalAlpha=Math.max(0,(340-f)/35);
+      if(o.data===this.player&&arrival&&this.metroEvent.boarded)continue; // aboard: drawn inside the car by drawMetroTrain
       if (o.kind === 'actor'){o.data.render(c);c.globalAlpha=1;}
       else if (o.kind === 'prop') this.drawProp(c, o.data);
       else this.drawItem(c, o.data);
@@ -1652,7 +1863,7 @@ class NeonUprising {
     }
     c.globalAlpha = 1;
     for (const p of this.popups) STREET.text(c, p.text, p.x, p.y, 19, p.color, 'center', '800');
-    if (!this.locked)
+    if (!this.locked && !this.metroEvent)
       STREET.text(c, 'GO  ➜', Math.min(this.gate - 40, this.camera + 1150), 360, 40, '#ffd08b', 'center', '900');
     c.restore();
     c.restore();

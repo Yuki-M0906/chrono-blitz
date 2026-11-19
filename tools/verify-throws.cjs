@@ -10,7 +10,7 @@ const root=path.resolve(__dirname,'..');let browser;
  const result=await page.evaluate(async()=>{
   await FighterSprites.ready;await StageArt.ready;
   const check=(ok,msg)=>{if(!ok)throw Error(msg);};
-  check(FighterSprites.sheets.size===18 && !FighterSprites.errors.length,'18 sprite atlases');
+  check([...FighterSprites.sheets.keys()].filter(key=>!key.endsWith('-locomotion')).length===18 && !FighterSprites.errors.length,'18 sprite atlases');
   sound.init=()=>{};sound.playBGM=()=>{};sound.announce=()=>{};
   const calls=[];fighterVoice.play=(id,event,player,priority)=>{calls.push({id,event,player,priority});return true;};
   const setup=(a,b,owner=0)=>{

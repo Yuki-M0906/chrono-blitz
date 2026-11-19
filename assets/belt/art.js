@@ -11,6 +11,7 @@ const BeltArt = {
   risingFx: null,
   breathFx: null,
   bossCells: new Map(),
+  bossWalk: null,
   bossSheets: new Map(),
   dashSheets: new Map(),
   actionSheets: new Map(),
@@ -36,12 +37,20 @@ const BeltArt = {
             this.trainFrames=[top,this.bounds(g,0,img.height/2,img.width,img.height/2)];this.trainBounds=top;
           }
           else if(id==='beach-decor')this.prepareBeachDecor(img);
+          else if(id.startsWith('beach-')&&id.endsWith('-walk'))this.beachSheets.set(id.slice(6),this.prepareWalkAtlas(img,96));
           else if(id.startsWith('beach-'))this.beachSheets.set(id.slice(6),this.prepareBeachAtlas(img));
           else if (id.startsWith('factory-')) this.prepareBoard(Number(id.slice(-1)), img, entry.horizon, this.factoryBoards);
           else if (id === 'maw') {
             this.monsterSheet = FighterSprites.prepareAtlas(img, 'maw');
             const c=this.monsterSheet.getContext('2d',{willReadFrequently:true}),cell=FighterSprites.cell;
             this.monsterCells=Array.from({length:24},(_,i)=>this.bounds(c,i%6*cell,Math.floor(i/6)*cell,cell,cell));
+          }
+          else if (id === 'maw-walk' || id === 'voss-walk') {
+            // v3.21.0 [ANIM-219] Walk sheets of the two bosses. One sole line (cell 0) is used for all eight cells.
+            const atlas=this.prepareWalkAtlas(img,64),c=atlas.getContext('2d',{willReadFrequently:true}),cell=FighterSprites.cell;
+            const foot=this.bounds(c,0,0,cell,cell).bottom+1;
+            if(id==='maw-walk'){this.monsterAtlases.set(id,atlas);this.monsterContacts.set(id,Array.from({length:24},()=>foot));}
+            else this.bossWalk={atlas,foot};
           }
           else if (['maw-motion','maw-breath','maw-hurt'].includes(id)) {
             const atlas=this.prepareStrictAtlas(img),c=atlas.getContext('2d',{willReadFrequently:true}),cell=FighterSprites.cell;
@@ -83,11 +92,17 @@ const BeltArt = {
   },
 
   drawDash(actor, c) {
-    const f = this.dashFrame(actor), image = this.dashSheets.get(actor.data.id);
+    let f = this.dashFrame(actor), image = this.dashSheets.get(actor.data.id);
     if (f === null || !image) return false;
     const scale = FighterSprites.scaleFor(actor.data.id), cell = FighterSprites.cell;
+    // v3.21.0 [ANIM-217] The running loop comes from the walk / run sheet when the character has one. The older loop
+    // started on a standing pose and its hips wandered 34 px. The dash attack (cells 8-23) stays on the dash sheet.
+    const run = actor.state === 'STREET_DASH' ? this.locomotion(actor.data.id) : null;
+    let nudge = null;
+    if (run) { f = this.runCell(actor.f); image = run.atlas; nudge = this.heroNudge(actor.data.id, '-locomotion', f, 'DASH_F'); }
     c.save(); c.scale(actor.facing, 1); c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
     if (actor.invuln > 0 && Math.floor(actor.animTick / 3) % 2) c.globalAlpha *= .72;
+    if (nudge) c.translate(Math.round(nudge.x * scale), Math.round(nudge.y * scale));
     const draw = offset => c.drawImage(image, f % 6 * cell, Math.floor(f / 6) * cell, cell, cell,
       -Math.round(FighterSprites.pivotX * scale) + offset, -Math.round(FighterSprites.pivotY * scale), Math.round(cell * scale), Math.round(cell * scale));
     const alpha = c.globalAlpha;
@@ -109,6 +124,23 @@ const BeltArt = {
     c.drawImage(image, frame % 6 * cell, Math.floor(frame / 6) * cell, cell, cell,
       -FighterSprites.pivotX * scale + offsetX, -FighterSprites.pivotY * scale + offsetY, cell * scale, cell * scale);
     c.restore(); return true;
+  },
+  // v3.21.0 [ANIM-219] Enemy walk sheets (assets/belt/art/locomotion-v3210): 256 px cells, cells 0-7 walk, 12-19 jog,
+  // hips at x = 128, soles at y = 249, 6 px margin. Each cell is copied as it is (no bleed from its neighbours).
+  // `left` is where the cell's left edge goes inside the 384 px atlas cell: 96 for the seaside sheets (their atlases
+  // keep 96 px of bleed on the left), 64 for the others.
+  prepareWalkAtlas(image, left) {
+    const c=document.createElement('canvas'),cell=FighterSprites.cell; c.width=cell*6; c.height=cell*4;
+    const g=c.getContext('2d',{willReadFrequently:true});
+    for(let f=0;f<24;f++) g.drawImage(image,f%6*256,Math.floor(f/6)*256,256,256,f%6*cell+left,Math.floor(f/6)*cell+64,256,256);
+    return c;
+  },
+  // Cell of an enemy walk sheet. `hold` is in units of actor.gait (one unit = one frame at the actor's full walking
+  // speed): [walk, jog]. It is chosen per enemy so that speed x hold / drawn scale is what the planted foot moves per cell.
+  enemyWalkHold: { coral:[8,7], azure:[8,7], pearl:[10,9], luka:[8,7], misha:[8,7], warlord:[12,12], voss:[10,10], maw:[12,12] },
+  enemyWalkCell(name, gait, back, jog = false) {
+    const hold=this.enemyWalkHold[name][jog?1:0], step=Math.floor((gait||0)/hold)%8;
+    return (jog?12:0)+(back?(8-step)%8:step);
   },
   prepareStrictAtlas(image, effects = false) {
     // New atlases never borrow pixels from adjacent drawings. Shared renderer stays unchanged.
@@ -330,6 +362,10 @@ const BeltArt = {
         const strike=[14,15,16][(a.strike|0)%3];
         return [life, af<4?13:af<16?strike:af<24?17:0];
       }
+      if(a.state==='WALK_F'&&this.beachSheets.has(a.resort+'-walk')){
+        // v3.21.0 [ANIM-219] Eight-cell walk, and an eight-cell jog while closing in from far away.
+        return [a.resort+'-walk', this.enemyWalkCell(a.resort, a.gait|0, a.walkBack, !!a.rush&&!a.walkBack)];
+      }
       if(a.state==='WALK_F'){
         const pace=Math.max(6,Math.min(8,Math.round(15/Math.max(1.5,a.speed||2))));
         const gait=a.gait|0;
@@ -363,6 +399,7 @@ const BeltArt = {
     else if(a.state==='HIT_STAND')f=16;
     else if(a.state==='WINDUP')f=8;
     else if(a.state==='ATK_H')f=a.f<5?8:a.f<12?9:a.f<20?10:11;
+    else if(a.state==='WALK_F'&&this.beachSheets.has(a.resort+'-walk')) return [a.resort+'-walk', this.enemyWalkCell(a.resort, a.gait??a.animTick, a.walkBack)]; // v3.21.0 [ANIM-219] IRON SHOGUN
     else if(a.state==='WALK_F'){const step=Math.floor((a.gait??a.animTick)/4)%6;f=2+(a.walkBack?(6-step)%6:step);}
     return [a.resort,f];
   },
@@ -402,13 +439,22 @@ const BeltArt = {
     return cells;
   },
   // Shift (in source pixels) that puts this cell's body over the idle pose's body. Upright poses align hips.
+  // Walk sheets have one sole line of their own: put cell 0's soles where the idle pose stands (source px).
+  resortWalkDrop(id) {
+    if (!id.endsWith('-walk')) return 0;
+    const name = id.slice(0, -5), sheet = this.beachSheets.get(id), px = FighterSprites.pivotX + 32;
+    const life = this.beachSheets.get(name + '-life'), base = this.beachSheets.get(name);
+    const ref = (life ? this.cellAnchors('beach-' + name + '-life', life, px)[0] : null) || (base ? this.cellAnchors('beach-' + name, base, px)[0] : null);
+    const own = sheet ? this.cellAnchors('beach-' + id, sheet, px)[0] : null;
+    return ref && own ? ref.bottom - own.bottom : 0;
+  },
   resortNudge(id, f) {
-    const sheet = this.beachSheets.get(id), base = this.beachSheets.get(id.replace(/-(life|motion)$/, ''));
+    const sheet = this.beachSheets.get(id), base = this.beachSheets.get(id.replace(/-(life|motion|walk)$/, ''));
     if (!sheet || !base) return 0;
     const px = FighterSprites.pivotX + 32, cellInfo = this.cellAnchors('beach-' + id, sheet, px)[f];
-    const life = this.beachSheets.get(id.replace(/-(life|motion)$/, '') + '-life');
-    const ref = (life ? this.cellAnchors('beach-' + id.replace(/-(life|motion)$/, '') + '-life', life, px)[0] : null) ||
-      this.cellAnchors('beach-' + id.replace(/-(life|motion)$/, ''), base, px)[0];
+    const life = this.beachSheets.get(id.replace(/-(life|motion|walk)$/, '') + '-life');
+    const ref = (life ? this.cellAnchors('beach-' + id.replace(/-(life|motion|walk)$/, '') + '-life', life, px)[0] : null) ||
+      this.cellAnchors('beach-' + id.replace(/-(life|motion|walk)$/, ''), base, px)[0];
     if (!cellInfo || !ref) return 0;
     const upright = cellInfo.h > ref.h * .75;
     return Math.max(-90, Math.min(90, ref.hip - (upright ? cellInfo.hip : cellInfo.centre)));
@@ -424,6 +470,21 @@ const BeltArt = {
     const step = Math.floor((gait || 0) / hold) % 4;
     return 2 + (back ? (4 - step) % 4 : step);
   },
+  // v3.21.0 [ANIM-217] Characters with a walk / run sheet (<id>-locomotion: cells 0-7 walk, 12-19 run, drawn as one
+  // continuous cycle at one size) use it; the rest keep the four base cells above. Returned cells are 72 + n.
+  // Pace: one cell lasts strideHold units of actor.gait (walk) or runHold frames (run). They are set so that the
+  // body advances as far per cell as the planted foot moves back in the art (VOLT: about 33 source px a cell walking,
+  // 69 running; measured on the delivered sheet), which keeps the planted foot nearly still on the ground.
+  // Walk: 24 frames a step (2.5 steps a second). Run: 20 frames a step. Faster holds make the feet skate.
+  locomotion(id) { return FighterSprites.sheets.get(id + '-locomotion') || null; },
+  strideHold: 6,
+  heroWalkCell(id, gait, back, hold = this.walkHold) {
+    if (!this.locomotion(id)) return this.walkCell(gait, back, hold);
+    const step = Math.floor((gait || 0) / (this.strideHold + (id === 'titan' ? 1 : 0))) % 8;
+    return 72 + (back ? (8 - step) % 8 : step);
+  },
+  runHold: 5,
+  runCell(f) { return 12 + Math.floor(f / this.runHold) % 8; },
   // Player heroes and the recoloured street / metro enemies share the fighter atlases. While standing, walking
   // and running the hips stay over the feet and the soles stay on one line; other states keep their authored lunge.
   heroNudge(id, suffix, f, state) {
@@ -436,12 +497,15 @@ const BeltArt = {
     // One sole line for every character (source px below the pivot). Attack cells already sit within a few px of it;
     // TITAN's idle and walk cells were drawn up to 13 px low, so he sank and rose whenever he started or stopped.
     const floor = 6;
+    // The walk / run sheet has one sole line of its own; cells that are higher are the flight phase of the run.
+    if (suffix === '-locomotion') return { x: Math.max(-70, Math.min(70, ref.hip - cellInfo.hip)), y: floor - (this.cellAnchors('hero-' + id + suffix, sheet.atlas, FighterSprites.pivotX)[0]?.bottom ?? floor) };
     return { x: Math.max(-70, Math.min(70, ref.hip - cellInfo.hip)), y: Math.max(-14, Math.min(14, floor - cellInfo.bottom)) };
   },
   drawResortActor(a,c) {
     const [id,f]=this.resortPose(a),image=this.beachPalette(id,a.resortHue||0);if(!image)return false;
     const cell=FighterSprites.cell,k=FighterSprites.scaleFor(a.data.id);c.save();c.scale(a.facing,1);c.imageSmoothingEnabled=true;
-    if(a.state==='WALK_F'){
+    if(id.endsWith('-walk')) c.translate(0, Math.round(this.resortWalkDrop(id)*k));
+    else if(a.state==='WALK_F'){
       const who=a.resort;
       const passing=(who==='coral'&&f===7)||(who==='azure'&&(f===7||f===9))||(who==='misha'&&f===9);
       const bob=f===11?-2:(passing?1:0);
@@ -456,7 +520,12 @@ const BeltArt = {
       c.save();c.beginPath();c.rect(s.camera,0,W,641);c.clip();c.drawImage(this.metroBoards.get(i),x,0);
       // Structural joins hide the hard boundary between deliberately different environments.
       
-      if(i===1||i===2){const ev=s.metroEvent,u=ev?.kind==='stop'?Math.min(150,ev.f):0,travel=ev?.kind==='stop'?ev.startTick+u-u*u/300:s.tick;for(let n=0;n<6;n++){const xx=x+(travel*14+n*270)%1920;c.save();c.beginPath();c.rect(x+30,205,i===2?1000:1500,95);c.clip();c.fillStyle='rgba(255,193,99,.12)';c.fillRect(xx,205,7,95);c.restore();}}
+      if(i===1||i===2){const travel=s.metroTravel();c.save();c.beginPath();c.rect(x+30,205,i===2?1000:1500,95);c.clip();c.fillStyle='rgba(255,193,99,.12)';
+        for(let n=0;n<6;n++){const xx=x+(travel*14+n*270)%1920;c.fillRect(xx,205,7,95);}
+        // v3.22.0 [EVENT-220] Emergency brake: sparks from the wheels light the windows from below, fewer as the train slows.
+        const ev=s.metroEvent;if(ev?.kind==='stop'&&!ev.swapped&&ev.f>=ev.brakeAt&&ev.f<ev.stopAt){const v=s.metroBrakeSpeed();
+          for(let n=0;n<5;n++){const h=Math.sin((ev.f*7+n)*12.9898)*43758.5453,r=h-Math.floor(h);if(r<.5*v+.1){const g=c.createLinearGradient(0,300,0,205);g.addColorStop(0,'rgba(255,170,70,'+(.5*v+.12)+')');g.addColorStop(1,'rgba(255,170,70,0)');c.fillStyle=g;c.fillRect(x+30+(n*397+ev.f*53)%1500,205,40+r*120,95);}}}
+        c.restore();}
       if(i===4){const image=this.images.get('arena-crowd');if(image)for(let tier=0;tier<3;tier++){
         const width=[150,180,220][tier],height=328*width/768,base=[170,270,355][tier];
         for(let j=0;j<Math.ceil(1920/width)+1;j++){const frame=Math.floor(s.tick/12+j+tier)%4;
@@ -553,6 +622,7 @@ const BeltArt = {
     if (actor.state === 'WINDUP') return actor.plan === 'slam' ? 44 : 39;
     // Match the existing damage / sound event at SLAM frame 20 exactly.
     if (actor.state === 'SLAM') return f < 20 ? 44 : f < 33 ? 14 : f < 43 ? 47 : 11;
+    if (state === 'WALK_F' && this.bossWalk) return 72 + this.enemyWalkCell('voss', actor.gait ?? f, actor.walkBack); // v3.21.0 [ANIM-219] IRON VOSS: eight-cell walk sheet
     if (state === 'WALK_F') return this.walkCell(actor.gait ?? f, actor.walkBack, this.walkHold + 1); // IRON VOSS: same four matching cells, a heavier pace
     return FighterSprites.frame('titan', state, f, actor.animTick, actor.blockstun > 0, actor.vy);
   },
@@ -575,6 +645,7 @@ const BeltArt = {
     if(a.state==='SLAM') return ['maw-motion',f<20?8+Math.min(1,Math.floor(f/10)):f<30?10:11];
     if(a.state==='CHARGE') return ['maw-motion',12+Math.floor(f/3)%6];
     if(a.state==='ATK_H') return ['maw-motion',18+Math.min(5,Math.floor(f/5))];
+    if(a.state==='WALK_F'&&this.monsterAtlases.has('maw-walk')) return ['maw-walk',this.enemyWalkCell('maw',a.gait??a.animTick,a.walkBack)]; // v3.21.0 [ANIM-219]
     if(a.state==='WALK_F'){const step=Math.floor((a.gait??a.animTick)/5)%6;return ['maw-motion',a.walkBack?(6-step)%6:step];}
     return ['maw',0];
   },
@@ -592,7 +663,14 @@ const BeltArt = {
     c.save(); c.scale(actor.burnTicks>0 ? (actor.burnDirection || actor.facing) : actor.facing,1);
     if(actor.burnTicks>0){c.filter='sepia(.7) saturate(3)';c.shadowColor='#ff6a14';c.shadowBlur=16;}
     c.imageSmoothingEnabled=true;
-    c.drawImage(image,frame%6*cell,Math.floor(frame/6)*cell,cell,cell,-FighterSprites.pivotX*scale,-foot*scale,cell*scale,cell*scale);
+    // v3.21.0 [ANIM-219] The walk sheet is centred on the hips; the standing pose sits a few px to the left of the pivot.
+    // Shift the walk by the difference of the two silhouettes' centres so the body does not jump when a step starts.
+    let shift=0;
+    if(id==='maw-walk'&&this.monsterSheet){
+      const stand=this.cellAnchors('maw',this.monsterSheet,FighterSprites.pivotX)[0],walk=this.cellAnchors('maw-walk',image,FighterSprites.pivotX)[0];
+      if(stand&&walk) shift=Math.max(-20,Math.min(20,stand.centre-walk.centre));
+    }
+    c.drawImage(image,frame%6*cell,Math.floor(frame/6)*cell,cell,cell,(shift-FighterSprites.pivotX)*scale,-foot*scale,cell*scale,cell*scale);
     c.restore(); return true;
   },
   drawMonsterBreath(actor,c) {
@@ -608,10 +686,10 @@ const BeltArt = {
   drawBoss(actor, c, state, f) {
     if (actor.monster) return this.drawMonster(actor,c);
     if (this.bossCells.size !== 3) return false;
-    const pose = this.bossFrame(actor, state, f);
+    const pose = this.bossFrame(actor, state, f), walk = pose >= 72;
     const id = pose >= 48 ? 'voss-throw' : pose >= 24 ? 'voss-motion' : 'voss-base';
-    const frame = pose % 24, image = this.bossSheets.get(id), box = this.bossCells.get(id)[frame];
-    const scale = FighterSprites.scaleFor('titan'), cell = FighterSprites.cell, foot = actor.z > 0 ? FighterSprites.pivotY : box.bottom + 1;
+    const frame = pose % 24, image = walk ? this.bossWalk.atlas : this.bossSheets.get(id), box = walk ? null : this.bossCells.get(id)[frame];
+    const scale = FighterSprites.scaleFor('titan'), cell = FighterSprites.cell, foot = actor.z > 0 ? FighterSprites.pivotY : walk ? this.bossWalk.foot : box.bottom + 1;
     c.save(); c.scale(actor.facing, 1); c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
     if (actor.invuln > 0 && Math.floor(actor.animTick / 3) % 2) c.globalAlpha *= .72;
     c.drawImage(image, frame % 6 * cell, Math.floor(frame / 6) * cell, cell, cell, -FighterSprites.pivotX * scale, -foot * scale, cell * scale, cell * scale);

@@ -7,7 +7,7 @@ const fs=require('fs'),path=require('path'),assert=require('assert/strict'),{chr
   const cues=[];sound.init=()=>{};sound.playBGM=()=>{};sound.announce=()=>{};fighterVoice.play=(id,event)=>{cues.push(id+'-'+event);return true;};
   const setup=(id=0)=>{input.keys={};input.just={};game.startStreet(id);const s=game.street;s.intro=0;s.enemies=[];s.props=[];s.player.x=450;s.player.y=550;s.player.invuln=0;return s;};
   let s=setup();const kinds=Object.keys(STREET.enemies).filter(k=>k!=='boss');check(kinds.length===9,'9 regular enemy types');check(new Set(kinds.map(k=>STREET.enemies[k].char)).size===6,'all 6 heroes reused');
-  for(const kind of kinds){const e=s.spawnEnemy(kind,600,550);check(e.streetPalette?.size===3&&e.label===STREET.enemies[kind].name,'palette and name '+kind);if(STREET.enemies[kind].role)check(e.hp===STREET.enemies[e.role].hp,'existing balance '+kind);}
+  for(const kind of kinds){const e=s.spawnEnemy(kind,600,550);check(e.streetPalette?.size===3+(FighterSprites.sheets.has(e.data.id+'-locomotion')?1:0)&&e.label===STREET.enemies[kind].name,'palette and name '+kind);if(STREET.enemies[kind].role)check(e.hp===STREET.enemies[e.role].hp,'existing balance '+kind);}
   s=setup();s.area=4;s.wave=0;s.spawnWave();check(cues.at(-1)==='voss-intro','boss entrance cue');check(s.bossIntro>=Math.ceil(fighterVoice.buffers.get('voss-intro').duration*60),'intro holds entire line');
   for(let id=0;id<6;id++)for(const method of ['dash','throw','rising']){
    s=setup(id);s.area=4;const boss=s.spawnEnemy('boss',510,550);boss.hp=1;boss.invuln=0;

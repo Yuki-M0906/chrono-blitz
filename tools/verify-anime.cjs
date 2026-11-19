@@ -11,8 +11,9 @@ const hashes=JSON.parse(read('assets/characters/v33/baseline-hashes.json'));
 // Still guarded against accidental edits: modules and packs no version since v3.2.0 was meant to touch.
 for(const f of ['assets/voices/engine.js','assets/voices/voicevox-config.json','assets/sprites/throws.js','assets/stages/renderer.js','data/stages.js'])assert.equal(hash(f),hashes[f],f+' preserved');
 const packs=require('./packs.cjs').readPacks().assets,manifest=JSON.parse(read('assets/belt/art/manifest.json'));
-const assets=[...Object.entries(packs.sprites).map(([id,uri])=>({id,uri,file:'assets/sprites/design-v33/'+id+'.png',old:'assets/sprites/anime-v3/'+id+'.png'})),
- ...Object.entries(manifest.assets).filter(([id])=>/^(voss-|dash-)/.test(id)).map(([id,e])=>({id,uri:packs.beltArt[id].src,file:'assets/belt/art/'+e.file,old:'assets/belt/art/anime-v3/'+id+'.png'}))];
+// v3.21.0: the optional walk / run sheets (<id>-locomotion) are newer than the v3.3 redesign; verify-motion-v3151 covers them.
+const assets=[...Object.entries(packs.sprites).filter(([id])=>!id.endsWith('-locomotion')).map(([id,uri])=>({id,uri,file:'assets/sprites/design-v33/'+id+'.png',old:'assets/sprites/anime-v3/'+id+'.png'})),
+ ...Object.entries(manifest.assets).filter(([id])=>/^(voss-|dash-)/.test(id)&&id!=='voss-walk').map(([id,e])=>({id,uri:packs.beltArt[id].src,file:'assets/belt/art/'+e.file,old:'assets/belt/art/anime-v3/'+id+'.png'}))];
 assert.equal(assets.length,27);
 let rawPoses=0;const alpha=[];
 for(const a of assets){
@@ -29,10 +30,10 @@ let browser;
  browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||'C:/Users/User/AppData/Local/Google/Chrome/Application/chrome.exe',args:['--mute-audio']});
  const context=await browser.newContext({viewport:{width:1440,height:940}});await context.addInitScript(()=>window.requestAnimationFrame=()=>0);
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(pathToFileURL(path.join(root,'ai_studio_code.html')).href);
- const loaded=await page.evaluate(async()=>{await Promise.all([FighterSprites.ready,BeltArt.ready,StageArt.ready]);sound.init=()=>{};sound.playBGM=()=>{};sound.announce=()=>{};fighterVoice.play=()=>false;return{shared:FighterSprites.sheets.size,boss:BeltArt.bossSheets.size,dash:BeltArt.dashSheets.size,errors:[...FighterSprites.errors,...BeltArt.errors],cell:FighterSprites.cell,scale:FighterSprites.visualScale};});
+ const loaded=await page.evaluate(async()=>{await Promise.all([FighterSprites.ready,BeltArt.ready,StageArt.ready]);sound.init=()=>{};sound.playBGM=()=>{};sound.announce=()=>{};fighterVoice.play=()=>false;return{shared:[...FighterSprites.sheets.keys()].filter(key=>!key.endsWith('-locomotion')).length,boss:BeltArt.bossSheets.size,dash:BeltArt.dashSheets.size,errors:[...FighterSprites.errors,...BeltArt.errors],cell:FighterSprites.cell,scale:FighterSprites.visualScale};});
  assert.deepEqual(loaded,{shared:18,boss:3,dash:6,errors:[],cell:384,scale:1.15});
  const cells=await page.evaluate(()=>{
-  const all=[...[...FighterSprites.sheets].map(([id,s])=>[id,s.atlas]),...BeltArt.bossSheets,...[...BeltArt.dashSheets].map(([id,s])=>['dash-'+id,s])];
+  const all=[...[...FighterSprites.sheets].filter(([id])=>!id.endsWith('-locomotion')).map(([id,s])=>[id,s.atlas]),...BeltArt.bossSheets,...[...BeltArt.dashSheets].map(([id,s])=>['dash-'+id,s])];
   let nonempty=0;const clipping=[];
   for(const [id,sheet] of all)for(let f=0;f<24;f++){
    const box=BeltArt.bounds(sheet.getContext('2d'),f%6*FighterSprites.cell,Math.floor(f/6)*FighterSprites.cell,FighterSprites.cell,FighterSprites.cell);if(box.count>1000)nonempty++;

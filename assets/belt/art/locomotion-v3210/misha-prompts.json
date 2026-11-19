@@ -1,0 +1,52 @@
+{
+  "character": "misha",
+  "tool": "OpenAI ImageGen",
+  "reference": "assets/belt/art/resort-v370/misha-life.png cell 0",
+  "generations": [
+    {
+      "mode": "walk",
+      "references": [
+        "idle cell 0",
+        "walk skeletal pose guide",
+        "VOLT approved walk cycle"
+      ],
+      "prompt": "Production animation cels for a 2D cel-shaded arcade beat-em-up. Reference 1 defines EXACT character identity, anatomy, palette, clothing, silhouette and carried objects. MISHA: adult blonde ponytailed fighter in blue beach fighting outfit, blue shoes, one ring in each hand carried along the forearms. Both rings remain at or above hip height near each arm. Keep a gap between each ring’s edge and the feet. Make exactly EIGHT isolated, entire, RIGHT-facing figures regularly laid out in a four column by two row grid, generous clear gutters including outermost edges. True transparent background; no floor/shadow/FX/text/labels. Ref 2 is skeletal choreography only; ref 3 is an approved male character animation for rhythm and leg ordering ONLY, do not adopt his wardrobe or face. Same scale, camera, lighting and model across all frames. Outlines clean like the identity reference. Same serious expression as idle. Draw near anatomical RIGHT leg and arm in light, far LEFT leg slightly darker and behind it when they overlap. Upper body in three-quarter right-facing profile, face to screen right. Cloth and hair lag smoothly. Never repeat the same leg leading in both rows. For the very FIRST CEL of row TWO, the entire lighter near thigh from the visible hip to the knee extends BACK towards SCREEN LEFT and connects to the rear shoe; the darker far leg leads forward to screen RIGHT. The near forearm is in FRONT of the rib cage. This contrasts with the first cel of row ONE, where the near knee and shoe lead and the near forearm trails behind the rib cage. Do not duplicate the top row. Each row must depict different near-leg silhouette and occlusions at the hip. Two half cycles with precisely equal and opposite stride and knee lift. Guarded upright WALK cycle. Top row: near/right leg stepping forward onto heel with far leg stretched back on toe; next near leg flat under weight, dark far shoe lifting behind; then near leg straight under pelvis, far knee bent passing it; finally far leg swinging forward and near leg behind. Bottom row opposite: FAR/left thigh and shoe forward on heel in the first pose, right/near leg stretching backward with near/right foot visibly behind, near arm forward. Follow with loading, passing, opposite foot swing. A continuous cycle where eighth frame leads back to first. In contact poses toe-to-toe span about 44% of standing height. Pelvis stays fixed, support foot moves uniformly backwards."
+    },
+    {
+      "mode": "run",
+      "references": [
+        "idle cell 0",
+        "run skeletal pose guide",
+        "VOLT approved run cycle",
+        "this character walk cels"
+      ],
+      "prompt": "Production animation cels for a 2D cel-shaded arcade beat-em-up. Reference 1 defines EXACT character identity, anatomy, palette, clothing, silhouette and carried objects. MISHA: adult blonde ponytailed fighter in blue beach fighting outfit, blue shoes, one ring in each hand carried along the forearms. Both rings remain at or above hip height near each arm. Keep a gap between each ring’s edge and the feet. Make exactly EIGHT isolated, entire, RIGHT-facing figures regularly laid out in a four column by two row grid, generous clear gutters including outermost edges. True transparent background; no floor/shadow/FX/text/labels. Ref 2 is skeletal choreography only; ref 3 is an approved male character animation for rhythm and leg ordering ONLY, do not adopt his wardrobe or face. Same scale, camera, lighting and model across all frames. Outlines clean like the identity reference. Same serious expression as idle. Draw near anatomical RIGHT leg and arm in light, far LEFT leg slightly darker and behind it when they overlap. Upper body in three-quarter right-facing profile, face to screen right. Cloth and hair lag smoothly. Never repeat the same leg leading in both rows. For the very FIRST CEL of row TWO, the entire lighter near thigh from the visible hip to the knee extends BACK towards SCREEN LEFT and connects to the rear shoe; the darker far leg leads forward to screen RIGHT. The near forearm is in FRONT of the rib cage. This contrasts with the first cel of row ONE, where the near knee and shoe lead and the near forearm trails behind the rib cage. Do not duplicate the top row. Each row must depict different near-leg silhouette and occlusions at the hip. Two half cycles with precisely equal and opposite stride and knee lift. Reference 4 is this same character walking. Match all features and scale. Compact light JOG at walking travel speed, tiny low airborne phases and an 8–12 degree lean with bent elbows. Bring each foot down almost below the pelvis; unlike the long VOLT sprint in reference 3, footprints are only about a quarter of body height apart at contact. Subtly lift the recovering heel, no hurdling or full-split stride. Follow the short foot spacings of the colored pose guide for all 8 poses. Top row right/near leg lands in front, then supports weight while the left heel lifts, right push-off as left knee drives up, then airborne as far/left foot reaches in front. Bottom row mirror leg depth ONLY so left/far foot lands ahead, then loading and pushing off, airborne with right/near leg reaching forward. All faces RIGHT. Front shoe lands on ball, shoes clear of one another in split poses."
+    },
+    {
+      "mode": "walk opposite supporting leg",
+      "references": [
+        "idle cell 0",
+        "LUKA cels 4-7 / 16-19 as a pose template"
+      ],
+      "prompt": "FOUR matching transparent full body animation cels in one horizontal row. Correct the opposite half-cycle of Misha walking: reference 2 shows the literal FOUR POSES to trace, her twin sister Luka's approved opposite-side half-cycle. Draw reference 2's four body poses in order, replacing outfit, hair and weapons with character design of reference 1, MISHA. Both twins are adult athletic fighters. Blue swimsuit costume and shoes, blonde ponytail with blue tie, metal bracers and one circular blue-metal fighting ring held in each hand. Preserve original face and lighting. The near forearm crosses the FRONT of her rib cage in the first pose while the brightly lit near leg from the visible hip stretches BACK to the shoe at SCREEN LEFT. Front shoe reaching to screen right is attached to the darker far thigh IN THE BACK. Keep this depth ordering of reference 2. Do not invent a new gait and do not reverse the ordering of thighs at their overlap. Keep weapons small, circular, held close to both arms and clearly connected to hands. Actual alpha transparency behind and through both rings, no haze or matte, no cast shadows, no captions. Same scale throughout."
+    },
+    {
+      "mode": "run opposite supporting leg",
+      "references": [
+        "idle cell 0",
+        "LUKA cels 4-7 / 16-19 as a pose template"
+      ],
+      "prompt": "FOUR matching transparent full body animation cels in one horizontal row. Correct the opposite half-cycle of Misha jogging in small steps: reference 2 shows the literal FOUR POSES to trace, her twin sister Luka's approved opposite-side half-cycle. Draw reference 2's four body poses in order, replacing outfit, hair and weapons with character design of reference 1, MISHA. Both twins are adult athletic fighters. Blue swimsuit costume and shoes, blonde ponytail with blue tie, metal bracers and one circular blue-metal fighting ring held in each hand. Preserve original face and lighting. The near forearm crosses the FRONT of her rib cage in the first pose while the brightly lit near leg from the visible hip stretches BACK to the shoe at SCREEN LEFT. Front shoe reaching to screen right is attached to the darker far thigh IN THE BACK. Keep this depth ordering of reference 2. Do not invent a new gait and do not reverse the ordering of thighs at their overlap. Keep weapons small, circular, held close to both arms and clearly connected to hands. Actual alpha transparency behind and through both rings, no haze or matte, no cast shadows, no captions. Same scale throughout."
+    },
+    {
+      "mode": "walk right support cleanup",
+      "references": [
+        "idle cell 0",
+        "accepted Misha left support cels",
+        "Luka right support cels"
+      ],
+      "prompt": "Four individual full body animation cels side by side in a single spaced row on truly transparent alpha. This is the FIRST HALF of MISHA walking. Reference 1 defines Misha's costume and face. Reference 2 shows her accepted second half and defines the clean color fills, exact linework, arm bracers and circular metal rings to match. Reference 3 is the EXACT four right-support walking POSES to trace from her twin Luka, but do not copy her red colors or weapons. Draw the NEAR thigh leading in the FIRST cel and visibly trailing in the last. Sequence: right/near heel strike ahead and forearm trails; right supporting, far heel lifting behind; right supporting while far knee passes forward; far knee and shoe extend forward with supporting near leg trailing. Match all four poses of ref 3. Her adult athletic body, blue beach fighting outfit, blonde ponytail with blue tie, both hands gripping one complete closed blue metal ring each, blue shoes. All cels identical scale and right facing. Transparent cutouts with clean unclipped silhouettes, both rings have transparent open centers, no flat matte or scenery, no text, no floor shadows."
+    }
+  ],
+  "registration": "8コマごとに生成し、頭・腰・足のランドマークで原画を位置合わせ。足の奥行きと接地を調整し、縮小後に透過と輪郭を検査。"
+}

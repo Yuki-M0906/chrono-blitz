@@ -1,4 +1,12 @@
-# NEON UPRISING — Stage 1〜5 ＋ Bonus / v3.20.2
+# NEON UPRISING — Stage 1〜5 ＋ Bonus / v3.22.0
+
+## v3.22.0 地下鉄イベント
+
+ステージ 4 の入線・乗車・発車と急停車・降車は `NeonUprising.beginMetroEvent` / `updateMetroEvent` / `drawMetroTrain` / `metroShake` / `metroStep`、効果音は同じ `engine.js` の `MetroSound`。各拍のフレーム番号はイベント開始時に決まる。詳細は HTML 冒頭の [EVENT-220] [SE-221]。
+
+## v3.21.0 歩行・走行シート
+
+キャラクターは 4 枚目のシート `assets/sprites/design-v33/<id>-locomotion.png`（コマ 0〜7 歩行、12〜19 走行）を任意で持てる。6 人ぶんそろっている。あれば `BeltArt.heroWalkCell` が歩行 8 コマ（共有描画のコマ番号 72〜79）を、`BeltArt.drawDash` がダッシュ走行に 84〜91 を使う。無ければ下の v3.20.2 の 4 コマのまま。速さは `BeltArt.strideHold`（6）と `runHold`（5）で、接地した足が地面の上で動かないように絵の足運びに合わせてある。詳細は HTML 冒頭の [ANIM-217]。
 
 ## v3.20.2 歩行
 
