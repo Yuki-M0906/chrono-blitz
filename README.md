@@ -1,87 +1,42 @@
 # CHRONO BLITZ: ARCADE COLLECTION
 
-Browser-only arcade collection (one small HTML file plus a `data/` folder of asset packs): the 1-on-1 2D fighter **OVERDRIVE** and the side-scrolling beat 'em up **NEON UPRISING**. / HTML と `data/` フォルダで動くアーケードコレクション。2D 対戦格闘「OVERDRIVE」と 1 人用ベルトスクロールアクション「NEON UPRISING」。
+**Play in your browser / ブラウザで遊ぶ:** https://yuki-m0906.github.io/chrono-blitz/
 
-**▶ Play the demo / デモをプレイ:** https://yuki-m0906.github.io/chrono-blitz/
+An arcade collection that runs in a desktop browser, with two games: the 1-on-1 2D fighter **OVERDRIVE** and the side-scrolling beat 'em up **NEON UPRISING**. Nothing to install. A keyboard is required.
 
-Current version: **v3.22.0** / 現在のバージョン: **v3.22.0**
-
-> The game is `ai_studio_code.html` (about 0.7 MB) plus sixteen asset packs in `data/` (about 300 MiB total). Keep them together. Later loads are cached per pack. Keyboard required.
-> ゲーム本体は `ai_studio_code.html`（約0.7MB）と `data/` フォルダのアセットパック16本（計約300MiB）のセットです。必ず同じ場所に置いてください。初回読み込みには時間がかかります。キーボードが必要です。
+パソコンのブラウザで遊べるアーケードコレクションです。2D 対戦格闘「OVERDRIVE」と、1 人用ベルトスクロールアクション「NEON UPRISING」の 2 本を収録しています。インストールは不要です。キーボードが必要です。
 
 ## Games / 収録ゲーム
 
 | | OVERDRIVE | NEON UPRISING |
 |---|---|---|
-| Genre | 1-on-1 versus fighting | Side-scrolling beat 'em up (1 player) |
-| Content | 6 fighters, 4 stages, ARCADE / VS CPU / VS 2P / TRAINING | 5 stages and a bonus round: "BLACK VEIN" (boss IRON VOSS) → "INFERNAL WORKS" (giant monster FURNACE MAW) → "AZURE MIRAGE" (twins LUKA & MISHA) → "DEADLINE EXPRESS" (OSWALD / IRON SHOGUN) → bonus "BREAKER YARD" (wreck a car) → "SKYHOOK ASCENT" (a rising hoist, boss VESPER MATRIARCH). 9 city enemy types, 6 resort types and 96 metro variants. Score and lives carry over |
-| Systems | Gatling cancels, command-input bonus, just guard, drive burst, synchronized throws | Final Fight style chain (punch → body blow → uppercut, each stage only after a hit), hold ↓ on the third hit to throw instead, thrown bodies hit other enemies, grabs with follow-up strikes, three-hit rising attack (↓ → ↑), flame dash attack, emergency spin attack, breakables and pickups, lives and 1UP, boss intro lines and slow-motion finish |
+| Genre / ジャンル | 1-on-1 versus fighting / 対戦格闘 | Side-scrolling beat 'em up, 1 player / ベルトスクロールアクション（1 人用） |
+| Content / 内容 | 6 fighters, 4 stages / 6 人、4 ステージ | 5 stages and a bonus round, each stage with a boss / 5 ステージとボーナス、各ステージにボス |
+| Modes / モード | ARCADE, VS CPU, VS 2P, TRAINING | Start from any stage / 開始ステージを選べる |
 
 ## Controls / 操作
 
-| | 1P (OVERDRIVE) | NEON UPRISING |
+| | OVERDRIVE (1P) | NEON UPRISING |
 |---|---|---|
-| Move | `W` `A` `S` `D` (or arrows) | `W` `A` `S` `D` (up/down = depth) |
-| Dash / Dash attack | Forward twice / Back twice | `→→` / `←←` / `D D` / `A A`, hold the second press to run; `J` / `Z` while running to attack |
-| Light / Heavy | `J` / `K` | `J` chain attack (punch → body → upper) and pick up; hold `S` on the 3rd hit to throw |
-| Special / Super | `L` / `U` | `L` emergency attack; `S` → `W` (↓ → ↑) three-hit rising attack |
-| Throw / Burst | `I` / `O` | `I` throw, `K` jump |
-| 2P | Arrows + `N` `M` `,` `.` `/` `;` | — |
-| Common | `H` command list, `ESC` pause, `Q` (while paused) back | |
-| Start stage | — | Button at the bottom right of the game select screen ("ベルト開始：STAGE n"), then pick a hero |
+| Move / 移動 | `W` `A` `S` `D` or arrow keys / または矢印キー | `W` `A` `S` `D` |
+| Attack / 攻撃 | `J` light / 弱, `K` heavy / 強, `L` special / 必殺技, `U` super / 超必殺技 | `J` attack, press repeatedly for a combo / 攻撃（連打で連続技） |
+| Other / その他 | `I` throw / 投げ, `O` burst / バースト | `K` jump / ジャンプ, `I` throw / 投げ, `L` emergency attack / 緊急技 |
+
+- 2P (OVERDRIVE): arrow keys and `N` `M` `,` `.` `/` `;` / 矢印キーと `N` `M` `,` `.` `/` `;`
+- `H`: command list / 技と操作の一覧　`ESC`: pause / ポーズ
+- Gamepads and touch screens are not supported. / ゲームパッドとタッチ操作には対応していません。
+
+The demo page lists the remaining moves. / そのほかの技は、デモのページに載せています。
 
 ## Tech / 技術
 
-- HTML5 Canvas 2D, fixed 60 Hz simulation, 1280×720 logical resolution, deterministic rendering (drawing never consumes the combat RNG).
-- Web Audio API: 9 original tracks (8 orchestral / cathedral pieces and the stage 5 theme) and all sound effects are synthesized locally from 42 base PCM buffers + 131 multi-sampled acoustic instrument and orchestral percussion buffers with a 2.25s stereo symphony hall convolver; no external audio files.
-- 432 shared contemporary anime poses (18 atlases), 72 IRON VOSS poses (3), 144 dash poses (6), a 24-cell rising-attack effect atlas, 96 FURNACE MAW poses (4) with a 12-cell flame, a 24-cell fire atlas, 4 versus backgrounds, 15 street / factory / resort backgrounds, 3 resort enemy atlases, 4 twin-boss atlases (96 poses), a resort decor atlas and an 8-cell prop/item atlas stored as data URIs (62 PNGs total).
-- Character voices: 148 clips. 142 English lines (22 per fighter including a finishing line; intro / defeat for VOSS and MAW; intro / combo / defeat for each twin) synthesized locally with the open-source Kokoro-82M model and post-processed, plus 6 creature sounds for VESPER synthesized from scratch (see credits).
-- No server, no network requests, no installation. Open `ai_studio_code.html` directly (with `data/` beside it).
-
-## Repository layout / 構成
-
-```
-ai_studio_code.html     the game code (distributable). Header comment = full spec & changelog (Japanese)
-data/                   asset packs generated by the build (sprites, stages, voices, belt art as data URIs)
-index.html              GitHub Pages landing page
-assets/                 editable sources that get embedded by the build
-  sprites/              atlases (PNG), renderer.js, throws.js, prompts
-  stages/               backgrounds (PNG), renderer.js
-  voices/               WAV clips, engine.js, manifests, CREDITS.md
-  audio/                SoundEngine source (engine.js) + README
-  belt/                 NEON UPRISING source (engine.js), visual layer (art.js), art/ PNGs + manifest/prompts, README
-tools/                  build-sprites.mjs (re-embeds assets), verify-*.cjs (Playwright tests), voice generation scripts
-verification/           latest test reports (JSON). Screenshots and audio previews are generated locally by the tests and not committed
-```
-
-Not committed (kept only on the author's machine, see `.gitignore`): test screenshots, superseded artwork that the build no longer reads (pixel-art atlases, `anime-v3`), and the per-version backups (`backups/`). Five tests compare against such local files and skip or fail on a fresh clone: `verify-sprites` (v1.6.0 baseline), `verify-voice-update` (older voice sets), part of `verify-anime`, and `verify-idle-fire-v344` and `verify-impact-v360` (pre-change sources in `backups/`).
-
-Build: `node tools/build-sprites.mjs` re-embeds everything between the `SPRITE_ASSETS` / `AUDIO_ENGINE` / `BELT_ENGINE` markers. Never edit inside the markers by hand.
-Tests: `node tools/verify-*.cjs` (needs Playwright and Chrome; see `assets/belt/README.md`).
-
-The detailed design document and the per-version changelog (v1.1 → v3.6) live in the HTML comment at the top of `ai_studio_code.html`.
+- HTML5 Canvas 2D, fixed 60 Hz simulation, 1280×720 logical resolution. / HTML5 Canvas 2D、固定 60Hz 更新、論理解像度 1280×720
+- Music and sound effects are synthesized in the browser with the Web Audio API. / BGM と効果音は Web Audio API でブラウザ内で合成
+- Plain HTML and JavaScript, with no framework and no server-side code. / フレームワークもサーバー側の処理も使わない、HTML と JavaScript だけの構成
+- The game is `ai_studio_code.html` plus the asset packs in `data/` (about 300 MiB in total), so the first load takes a while. / ゲーム本体は `ai_studio_code.html` と `data/` フォルダのアセットパック（計約 300MiB）。初回の読み込みには時間がかかります
 
 ## Credits / クレジット
 
-Since v3.20.1 the character voices are English lines synthesized on the author's machine with [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) (model: Apache-2.0; runtime `kokoro-onnx`: MIT) by `tools/generate-english-voices.py`, then pitch-shaped and mastered by the same script. VESPER's six creature sounds are original synthesis (`tools/render-vesper-voices.mjs`).
-v3.20.1 以降のキャラクターボイスは、オープンソースの音声合成モデル Kokoro-82M（Apache-2.0）でローカル生成し、同じスクリプトで演出用の加工をした英語の台詞です。VESPER の 6 本は独自合成です。
+Character voices are English lines synthesized on the author's machine with [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) (model: Apache-2.0; runtime `kokoro-onnx`: MIT) and then processed for effect. The creature sounds of the last boss are original synthesis.
 
-| Character | Credit |
-|---|---|
-| 神楽 / KAGURA | Kokoro-82M (am_fenrir) |
-| ヴォルト / VOLT | Kokoro-82M (am_puck) |
-| フレイヤ / FREYA | Kokoro-82M (af_bella) |
-| タイタン / TITAN | Kokoro-82M (bm_george) |
-| 綾女 / AYAME | Kokoro-82M (af_heart) |
-| セリーヌ / CELINE | Kokoro-82M (bf_emma) |
-| IRON VOSS | Kokoro-82M (am_michael) |
-| FURNACE MAW | Kokoro-82M (am_michael) |
-| ルカ / LUKA | Kokoro-82M (af_sarah) |
-| ミーシャ / MISHA | Kokoro-82M (bf_isabella) |
-| VESPER MATRIARCH | Original synthesized creature vocals |
-
-History: v3.8.0–v3.20.0 used voices generated through the Edge read-aloud endpoint; they were replaced because their redistribution terms could not be confirmed. Up to v3.7.2 the voices were VOICEVOX (玄野武宏, 白上虎太郎, 四国めたん, 麒ヶ島宗麟, 中国うさぎ, 九州そら); those clips remain in the git history.
-
-### v3.4.0 Street commands
-
-↓→↑ / S→W within 14 frames of pressing down (holding down longer cancels it; a short overlap is allowed; 6-frame recovery buffer): three-hit rising attack, also from a grab. Grab: J/Z twice, then J/Z to launch or I to throw.
+キャラクターボイスは、オープンソースの音声合成モデル Kokoro-82M（Apache-2.0）で作者の手元で生成し、演出用に加工した英語の台詞です。最終ボスの声は独自に合成しています。
