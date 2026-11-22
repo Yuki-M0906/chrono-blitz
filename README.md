@@ -52,10 +52,9 @@ assets/                 editable sources that get embedded by the build
   belt/                 NEON UPRISING source (engine.js), visual layer (art.js), art/ PNGs + manifest/prompts, README
 tools/                  build-sprites.mjs (re-embeds assets), verify-*.cjs (Playwright tests), voice generation scripts
 verification/           latest test reports (JSON). Screenshots and audio previews are generated locally by the tests and not committed
-backups/                pre-change copies of edited sources for recent versions (two tests read them)
 ```
 
-Not committed (kept only on the author's machine, see `.gitignore`): test screenshots, superseded artwork that the build no longer reads (pixel-art atlases, `anime-v3`), and per-version full HTML backups. Three tests compare against such local files and skip or fail on a fresh clone: `verify-sprites` (v1.6.0 baseline), `verify-voice-update` (older voice sets) and part of `verify-anime`.
+Not committed (kept only on the author's machine, see `.gitignore`): test screenshots, superseded artwork that the build no longer reads (pixel-art atlases, `anime-v3`), and the per-version backups (`backups/`). Five tests compare against such local files and skip or fail on a fresh clone: `verify-sprites` (v1.6.0 baseline), `verify-voice-update` (older voice sets), part of `verify-anime`, and `verify-idle-fire-v344` and `verify-impact-v360` (pre-change sources in `backups/`).
 
 Build: `node tools/build-sprites.mjs` re-embeds everything between the `SPRITE_ASSETS` / `AUDIO_ENGINE` / `BELT_ENGINE` markers. Never edit inside the markers by hand.
 Tests: `node tools/verify-*.cjs` (needs Playwright and Chrome; see `assets/belt/README.md`).

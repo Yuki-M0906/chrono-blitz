@@ -52,10 +52,8 @@ assets/belt/art/metro-v3100/subway-train.png
 assets/belt/art/metro-v3101/arena.png
 assets/belt/art/metro-v3101/cab.png
 assets/belt/art/metro-v3101/crowd.png
-# 控えフォルダ内の差し替え前の原画（コードと manifest の控えは管理対象のまま）
-backups/**/*.png
-backups/**/*.jpg
-backups/**/*.wav
+# 控えフォルダ（過去版の控え）は丸ごと管理対象外。手元にだけ置く
+backups/
 
 # 修正前後の比較アニメーション（検証を実行しても再生成されないが、容量があるので管理対象外）
 verification/**/*.gif
